@@ -18,10 +18,12 @@ Use this skill at the start and closeout of every AutoMix repository task.
    - dynamic-workflow policy
    - sub-agent policy
    - fallback policy
-3. If the current session cannot verify or satisfy the requested model/effort, stop with `BLOCKED_MODEL_SELECTION`. Never silently substitute a model.
-4. Dynamic workflows and sub-agents are OFF unless the task explicitly authorizes them. Authorization must also pin model/effort for any delegated agent.
-5. Extract the task's scope, prohibited actions, deliverables, branch, acceptance criteria, and stop conditions into a short execution checklist before editing.
-6. Do not widen scope because adjacent work looks useful. Record adjacent work as a recommendation instead.
+3. For Claude work, **Claude Desktop → Code tab/workspace is an allowed execution surface**, even if the embedded runtime internally identifies itself as `Claude Code`, `Claude Code CLI`, or an Agent-SDK/Code runtime. Do not confuse that embedded runtime identity with a standalone terminal/CLI session.
+4. The exact requested model/effort must still be visibly selected/verified in Claude Desktop. If the model/effort cannot be satisfied, stop with `BLOCKED_MODEL_SELECTION`. A Desktop Code-tab session must NOT block merely because its embedded runtime calls itself Claude Code.
+5. Standalone `claude` terminal sessions, standalone Claude Code CLI/Agent SDK outside Claude Desktop, Cowork/delegated agents, dynamic delegation, and unapproved sub-agents remain forbidden unless the active task explicitly authorizes them.
+6. Dynamic workflows and sub-agents are OFF unless the task explicitly authorizes them. Authorization must also pin model/effort for any delegated agent.
+7. Extract the task's scope, prohibited actions, deliverables, branch, acceptance criteria, and stop conditions into a short execution checklist before editing.
+8. Do not widen scope because adjacent work looks useful. Record adjacent work as a recommendation instead.
 
 ## Evidence gate
 
