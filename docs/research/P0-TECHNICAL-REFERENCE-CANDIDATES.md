@@ -11,7 +11,7 @@ This is a candidate inventory for P0 research. Inclusion here does **not** mean 
 - `REFERENCE_ONLY`: useful architecture/algorithm source, but current license/stack makes direct embedding undesirable.
 - `DEFER`: potentially useful later, not needed for current gate.
 
-## Music structure / beat analysis
+## Cue-point / structure / beat analysis
 
 ### All-In-One Music Structure Analyzer
 
@@ -44,6 +44,48 @@ Caveats:
 - functional segments are not identical to musical phrase boundaries; P0-M3 must evaluate boundary quality and derive phrase candidates rather than falsely equating the two.
 
 Decision: `BENCHMARK_NOW`, `PRODUCTION_CANDIDATE_ONLY_AFTER_PORTABILITY_STUDY`.
+
+### CUE-DETR / EDM-CUE
+
+Repository: https://github.com/ETH-DISCO/cue-detr
+
+Pinned revision: `d0462856ed2f59a1fb65267cfbe87340a65ad1bb`
+
+Code license: MIT.
+
+Paper: `Cue Point Estimation using Object Detection` (2024), https://arxiv.org/abs/2407.06823
+
+Upstream publishes:
+
+- cue-point prediction code;
+- pretrained checkpoint links;
+- EDM-CUE metadata links;
+- a demo that predicts cue points from MP3 files;
+- training code using a modified DETR/object-detection formulation.
+
+The repository documents EDM-CUE metadata for almost 5k EDM tracks collected from four DJs. Metadata includes:
+
+- BPM / beat-grid start;
+- initial beat count;
+- time signature;
+- Camelot key metadata;
+- expert cue-point timestamps.
+
+The associated paper reports roughly 21k manually annotated expert cue points and emphasizes phrasing adherence.
+
+Why it matters to AutoMix:
+
+This directly targets a key problem we otherwise risk reinventing: **where should a DJ-capable transition enter/exit a track?** It should be compared against rule-based novelty methods, energy-only heuristics, fixed-N-beat phrase proxies, and structure-model-derived candidate points.
+
+Caveats:
+
+- code being MIT does **not** automatically establish the license/provenance of Hugging Face datasets/checkpoints or referenced source audio;
+- repo ships metadata/references, not copyrighted training audio;
+- domain appears EDM-heavy and may generalize poorly to pop/hip-hop/rock/non-4/4 material;
+- model size, inference speed, mobile portability, and robustness to lossy/streaming audio are not yet evaluated;
+- P0-M3 must audit dataset/checkpoint terms separately before any production adoption.
+
+Decision: **`BENCHMARK_NOW`, `HIGH_PRIORITY_REUSE_CANDIDATE_AFTER_ASSET_LICENSE_AUDIT`**.
 
 ### BeatNet
 
@@ -186,24 +228,30 @@ Decision: `REFERENCE_ONLY`, plus possible native Apple analyzer experiment for o
 
 P0-M3 should not ask “which one library wins?” as a single score. Test lanes separately:
 
-1. **Beat/downbeat lane**
+1. **Cue-point lane**
+   - CUE-DETR / EDM-CUE
+   - rule-based novelty/cue methods from prior literature
+   - structure-derived candidates from All-In-One
+   - simple energy/fixed-phrase heuristics as negative baselines
+2. **Beat/downbeat lane**
    - All-In-One
    - BeatNet
    - Essentia baseline(s)
-2. **Structure lane**
+3. **Structure lane**
    - All-In-One functional boundaries/labels
    - additional structure/novelty methods if needed
-3. **Harmonic lane**
+4. **Harmonic lane**
    - key/chroma algorithms and confidence
-4. **Activity lane**
+5. **Activity lane**
    - vocal/bass/percussion activity or proxies
-5. **Loudness/energy lane**
+6. **Loudness/energy lane**
    - integrated + short-term/local curves
-6. **Stretch/pitch lane**
+7. **Stretch/pitch lane**
    - Signalsmith Stretch
    - Rubber Band reference
-7. **Engine architecture lane**
+8. **Engine architecture lane**
    - SimpMusic pinned baseline
+   - Echo Music source reference
    - Mixxx reference patterns
 
 The likely production architecture may combine several specialized components rather than adopt one large MIR framework.
@@ -224,3 +272,5 @@ No candidate becomes a production dependency until a task records:
 - failure/fallback behavior;
 - maintenance/community risk;
 - reproducible integration prototype.
+
+For ML/research candidates, the gate additionally requires separate verification of **code license, checkpoint license, dataset license/provenance, and training-audio rights**. Do not assume a permissive repository license covers model/data artifacts hosted elsewhere.
