@@ -54,6 +54,25 @@ For Claude repository work, the default unless a task says otherwise is:
 - Dynamic workflows: OFF
 - Sub-agents: OFF
 
+### Claude Desktop execution-surface semantics
+
+The project owner's normal Claude workflow is the **Claude Desktop application**.
+
+For task-policy purposes, the following is **ALLOWED**:
+
+- Claude Desktop app in its **Code** tab/workspace, even when the embedded runtime identifies itself internally as `Claude Code`, `Claude Code CLI`, or an Agent-SDK/Code runtime.
+- The visible Desktop session must still use the exact model/effort requested by the task (for example `Sonnet 5` + `High` when that is what the Desktop UI exposes for `Sonnet High`).
+
+The following remains **FORBIDDEN unless a task explicitly authorizes it**:
+
+- launching `claude` from a separate terminal/shell outside Claude Desktop;
+- a standalone Claude Code CLI session not initiated from the Claude Desktop app;
+- standalone Agent SDK scripts/runners outside Claude Desktop;
+- Cowork/delegated agents, sub-agents, agent teams, nested agents, or dynamic delegation not explicitly authorized by the task;
+- silent model/effort fallback.
+
+An embedded Code runtime inside Claude Desktop MUST NOT return `BLOCKED_MODEL_SELECTION` merely because it self-identifies as `Claude Code`. Execution surface and runtime identity are separate concepts. Blocking is appropriate only when the requested model/effort cannot be selected/verified in the Desktop UI, or another explicit stop condition is met.
+
 ## Mandatory PM handoff
 
 Every task prompt MUST end with a `HANDOFF TO PM` section that tells the executing agent exactly what to return for review. At minimum require:
