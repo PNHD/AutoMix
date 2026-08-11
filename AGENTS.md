@@ -10,6 +10,20 @@ Build a provider-independent AutoMix system whose transition quality is evaluate
 
 No production app implementation is accepted during P0 unless a task explicitly authorizes a disposable experiment.
 
+## Project-local skills
+
+AutoMix keeps portable project skills under `.agents/skills/`.
+
+Use these as follows:
+
+- **Every task:** `.agents/skills/automix-task-contract/SKILL.md`
+- **Research / source archaeology / API / DSP feasibility:** `.agents/skills/automix-forensic-research/SKILL.md`
+- **Implementation review / milestone acceptance:** `.agents/skills/automix-code-review/SKILL.md`
+
+A project skill supplements this file; it does not override the active task's execution profile, scope, prohibitions, or acceptance criteria.
+
+Third-party skill decisions and pinned upstream refs are recorded in `docs/research/AGENT-SKILLS-AUDIT.md`.
+
 ## Non-negotiable rules
 
 1. Evidence before conclusions. Cite exact repository paths, symbols, commits, official documentation, benchmark outputs, or reproducible commands.
