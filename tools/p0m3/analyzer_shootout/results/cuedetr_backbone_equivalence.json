@@ -1,0 +1,39 @@
+{
+  "claim": "use_pretrained_backbone=False produces bit-identical CUE-DETR output vs. the upstream-default use_pretrained_backbone=True, because disco-eth/cue-detr's checkpoint state_dict fully overwrites the backbone regardless of its initialization.",
+  "checkpoint": "disco-eth/cue-detr",
+  "processor_config": "facebook/detr-resnet-50",
+  "compared_fixture": "FIX-A-constant-120bpm-4-4",
+  "compared_input_path": "FIX-A-constant-120bpm-4-4.mp3",
+  "dependency_versions": {
+    "torch": "2.13.0+cpu",
+    "transformers": "4.42.3"
+  },
+  "compared_fields": [
+    "raw_cue_points_ms (box positions -> frame time)",
+    "raw_cue_score (DETR detection score)"
+  ],
+  "use_pretrained_backbone_True": {
+    "raw_cue_points_ms": [
+      69.7,
+      31718.5
+    ],
+    "raw_cue_score": [
+      1.0,
+      0.9105813584226546
+    ]
+  },
+  "use_pretrained_backbone_False": {
+    "raw_cue_points_ms": [
+      69.7,
+      31718.5
+    ],
+    "raw_cue_score": [
+      1.0,
+      0.9105813584226546
+    ]
+  },
+  "positions_equal": true,
+  "scores_equal": true,
+  "max_score_diff": 0.0,
+  "verdict": "BIT_IDENTICAL"
+}

@@ -48,7 +48,7 @@ def run(fixture_id: str, gt: dict) -> AnalyzerResult:
     result.beat_confidence = None  # theoretical grid asserts no measured confidence
     result.downbeat_timestamps_ms = None  # scalar BPM alone cannot determine bar phase
     result.device = "cpu"
-    result.wall_time_sec = time.perf_counter() - t0
-    result.run_phase = "N_A"  # PM REPAIR R1: no model to load; lifecycle concept doesn't apply
+    result.total_call_wall_sec = time.perf_counter() - t0
+    result.estimator_lifecycle = "N_A"  # PM REPAIR R1/R8: no model to load; lifecycle concept doesn't apply
     result.memory_measurement_method = "N_A"
     return result

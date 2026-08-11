@@ -2,93 +2,93 @@
 
 Fixtures: 8. Raw runs: 40. Scored: 40.
 
-| candidate | fixture | run_state | wall_time_s | error |
+| candidate | fixture | run_state | total_call_wall_sec | error |
 |---|---|---|---|---|
-| beatnet | FIX-A-constant-120bpm-4-4 | OK | 22.4525 |  |
-| beatnet | FIX-B-half-beat-phase-offset | OK | 0.2084 |  |
-| beatnet | FIX-C-wrong-downbeat-phase | OK | 0.3604 |  |
-| beatnet | FIX-D-4-4-reference | OK | 0.2275 |  |
-| beatnet | FIX-E-non-4-4-waltz | OK | 0.4029 |  |
-| beatnet | FIX-F-8bar-16bar-sections | OK | 0.7728 |  |
-| beatnet | FIX-G-intro-body-outro-energy | OK | 0.6502 |  |
-| beatnet | FIX-H-variable-tempo-ramp | OK | 0.5022 |  |
-| cue_detr | FIX-A-constant-120bpm-4-4 | OK | 6.7223 |  |
-| cue_detr | FIX-B-half-beat-phase-offset | OK | 1.3141 |  |
-| cue_detr | FIX-C-wrong-downbeat-phase | OK | 1.6259 |  |
-| cue_detr | FIX-D-4-4-reference | OK | 1.0998 |  |
-| cue_detr | FIX-E-non-4-4-waltz | OK | 1.708 |  |
-| cue_detr | FIX-F-8bar-16bar-sections | OK | 3.84 |  |
-| cue_detr | FIX-G-intro-body-outro-energy | OK | 3.5017 |  |
-| cue_detr | FIX-H-variable-tempo-ramp | OK | 2.4971 |  |
-| energy_onset_heuristic_baseline | FIX-A-constant-120bpm-4-4 | OK | 0.04889360000015586 |  |
-| energy_onset_heuristic_baseline | FIX-B-half-beat-phase-offset | OK | 0.05573119999826304 |  |
-| energy_onset_heuristic_baseline | FIX-C-wrong-downbeat-phase | OK | 0.07771860000138986 |  |
-| energy_onset_heuristic_baseline | FIX-D-4-4-reference | OK | 0.04840159999730531 |  |
-| energy_onset_heuristic_baseline | FIX-E-non-4-4-waltz | OK | 0.06781839999894146 |  |
-| energy_onset_heuristic_baseline | FIX-F-8bar-16bar-sections | OK | 0.15258220000032452 |  |
-| energy_onset_heuristic_baseline | FIX-G-intro-body-outro-energy | OK | 0.1286863000023004 |  |
-| energy_onset_heuristic_baseline | FIX-H-variable-tempo-ramp | OK | 0.09669980000035139 |  |
-| fixed_32_beat_phrase_proxy_baseline | FIX-A-constant-120bpm-4-4 | OK | 5.699999746866524e-06 |  |
-| fixed_32_beat_phrase_proxy_baseline | FIX-B-half-beat-phase-offset | OK | 8.099999831756577e-06 |  |
-| fixed_32_beat_phrase_proxy_baseline | FIX-C-wrong-downbeat-phase | OK | 8.099999831756577e-06 |  |
-| fixed_32_beat_phrase_proxy_baseline | FIX-D-4-4-reference | OK | 8.400002116104588e-06 |  |
-| fixed_32_beat_phrase_proxy_baseline | FIX-E-non-4-4-waltz | OK | 5.799996870337054e-06 |  |
-| fixed_32_beat_phrase_proxy_baseline | FIX-F-8bar-16bar-sections | OK | 6.499998562503606e-06 |  |
-| fixed_32_beat_phrase_proxy_baseline | FIX-G-intro-body-outro-energy | OK | 8.999999408842996e-06 |  |
-| fixed_32_beat_phrase_proxy_baseline | FIX-H-variable-tempo-ramp | OK | 7.099999493220821e-06 |  |
-| scalar_bpm_grid_baseline | FIX-A-constant-120bpm-4-4 | OK | 4.220000118948519e-05 |  |
-| scalar_bpm_grid_baseline | FIX-B-half-beat-phase-offset | OK | 6.319999738479964e-05 |  |
-| scalar_bpm_grid_baseline | FIX-C-wrong-downbeat-phase | OK | 5.830000009154901e-05 |  |
-| scalar_bpm_grid_baseline | FIX-D-4-4-reference | OK | 4.740000076708384e-05 |  |
-| scalar_bpm_grid_baseline | FIX-E-non-4-4-waltz | OK | 3.1500003387918696e-05 |  |
-| scalar_bpm_grid_baseline | FIX-F-8bar-16bar-sections | OK | 7.829999958630651e-05 |  |
-| scalar_bpm_grid_baseline | FIX-G-intro-body-outro-energy | OK | 0.00013800000306218863 |  |
-| scalar_bpm_grid_baseline | FIX-H-variable-tempo-ramp | OK | 5.4299998737405986e-05 |  |
+| beatnet | FIX-A-constant-120bpm-4-4 | OK | 10.4653 |  |
+| beatnet | FIX-B-half-beat-phase-offset | OK | 0.2819 |  |
+| beatnet | FIX-C-wrong-downbeat-phase | OK | 0.3299 |  |
+| beatnet | FIX-D-4-4-reference | OK | 0.2391 |  |
+| beatnet | FIX-E-non-4-4-waltz | OK | 0.3719 |  |
+| beatnet | FIX-F-8bar-16bar-sections | OK | 0.6767 |  |
+| beatnet | FIX-G-intro-body-outro-energy | OK | 0.805 |  |
+| beatnet | FIX-H-variable-tempo-ramp | OK | 0.7635 |  |
+| cue_detr | FIX-A-constant-120bpm-4-4 | OK | 6.6902 |  |
+| cue_detr | FIX-B-half-beat-phase-offset | OK | 2.165 |  |
+| cue_detr | FIX-C-wrong-downbeat-phase | OK | 2.6605 |  |
+| cue_detr | FIX-D-4-4-reference | OK | 2.3149 |  |
+| cue_detr | FIX-E-non-4-4-waltz | OK | 2.6068 |  |
+| cue_detr | FIX-F-8bar-16bar-sections | OK | 4.1807 |  |
+| cue_detr | FIX-G-intro-body-outro-energy | OK | 3.9152 |  |
+| cue_detr | FIX-H-variable-tempo-ramp | OK | 3.1768 |  |
+| energy_onset_heuristic_baseline | FIX-A-constant-120bpm-4-4 | OK | 0.055840400000306545 |  |
+| energy_onset_heuristic_baseline | FIX-B-half-beat-phase-offset | OK | 0.051339800000278046 |  |
+| energy_onset_heuristic_baseline | FIX-C-wrong-downbeat-phase | OK | 0.061729899996862514 |  |
+| energy_onset_heuristic_baseline | FIX-D-4-4-reference | OK | 0.04407519999949727 |  |
+| energy_onset_heuristic_baseline | FIX-E-non-4-4-waltz | OK | 0.06751509999958216 |  |
+| energy_onset_heuristic_baseline | FIX-F-8bar-16bar-sections | OK | 0.1634522000022116 |  |
+| energy_onset_heuristic_baseline | FIX-G-intro-body-outro-energy | OK | 0.16038660000049276 |  |
+| energy_onset_heuristic_baseline | FIX-H-variable-tempo-ramp | OK | 0.11549699999886798 |  |
+| fixed_32_beat_phrase_proxy_baseline | FIX-A-constant-120bpm-4-4 | OK | 8.999999408842996e-06 |  |
+| fixed_32_beat_phrase_proxy_baseline | FIX-B-half-beat-phase-offset | OK | 6.599999323952943e-06 |  |
+| fixed_32_beat_phrase_proxy_baseline | FIX-C-wrong-downbeat-phase | OK | 6.000002031214535e-06 |  |
+| fixed_32_beat_phrase_proxy_baseline | FIX-D-4-4-reference | OK | 6.099999154685065e-06 |  |
+| fixed_32_beat_phrase_proxy_baseline | FIX-E-non-4-4-waltz | OK | 6.199999916134402e-06 |  |
+| fixed_32_beat_phrase_proxy_baseline | FIX-F-8bar-16bar-sections | OK | 1.7399997886968777e-05 |  |
+| fixed_32_beat_phrase_proxy_baseline | FIX-G-intro-body-outro-energy | OK | 6.400001439033076e-06 |  |
+| fixed_32_beat_phrase_proxy_baseline | FIX-H-variable-tempo-ramp | OK | 7.499998901039362e-06 |  |
+| scalar_bpm_grid_baseline | FIX-A-constant-120bpm-4-4 | OK | 4.27999984822236e-05 |  |
+| scalar_bpm_grid_baseline | FIX-B-half-beat-phase-offset | OK | 3.149999974993989e-05 |  |
+| scalar_bpm_grid_baseline | FIX-C-wrong-downbeat-phase | OK | 3.229999856557697e-05 |  |
+| scalar_bpm_grid_baseline | FIX-D-4-4-reference | OK | 3.270000161137432e-05 |  |
+| scalar_bpm_grid_baseline | FIX-E-non-4-4-waltz | OK | 3.1299998227041215e-05 |  |
+| scalar_bpm_grid_baseline | FIX-F-8bar-16bar-sections | OK | 0.00016589999722782522 |  |
+| scalar_bpm_grid_baseline | FIX-G-intro-body-outro-energy | OK | 6.280000161495991e-05 |  |
+| scalar_bpm_grid_baseline | FIX-H-variable-tempo-ramp | OK | 7.249999907799065e-05 |  |
 
-## Runtime lifecycle / memory / model-size (PM REPAIR R1)
+## Canonical (fresh-per-call, PM REVIEW #2 R8) runtime lifecycle / memory / model-size
 
-| candidate | fixture | run_phase | asset_fetch_wall_sec | wall_time_sec | process_peak_rss_mb | python_tracemalloc_peak_mb | memory_measurement_method | checkpoint_size_mb | total_model_asset_footprint_mb |
-|---|---|---|---|---|---|---|---|---|---|
-| beatnet | FIX-A-constant-120bpm-4-4 | COLD_MODEL_LOAD_INFERENCE | 0.0732 | 22.4525 | 544.84 | 185.42 | PSUTIL_PROCESS_PEAK_WSET_RSS | 1.54 | 1.54 |
-| beatnet | FIX-B-half-beat-phase-offset | WARM_INFERENCE | None | 0.2084 | 544.84 | 35.82 | PSUTIL_PROCESS_PEAK_WSET_RSS | 1.54 | 1.54 |
-| beatnet | FIX-C-wrong-downbeat-phase | WARM_INFERENCE | None | 0.3604 | 544.84 | 44.99 | PSUTIL_PROCESS_PEAK_WSET_RSS | 1.54 | 1.54 |
-| beatnet | FIX-D-4-4-reference | WARM_INFERENCE | None | 0.2275 | 544.84 | 32.75 | PSUTIL_PROCESS_PEAK_WSET_RSS | 1.54 | 1.54 |
-| beatnet | FIX-E-non-4-4-waltz | WARM_INFERENCE | None | 0.4029 | 544.84 | 49.71 | PSUTIL_PROCESS_PEAK_WSET_RSS | 1.54 | 1.54 |
-| beatnet | FIX-F-8bar-16bar-sections | WARM_INFERENCE | None | 0.7728 | 597.07 | 115.8 | PSUTIL_PROCESS_PEAK_WSET_RSS | 1.54 | 1.54 |
-| beatnet | FIX-G-intro-body-outro-energy | WARM_INFERENCE | None | 0.6502 | 597.07 | 107.56 | PSUTIL_PROCESS_PEAK_WSET_RSS | 1.54 | 1.54 |
-| beatnet | FIX-H-variable-tempo-ramp | WARM_INFERENCE | None | 0.5022 | 597.07 | 77.3 | PSUTIL_PROCESS_PEAK_WSET_RSS | 1.54 | 1.54 |
-| cue_detr | FIX-A-constant-120bpm-4-4 | COLD_MODEL_LOAD_INFERENCE | 1.6332 | 6.7223 | 926.72 | 72.73 | PSUTIL_PROCESS_PEAK_WSET_RSS | 158.78 | 158.78 |
-| cue_detr | FIX-B-half-beat-phase-offset | WARM_INFERENCE | None | 1.3141 | 926.72 | 33.57 | PSUTIL_PROCESS_PEAK_WSET_RSS | 158.78 | 158.78 |
-| cue_detr | FIX-C-wrong-downbeat-phase | WARM_INFERENCE | None | 1.6259 | 926.72 | 38.41 | PSUTIL_PROCESS_PEAK_WSET_RSS | 158.78 | 158.78 |
-| cue_detr | FIX-D-4-4-reference | WARM_INFERENCE | None | 1.0998 | 926.72 | 29.4 | PSUTIL_PROCESS_PEAK_WSET_RSS | 158.78 | 158.78 |
-| cue_detr | FIX-E-non-4-4-waltz | WARM_INFERENCE | None | 1.708 | 926.72 | 42.76 | PSUTIL_PROCESS_PEAK_WSET_RSS | 158.78 | 158.78 |
-| cue_detr | FIX-F-8bar-16bar-sections | WARM_INFERENCE | None | 3.84 | 1263.85 | 90.06 | PSUTIL_PROCESS_PEAK_WSET_RSS | 158.78 | 158.78 |
-| cue_detr | FIX-G-intro-body-outro-energy | WARM_INFERENCE | None | 3.5017 | 1263.85 | 83.46 | PSUTIL_PROCESS_PEAK_WSET_RSS | 158.78 | 158.78 |
-| cue_detr | FIX-H-variable-tempo-ramp | WARM_INFERENCE | None | 2.4971 | 1263.85 | 62.94 | PSUTIL_PROCESS_PEAK_WSET_RSS | 158.78 | 158.78 |
-| energy_onset_heuristic_baseline | FIX-A-constant-120bpm-4-4 | N_A | None | 0.04889360000015586 | None | None | N_A | None | None |
-| energy_onset_heuristic_baseline | FIX-B-half-beat-phase-offset | N_A | None | 0.05573119999826304 | None | None | N_A | None | None |
-| energy_onset_heuristic_baseline | FIX-C-wrong-downbeat-phase | N_A | None | 0.07771860000138986 | None | None | N_A | None | None |
-| energy_onset_heuristic_baseline | FIX-D-4-4-reference | N_A | None | 0.04840159999730531 | None | None | N_A | None | None |
-| energy_onset_heuristic_baseline | FIX-E-non-4-4-waltz | N_A | None | 0.06781839999894146 | None | None | N_A | None | None |
-| energy_onset_heuristic_baseline | FIX-F-8bar-16bar-sections | N_A | None | 0.15258220000032452 | None | None | N_A | None | None |
-| energy_onset_heuristic_baseline | FIX-G-intro-body-outro-energy | N_A | None | 0.1286863000023004 | None | None | N_A | None | None |
-| energy_onset_heuristic_baseline | FIX-H-variable-tempo-ramp | N_A | None | 0.09669980000035139 | None | None | N_A | None | None |
-| fixed_32_beat_phrase_proxy_baseline | FIX-A-constant-120bpm-4-4 | N_A | None | 5.699999746866524e-06 | None | None | N_A | None | None |
-| fixed_32_beat_phrase_proxy_baseline | FIX-B-half-beat-phase-offset | N_A | None | 8.099999831756577e-06 | None | None | N_A | None | None |
-| fixed_32_beat_phrase_proxy_baseline | FIX-C-wrong-downbeat-phase | N_A | None | 8.099999831756577e-06 | None | None | N_A | None | None |
-| fixed_32_beat_phrase_proxy_baseline | FIX-D-4-4-reference | N_A | None | 8.400002116104588e-06 | None | None | N_A | None | None |
-| fixed_32_beat_phrase_proxy_baseline | FIX-E-non-4-4-waltz | N_A | None | 5.799996870337054e-06 | None | None | N_A | None | None |
-| fixed_32_beat_phrase_proxy_baseline | FIX-F-8bar-16bar-sections | N_A | None | 6.499998562503606e-06 | None | None | N_A | None | None |
-| fixed_32_beat_phrase_proxy_baseline | FIX-G-intro-body-outro-energy | N_A | None | 8.999999408842996e-06 | None | None | N_A | None | None |
-| fixed_32_beat_phrase_proxy_baseline | FIX-H-variable-tempo-ramp | N_A | None | 7.099999493220821e-06 | None | None | N_A | None | None |
-| scalar_bpm_grid_baseline | FIX-A-constant-120bpm-4-4 | N_A | None | 4.220000118948519e-05 | None | None | N_A | None | None |
-| scalar_bpm_grid_baseline | FIX-B-half-beat-phase-offset | N_A | None | 6.319999738479964e-05 | None | None | N_A | None | None |
-| scalar_bpm_grid_baseline | FIX-C-wrong-downbeat-phase | N_A | None | 5.830000009154901e-05 | None | None | N_A | None | None |
-| scalar_bpm_grid_baseline | FIX-D-4-4-reference | N_A | None | 4.740000076708384e-05 | None | None | N_A | None | None |
-| scalar_bpm_grid_baseline | FIX-E-non-4-4-waltz | N_A | None | 3.1500003387918696e-05 | None | None | N_A | None | None |
-| scalar_bpm_grid_baseline | FIX-F-8bar-16bar-sections | N_A | None | 7.829999958630651e-05 | None | None | N_A | None | None |
-| scalar_bpm_grid_baseline | FIX-G-intro-body-outro-energy | N_A | None | 0.00013800000306218863 | None | None | N_A | None | None |
-| scalar_bpm_grid_baseline | FIX-H-variable-tempo-ramp | N_A | None | 5.4299998737405986e-05 | None | None | N_A | None | None |
+| candidate | fixture | estimator_lifecycle | model_load_wall_sec | asset_fetch_wall_sec | inference_wall_sec | total_call_wall_sec | process_peak_rss_mb | python_tracemalloc_peak_mb | memory_measurement_method | checkpoint_size_mb | total_model_asset_footprint_mb |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| beatnet | FIX-A-constant-120bpm-4-4 | FRESH_PER_CALL | 4.034 | None | 6.4313 | 10.4653 | 450.87 | 101.99 | PSUTIL_PROCESS_PEAK_WSET_RSS | 1.54 | 1.54 |
+| beatnet | FIX-B-half-beat-phase-offset | FRESH_PER_CALL | 0.0138 | None | 0.2681 | 0.2819 | 450.87 | 36.46 | PSUTIL_PROCESS_PEAK_WSET_RSS | 1.54 | 1.54 |
+| beatnet | FIX-C-wrong-downbeat-phase | FRESH_PER_CALL | 0.0192 | None | 0.3107 | 0.3299 | 450.87 | 45.48 | PSUTIL_PROCESS_PEAK_WSET_RSS | 1.54 | 1.54 |
+| beatnet | FIX-D-4-4-reference | FRESH_PER_CALL | 0.0151 | None | 0.224 | 0.2391 | 450.87 | 33.23 | PSUTIL_PROCESS_PEAK_WSET_RSS | 1.54 | 1.54 |
+| beatnet | FIX-E-non-4-4-waltz | FRESH_PER_CALL | 0.0205 | None | 0.3514 | 0.3719 | 450.87 | 50.2 | PSUTIL_PROCESS_PEAK_WSET_RSS | 1.54 | 1.54 |
+| beatnet | FIX-F-8bar-16bar-sections | FRESH_PER_CALL | 0.0137 | None | 0.663 | 0.6767 | 547.79 | 116.35 | PSUTIL_PROCESS_PEAK_WSET_RSS | 1.54 | 1.54 |
+| beatnet | FIX-G-intro-body-outro-energy | FRESH_PER_CALL | 0.0127 | None | 0.7923 | 0.805 | 547.79 | 108.1 | PSUTIL_PROCESS_PEAK_WSET_RSS | 1.54 | 1.54 |
+| beatnet | FIX-H-variable-tempo-ramp | FRESH_PER_CALL | 0.0136 | None | 0.7499 | 0.7635 | 547.79 | 77.79 | PSUTIL_PROCESS_PEAK_WSET_RSS | 1.54 | 1.54 |
+| cue_detr | FIX-A-constant-120bpm-4-4 | FRESH_PER_CALL | 1.5013 | None | 5.1889 | 6.6902 | 944.77 | 66.26 | PSUTIL_PROCESS_PEAK_WSET_RSS | 158.78 | 158.78 |
+| cue_detr | FIX-B-half-beat-phase-offset | FRESH_PER_CALL | 1.1532 | None | 1.0118 | 2.165 | 944.77 | 29.92 | PSUTIL_PROCESS_PEAK_WSET_RSS | 158.78 | 158.78 |
+| cue_detr | FIX-C-wrong-downbeat-phase | FRESH_PER_CALL | 1.1531 | None | 1.5074 | 2.6605 | 979.31 | 33.86 | PSUTIL_PROCESS_PEAK_WSET_RSS | 158.78 | 158.78 |
+| cue_detr | FIX-D-4-4-reference | FRESH_PER_CALL | 1.1133 | None | 1.2016 | 2.3149 | 984.0 | 26.06 | PSUTIL_PROCESS_PEAK_WSET_RSS | 158.78 | 158.78 |
+| cue_detr | FIX-E-non-4-4-waltz | FRESH_PER_CALL | 1.0933 | None | 1.5135 | 2.6068 | 995.61 | 37.75 | PSUTIL_PROCESS_PEAK_WSET_RSS | 158.78 | 158.78 |
+| cue_detr | FIX-F-8bar-16bar-sections | FRESH_PER_CALL | 1.1509 | None | 3.0298 | 4.1807 | 1301.25 | 78.71 | PSUTIL_PROCESS_PEAK_WSET_RSS | 158.78 | 158.78 |
+| cue_detr | FIX-G-intro-body-outro-energy | FRESH_PER_CALL | 1.0768 | None | 2.8384 | 3.9152 | 1301.25 | 72.88 | PSUTIL_PROCESS_PEAK_WSET_RSS | 158.78 | 158.78 |
+| cue_detr | FIX-H-variable-tempo-ramp | FRESH_PER_CALL | 1.0549 | None | 2.1219 | 3.1768 | 1301.25 | 55.29 | PSUTIL_PROCESS_PEAK_WSET_RSS | 158.78 | 158.78 |
+| energy_onset_heuristic_baseline | FIX-A-constant-120bpm-4-4 | N_A | None | None | None | 0.055840400000306545 | None | None | N_A | None | None |
+| energy_onset_heuristic_baseline | FIX-B-half-beat-phase-offset | N_A | None | None | None | 0.051339800000278046 | None | None | N_A | None | None |
+| energy_onset_heuristic_baseline | FIX-C-wrong-downbeat-phase | N_A | None | None | None | 0.061729899996862514 | None | None | N_A | None | None |
+| energy_onset_heuristic_baseline | FIX-D-4-4-reference | N_A | None | None | None | 0.04407519999949727 | None | None | N_A | None | None |
+| energy_onset_heuristic_baseline | FIX-E-non-4-4-waltz | N_A | None | None | None | 0.06751509999958216 | None | None | N_A | None | None |
+| energy_onset_heuristic_baseline | FIX-F-8bar-16bar-sections | N_A | None | None | None | 0.1634522000022116 | None | None | N_A | None | None |
+| energy_onset_heuristic_baseline | FIX-G-intro-body-outro-energy | N_A | None | None | None | 0.16038660000049276 | None | None | N_A | None | None |
+| energy_onset_heuristic_baseline | FIX-H-variable-tempo-ramp | N_A | None | None | None | 0.11549699999886798 | None | None | N_A | None | None |
+| fixed_32_beat_phrase_proxy_baseline | FIX-A-constant-120bpm-4-4 | N_A | None | None | None | 8.999999408842996e-06 | None | None | N_A | None | None |
+| fixed_32_beat_phrase_proxy_baseline | FIX-B-half-beat-phase-offset | N_A | None | None | None | 6.599999323952943e-06 | None | None | N_A | None | None |
+| fixed_32_beat_phrase_proxy_baseline | FIX-C-wrong-downbeat-phase | N_A | None | None | None | 6.000002031214535e-06 | None | None | N_A | None | None |
+| fixed_32_beat_phrase_proxy_baseline | FIX-D-4-4-reference | N_A | None | None | None | 6.099999154685065e-06 | None | None | N_A | None | None |
+| fixed_32_beat_phrase_proxy_baseline | FIX-E-non-4-4-waltz | N_A | None | None | None | 6.199999916134402e-06 | None | None | N_A | None | None |
+| fixed_32_beat_phrase_proxy_baseline | FIX-F-8bar-16bar-sections | N_A | None | None | None | 1.7399997886968777e-05 | None | None | N_A | None | None |
+| fixed_32_beat_phrase_proxy_baseline | FIX-G-intro-body-outro-energy | N_A | None | None | None | 6.400001439033076e-06 | None | None | N_A | None | None |
+| fixed_32_beat_phrase_proxy_baseline | FIX-H-variable-tempo-ramp | N_A | None | None | None | 7.499998901039362e-06 | None | None | N_A | None | None |
+| scalar_bpm_grid_baseline | FIX-A-constant-120bpm-4-4 | N_A | None | None | None | 4.27999984822236e-05 | None | None | N_A | None | None |
+| scalar_bpm_grid_baseline | FIX-B-half-beat-phase-offset | N_A | None | None | None | 3.149999974993989e-05 | None | None | N_A | None | None |
+| scalar_bpm_grid_baseline | FIX-C-wrong-downbeat-phase | N_A | None | None | None | 3.229999856557697e-05 | None | None | N_A | None | None |
+| scalar_bpm_grid_baseline | FIX-D-4-4-reference | N_A | None | None | None | 3.270000161137432e-05 | None | None | N_A | None | None |
+| scalar_bpm_grid_baseline | FIX-E-non-4-4-waltz | N_A | None | None | None | 3.1299998227041215e-05 | None | None | N_A | None | None |
+| scalar_bpm_grid_baseline | FIX-F-8bar-16bar-sections | N_A | None | None | None | 0.00016589999722782522 | None | None | N_A | None | None |
+| scalar_bpm_grid_baseline | FIX-G-intro-body-outro-energy | N_A | None | None | None | 6.280000161495991e-05 | None | None | N_A | None | None |
+| scalar_bpm_grid_baseline | FIX-H-variable-tempo-ramp | N_A | None | None | None | 7.249999907799065e-05 | None | None | N_A | None | None |
 
 ## Scored metrics
 
@@ -98,10 +98,10 @@ Fixtures: 8. Raw runs: 40. Scored: 40.
 | beatnet | FIX-B-half-beat-phase-offset | 1.0 | 0.029866666666666666 | 1.0 | 1.0 | False | None |
 | beatnet | FIX-C-wrong-downbeat-phase | 1.0 | 0.03333333333333333 | 1.0 | 1.0 | False | None |
 | beatnet | FIX-D-4-4-reference | 1.0 | 0.03266666666666667 | 0.9166666666666666 | 0.9166666666666666 | False | None |
-| beatnet | FIX-E-non-4-4-waltz | 1.0 | 0.0195 | 0.5 | 0.5625 | False | None |
-| beatnet | FIX-F-8bar-16bar-sections | 1.0 | 0.023466666666666667 | 0.0 | 0.025 | False | None |
-| beatnet | FIX-G-intro-body-outro-energy | 1.0 | 0.02383333333333333 | 0.96875 | 0.96875 | False | None |
-| beatnet | FIX-H-variable-tempo-ramp | 0.9895833333333334 | 0.026833333333333334 | 0.9583333333333334 | 0.9583333333333334 | False | None |
+| beatnet | FIX-E-non-4-4-waltz | 1.0 | 0.0195 | 0.5 | 0.5 | False | None |
+| beatnet | FIX-F-8bar-16bar-sections | 1.0 | 0.023466666666666667 | 0.0 | 0.0 | False | None |
+| beatnet | FIX-G-intro-body-outro-energy | 1.0 | 0.02383333333333333 | 1.0 | 1.0 | False | None |
+| beatnet | FIX-H-variable-tempo-ramp | 1.0 | 0.026833333333333334 | 1.0 | 1.0 | False | None |
 | cue_detr | FIX-A-constant-120bpm-4-4 | None | None | None | None | None | None |
 | cue_detr | FIX-B-half-beat-phase-offset | None | None | None | None | None | None |
 | cue_detr | FIX-C-wrong-downbeat-phase | None | None | None | None | None | None |
@@ -143,7 +143,7 @@ Fixtures: 8. Raw runs: 40. Scored: 40.
 | energy_onset_heuristic_baseline | FIX-G-intro-body-outro-energy | COND_SECTION_OK | 2181.818 | 3 | 5 | 2 | 3 | 1 | 0.4 | 0.6666666666666666 | 0.5 |
 | fixed_32_beat_phrase_proxy_baseline | FIX-F-8bar-16bar-sections | COND_PHRASE_OK | 234.375 | 4 | 5 | 4 | 1 | 0 | 0.8 | 1.0 | 0.888888888888889 |
 
-## CUE-DETR score/validation fields (PM REPAIR R5/R10)
+## CUE-DETR score/validation fields (PM REPAIR R5, PM REVIEW #2 R10 -- validated = raw predictions FILTERED to [0,duration_ms], never clamped)
 
 | candidate | fixture | cue_score_kind | cue_confidence | n_raw | n_validated | n_invalid | invalid_raw_ms |
 |---|---|---|---|---|---|---|---|

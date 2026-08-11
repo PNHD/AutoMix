@@ -70,6 +70,7 @@
     73615.0
   ],
   "raw_cue_points_ms": null,
+  "raw_cue_score": null,
   "n_invalid_cue_predictions": null,
   "invalid_cue_points_raw_ms": null,
   "cue_score": null,
@@ -98,9 +99,11 @@
       "label": "low_energy"
     }
   ],
-  "run_phase": "N_A",
+  "estimator_lifecycle": "N_A",
+  "model_load_wall_sec": null,
   "asset_fetch_wall_sec": null,
-  "wall_time_sec": 0.15258220000032452,
+  "inference_wall_sec": null,
+  "total_call_wall_sec": 0.1634522000022116,
   "memory_measurement_method": "N_A",
   "process_peak_rss_mb": null,
   "python_tracemalloc_peak_mb": null,

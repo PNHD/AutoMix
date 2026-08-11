@@ -1,0 +1,62 @@
+{
+  "_scope_note": "Machine-readable source of truth for Issue #5 Task F lane decisions. Every 'decision' value MUST be one of the six values Issue #5 permits (ADOPT_FOR_P0_PROTOTYPE, KEEP_AS_BENCHMARK_ONLY, REIMPLEMENT_SMALLER_EQUIVALENT, PORT/EXPORT_EXPERIMENT_NEXT, REJECT, BLOCKED_PENDING_LICENSE) -- asserted by eval/verify_repair.py. PM REVIEW #2 R11: 'UNRESOLVED' is not a valid value and has been removed everywhere.",
+  "beat_timestamps": [
+    {
+      "candidate": "beatnet",
+      "decision": "ADOPT_FOR_P0_PROTOTYPE",
+      "status_note": "Real, strong beat-timestamp accuracy on canonical fresh-per-call results, including under deliberate phase-offset and variable-tempo stress fixtures where the scalar-BPM negative baseline collapses. Benchmark-only per the artifact license matrix; not a production-shipping decision."
+    }
+  ],
+  "downbeats_bar_phase": [
+    {
+      "candidate": "beatnet",
+      "decision": "KEEP_AS_BENCHMARK_ONLY",
+      "status_note": "Beat tracking strong; downbeat/meter selection not reliably validated on this pass's synthetic fixtures (systematic meter=2 misclassification on all 8, including the true-3/4 fixture). Needs real-music validation before any adoption decision."
+    }
+  ],
+  "meter": [
+    {
+      "candidate": "beatnet",
+      "decision": "KEEP_AS_BENCHMARK_ONLY",
+      "status_note": "0 of 8 fixtures correctly classified this pass."
+    }
+  ],
+  "cue_points": [
+    {
+      "candidate": "cue_detr",
+      "decision": "KEEP_AS_BENCHMARK_ONLY",
+      "status_note": "Real execution, plausible qualitative behavior on synthetic material, but smoke-test only (no authored cue ground truth this pass) and EDM-domain-specific per the standing P0 concern. 4 of 11 raw predictions across the 8-fixture set were out-of-duration/negative and filtered."
+    }
+  ],
+  "phrase_candidates": [
+    {
+      "candidate": "fixed_32_beat_phrase_proxy_baseline",
+      "decision": "REJECT",
+      "status_note": "Directly disproven as a phrase-detection method: on FIX-F's 4 real authored phrase boundaries, TP=4/FP=1/FN=0 -- coincidental overlap plus one musically baseless spurious boundary."
+    },
+    {
+      "candidate": "all_in_one",
+      "decision": "PORT/EXPORT_EXPERIMENT_NEXT",
+      "status_note": "BLOCKED_ENVIRONMENT; execution/capability ownership unresolved. No claim that the next experiment is guaranteed to succeed. See docs/research/P0-M3-R1-ANALYZER-SHOOTOUT.md Sec 8 for the bounded WSL2 probe evidence (NATTEN's own build blocker is resolved on Linux via a prebuilt wheel, but the pinned revision's code targets an older NATTEN functional API not present in any NATTEN release with a working install path found this pass)."
+    }
+  ],
+  "section_boundaries_labels": [
+    {
+      "candidate": "energy_onset_heuristic_baseline",
+      "decision": "REJECT",
+      "status_note": "A coarse energy-level threshold proxy, never a real section/structure model; included only as a negative-baseline floor."
+    },
+    {
+      "candidate": "all_in_one",
+      "decision": "PORT/EXPORT_EXPERIMENT_NEXT",
+      "status_note": "BLOCKED_ENVIRONMENT; execution/capability ownership unresolved. Same evidence basis as the phrase_candidates lane entry above."
+    }
+  ],
+  "confidence_fallback_inputs": [
+    {
+      "candidate": "none_this_pass",
+      "decision": "KEEP_AS_BENCHMARK_ONLY",
+      "status_note": "Neither BeatNet's offline DBN API nor CUE-DETR's min-max-normalized DETR detection score (cue_score_kind=MINMAX_NORMALIZED_DETR_DETECTION_SCORE) is a calibrated musical-confidence signal usable for AutoMix's confidence-aware fallback. Open design problem, not solved by anything executed this pass."
+    }
+  ]
+}

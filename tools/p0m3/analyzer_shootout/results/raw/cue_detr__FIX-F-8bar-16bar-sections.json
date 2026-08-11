@@ -18,6 +18,9 @@
   "raw_cue_points_ms": [
     -69.7
   ],
+  "raw_cue_score": [
+    1.0
+  ],
   "n_invalid_cue_predictions": 1,
   "invalid_cue_points_raw_ms": [
     -69.7
@@ -27,14 +30,16 @@
   "cue_confidence": null,
   "phrase_boundaries_ms": null,
   "section_boundaries": null,
-  "run_phase": "WARM_INFERENCE",
+  "estimator_lifecycle": "FRESH_PER_CALL",
+  "model_load_wall_sec": 1.1509,
   "asset_fetch_wall_sec": null,
-  "wall_time_sec": 3.84,
+  "inference_wall_sec": 3.0298,
+  "total_call_wall_sec": 4.1807,
   "memory_measurement_method": "PSUTIL_PROCESS_PEAK_WSET_RSS",
-  "process_peak_rss_mb": 1263.85,
-  "python_tracemalloc_peak_mb": 90.06,
+  "process_peak_rss_mb": 1301.25,
+  "python_tracemalloc_peak_mb": 78.71,
   "device": "cpu",
   "checkpoint_size_mb": 158.78,
   "total_model_asset_footprint_mb": 158.78,
-  "notes": "Direct port of upstream cue_points.py (MIT; see THIRD_PARTY_NOTICES.md). SMOKE/REGRESSION evidence only on synthetic fixtures -- no authored cue-point ground truth exists for these fixtures (Issue #5 Task D). use_pretrained_backbone=False (PM REPAIR R4): timm backbone download removed, proven bit-identical output vs. the upstream-default pretrained-backbone path."
+  "notes": "Direct port of upstream cue_points.py (MIT; see THIRD_PARTY_NOTICES.md). SMOKE/REGRESSION evidence only on synthetic fixtures -- no authored cue-point ground truth exists for these fixtures (Issue #5 Task D). use_pretrained_backbone=False (PM REPAIR R4): timm backbone download removed, proven bit-identical output (results/cuedetr_backbone_equivalence.json)."
 }

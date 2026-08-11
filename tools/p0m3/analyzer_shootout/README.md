@@ -20,16 +20,51 @@ fixtures/manifest.json          committed ground truth (SYNTHETIC_EXACT), no aud
 local_audio/                    generated .wav/.mp3 fixtures -- gitignored, regenerate locally
 common/schema.py                normalized AnalyzerResult comparison shape (Issue #5 Task B)
 baselines/                      3 required negative baselines (pure numpy/scipy, no ML deps)
-candidates/run_beatnet.py       BeatNet (mjhydri/BeatNet @ 81cedd4b) runner + documented Windows/py3.10 compat shims
-candidates/run_cuedetr.py       CUE-DETR (ETH-DISCO/cue-detr @ d0462856) runner, adapted from upstream cue_points.py (MIT)
-eval/metrics.py                 beat/downbeat/phrase/section/BPM error metrics vs. SYNTHETIC_EXACT ground truth
-eval/run_shootout.py            CLI orchestrator; merges results across venvs (see below) into results/
-results/raw/*.json              one AnalyzerResult per (candidate, fixture) -- committed, no audio, no checkpoints
-results/metrics.json            computed metrics -- committed
-results/all_raw.json            merged raw results -- committed
-results/SUMMARY.md              machine-generated table -- committed
+candidates/run_beatnet.py       BeatNet (mjhydri/BeatNet @ 81cedd4b) runner + documented Windows/py3.10 compat shims.
+                                 run() = canonical, ALWAYS fresh-per-call (correctness-safe, PM REVIEW #2 R8).
+                                 construct_estimator()/run_with_estimator() = building blocks reused only by
+                                 the separate profiling/equivalence scripts below, never by run() itself.
+candidates/run_cuedetr.py       CUE-DETR (ETH-DISCO/cue-detr @ d0462856) runner, adapted from upstream cue_points.py (MIT).
+                                 Same run()-is-canonical-fresh-per-call split as run_beatnet.py. Also exposes
+                                 generate_backbone_equivalence_evidence() (R12 machine-readable proof generator).
+eval/metrics.py                 beat/downbeat/phrase/section/BPM error metrics vs. SYNTHETIC_EXACT ground truth,
+                                 including the two-sided TP/FP/FN/precision/recall/F1 boundary_event_metrics().
+eval/run_shootout.py            CLI orchestrator; merges CANONICAL (fresh-per-call) results across venvs into results/.
+eval/run_runtime_profile.py     SEPARATE, non-canonical warm-reuse performance profiler -> results/runtime_profile.json.
+                                 Never read by run_shootout.py; never feeds correctness metrics.
+eval/warm_equivalence_test.py   Same-fixture cold-vs-warm equivalence test -> results/warm_cold_equivalence.json.
+eval/verify_repair.py           Programmatic verification of every PM-repair claim (10 assertion groups); run this
+                                 after regenerating results to confirm nothing regressed.
+results/raw/*.json              one AnalyzerResult per (candidate, fixture), CANONICAL (fresh-per-call) only -- committed
+results/metrics.json            computed metrics, canonical -- committed
+results/all_raw.json            merged canonical raw results -- committed
+results/SUMMARY.md              machine-generated table, canonical -- committed
+results/runtime_profile.json    separate warm-reuse PERFORMANCE data only -- committed, but not correctness evidence
+results/warm_cold_equivalence.json   same-fixture equivalence test evidence -- committed
+results/cuedetr_backbone_equivalence.json   machine-readable use_pretrained_backbone=False proof -- committed
+results/lane_decisions.json     machine-readable Issue #5 Task F lane decisions, enum-validated -- committed
 requirements/*.lock.txt         exact `pip freeze` from each real install attempt -- committed for reproducibility
 ```
+
+## Canonical correctness vs. performance profiling (PM REVIEW #2 R8)
+
+**`results/all_raw.json`/`results/metrics.json`/`results/SUMMARY.md` are
+produced exclusively from fresh-per-call runs** (`candidates/run_*.py`'s
+`run()` function constructs a brand-new model/estimator every single
+call). This is deliberate: an earlier repair pass reused one BeatNet
+estimator across fixtures and found it changed BeatNet's own output
+depending on which fixture had run before it (`results/warm_cold_equivalence.json`
+proves this concretely — see the main report Sec 5.3). Canonical
+correctness numbers must never depend on fixture processing order, so
+they never use that reuse path.
+
+Two **separate** artifacts exist purely to characterize warm-reuse
+performance, and neither is ever merged into canonical results:
+- `results/runtime_profile.json` (`eval/run_runtime_profile.py`) —
+  deliberately reuses one model across all 8 fixtures, timing only.
+- `results/warm_cold_equivalence.json` (`eval/warm_equivalence_test.py`) —
+  answers whether that reuse is even safe, on one fixed fixture, isolating
+  state-carryover from input variation.
 
 ## Why two/three separate venvs
 
@@ -80,6 +115,17 @@ ffmpeg -y -i local_audio/FIX-A....wav -codec:a libmp3lame -qscale:a 2 local_audi
 
 # 5. Re-merge everything into results/ (safe to run from any venv, does not re-run candidates):
 python eval/run_shootout.py --candidates none
+
+# 6. (Optional) separate warm-reuse performance profiling -- NOT correctness data:
+.venv-beatnet/Scripts/python.exe eval/run_runtime_profile.py --candidate beatnet
+.venv-cuedetr/Scripts/python.exe eval/run_runtime_profile.py --candidate cuedetr
+
+# 7. (Optional) same-fixture cold-vs-warm equivalence test:
+.venv-beatnet/Scripts/python.exe eval/warm_equivalence_test.py --candidate beatnet
+.venv-cuedetr/Scripts/python.exe eval/warm_equivalence_test.py --candidate cuedetr
+
+# 8. Verify every repaired claim programmatically (run from either venv):
+python eval/verify_repair.py
 ```
 
 ## What was NOT executed and why

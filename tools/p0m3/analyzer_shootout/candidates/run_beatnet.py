@@ -33,17 +33,30 @@ reproducible environment blocker for BeatNet on any current Python
 (documented for the portability matrix, Issue #5 Task E), not something
 papered over silently -- see docs/research/P0-M3-R1-ANALYZER-SHOOTOUT.md.
 
---- PM REPAIR R1: honest cold/warm lifecycle ---
-The BeatNet estimator is constructed exactly once per (model, mode,
-inference_model, device) key and cached at module scope; every later call
-that reuses that SAME estimator object is reported as WARM_INFERENCE with
-wall time covering .process(path) only. The first call that constructs a
-new estimator is COLD_MODEL_LOAD_INFERENCE, with the construction time
-attributed to asset_fetch_wall_sec (this is in-process model construction
-from the already-pip-installed, on-disk .pt checkpoint -- no network
-fetch happens at run time; the label still separates "getting the model
-into memory" from "running inference" per PM's requested lifecycle, even
-though for BeatNet specifically that load has no network component).
+--- PM REVIEW #2 R8: canonical correctness is FRESH-PER-CALL, always ---
+`run()` below is the ONLY entry point used to produce canonical
+all_raw.json/metrics.json rows. It constructs a brand-new BeatNet
+estimator on every single call and never reuses one across fixtures, so
+correctness fields (beat_timestamps_ms, beat_position_in_bar,
+downbeat_timestamps_ms, meter) can never be contaminated by another
+fixture's prior in-process state. This was made mandatory after PM REVIEW
+#2 found that the PM REPAIR R1 pass's cross-fixture estimator caching
+(then labeled "warm") measurably changed BeatNet's own output between
+identical-methodology runs (see
+docs/research/P0-M3-R1-ANALYZER-SHOOTOUT.md Sec 8 for the same-fixture
+equivalence test that reproduces and quantifies this). Warm-resident
+reuse is now measured ONLY by the separate, non-canonical
+`eval/run_runtime_profile.py` script, whose output
+(results/runtime_profile.json) is never merged into canonical results.
+
+--- PM REVIEW #2 R9: non-overlapping timing fields ---
+`model_load_wall_sec` covers construction only; `inference_wall_sec`'s
+timer starts strictly after construction returns; `total_call_wall_sec`
+is defined to equal their sum exactly (asserted by eval/verify_repair.py).
+`asset_fetch_wall_sec` is always None here: BeatNet's checkpoints ship
+inside the pip-installed package (no runtime network fetch occurs, and
+none is separately instrumented even if pip itself fetched something at
+install time, which is outside any single analyzer call's timing).
 """
 from __future__ import annotations
 
@@ -71,7 +84,6 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from common.schema import AnalyzerResult  # noqa: E402
 from common.runtime import process_peak_rss_mb  # noqa: E402
 
-_ESTIMATORS: dict[tuple, object] = {}
 _CHECKPOINT_SIZES_MB: dict[int, float] = {}
 
 
@@ -89,21 +101,25 @@ def _checkpoint_size_mb(model: int) -> float | None:
         return None
 
 
-def _get_estimator(model: int, mode: str, inference_model: str, device: str):
-    """Returns (estimator, load_wall_sec). load_wall_sec is 0.0 unless THIS
-    call actually constructed a new estimator (real cold path)."""
-    key = (model, mode, inference_model, device)
-    if key in _ESTIMATORS:
-        return _ESTIMATORS[key], 0.0
+def construct_estimator(model: int = 1, mode: str = "offline", inference_model: str = "DBN", device: str = "cpu"):
+    """Constructs and returns a brand-new BeatNet estimator. Exposed as a
+    standalone function so both canonical run() (always fresh) and the
+    separate, non-canonical eval/run_runtime_profile.py (deliberately
+    reuses the returned object across fixtures) share one real
+    construction code path, without run() itself ever caching anything."""
     from BeatNet.BeatNet import BeatNet
-    t0 = time.perf_counter()
-    estimator = BeatNet(model, mode=mode, inference_model=inference_model, plot=[], thread=False, device=device)
-    load_wall = time.perf_counter() - t0
-    _ESTIMATORS[key] = estimator
-    return estimator, load_wall
+    return BeatNet(model, mode=mode, inference_model=inference_model, plot=[], thread=False, device=device)
 
 
-def run(fixture_id: str, wav_path: str, model: int = 1) -> AnalyzerResult:
+def run_with_estimator(estimator, fixture_id: str, wav_path: str, model: int = 1,
+                        estimator_lifecycle: str = "FRESH_PER_CALL",
+                        model_load_wall_sec: float | None = None) -> AnalyzerResult:
+    """Runs inference with an already-constructed estimator and fills in an
+    AnalyzerResult. `model_load_wall_sec` must be the caller-measured
+    construction time for THIS call (0.0 if the estimator was reused and no
+    construction occurred on this call) -- never measured inside this
+    function, so the inference timer below is guaranteed to start only
+    after construction has already finished."""
     result = AnalyzerResult(
         candidate_id="beatnet",
         candidate_kind="ML_MODEL",
@@ -111,48 +127,29 @@ def run(fixture_id: str, wav_path: str, model: int = 1) -> AnalyzerResult:
         run_state="OK",
         device="cpu",
         checkpoint_size_mb=_checkpoint_size_mb(model),
+        estimator_lifecycle=estimator_lifecycle,
         notes="Offline mode, DBN (non-causal) inference, pinned model checkpoint "
               f"model-{model}.pt (repo-bundled, CC BY 4.0). beats_per_bar candidates=[2,3,4] "
               "(meter-adaptive). checkpoint_size_mb/total_model_asset_footprint_mb are equal here: "
-              "exactly one .pt file is loaded per estimator instance (PM REPAIR R1).",
+              "exactly one .pt file is loaded per estimator instance.",
     )
     result.total_model_asset_footprint_mb = result.checkpoint_size_mb
+    result.model_load_wall_sec = model_load_wall_sec
     tracemalloc.start()
-    t0 = time.perf_counter()
+    t_infer_start = time.perf_counter()
     try:
-        key = (model, "offline", "DBN", "cpu")
-        was_first_call = key not in _ESTIMATORS
-        estimator, load_wall = _get_estimator(model, "offline", "DBN", "cpu")
-        result.run_phase = "COLD_MODEL_LOAD_INFERENCE" if was_first_call else "WARM_INFERENCE"
-        if was_first_call:
-            result.asset_fetch_wall_sec = round(load_wall, 4)
         output = estimator.process(wav_path)
     except Exception as exc:
         result.run_state = "FAILED"
         result.error = f"{type(exc).__name__}: {exc}"
-        wall = time.perf_counter() - t0
-        _, py_peak = tracemalloc.get_traced_memory()
-        tracemalloc.stop()
-        rss_mb, mem_method = process_peak_rss_mb()
-        result.wall_time_sec = round(wall, 4)
-        result.process_peak_rss_mb = rss_mb
-        result.python_tracemalloc_peak_mb = round(py_peak / (1024 * 1024), 2)
-        result.memory_measurement_method = mem_method
+        _finalize_timing(result, t_infer_start)
         return result
-
-    wall = time.perf_counter() - t0
-    _, py_peak = tracemalloc.get_traced_memory()
-    tracemalloc.stop()
-    rss_mb, mem_method = process_peak_rss_mb()
 
     output = np.asarray(output)
     if output.ndim != 2 or output.shape[1] < 2:
         result.run_state = "FAILED"
         result.error = f"unexpected BeatNet output shape {output.shape}"
-        result.wall_time_sec = round(wall, 4)
-        result.process_peak_rss_mb = rss_mb
-        result.python_tracemalloc_peak_mb = round(py_peak / (1024 * 1024), 2)
-        result.memory_measurement_method = mem_method
+        _finalize_timing(result, t_infer_start)
         return result
 
     beat_times_ms = (output[:, 0] * 1000.0).tolist()
@@ -167,8 +164,39 @@ def run(fixture_id: str, wav_path: str, model: int = 1) -> AnalyzerResult:
     result.meter_denominator = 4
     result.meter_confidence = None  # DBN does not expose a scalar meter-confidence via this API
     result.bpm = None  # BeatNet's offline/DBN path does not directly return a scalar BPM
-    result.wall_time_sec = round(wall, 4)
+    _finalize_timing(result, t_infer_start)
+    return result
+
+
+def _finalize_timing(result: AnalyzerResult, t_infer_start: float) -> None:
+    t_infer_end = time.perf_counter()
+    _, py_peak = tracemalloc.get_traced_memory()
+    tracemalloc.stop()
+    rss_mb, mem_method = process_peak_rss_mb()
+    result.inference_wall_sec = round(t_infer_end - t_infer_start, 4)
+    result.asset_fetch_wall_sec = None  # never separately measured for BeatNet (no runtime network fetch)
+    result.total_call_wall_sec = round((result.model_load_wall_sec or 0.0) + result.inference_wall_sec, 4)
     result.process_peak_rss_mb = rss_mb
     result.python_tracemalloc_peak_mb = round(py_peak / (1024 * 1024), 2)
     result.memory_measurement_method = mem_method
-    return result
+
+
+def run(fixture_id: str, wav_path: str, model: int = 1) -> AnalyzerResult:
+    """Canonical correctness entry point (PM REVIEW #2 R8): constructs a
+    brand-new estimator every call. This is the ONLY function eval/run_shootout.py
+    calls to produce all_raw.json/metrics.json rows."""
+    t_load_start = time.perf_counter()
+    try:
+        estimator = construct_estimator(model=model, mode="offline", inference_model="DBN", device="cpu")
+    except Exception as exc:
+        result = AnalyzerResult(
+            candidate_id="beatnet", candidate_kind="ML_MODEL", fixture_id=fixture_id,
+            run_state="FAILED", error=f"{type(exc).__name__}: {exc}",
+            estimator_lifecycle="FRESH_PER_CALL",
+        )
+        result.model_load_wall_sec = round(time.perf_counter() - t_load_start, 4)
+        return result
+    model_load_wall = time.perf_counter() - t_load_start
+    return run_with_estimator(estimator, fixture_id, wav_path, model=model,
+                               estimator_lifecycle="FRESH_PER_CALL",
+                               model_load_wall_sec=round(model_load_wall, 4))

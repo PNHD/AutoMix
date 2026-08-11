@@ -72,12 +72,12 @@
     "candidate_id": "beatnet",
     "beat_event_errors": {
       "median_gt_to_pred_ms": 20.0,
-      "mean_gt_to_pred_ms": 31.666666666666668,
-      "max_gt_to_pred_ms": 580.0,
-      "missed_beats": 1,
+      "mean_gt_to_pred_ms": 19.583333333333332,
+      "max_gt_to_pred_ms": 20.0,
+      "missed_beats": 0,
       "extra_beats": 1,
       "n_gt": 48,
-      "n_pred": 48
+      "n_pred": 49
     },
     "beat_fraction": {
       "median_beat_fraction_error": 0.03333333333333333,
@@ -87,7 +87,7 @@
       "median_abs_error_ms": 20.0,
       "within_10pct_bar_rate": 1.0,
       "n_gt": 12,
-      "n_pred": 24
+      "n_pred": 25
     },
     "exact_bar_phase": {
       "exact_bar_phase_accuracy": 1.0
@@ -106,7 +106,7 @@
     "candidate_id": "beatnet",
     "beat_event_errors": {
       "median_gt_to_pred_ms": 14.0,
-      "mean_gt_to_pred_ms": 21.854166666666668,
+      "mean_gt_to_pred_ms": 21.4375,
       "max_gt_to_pred_ms": 420.0,
       "missed_beats": 1,
       "extra_beats": 2,
@@ -140,12 +140,12 @@
     "candidate_id": "beatnet",
     "beat_event_errors": {
       "median_gt_to_pred_ms": 13.0,
-      "mean_gt_to_pred_ms": 26.666666666666668,
-      "max_gt_to_pred_ms": 660.0,
-      "missed_beats": 1,
+      "mean_gt_to_pred_ms": 12.916666666666666,
+      "max_gt_to_pred_ms": 20.0,
+      "missed_beats": 0,
       "extra_beats": 1,
       "n_gt": 48,
-      "n_pred": 48
+      "n_pred": 49
     },
     "beat_fraction": {
       "median_beat_fraction_error": 0.0195,
@@ -158,7 +158,7 @@
       "n_pred": 24
     },
     "exact_bar_phase": {
-      "exact_bar_phase_accuracy": 0.5625
+      "exact_bar_phase_accuracy": 0.5
     },
     "meter_correct": false,
     "meter_predicted": 2,
@@ -174,12 +174,12 @@
     "candidate_id": "beatnet",
     "beat_event_errors": {
       "median_gt_to_pred_ms": 11.0,
-      "mean_gt_to_pred_ms": 14.5,
-      "max_gt_to_pred_ms": 460.0,
-      "missed_beats": 1,
+      "mean_gt_to_pred_ms": 11.625,
+      "max_gt_to_pred_ms": 22.0,
+      "missed_beats": 0,
       "extra_beats": 3,
       "n_gt": 160,
-      "n_pred": 162
+      "n_pred": 163
     },
     "beat_fraction": {
       "median_beat_fraction_error": 0.023466666666666667,
@@ -192,7 +192,7 @@
       "n_pred": 81
     },
     "exact_bar_phase": {
-      "exact_bar_phase_accuracy": 0.025
+      "exact_bar_phase_accuracy": 0.0
     },
     "meter_correct": false,
     "meter_predicted": 2,
@@ -208,12 +208,12 @@
     "candidate_id": "beatnet",
     "beat_event_errors": {
       "median_gt_to_pred_ms": 13.0,
-      "mean_gt_to_pred_ms": 17.609375,
-      "max_gt_to_pred_ms": 540.0,
-      "missed_beats": 1,
+      "mean_gt_to_pred_ms": 13.390625,
+      "max_gt_to_pred_ms": 25.0,
+      "missed_beats": 0,
       "extra_beats": 2,
       "n_gt": 128,
-      "n_pred": 129
+      "n_pred": 130
     },
     "beat_fraction": {
       "median_beat_fraction_error": 0.02383333333333333,
@@ -221,12 +221,12 @@
     },
     "downbeat_bar_phase": {
       "median_abs_error_ms": 13.0,
-      "within_10pct_bar_rate": 0.96875,
+      "within_10pct_bar_rate": 1.0,
       "n_gt": 32,
-      "n_pred": 64
+      "n_pred": 65
     },
     "exact_bar_phase": {
-      "exact_bar_phase_accuracy": 0.96875
+      "exact_bar_phase_accuracy": 1.0
     },
     "meter_correct": false,
     "meter_predicted": 2,
@@ -242,25 +242,25 @@
     "candidate_id": "beatnet",
     "beat_event_errors": {
       "median_gt_to_pred_ms": 14.0,
-      "mean_gt_to_pred_ms": 20.197916666666668,
-      "max_gt_to_pred_ms": 580.0,
-      "missed_beats": 1,
+      "mean_gt_to_pred_ms": 14.15625,
+      "max_gt_to_pred_ms": 27.0,
+      "missed_beats": 0,
       "extra_beats": 1,
       "n_gt": 96,
-      "n_pred": 96
+      "n_pred": 97
     },
     "beat_fraction": {
       "median_beat_fraction_error": 0.026833333333333334,
-      "cond_beat_ok_rate": 0.9895833333333334
+      "cond_beat_ok_rate": 1.0
     },
     "downbeat_bar_phase": {
-      "median_abs_error_ms": 15.0,
-      "within_10pct_bar_rate": 0.9583333333333334,
+      "median_abs_error_ms": 14.0,
+      "within_10pct_bar_rate": 1.0,
       "n_gt": 24,
-      "n_pred": 48
+      "n_pred": 49
     },
     "exact_bar_phase": {
-      "exact_bar_phase_accuracy": 0.9583333333333334
+      "exact_bar_phase_accuracy": 1.0
     },
     "meter_correct": false,
     "meter_predicted": 2,

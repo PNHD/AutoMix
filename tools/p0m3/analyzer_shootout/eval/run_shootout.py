@@ -203,24 +203,25 @@ def write_summary_md(manifest, all_raw, all_scores, results_dir):
     lines = ["# P0-M3-R1 analyzer shootout -- machine-generated summary", ""]
     lines.append(f"Fixtures: {len(manifest['fixtures'])}. Raw runs: {len(all_raw)}. Scored: {len(all_scores)}.")
     lines.append("")
-    lines.append("| candidate | fixture | run_state | wall_time_s | error |")
+    lines.append("| candidate | fixture | run_state | total_call_wall_sec | error |")
     lines.append("|---|---|---|---|---|")
     for r in all_raw:
         err = (r.get("error") or "").replace("|", "/")[:80]
         lines.append(f"| {r['candidate_id']} | {r['fixture_id']} | {r['run_state']} | "
-                      f"{r.get('wall_time_sec')} | {err} |")
+                      f"{r.get('total_call_wall_sec')} | {err} |")
 
     lines.append("")
-    lines.append("## Runtime lifecycle / memory / model-size (PM REPAIR R1)")
+    lines.append("## Canonical (fresh-per-call, PM REVIEW #2 R8) runtime lifecycle / memory / model-size")
     lines.append("")
-    lines.append("| candidate | fixture | run_phase | asset_fetch_wall_sec | wall_time_sec | "
-                  "process_peak_rss_mb | python_tracemalloc_peak_mb | memory_measurement_method | "
-                  "checkpoint_size_mb | total_model_asset_footprint_mb |")
-    lines.append("|---|---|---|---|---|---|---|---|---|---|")
+    lines.append("| candidate | fixture | estimator_lifecycle | model_load_wall_sec | asset_fetch_wall_sec | "
+                  "inference_wall_sec | total_call_wall_sec | process_peak_rss_mb | python_tracemalloc_peak_mb | "
+                  "memory_measurement_method | checkpoint_size_mb | total_model_asset_footprint_mb |")
+    lines.append("|---|---|---|---|---|---|---|---|---|---|---|---|")
     for r in all_raw:
         lines.append(
-            f"| {r['candidate_id']} | {r['fixture_id']} | {r.get('run_phase')} | "
-            f"{r.get('asset_fetch_wall_sec')} | {r.get('wall_time_sec')} | "
+            f"| {r['candidate_id']} | {r['fixture_id']} | {r.get('estimator_lifecycle')} | "
+            f"{r.get('model_load_wall_sec')} | {r.get('asset_fetch_wall_sec')} | "
+            f"{r.get('inference_wall_sec')} | {r.get('total_call_wall_sec')} | "
             f"{r.get('process_peak_rss_mb')} | {r.get('python_tracemalloc_peak_mb')} | "
             f"{r.get('memory_measurement_method')} | {r.get('checkpoint_size_mb')} | "
             f"{r.get('total_model_asset_footprint_mb')} |"
@@ -261,7 +262,8 @@ def write_summary_md(manifest, all_raw, all_scores, results_dir):
                 )
 
     lines.append("")
-    lines.append("## CUE-DETR score/validation fields (PM REPAIR R5/R10)")
+    lines.append("## CUE-DETR score/validation fields (PM REPAIR R5, PM REVIEW #2 R10 -- validated = "
+                  "raw predictions FILTERED to [0,duration_ms], never clamped)")
     lines.append("")
     lines.append("| candidate | fixture | cue_score_kind | cue_confidence | n_raw | n_validated | "
                   "n_invalid | invalid_raw_ms |")
