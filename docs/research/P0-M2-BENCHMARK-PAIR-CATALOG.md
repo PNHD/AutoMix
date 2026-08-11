@@ -1,15 +1,19 @@
 # P0-M2-R1 — Benchmark Pair Catalog (Illustrative)
 
-Status date: 2026-08-11 (PM REVIEW #3 — R13/R14 taxonomy fixes propagated, R15 schema-fidelity fixes for `A-010`/`E-007`, full 31/31 roundtrip audit)
+Status date: 2026-08-11 (PM REVIEW #4 — R18 native-tempo `FULL_DJ_BLEND` classification fix re-verified against all 31 pairs; no per-pair policy changes required. Carries forward PM REVIEW #3's R13/R14 taxonomy propagation and R15 schema-fidelity fixes for `A-010`/`E-007`.)
 
 Optional companion to `docs/research/P0-M2-AUTOMIX-QUALITY-BENCHMARK-CONTRACT.md` and `docs/research/P0-M2-CORPUS-MANIFEST-SCHEMA.md`. Specifies representative pair definitions in the manifest schema's shape. No audio is included or implied to exist; corpus production is future work.
 
-All example fixtures use `provenance: SYNTHETIC` for `SYNTHETIC_EXACT` ground truth (manifest schema §6).
+All example fixtures use `provenance: SYNTHETIC` for `SYNTHETIC_EXACT` ground truth (manifest schema §10, annotation source enum).
 
-## What changed this pass (R13–R16, read this first)
+## What changed this pass (R18, read this first)
+
+R18 revised the benchmark contract's classification decision procedure (contract §5.2/§5.3) so that a native-tempo `FULL_DJ_BLEND` no longer requires EQ automation, and now additionally requires measured cue/phrase structural evidence (not beat lock alone) — see the contract's §5.4 worked examples 1–5. This is a **runtime classification rule change only**: it changes how a benchmark runner computes `observed_class` from a transition render record. It does **not** change the shape or content of any pair's `transition_class_policy` in this catalog, because that policy is expressed in terms of the class labels themselves (`FULL_DJ_BLEND`, `SHORT_EQ_BLEND`, etc.) and Condition-Registry IDs, both of which are unaffected by how `observed_class` gets computed. All 31 pairs were re-audited against the revised classification procedure (see "Full 31/31 policy-schema roundtrip audit" below) and required **zero** policy changes.
+
+## What changed in the prior pass (R13–R16, retained for context)
 
 - **R13/R14 taxonomy fixes propagated:** the classification decision procedure changed (contract §5.2), which makes `GAPLESS` unreachable for any pair with `is_continuous_work=false`, since `GAPLESS` now strictly requires both zero overlap, zero gap, *and* authored continuity. Two pairs' `accepted_unconditional` lists referenced `GAPLESS`/`CUT` in ways that no longer match the corrected procedure and are fixed below: `PAIR-SYN-A-007` (`GAPLESS` → `NO_SPECIAL_TRANSITION`, since it is not a continuous-work pair) and `PAIR-SYN-E-005` (`CUT` → `NO_SPECIAL_TRANSITION`, since its "cold stop" *is* each fixture's own natural/authored boundary, which the corrected procedure classifies `NO_SPECIAL_TRANSITION` when boundaries are natural, not `CUT`, which requires a *non-natural* boundary).
-- **R15 schema-fidelity fixes:** `PAIR-SYN-A-010` now uses the array-valued `human_confirmations` + `human_all_required` fields (manifest schema §5) instead of a single-object placeholder. `PAIR-SYN-E-007` now uses the new `rejected_conditional` mechanism, keyed purely on the outcome condition `COND_VOCAL_OK` — the prior `requires_modifier: "stem_separation_applied"` gate is removed; any technique that achieves the required rendered outcome now qualifies.
+- **R15 schema-fidelity fixes:** `PAIR-SYN-A-010` now uses the array-valued `human_confirmations` + `human_all_required` fields (manifest schema §6) instead of a single-object placeholder. `PAIR-SYN-E-007` now uses the new `rejected_conditional` mechanism, keyed purely on the outcome condition `COND_VOCAL_OK` — the prior `requires_modifier: "stem_separation_applied"` gate is removed; any technique that achieves the required rendered outcome now qualifies.
 - **R16:** no catalog changes required (R16 is a corpus-minimums/gate field, not a per-pair policy field), but the coverage summary below is updated to reference `lane_e_holdout_min`.
 
 ## Reading the `Transition class policy` column
@@ -19,7 +23,7 @@ All example fixtures use `provenance: SYNTHETIC` for `SYNTHETIC_EXACT` ground tr
 - **`RC:`** — **new (R15)** `rejected_conditional`: rejected *unless* the stated condition(s) hold, with a mandatory `reason`. Outcome-grounded — never keyed on a specific implementation technology.
 - **`R:`** — `rejected`, unconditionally, with a mandatory fixture-grounded `reason`.
 
-Per manifest schema §5's new structural constraint, a class appears in **at most one** of these four per pair.
+Per manifest schema §6.1's structural constraint, a class appears in **at most one** of these four per pair.
 
 ## Lane A — Timing / structure
 
@@ -154,9 +158,13 @@ Per manifest schema §5's new structural constraint, a class appears in **at mos
 
 `FULL_DJ_BLEND` appears in **exactly one** list (`rejected_conditional`), never simultaneously in `accepted_conditional` and `rejected` — resolving the prior contradiction structurally, not just by careful wording. Per the contract §8 scoring rule: if a render's `observed_class = FULL_DJ_BLEND` and the measured `COND_VOCAL_OK` is satisfied on that specific rendered output, the transition scores **correct** regardless of which technique (if any) was used to achieve it; if `COND_VOCAL_OK` is not satisfied, it scores a mismatch **and** is `C11`-eligible, grounded by the `reason` field — which itself never names a required technology, satisfying REQUIRED VALIDATION item 5.
 
-## Full 31/31 policy-schema roundtrip audit (R16 REQUIRED VALIDATION item 6)
+## Full 31/31 policy-schema roundtrip audit
 
-Every pair above was checked against the manifest schema §5 `transition_class_policy` object for: (a) every referenced condition ID exists in the Condition Registry (contract §7); (b) every class appears in at most one of `accepted_unconditional`/`accepted_conditional`/`rejected_conditional`/`rejected`; (c) every combinator used ("&" between condition IDs) maps to the schema's `all_required: true` field, with no pair in this catalog using an OR combination, so `all_required: false` is unused here but remains schema-available; (d) no cell contains an unmodeled prose operator ("without", "unless", "except when") that lacks a structural equivalent — every occurrence of such English words in the table cells above is descriptive commentary *about* an already-structural policy (e.g. explaining *why* a `rejected_conditional` entry exists), never additional logic that only exists in prose. Result: **31/31 pairs pass** — every policy in this catalog is fully representable in the current schema with no residual free-text-only logic. The two literal JSON examples above (`A-010`, `E-007`) are the two pairs the PM specifically flagged as previously non-representable; both are now proven representable by direct serialization rather than by table-cell notation alone.
+Every pair above was checked against the manifest schema §6 `transition_class_policy` object for: (a) every referenced condition ID exists in the Condition Registry (contract §7); (b) every class appears in at most one of `accepted_unconditional`/`accepted_conditional`/`rejected_conditional`/`rejected`; (c) every combinator used ("&" between condition IDs) maps to the schema's `all_required: true` field, with no pair in this catalog using an OR combination, so `all_required: false` is unused here but remains schema-available; (d) no cell contains an unmodeled prose operator ("without", "unless", "except when") that lacks a structural equivalent. Result: **31/31 pairs pass.**
+
+**Re-run after the R18 classification-procedure change (PM REVIEW #4):** since R18 only alters how `observed_class` is computed at runtime (contract §5.2/§5.3) and does not alter the `transition_class_policy` schema shape or the meaning of any Condition-Registry ID, every one of the 31 pairs' policies remains representable and correct without modification. The audit specifically re-checked whether any pair's `FULL_DJ_BLEND` `accepted_conditional`/`rejected_conditional` entry implicitly assumed the old (EQ-required) classification rule — none do, since every catalog policy references `FULL_DJ_BLEND` only by name and by Condition-Registry IDs (e.g. `COND_BEAT_OK`, `COND_CUE_OK`), never by the render-record automation flags (`has_eq_automation` etc.) that the classification procedure itself consumes. **Result: 31/31 pairs pass, zero policy changes required by R18.**
+
+The two literal JSON examples above (`A-010`, `E-007`) are the two pairs the PM specifically flagged in PM REVIEW #3 as previously non-representable; both remain proven representable by direct serialization, unaffected by R18.
 
 ## Coverage summary against benchmark contract §4/§5/§11/§12
 
