@@ -56,6 +56,21 @@ Every task prompt MUST end with a `HANDOFF TO PM` section that tells the executi
 
 Do not end with only a prose summary such as “done”. The handoff must be sufficient for the PM to independently verify the work without reconstructing the agent's session.
 
+## External skill / agent-extension supply-chain policy
+
+AutoMix is a public repository. Treat every third-party `SKILL.md`, agent pack, MCP bundle, installer, workflow template, and copied agent instruction as executable supply-chain input even when it contains only prose.
+
+Before adopting one:
+
+1. Inspect the actual source repository and exact skill contents; do not trust the registry title, install count, or summary alone.
+2. Prefer first-party/official sources or established maintainers with explicit licenses.
+3. Check for instructions that read secrets, upload local files, weaken sandboxing, auto-run shell/network commands, alter Git credentials, or spawn uncontrolled agents.
+4. Check behavior against this repository's model/quota policy. Any skill that mandates sub-agents, dynamic delegation, unpinned model fallback, or a forbidden model must be rejected or locally adapted before use.
+5. Pin the upstream commit/ref in `docs/research/AGENT-SKILLS-AUDIT.md` before vendoring/adapting.
+6. Do not execute `npx skills add ...@latest`, curl-pipe-shell installers, or equivalent unpinned remote installers in CI.
+7. Vendored/adapted third-party content must preserve required license/attribution notices.
+8. Re-audit before updating a pinned skill. No silent upgrades.
+
 ## Quality terminology
 
 - **Crossfade**: volume overlap only.
