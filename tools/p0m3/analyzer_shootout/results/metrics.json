@@ -1,0 +1,684 @@
+[
+  {
+    "fixture_id": "FIX-A-constant-120bpm-4-4",
+    "candidate_id": "beatnet",
+    "beat_event_errors": {
+      "median_gt_to_pred_ms": 20.0,
+      "mean_gt_to_pred_ms": 19.6875,
+      "max_gt_to_pred_ms": 20.0,
+      "missed_beats": 0,
+      "extra_beats": 2,
+      "n_gt": 64,
+      "n_pred": 66
+    },
+    "beat_fraction": {
+      "median_beat_fraction_error": 0.04,
+      "cond_beat_ok_rate": 1.0
+    },
+    "downbeat_bar_phase": {
+      "median_abs_error_ms": 20.0,
+      "within_10pct_bar_rate": 1.0,
+      "n_gt": 16,
+      "n_pred": 33
+    },
+    "exact_bar_phase": {
+      "exact_bar_phase_accuracy": 1.0
+    },
+    "meter_correct": false,
+    "meter_predicted": 2,
+    "meter_gt": 4,
+    "bpm_error": {
+      "abs_error_bpm": null,
+      "abs_error_pct": null,
+      "half_double_time_note": null
+    }
+  },
+  {
+    "fixture_id": "FIX-B-half-beat-phase-offset",
+    "candidate_id": "beatnet",
+    "beat_event_errors": {
+      "median_gt_to_pred_ms": 14.0,
+      "mean_gt_to_pred_ms": 14.166666666666666,
+      "max_gt_to_pred_ms": 24.0,
+      "missed_beats": 0,
+      "extra_beats": 2,
+      "n_gt": 48,
+      "n_pred": 50
+    },
+    "beat_fraction": {
+      "median_beat_fraction_error": 0.029866666666666666,
+      "cond_beat_ok_rate": 1.0
+    },
+    "downbeat_bar_phase": {
+      "median_abs_error_ms": 19.0,
+      "within_10pct_bar_rate": 1.0,
+      "n_gt": 12,
+      "n_pred": 25
+    },
+    "exact_bar_phase": {
+      "exact_bar_phase_accuracy": 1.0
+    },
+    "meter_correct": false,
+    "meter_predicted": 2,
+    "meter_gt": 4,
+    "bpm_error": {
+      "abs_error_bpm": null,
+      "abs_error_pct": null,
+      "half_double_time_note": null
+    }
+  },
+  {
+    "fixture_id": "FIX-C-wrong-downbeat-phase",
+    "candidate_id": "beatnet",
+    "beat_event_errors": {
+      "median_gt_to_pred_ms": 20.0,
+      "mean_gt_to_pred_ms": 19.583333333333332,
+      "max_gt_to_pred_ms": 20.0,
+      "missed_beats": 0,
+      "extra_beats": 1,
+      "n_gt": 48,
+      "n_pred": 49
+    },
+    "beat_fraction": {
+      "median_beat_fraction_error": 0.03333333333333333,
+      "cond_beat_ok_rate": 1.0
+    },
+    "downbeat_bar_phase": {
+      "median_abs_error_ms": 20.0,
+      "within_10pct_bar_rate": 1.0,
+      "n_gt": 12,
+      "n_pred": 25
+    },
+    "exact_bar_phase": {
+      "exact_bar_phase_accuracy": 1.0
+    },
+    "meter_correct": false,
+    "meter_predicted": 2,
+    "meter_gt": 4,
+    "bpm_error": {
+      "abs_error_bpm": null,
+      "abs_error_pct": null,
+      "half_double_time_note": null
+    }
+  },
+  {
+    "fixture_id": "FIX-D-4-4-reference",
+    "candidate_id": "beatnet",
+    "beat_event_errors": {
+      "median_gt_to_pred_ms": 14.0,
+      "mean_gt_to_pred_ms": 21.4375,
+      "max_gt_to_pred_ms": 420.0,
+      "missed_beats": 1,
+      "extra_beats": 2,
+      "n_gt": 48,
+      "n_pred": 49
+    },
+    "beat_fraction": {
+      "median_beat_fraction_error": 0.03266666666666667,
+      "cond_beat_ok_rate": 1.0
+    },
+    "downbeat_bar_phase": {
+      "median_abs_error_ms": 17.0,
+      "within_10pct_bar_rate": 0.9166666666666666,
+      "n_gt": 12,
+      "n_pred": 24
+    },
+    "exact_bar_phase": {
+      "exact_bar_phase_accuracy": 0.9166666666666666
+    },
+    "meter_correct": false,
+    "meter_predicted": 2,
+    "meter_gt": 4,
+    "bpm_error": {
+      "abs_error_bpm": null,
+      "abs_error_pct": null,
+      "half_double_time_note": null
+    }
+  },
+  {
+    "fixture_id": "FIX-E-non-4-4-waltz",
+    "candidate_id": "beatnet",
+    "beat_event_errors": {
+      "median_gt_to_pred_ms": 13.0,
+      "mean_gt_to_pred_ms": 12.916666666666666,
+      "max_gt_to_pred_ms": 20.0,
+      "missed_beats": 0,
+      "extra_beats": 1,
+      "n_gt": 48,
+      "n_pred": 49
+    },
+    "beat_fraction": {
+      "median_beat_fraction_error": 0.0195,
+      "cond_beat_ok_rate": 1.0
+    },
+    "downbeat_bar_phase": {
+      "median_abs_error_ms": 660.0,
+      "within_10pct_bar_rate": 0.5,
+      "n_gt": 16,
+      "n_pred": 24
+    },
+    "exact_bar_phase": {
+      "exact_bar_phase_accuracy": 0.5
+    },
+    "meter_correct": false,
+    "meter_predicted": 2,
+    "meter_gt": 3,
+    "bpm_error": {
+      "abs_error_bpm": null,
+      "abs_error_pct": null,
+      "half_double_time_note": null
+    }
+  },
+  {
+    "fixture_id": "FIX-F-8bar-16bar-sections",
+    "candidate_id": "beatnet",
+    "beat_event_errors": {
+      "median_gt_to_pred_ms": 11.0,
+      "mean_gt_to_pred_ms": 11.625,
+      "max_gt_to_pred_ms": 22.0,
+      "missed_beats": 0,
+      "extra_beats": 3,
+      "n_gt": 160,
+      "n_pred": 163
+    },
+    "beat_fraction": {
+      "median_beat_fraction_error": 0.023466666666666667,
+      "cond_beat_ok_rate": 1.0
+    },
+    "downbeat_bar_phase": {
+      "median_abs_error_ms": 460.0,
+      "within_10pct_bar_rate": 0.0,
+      "n_gt": 40,
+      "n_pred": 81
+    },
+    "exact_bar_phase": {
+      "exact_bar_phase_accuracy": 0.0
+    },
+    "meter_correct": false,
+    "meter_predicted": 2,
+    "meter_gt": 4,
+    "bpm_error": {
+      "abs_error_bpm": null,
+      "abs_error_pct": null,
+      "half_double_time_note": null
+    }
+  },
+  {
+    "fixture_id": "FIX-G-intro-body-outro-energy",
+    "candidate_id": "beatnet",
+    "beat_event_errors": {
+      "median_gt_to_pred_ms": 13.0,
+      "mean_gt_to_pred_ms": 13.390625,
+      "max_gt_to_pred_ms": 25.0,
+      "missed_beats": 0,
+      "extra_beats": 2,
+      "n_gt": 128,
+      "n_pred": 130
+    },
+    "beat_fraction": {
+      "median_beat_fraction_error": 0.02383333333333333,
+      "cond_beat_ok_rate": 1.0
+    },
+    "downbeat_bar_phase": {
+      "median_abs_error_ms": 13.0,
+      "within_10pct_bar_rate": 1.0,
+      "n_gt": 32,
+      "n_pred": 65
+    },
+    "exact_bar_phase": {
+      "exact_bar_phase_accuracy": 1.0
+    },
+    "meter_correct": false,
+    "meter_predicted": 2,
+    "meter_gt": 4,
+    "bpm_error": {
+      "abs_error_bpm": null,
+      "abs_error_pct": null,
+      "half_double_time_note": null
+    }
+  },
+  {
+    "fixture_id": "FIX-H-variable-tempo-ramp",
+    "candidate_id": "beatnet",
+    "beat_event_errors": {
+      "median_gt_to_pred_ms": 14.0,
+      "mean_gt_to_pred_ms": 14.15625,
+      "max_gt_to_pred_ms": 27.0,
+      "missed_beats": 0,
+      "extra_beats": 1,
+      "n_gt": 96,
+      "n_pred": 97
+    },
+    "beat_fraction": {
+      "median_beat_fraction_error": 0.026833333333333334,
+      "cond_beat_ok_rate": 1.0
+    },
+    "downbeat_bar_phase": {
+      "median_abs_error_ms": 14.0,
+      "within_10pct_bar_rate": 1.0,
+      "n_gt": 24,
+      "n_pred": 49
+    },
+    "exact_bar_phase": {
+      "exact_bar_phase_accuracy": 1.0
+    },
+    "meter_correct": false,
+    "meter_predicted": 2,
+    "meter_gt": 4,
+    "bpm_error": {
+      "abs_error_bpm": null,
+      "abs_error_pct": null,
+      "half_double_time_note": null
+    }
+  },
+  {
+    "fixture_id": "FIX-A-constant-120bpm-4-4",
+    "candidate_id": "cue_detr",
+    "bpm_error": {
+      "abs_error_bpm": null,
+      "abs_error_pct": null,
+      "half_double_time_note": null
+    }
+  },
+  {
+    "fixture_id": "FIX-B-half-beat-phase-offset",
+    "candidate_id": "cue_detr",
+    "bpm_error": {
+      "abs_error_bpm": null,
+      "abs_error_pct": null,
+      "half_double_time_note": null
+    }
+  },
+  {
+    "fixture_id": "FIX-C-wrong-downbeat-phase",
+    "candidate_id": "cue_detr",
+    "bpm_error": {
+      "abs_error_bpm": null,
+      "abs_error_pct": null,
+      "half_double_time_note": null
+    }
+  },
+  {
+    "fixture_id": "FIX-D-4-4-reference",
+    "candidate_id": "cue_detr",
+    "bpm_error": {
+      "abs_error_bpm": null,
+      "abs_error_pct": null,
+      "half_double_time_note": null
+    }
+  },
+  {
+    "fixture_id": "FIX-E-non-4-4-waltz",
+    "candidate_id": "cue_detr",
+    "bpm_error": {
+      "abs_error_bpm": null,
+      "abs_error_pct": null,
+      "half_double_time_note": null
+    }
+  },
+  {
+    "fixture_id": "FIX-F-8bar-16bar-sections",
+    "candidate_id": "cue_detr",
+    "bpm_error": {
+      "abs_error_bpm": null,
+      "abs_error_pct": null,
+      "half_double_time_note": null
+    }
+  },
+  {
+    "fixture_id": "FIX-G-intro-body-outro-energy",
+    "candidate_id": "cue_detr",
+    "bpm_error": {
+      "abs_error_bpm": null,
+      "abs_error_pct": null,
+      "half_double_time_note": null
+    }
+  },
+  {
+    "fixture_id": "FIX-H-variable-tempo-ramp",
+    "candidate_id": "cue_detr",
+    "bpm_error": {
+      "abs_error_bpm": null,
+      "abs_error_pct": null,
+      "half_double_time_note": null
+    }
+  },
+  {
+    "fixture_id": "FIX-A-constant-120bpm-4-4",
+    "candidate_id": "energy_onset_heuristic_baseline",
+    "bpm_error": {
+      "abs_error_bpm": null,
+      "abs_error_pct": null,
+      "half_double_time_note": null
+    }
+  },
+  {
+    "fixture_id": "FIX-B-half-beat-phase-offset",
+    "candidate_id": "energy_onset_heuristic_baseline",
+    "bpm_error": {
+      "abs_error_bpm": null,
+      "abs_error_pct": null,
+      "half_double_time_note": null
+    }
+  },
+  {
+    "fixture_id": "FIX-C-wrong-downbeat-phase",
+    "candidate_id": "energy_onset_heuristic_baseline",
+    "bpm_error": {
+      "abs_error_bpm": null,
+      "abs_error_pct": null,
+      "half_double_time_note": null
+    }
+  },
+  {
+    "fixture_id": "FIX-D-4-4-reference",
+    "candidate_id": "energy_onset_heuristic_baseline",
+    "bpm_error": {
+      "abs_error_bpm": null,
+      "abs_error_pct": null,
+      "half_double_time_note": null
+    }
+  },
+  {
+    "fixture_id": "FIX-E-non-4-4-waltz",
+    "candidate_id": "energy_onset_heuristic_baseline",
+    "bpm_error": {
+      "abs_error_bpm": null,
+      "abs_error_pct": null,
+      "half_double_time_note": null
+    }
+  },
+  {
+    "fixture_id": "FIX-F-8bar-16bar-sections",
+    "candidate_id": "energy_onset_heuristic_baseline",
+    "section_boundary_distance": {
+      "median_abs_error_ms": 1000,
+      "max_abs_error_ms": 14000,
+      "n_gt": 4,
+      "n_pred": 4
+    },
+    "bpm_error": {
+      "abs_error_bpm": null,
+      "abs_error_pct": null,
+      "half_double_time_note": null
+    }
+  },
+  {
+    "fixture_id": "FIX-G-intro-body-outro-energy",
+    "candidate_id": "energy_onset_heuristic_baseline",
+    "section_boundary_distance": {
+      "median_abs_error_ms": 1000,
+      "max_abs_error_ms": 6636,
+      "n_gt": 3,
+      "n_pred": 5
+    },
+    "bpm_error": {
+      "abs_error_bpm": null,
+      "abs_error_pct": null,
+      "half_double_time_note": null
+    }
+  },
+  {
+    "fixture_id": "FIX-H-variable-tempo-ramp",
+    "candidate_id": "energy_onset_heuristic_baseline",
+    "bpm_error": {
+      "abs_error_bpm": null,
+      "abs_error_pct": null,
+      "half_double_time_note": null
+    }
+  },
+  {
+    "fixture_id": "FIX-A-constant-120bpm-4-4",
+    "candidate_id": "fixed_32_beat_phrase_proxy_baseline",
+    "bpm_error": {
+      "abs_error_bpm": null,
+      "abs_error_pct": null,
+      "half_double_time_note": null
+    }
+  },
+  {
+    "fixture_id": "FIX-B-half-beat-phase-offset",
+    "candidate_id": "fixed_32_beat_phrase_proxy_baseline",
+    "bpm_error": {
+      "abs_error_bpm": null,
+      "abs_error_pct": null,
+      "half_double_time_note": null
+    }
+  },
+  {
+    "fixture_id": "FIX-C-wrong-downbeat-phase",
+    "candidate_id": "fixed_32_beat_phrase_proxy_baseline",
+    "bpm_error": {
+      "abs_error_bpm": null,
+      "abs_error_pct": null,
+      "half_double_time_note": null
+    }
+  },
+  {
+    "fixture_id": "FIX-D-4-4-reference",
+    "candidate_id": "fixed_32_beat_phrase_proxy_baseline",
+    "bpm_error": {
+      "abs_error_bpm": null,
+      "abs_error_pct": null,
+      "half_double_time_note": null
+    }
+  },
+  {
+    "fixture_id": "FIX-E-non-4-4-waltz",
+    "candidate_id": "fixed_32_beat_phrase_proxy_baseline",
+    "bpm_error": {
+      "abs_error_bpm": null,
+      "abs_error_pct": null,
+      "half_double_time_note": null
+    }
+  },
+  {
+    "fixture_id": "FIX-F-8bar-16bar-sections",
+    "candidate_id": "fixed_32_beat_phrase_proxy_baseline",
+    "phrase_boundary_distance": {
+      "median_abs_error_ms": 0,
+      "max_abs_error_ms": 0,
+      "n_gt": 4,
+      "n_pred": 5
+    },
+    "bpm_error": {
+      "abs_error_bpm": null,
+      "abs_error_pct": null,
+      "half_double_time_note": null
+    }
+  },
+  {
+    "fixture_id": "FIX-G-intro-body-outro-energy",
+    "candidate_id": "fixed_32_beat_phrase_proxy_baseline",
+    "bpm_error": {
+      "abs_error_bpm": null,
+      "abs_error_pct": null,
+      "half_double_time_note": null
+    }
+  },
+  {
+    "fixture_id": "FIX-H-variable-tempo-ramp",
+    "candidate_id": "fixed_32_beat_phrase_proxy_baseline",
+    "bpm_error": {
+      "abs_error_bpm": null,
+      "abs_error_pct": null,
+      "half_double_time_note": null
+    }
+  },
+  {
+    "fixture_id": "FIX-A-constant-120bpm-4-4",
+    "candidate_id": "scalar_bpm_grid_baseline",
+    "beat_event_errors": {
+      "median_gt_to_pred_ms": 0.0,
+      "mean_gt_to_pred_ms": 0.0,
+      "max_gt_to_pred_ms": 0.0,
+      "missed_beats": 0,
+      "extra_beats": 5,
+      "n_gt": 64,
+      "n_pred": 69
+    },
+    "beat_fraction": {
+      "median_beat_fraction_error": 0.0,
+      "cond_beat_ok_rate": 1.0
+    },
+    "bpm_error": {
+      "abs_error_bpm": 0.0,
+      "abs_error_pct": 0.0,
+      "half_double_time_note": null
+    }
+  },
+  {
+    "fixture_id": "FIX-B-half-beat-phase-offset",
+    "candidate_id": "scalar_bpm_grid_baseline",
+    "beat_event_errors": {
+      "median_gt_to_pred_ms": 234.25,
+      "mean_gt_to_pred_ms": 234.125,
+      "max_gt_to_pred_ms": 234.25,
+      "missed_beats": 48,
+      "extra_beats": 53,
+      "n_gt": 48,
+      "n_pred": 53
+    },
+    "beat_fraction": {
+      "median_beat_fraction_error": 0.4997333333333333,
+      "cond_beat_ok_rate": 0.0
+    },
+    "bpm_error": {
+      "abs_error_bpm": 0.0,
+      "abs_error_pct": 0.0,
+      "half_double_time_note": null
+    }
+  },
+  {
+    "fixture_id": "FIX-C-wrong-downbeat-phase",
+    "candidate_id": "scalar_bpm_grid_baseline",
+    "beat_event_errors": {
+      "median_gt_to_pred_ms": 0.0,
+      "mean_gt_to_pred_ms": 0.0,
+      "max_gt_to_pred_ms": 0.0,
+      "missed_beats": 0,
+      "extra_beats": 4,
+      "n_gt": 48,
+      "n_pred": 52
+    },
+    "beat_fraction": {
+      "median_beat_fraction_error": 0.0,
+      "cond_beat_ok_rate": 1.0
+    },
+    "bpm_error": {
+      "abs_error_bpm": 0.0,
+      "abs_error_pct": 0.0,
+      "half_double_time_note": null
+    }
+  },
+  {
+    "fixture_id": "FIX-D-4-4-reference",
+    "candidate_id": "scalar_bpm_grid_baseline",
+    "beat_event_errors": {
+      "median_gt_to_pred_ms": 0.2860000000000582,
+      "mean_gt_to_pred_ms": 0.24131250000004675,
+      "max_gt_to_pred_ms": 0.4290000000000873,
+      "missed_beats": 0,
+      "extra_beats": 5,
+      "n_gt": 48,
+      "n_pred": 53
+    },
+    "beat_fraction": {
+      "median_beat_fraction_error": 0.0006673333333334692,
+      "cond_beat_ok_rate": 1.0
+    },
+    "bpm_error": {
+      "abs_error_bpm": 0.0,
+      "abs_error_pct": 0.0,
+      "half_double_time_note": null
+    }
+  },
+  {
+    "fixture_id": "FIX-E-non-4-4-waltz",
+    "candidate_id": "scalar_bpm_grid_baseline",
+    "beat_event_errors": {
+      "median_gt_to_pred_ms": 0.33299999999871943,
+      "mean_gt_to_pred_ms": 0.22199999999963657,
+      "max_gt_to_pred_ms": 0.3330000000005384,
+      "missed_beats": 0,
+      "extra_beats": 4,
+      "n_gt": 48,
+      "n_pred": 52
+    },
+    "beat_fraction": {
+      "median_beat_fraction_error": 0.0004994999999980792,
+      "cond_beat_ok_rate": 1.0
+    },
+    "bpm_error": {
+      "abs_error_bpm": 0.0,
+      "abs_error_pct": 0.0,
+      "half_double_time_note": null
+    }
+  },
+  {
+    "fixture_id": "FIX-F-8bar-16bar-sections",
+    "candidate_id": "scalar_bpm_grid_baseline",
+    "beat_event_errors": {
+      "median_gt_to_pred_ms": 0.25,
+      "mean_gt_to_pred_ms": 0.25,
+      "max_gt_to_pred_ms": 0.5,
+      "missed_beats": 0,
+      "extra_beats": 5,
+      "n_gt": 160,
+      "n_pred": 165
+    },
+    "beat_fraction": {
+      "median_beat_fraction_error": 0.0005333333333333334,
+      "cond_beat_ok_rate": 1.0
+    },
+    "bpm_error": {
+      "abs_error_bpm": 0.0,
+      "abs_error_pct": 0.0,
+      "half_double_time_note": null
+    }
+  },
+  {
+    "fixture_id": "FIX-G-intro-body-outro-energy",
+    "candidate_id": "scalar_bpm_grid_baseline",
+    "beat_event_errors": {
+      "median_gt_to_pred_ms": 0.27300000000104774,
+      "mean_gt_to_pred_ms": 0.2474062500007017,
+      "max_gt_to_pred_ms": 0.45500000000174623,
+      "missed_beats": 0,
+      "extra_beats": 4,
+      "n_gt": 128,
+      "n_pred": 132
+    },
+    "beat_fraction": {
+      "median_beat_fraction_error": 0.0005005000000019208,
+      "cond_beat_ok_rate": 1.0
+    },
+    "bpm_error": {
+      "abs_error_bpm": 0.0,
+      "abs_error_pct": 0.0,
+      "half_double_time_note": null
+    }
+  },
+  {
+    "fixture_id": "FIX-H-variable-tempo-ramp",
+    "candidate_id": "scalar_bpm_grid_baseline",
+    "beat_event_errors": {
+      "median_gt_to_pred_ms": 141.87000000000262,
+      "mean_gt_to_pred_ms": 134.9660312500001,
+      "max_gt_to_pred_ms": 260.7830000000031,
+      "missed_beats": 77,
+      "extra_beats": 81,
+      "n_gt": 96,
+      "n_pred": 100
+    },
+    "beat_fraction": {
+      "median_beat_fraction_error": 0.27191750000000503,
+      "cond_beat_ok_rate": 0.125
+    },
+    "bpm_error": {
+      "abs_error_bpm": 0.0,
+      "abs_error_pct": 0.0,
+      "half_double_time_note": null
+    }
+  }
+]

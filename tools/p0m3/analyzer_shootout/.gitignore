@@ -1,0 +1,14 @@
+# Disposable P0-M3-R1 analyzer shootout harness.
+# Generated/downloaded audio and heavy model checkpoints stay local-only.
+local_audio/
+*.wav
+*.mp3
+*.flac
+checkpoints/
+*.pt
+*.pth
+*.ckpt
+*.onnx
+.venv/
+__pycache__/
+*.pyc

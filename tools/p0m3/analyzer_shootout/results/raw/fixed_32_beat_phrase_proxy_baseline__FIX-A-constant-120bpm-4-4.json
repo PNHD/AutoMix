@@ -1,0 +1,30 @@
+{
+  "candidate_id": "fixed_32_beat_phrase_proxy_baseline",
+  "candidate_kind": "BASELINE",
+  "fixture_id": "FIX-A-constant-120bpm-4-4",
+  "run_state": "OK",
+  "error": null,
+  "bpm": null,
+  "bpm_confidence": null,
+  "beat_timestamps_ms": null,
+  "beat_confidence": null,
+  "downbeat_timestamps_ms": null,
+  "beat_position_in_bar": null,
+  "downbeat_confidence": null,
+  "meter_numerator": null,
+  "meter_denominator": null,
+  "meter_confidence": null,
+  "cue_points_ms": null,
+  "cue_confidence": null,
+  "phrase_boundaries_ms": [
+    0,
+    16000
+  ],
+  "section_boundaries": null,
+  "wall_time_sec": 5.300000339047983e-06,
+  "is_cold_run": true,
+  "peak_memory_mb": null,
+  "device": "cpu",
+  "model_checkpoint_size_mb": null,
+  "notes": "Negative baseline: phrase boundary asserted every 32 beats from beat 0, with no regard for actual musical structure."
+}
