@@ -1,0 +1,28 @@
+{
+  "schema_version": "1.0.0",
+  "purpose": "P0-M3-R2 Task D adversarial fixture index. Metadata-only (no audio bytes, no copyrighted material). Fixtures describe candidate current-track exit points; the planner decides WHEN to leave the current track, independent of any specific next-track/DSP choice (P4).",
+  "fixtures_file": "fixtures.json",
+  "fixture_count": 10,
+  "task_d_coverage": [
+    { "task_d_item": 1, "fixture_id": "TP-01", "description": "normal 3-4 min track, attractive early technical mix point, no legitimate exit there" },
+    { "task_d_item": 2, "fixture_id": "TP-02", "description": "same track family with a strong late outro exit" },
+    { "task_d_item": 3, "fixture_id": "TP-03", "description": "short ~60-90s track where a percentage-only guard would be wrong" },
+    { "task_d_item": 4, "fixture_id": "TP-04", "description": "long track where waiting for absolute near-end is unnecessarily restrictive" },
+    { "task_d_item": 5, "fixture_id": "TP-05", "description": "track with no clean outro at all (authored absence)" },
+    { "task_d_item": 6, "fixture_id": "TP-06", "description": "intro/verse/chorus structure with an early false opportunity before the first chorus completes" },
+    { "task_d_item": 7, "fixture_id": "TP-07", "description": "instrumental / low-vocal case" },
+    { "task_d_item": 8, "fixture_id": "TP-08", "description": "dense vocal overlap case" },
+    { "task_d_item": 9, "fixture_id": "TP-09", "description": "no trustworthy cue/section annotation -- confidence-aware fallback" },
+    { "task_d_item": 10, "fixture_id": "TP-10", "description": "explicit HIGHLIGHT_EXPLICIT case where an earlier exit is intentionally allowed" }
+  ],
+  "candidate_ground_truth_fields": {
+    "is_premature_trap": "SYNTHETIC_EXACT fixture-design-intent label: this candidate is technically compatible but must never be selected as a real transition in FULL_SONG_DEFAULT or BALANCED_MIX.",
+    "is_vocal_collision_trap": "SYNTHETIC_EXACT: structurally plausible candidate that must be rejected specifically due to vocal_collision_risk=HIGH.",
+    "is_valid_natural_exit": "SYNTHETIC_EXACT: a candidate that is an acceptable choice under FULL_SONG_DEFAULT/BALANCED_MIX (region-supported, musical-unit-complete, low vocal risk).",
+    "is_preferred_earliest_valid_exit": "SYNTHETIC_EXACT: of the valid candidates on this fixture, the single earliest one a non-over-restrictive policy should be able to capture; used to measure missed-transition-opportunity separately from mere song-preservation.",
+    "highlight_eligible": "SYNTHETIC_EXACT, TP-10 only: marks the candidate that is intentionally structurally sound but fraction-gated, to isolate the HIGHLIGHT_EXPLICIT intent effect from structural evidence."
+  },
+  "note_on_ground_truth_isolation": "Ground-truth labels (is_premature_trap, is_vocal_collision_trap, is_valid_natural_exit, is_preferred_earliest_valid_exit, highlight_eligible) are consumed ONLY by run_benchmark.py's scoring/metrics code, never by policy/eligibility.py's decision logic. This separation is asserted by verify.py so no policy can 'see the answer key'.",
+  "no_copyrighted_audio": true,
+  "no_provider_credentials_or_tokens": true
+}

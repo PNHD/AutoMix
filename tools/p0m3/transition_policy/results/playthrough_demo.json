@@ -1,0 +1,99 @@
+{
+  "fixture_id": "TP-01",
+  "note": "Same fixture, same policy, same intent, two different evaluation times -- demonstrates PLAY_THROUGH and NO_SPECIAL_TRANSITION are both reachable, distinct, first-class outcomes (AC10), and that 'keep playing' is the correct mid-track answer (Task C: 'if no good transition exists yet, playing longer is correct').",
+  "query_at_60000ms_before_outro_region": {
+    "fixture_id": "TP-01",
+    "listener_intent": "FULL_SONG_DEFAULT",
+    "policy_name": "STRUCTURE_AWARE_PRESERVATION",
+    "decision_type": "PLAY_THROUGH",
+    "current_track_exit_window_ms": null,
+    "next_track_entry_window_ms": null,
+    "preferred_transition_class_set": [],
+    "beat_downbeat_alignment_target_ms": null,
+    "permitted_tempo_pitch_envelope": null,
+    "confidence": "N/A -- re-evaluate later",
+    "reason_codes": [
+      "NO_ELIGIBLE_CANDIDATE_YET_MORE_TRACK_REMAINS"
+    ],
+    "queue_order_independent_of_exit_timing": true,
+    "candidate_trace": [
+      {
+        "candidate_id": "TP-01-C1",
+        "t_ms": 30000,
+        "fraction_consumed": 0.1429,
+        "source": "technical_mix_point",
+        "eligible": false,
+        "rejection_reason_codes": [
+          "NO_STRUCTURAL_EVIDENCE",
+          "BELOW_PRESERVATION_FRACTION_FLOOR"
+        ],
+        "acceptance_reason_codes": [],
+        "song_preservation_score": 0.1429,
+        "musical_structure_score": 0.2,
+        "timing_score": 0.1714,
+        "confidence": "HIGH",
+        "preferred_transition_class_set": [
+          "SIMPLE_CROSSFADE"
+        ]
+      }
+    ]
+  },
+  "query_at_210000ms_natural_end": {
+    "fixture_id": "TP-01",
+    "listener_intent": "FULL_SONG_DEFAULT",
+    "policy_name": "STRUCTURE_AWARE_PRESERVATION",
+    "decision_type": "NO_SPECIAL_TRANSITION",
+    "current_track_exit_window_ms": null,
+    "next_track_entry_window_ms": null,
+    "preferred_transition_class_set": [],
+    "beat_downbeat_alignment_target_ms": null,
+    "permitted_tempo_pitch_envelope": null,
+    "confidence": "HIGH",
+    "reason_codes": [
+      "END_OF_TRACK_NATURAL_HANDOFF",
+      "STRUCTURAL_EVIDENCE_PRESENT"
+    ],
+    "queue_order_independent_of_exit_timing": true,
+    "candidate_trace": [
+      {
+        "candidate_id": "TP-01-C1",
+        "t_ms": 30000,
+        "fraction_consumed": 0.1429,
+        "source": "technical_mix_point",
+        "eligible": false,
+        "rejection_reason_codes": [
+          "NO_STRUCTURAL_EVIDENCE",
+          "BELOW_PRESERVATION_FRACTION_FLOOR"
+        ],
+        "acceptance_reason_codes": [],
+        "song_preservation_score": 0.1429,
+        "musical_structure_score": 0.2,
+        "timing_score": 0.1714,
+        "confidence": "HIGH",
+        "preferred_transition_class_set": [
+          "SIMPLE_CROSSFADE"
+        ]
+      },
+      {
+        "candidate_id": "TP-01-C2-END",
+        "t_ms": 210000,
+        "fraction_consumed": 1.0,
+        "source": "authored_outro",
+        "eligible": true,
+        "rejection_reason_codes": [],
+        "acceptance_reason_codes": [
+          "STRUCTURAL_EVIDENCE_PRESENT"
+        ],
+        "song_preservation_score": 1.0,
+        "musical_structure_score": 1.0,
+        "timing_score": 1.0,
+        "confidence": "HIGH",
+        "preferred_transition_class_set": [
+          "FULL_DJ_BLEND",
+          "SHORT_EQ_BLEND",
+          "SIMPLE_CROSSFADE"
+        ]
+      }
+    ]
+  }
+}

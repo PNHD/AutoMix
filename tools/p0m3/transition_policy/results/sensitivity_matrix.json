@@ -1,0 +1,55 @@
+{
+  "policy": "STRUCTURE_AWARE_PRESERVATION@FULL_SONG_DEFAULT",
+  "swept_parameter": "fraction_floor_override (replaces both the normal-length and short-track floors uniformly; structural-evidence/confidence/vocal-risk guards held fixed ON throughout)",
+  "conclusion": "premature_exit_rate is 0/9 at every threshold in this sweep, including the most permissive (0.15) -- because the structural-evidence guard (Task B guard 3) is independent of the fraction floor and already excludes every is_premature_trap/is_vocal_collision_trap candidate in the fixture set regardless of elapsed time or fraction. This is the direct evidence for AC5: no single elapsed-time/fraction threshold is, by itself, the premature-exit guard. Contrast with BPM_KEY_ONLY_EARLY@FULL_SONG_DEFAULT and NAIVE_EARLIEST_COMPATIBLE@FULL_SONG_DEFAULT in metrics.json, which have no structural-evidence guard at all and show a nonzero premature_exit_rate even though they also use a fraction/time floor (0.10 and 0.0 respectively) -- proving the floor alone, without the structural gate, does not prevent the owner's observed failure class.",
+  "rows": [
+    {
+      "fraction_floor": 0.15,
+      "premature_exit_rate": 0.0,
+      "premature_exit_count_over_denominator": "0/9",
+      "missed_transition_opportunity_rate": 0.0,
+      "missed_transition_opportunity_count_over_denominator": "0/6",
+      "fallback_playthrough_rate": 0.4
+    },
+    {
+      "fraction_floor": 0.3,
+      "premature_exit_rate": 0.0,
+      "premature_exit_count_over_denominator": "0/9",
+      "missed_transition_opportunity_rate": 0.1667,
+      "missed_transition_opportunity_count_over_denominator": "1/6",
+      "fallback_playthrough_rate": 0.5
+    },
+    {
+      "fraction_floor": 0.45,
+      "premature_exit_rate": 0.0,
+      "premature_exit_count_over_denominator": "0/9",
+      "missed_transition_opportunity_rate": 0.3333,
+      "missed_transition_opportunity_count_over_denominator": "2/6",
+      "fallback_playthrough_rate": 0.6
+    },
+    {
+      "fraction_floor": 0.55,
+      "premature_exit_rate": 0.0,
+      "premature_exit_count_over_denominator": "0/9",
+      "missed_transition_opportunity_rate": 0.5,
+      "missed_transition_opportunity_count_over_denominator": "3/6",
+      "fallback_playthrough_rate": 0.7
+    },
+    {
+      "fraction_floor": 0.7,
+      "premature_exit_rate": 0.0,
+      "premature_exit_count_over_denominator": "0/9",
+      "missed_transition_opportunity_rate": 0.6667,
+      "missed_transition_opportunity_count_over_denominator": "4/6",
+      "fallback_playthrough_rate": 0.8
+    },
+    {
+      "fraction_floor": 0.85,
+      "premature_exit_rate": 0.0,
+      "premature_exit_count_over_denominator": "0/9",
+      "missed_transition_opportunity_rate": 0.6667,
+      "missed_transition_opportunity_count_over_denominator": "4/6",
+      "fallback_playthrough_rate": 0.8
+    }
+  ]
+}

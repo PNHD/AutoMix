@@ -1,0 +1,3580 @@
+{
+  "NAIVE_EARLIEST_COMPATIBLE@FULL_SONG_DEFAULT": {
+    "TP-01": {
+      "fixture_id": "TP-01",
+      "listener_intent": "FULL_SONG_DEFAULT",
+      "policy_name": "NAIVE_EARLIEST_COMPATIBLE",
+      "decision_type": "TRANSITION",
+      "current_track_exit_window_ms": {
+        "t_start_ms": 30000,
+        "t_end_ms": 30000
+      },
+      "next_track_entry_window_ms": {
+        "t_start_ms": 0,
+        "t_end_ms": 0
+      },
+      "preferred_transition_class_set": [
+        "FULL_DJ_BLEND"
+      ],
+      "beat_downbeat_alignment_target_ms": 30000,
+      "permitted_tempo_pitch_envelope": {
+        "tempo_ratio_max_deviation": 0.12,
+        "max_pitch_shift_semitones": 3
+      },
+      "confidence": "N/A -- policy does not model confidence",
+      "reason_codes": [
+        "TECHNICALLY_COMPATIBLE_MIX_POINT"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-01-C1",
+          "t_ms": 30000,
+          "fraction_consumed": 0.1429,
+          "source": "technical_mix_point",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "TECHNICALLY_COMPATIBLE_MIX_POINT"
+          ],
+          "song_preservation_score": 0.0,
+          "musical_structure_score": 0.0,
+          "timing_score": 1.0,
+          "confidence": "N/A -- policy does not model confidence",
+          "preferred_transition_class_set": [
+            "FULL_DJ_BLEND"
+          ]
+        }
+      ]
+    },
+    "TP-02": {
+      "fixture_id": "TP-02",
+      "listener_intent": "FULL_SONG_DEFAULT",
+      "policy_name": "NAIVE_EARLIEST_COMPATIBLE",
+      "decision_type": "TRANSITION",
+      "current_track_exit_window_ms": {
+        "t_start_ms": 90000,
+        "t_end_ms": 90000
+      },
+      "next_track_entry_window_ms": {
+        "t_start_ms": 0,
+        "t_end_ms": 0
+      },
+      "preferred_transition_class_set": [
+        "FULL_DJ_BLEND"
+      ],
+      "beat_downbeat_alignment_target_ms": 90000,
+      "permitted_tempo_pitch_envelope": {
+        "tempo_ratio_max_deviation": 0.12,
+        "max_pitch_shift_semitones": 3
+      },
+      "confidence": "N/A -- policy does not model confidence",
+      "reason_codes": [
+        "TECHNICALLY_COMPATIBLE_MIX_POINT"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-02-C1",
+          "t_ms": 90000,
+          "fraction_consumed": 0.45,
+          "source": "technical_mix_point",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "TECHNICALLY_COMPATIBLE_MIX_POINT"
+          ],
+          "song_preservation_score": 0.0,
+          "musical_structure_score": 0.0,
+          "timing_score": 1.0,
+          "confidence": "N/A -- policy does not model confidence",
+          "preferred_transition_class_set": [
+            "FULL_DJ_BLEND"
+          ]
+        }
+      ]
+    },
+    "TP-03": {
+      "fixture_id": "TP-03",
+      "listener_intent": "FULL_SONG_DEFAULT",
+      "policy_name": "NAIVE_EARLIEST_COMPATIBLE",
+      "decision_type": "TRANSITION",
+      "current_track_exit_window_ms": {
+        "t_start_ms": 8000,
+        "t_end_ms": 8000
+      },
+      "next_track_entry_window_ms": {
+        "t_start_ms": 0,
+        "t_end_ms": 0
+      },
+      "preferred_transition_class_set": [
+        "FULL_DJ_BLEND"
+      ],
+      "beat_downbeat_alignment_target_ms": 8000,
+      "permitted_tempo_pitch_envelope": {
+        "tempo_ratio_max_deviation": 0.12,
+        "max_pitch_shift_semitones": 3
+      },
+      "confidence": "N/A -- policy does not model confidence",
+      "reason_codes": [
+        "TECHNICALLY_COMPATIBLE_MIX_POINT"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-03-C1",
+          "t_ms": 8000,
+          "fraction_consumed": 0.1067,
+          "source": "technical_mix_point",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "TECHNICALLY_COMPATIBLE_MIX_POINT"
+          ],
+          "song_preservation_score": 0.0,
+          "musical_structure_score": 0.0,
+          "timing_score": 1.0,
+          "confidence": "N/A -- policy does not model confidence",
+          "preferred_transition_class_set": [
+            "FULL_DJ_BLEND"
+          ]
+        }
+      ]
+    },
+    "TP-04": {
+      "fixture_id": "TP-04",
+      "listener_intent": "FULL_SONG_DEFAULT",
+      "policy_name": "NAIVE_EARLIEST_COMPATIBLE",
+      "decision_type": "TRANSITION",
+      "current_track_exit_window_ms": {
+        "t_start_ms": 40000,
+        "t_end_ms": 40000
+      },
+      "next_track_entry_window_ms": {
+        "t_start_ms": 0,
+        "t_end_ms": 0
+      },
+      "preferred_transition_class_set": [
+        "FULL_DJ_BLEND"
+      ],
+      "beat_downbeat_alignment_target_ms": 40000,
+      "permitted_tempo_pitch_envelope": {
+        "tempo_ratio_max_deviation": 0.12,
+        "max_pitch_shift_semitones": 3
+      },
+      "confidence": "N/A -- policy does not model confidence",
+      "reason_codes": [
+        "TECHNICALLY_COMPATIBLE_MIX_POINT"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-04-C1",
+          "t_ms": 40000,
+          "fraction_consumed": 0.0833,
+          "source": "technical_mix_point",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "TECHNICALLY_COMPATIBLE_MIX_POINT"
+          ],
+          "song_preservation_score": 0.0,
+          "musical_structure_score": 0.0,
+          "timing_score": 1.0,
+          "confidence": "N/A -- policy does not model confidence",
+          "preferred_transition_class_set": [
+            "FULL_DJ_BLEND"
+          ]
+        }
+      ]
+    },
+    "TP-05": {
+      "fixture_id": "TP-05",
+      "listener_intent": "FULL_SONG_DEFAULT",
+      "policy_name": "NAIVE_EARLIEST_COMPATIBLE",
+      "decision_type": "TRANSITION",
+      "current_track_exit_window_ms": {
+        "t_start_ms": 100000,
+        "t_end_ms": 100000
+      },
+      "next_track_entry_window_ms": {
+        "t_start_ms": 0,
+        "t_end_ms": 0
+      },
+      "preferred_transition_class_set": [
+        "FULL_DJ_BLEND"
+      ],
+      "beat_downbeat_alignment_target_ms": 100000,
+      "permitted_tempo_pitch_envelope": {
+        "tempo_ratio_max_deviation": 0.12,
+        "max_pitch_shift_semitones": 3
+      },
+      "confidence": "N/A -- policy does not model confidence",
+      "reason_codes": [
+        "TECHNICALLY_COMPATIBLE_MIX_POINT"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-05-C1",
+          "t_ms": 100000,
+          "fraction_consumed": 0.5128,
+          "source": "technical_mix_point",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "TECHNICALLY_COMPATIBLE_MIX_POINT"
+          ],
+          "song_preservation_score": 0.0,
+          "musical_structure_score": 0.0,
+          "timing_score": 1.0,
+          "confidence": "N/A -- policy does not model confidence",
+          "preferred_transition_class_set": [
+            "FULL_DJ_BLEND"
+          ]
+        }
+      ]
+    },
+    "TP-06": {
+      "fixture_id": "TP-06",
+      "listener_intent": "FULL_SONG_DEFAULT",
+      "policy_name": "NAIVE_EARLIEST_COMPATIBLE",
+      "decision_type": "TRANSITION",
+      "current_track_exit_window_ms": {
+        "t_start_ms": 58000,
+        "t_end_ms": 58000
+      },
+      "next_track_entry_window_ms": {
+        "t_start_ms": 0,
+        "t_end_ms": 0
+      },
+      "preferred_transition_class_set": [
+        "FULL_DJ_BLEND"
+      ],
+      "beat_downbeat_alignment_target_ms": 58000,
+      "permitted_tempo_pitch_envelope": {
+        "tempo_ratio_max_deviation": 0.12,
+        "max_pitch_shift_semitones": 3
+      },
+      "confidence": "N/A -- policy does not model confidence",
+      "reason_codes": [
+        "TECHNICALLY_COMPATIBLE_MIX_POINT"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-06-C1",
+          "t_ms": 58000,
+          "fraction_consumed": 0.2578,
+          "source": "technical_mix_point",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "TECHNICALLY_COMPATIBLE_MIX_POINT"
+          ],
+          "song_preservation_score": 0.0,
+          "musical_structure_score": 0.0,
+          "timing_score": 1.0,
+          "confidence": "N/A -- policy does not model confidence",
+          "preferred_transition_class_set": [
+            "FULL_DJ_BLEND"
+          ]
+        }
+      ]
+    },
+    "TP-07": {
+      "fixture_id": "TP-07",
+      "listener_intent": "FULL_SONG_DEFAULT",
+      "policy_name": "NAIVE_EARLIEST_COMPATIBLE",
+      "decision_type": "TRANSITION",
+      "current_track_exit_window_ms": {
+        "t_start_ms": 15000,
+        "t_end_ms": 15000
+      },
+      "next_track_entry_window_ms": {
+        "t_start_ms": 0,
+        "t_end_ms": 0
+      },
+      "preferred_transition_class_set": [
+        "FULL_DJ_BLEND"
+      ],
+      "beat_downbeat_alignment_target_ms": 15000,
+      "permitted_tempo_pitch_envelope": {
+        "tempo_ratio_max_deviation": 0.12,
+        "max_pitch_shift_semitones": 3
+      },
+      "confidence": "N/A -- policy does not model confidence",
+      "reason_codes": [
+        "TECHNICALLY_COMPATIBLE_MIX_POINT"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-07-C1",
+          "t_ms": 15000,
+          "fraction_consumed": 0.075,
+          "source": "technical_mix_point",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "TECHNICALLY_COMPATIBLE_MIX_POINT"
+          ],
+          "song_preservation_score": 0.0,
+          "musical_structure_score": 0.0,
+          "timing_score": 1.0,
+          "confidence": "N/A -- policy does not model confidence",
+          "preferred_transition_class_set": [
+            "FULL_DJ_BLEND"
+          ]
+        }
+      ]
+    },
+    "TP-08": {
+      "fixture_id": "TP-08",
+      "listener_intent": "FULL_SONG_DEFAULT",
+      "policy_name": "NAIVE_EARLIEST_COMPATIBLE",
+      "decision_type": "TRANSITION",
+      "current_track_exit_window_ms": {
+        "t_start_ms": 150000,
+        "t_end_ms": 150000
+      },
+      "next_track_entry_window_ms": {
+        "t_start_ms": 0,
+        "t_end_ms": 0
+      },
+      "preferred_transition_class_set": [
+        "FULL_DJ_BLEND"
+      ],
+      "beat_downbeat_alignment_target_ms": 150000,
+      "permitted_tempo_pitch_envelope": {
+        "tempo_ratio_max_deviation": 0.12,
+        "max_pitch_shift_semitones": 3
+      },
+      "confidence": "N/A -- policy does not model confidence",
+      "reason_codes": [
+        "TECHNICALLY_COMPATIBLE_MIX_POINT"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-08-C1",
+          "t_ms": 150000,
+          "fraction_consumed": 0.7143,
+          "source": "bridge_section_end",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "TECHNICALLY_COMPATIBLE_MIX_POINT"
+          ],
+          "song_preservation_score": 0.0,
+          "musical_structure_score": 0.0,
+          "timing_score": 1.0,
+          "confidence": "N/A -- policy does not model confidence",
+          "preferred_transition_class_set": [
+            "FULL_DJ_BLEND"
+          ]
+        }
+      ]
+    },
+    "TP-09": {
+      "fixture_id": "TP-09",
+      "listener_intent": "FULL_SONG_DEFAULT",
+      "policy_name": "NAIVE_EARLIEST_COMPATIBLE",
+      "decision_type": "TRANSITION",
+      "current_track_exit_window_ms": {
+        "t_start_ms": 45000,
+        "t_end_ms": 45000
+      },
+      "next_track_entry_window_ms": {
+        "t_start_ms": 0,
+        "t_end_ms": 0
+      },
+      "preferred_transition_class_set": [
+        "FULL_DJ_BLEND"
+      ],
+      "beat_downbeat_alignment_target_ms": 45000,
+      "permitted_tempo_pitch_envelope": {
+        "tempo_ratio_max_deviation": 0.12,
+        "max_pitch_shift_semitones": 3
+      },
+      "confidence": "N/A -- policy does not model confidence",
+      "reason_codes": [
+        "TECHNICALLY_COMPATIBLE_MIX_POINT"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-09-C1",
+          "t_ms": 45000,
+          "fraction_consumed": 0.225,
+          "source": "technical_mix_point",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "TECHNICALLY_COMPATIBLE_MIX_POINT"
+          ],
+          "song_preservation_score": 0.0,
+          "musical_structure_score": 0.0,
+          "timing_score": 1.0,
+          "confidence": "N/A -- policy does not model confidence",
+          "preferred_transition_class_set": [
+            "FULL_DJ_BLEND"
+          ]
+        }
+      ]
+    },
+    "TP-10": {
+      "fixture_id": "TP-10",
+      "listener_intent": "FULL_SONG_DEFAULT",
+      "policy_name": "NAIVE_EARLIEST_COMPATIBLE",
+      "decision_type": "TRANSITION",
+      "current_track_exit_window_ms": {
+        "t_start_ms": 50000,
+        "t_end_ms": 50000
+      },
+      "next_track_entry_window_ms": {
+        "t_start_ms": 0,
+        "t_end_ms": 0
+      },
+      "preferred_transition_class_set": [
+        "FULL_DJ_BLEND"
+      ],
+      "beat_downbeat_alignment_target_ms": 50000,
+      "permitted_tempo_pitch_envelope": {
+        "tempo_ratio_max_deviation": 0.12,
+        "max_pitch_shift_semitones": 3
+      },
+      "confidence": "N/A -- policy does not model confidence",
+      "reason_codes": [
+        "TECHNICALLY_COMPATIBLE_MIX_POINT"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-10-C1",
+          "t_ms": 50000,
+          "fraction_consumed": 0.2083,
+          "source": "post_first_chorus_highlight_point",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "TECHNICALLY_COMPATIBLE_MIX_POINT"
+          ],
+          "song_preservation_score": 0.0,
+          "musical_structure_score": 0.0,
+          "timing_score": 1.0,
+          "confidence": "N/A -- policy does not model confidence",
+          "preferred_transition_class_set": [
+            "FULL_DJ_BLEND"
+          ]
+        }
+      ]
+    }
+  },
+  "BPM_KEY_ONLY_EARLY@FULL_SONG_DEFAULT": {
+    "TP-01": {
+      "fixture_id": "TP-01",
+      "listener_intent": "FULL_SONG_DEFAULT",
+      "policy_name": "BPM_KEY_ONLY_EARLY",
+      "decision_type": "TRANSITION",
+      "current_track_exit_window_ms": {
+        "t_start_ms": 30000,
+        "t_end_ms": 30000
+      },
+      "next_track_entry_window_ms": {
+        "t_start_ms": 0,
+        "t_end_ms": 0
+      },
+      "preferred_transition_class_set": [
+        "SIMPLE_CROSSFADE",
+        "FULL_DJ_BLEND"
+      ],
+      "beat_downbeat_alignment_target_ms": 30000,
+      "permitted_tempo_pitch_envelope": {
+        "tempo_ratio_max_deviation": 0.12,
+        "max_pitch_shift_semitones": 3
+      },
+      "confidence": "N/A -- policy does not model confidence",
+      "reason_codes": [
+        "BPM_KEY_COMPATIBLE_ABOVE_FLOOR"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-01-C1",
+          "t_ms": 30000,
+          "fraction_consumed": 0.1429,
+          "source": "technical_mix_point",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "BPM_KEY_COMPATIBLE_ABOVE_FLOOR"
+          ],
+          "song_preservation_score": 0.1429,
+          "musical_structure_score": 0.0,
+          "timing_score": 0.1429,
+          "confidence": "N/A -- policy does not model confidence",
+          "preferred_transition_class_set": [
+            "SIMPLE_CROSSFADE",
+            "FULL_DJ_BLEND"
+          ]
+        }
+      ]
+    },
+    "TP-02": {
+      "fixture_id": "TP-02",
+      "listener_intent": "FULL_SONG_DEFAULT",
+      "policy_name": "BPM_KEY_ONLY_EARLY",
+      "decision_type": "TRANSITION",
+      "current_track_exit_window_ms": {
+        "t_start_ms": 90000,
+        "t_end_ms": 90000
+      },
+      "next_track_entry_window_ms": {
+        "t_start_ms": 0,
+        "t_end_ms": 0
+      },
+      "preferred_transition_class_set": [
+        "SIMPLE_CROSSFADE",
+        "FULL_DJ_BLEND"
+      ],
+      "beat_downbeat_alignment_target_ms": 90000,
+      "permitted_tempo_pitch_envelope": {
+        "tempo_ratio_max_deviation": 0.12,
+        "max_pitch_shift_semitones": 3
+      },
+      "confidence": "N/A -- policy does not model confidence",
+      "reason_codes": [
+        "BPM_KEY_COMPATIBLE_ABOVE_FLOOR"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-02-C1",
+          "t_ms": 90000,
+          "fraction_consumed": 0.45,
+          "source": "technical_mix_point",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "BPM_KEY_COMPATIBLE_ABOVE_FLOOR"
+          ],
+          "song_preservation_score": 0.45,
+          "musical_structure_score": 0.0,
+          "timing_score": 0.45,
+          "confidence": "N/A -- policy does not model confidence",
+          "preferred_transition_class_set": [
+            "SIMPLE_CROSSFADE",
+            "FULL_DJ_BLEND"
+          ]
+        }
+      ]
+    },
+    "TP-03": {
+      "fixture_id": "TP-03",
+      "listener_intent": "FULL_SONG_DEFAULT",
+      "policy_name": "BPM_KEY_ONLY_EARLY",
+      "decision_type": "TRANSITION",
+      "current_track_exit_window_ms": {
+        "t_start_ms": 8000,
+        "t_end_ms": 8000
+      },
+      "next_track_entry_window_ms": {
+        "t_start_ms": 0,
+        "t_end_ms": 0
+      },
+      "preferred_transition_class_set": [
+        "SIMPLE_CROSSFADE",
+        "FULL_DJ_BLEND"
+      ],
+      "beat_downbeat_alignment_target_ms": 8000,
+      "permitted_tempo_pitch_envelope": {
+        "tempo_ratio_max_deviation": 0.12,
+        "max_pitch_shift_semitones": 3
+      },
+      "confidence": "N/A -- policy does not model confidence",
+      "reason_codes": [
+        "BPM_KEY_COMPATIBLE_ABOVE_FLOOR"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-03-C1",
+          "t_ms": 8000,
+          "fraction_consumed": 0.1067,
+          "source": "technical_mix_point",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "BPM_KEY_COMPATIBLE_ABOVE_FLOOR"
+          ],
+          "song_preservation_score": 0.1067,
+          "musical_structure_score": 0.0,
+          "timing_score": 0.1067,
+          "confidence": "N/A -- policy does not model confidence",
+          "preferred_transition_class_set": [
+            "SIMPLE_CROSSFADE",
+            "FULL_DJ_BLEND"
+          ]
+        }
+      ]
+    },
+    "TP-04": {
+      "fixture_id": "TP-04",
+      "listener_intent": "FULL_SONG_DEFAULT",
+      "policy_name": "BPM_KEY_ONLY_EARLY",
+      "decision_type": "TRANSITION",
+      "current_track_exit_window_ms": {
+        "t_start_ms": 270000,
+        "t_end_ms": 270000
+      },
+      "next_track_entry_window_ms": {
+        "t_start_ms": 0,
+        "t_end_ms": 0
+      },
+      "preferred_transition_class_set": [
+        "SIMPLE_CROSSFADE",
+        "FULL_DJ_BLEND"
+      ],
+      "beat_downbeat_alignment_target_ms": 270000,
+      "permitted_tempo_pitch_envelope": {
+        "tempo_ratio_max_deviation": 0.12,
+        "max_pitch_shift_semitones": 3
+      },
+      "confidence": "N/A -- policy does not model confidence",
+      "reason_codes": [
+        "BPM_KEY_COMPATIBLE_ABOVE_FLOOR"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-04-C1",
+          "t_ms": 40000,
+          "fraction_consumed": 0.0833,
+          "source": "technical_mix_point",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "BELOW_FIXED_SMALL_FRACTION_FLOOR"
+          ],
+          "acceptance_reason_codes": [],
+          "song_preservation_score": 0.0833,
+          "musical_structure_score": 0.0,
+          "timing_score": 0.0,
+          "confidence": "N/A -- policy does not model confidence",
+          "preferred_transition_class_set": []
+        },
+        {
+          "candidate_id": "TP-04-C2",
+          "t_ms": 270000,
+          "fraction_consumed": 0.5625,
+          "source": "instrumental_break_section_end",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "BPM_KEY_COMPATIBLE_ABOVE_FLOOR"
+          ],
+          "song_preservation_score": 0.5625,
+          "musical_structure_score": 0.0,
+          "timing_score": 0.5625,
+          "confidence": "N/A -- policy does not model confidence",
+          "preferred_transition_class_set": [
+            "SIMPLE_CROSSFADE",
+            "FULL_DJ_BLEND"
+          ]
+        }
+      ]
+    },
+    "TP-05": {
+      "fixture_id": "TP-05",
+      "listener_intent": "FULL_SONG_DEFAULT",
+      "policy_name": "BPM_KEY_ONLY_EARLY",
+      "decision_type": "TRANSITION",
+      "current_track_exit_window_ms": {
+        "t_start_ms": 100000,
+        "t_end_ms": 100000
+      },
+      "next_track_entry_window_ms": {
+        "t_start_ms": 0,
+        "t_end_ms": 0
+      },
+      "preferred_transition_class_set": [
+        "SIMPLE_CROSSFADE",
+        "FULL_DJ_BLEND"
+      ],
+      "beat_downbeat_alignment_target_ms": 100000,
+      "permitted_tempo_pitch_envelope": {
+        "tempo_ratio_max_deviation": 0.12,
+        "max_pitch_shift_semitones": 3
+      },
+      "confidence": "N/A -- policy does not model confidence",
+      "reason_codes": [
+        "BPM_KEY_COMPATIBLE_ABOVE_FLOOR"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-05-C1",
+          "t_ms": 100000,
+          "fraction_consumed": 0.5128,
+          "source": "technical_mix_point",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "BPM_KEY_COMPATIBLE_ABOVE_FLOOR"
+          ],
+          "song_preservation_score": 0.5128,
+          "musical_structure_score": 0.0,
+          "timing_score": 0.5128,
+          "confidence": "N/A -- policy does not model confidence",
+          "preferred_transition_class_set": [
+            "SIMPLE_CROSSFADE",
+            "FULL_DJ_BLEND"
+          ]
+        }
+      ]
+    },
+    "TP-06": {
+      "fixture_id": "TP-06",
+      "listener_intent": "FULL_SONG_DEFAULT",
+      "policy_name": "BPM_KEY_ONLY_EARLY",
+      "decision_type": "TRANSITION",
+      "current_track_exit_window_ms": {
+        "t_start_ms": 58000,
+        "t_end_ms": 58000
+      },
+      "next_track_entry_window_ms": {
+        "t_start_ms": 0,
+        "t_end_ms": 0
+      },
+      "preferred_transition_class_set": [
+        "SIMPLE_CROSSFADE",
+        "FULL_DJ_BLEND"
+      ],
+      "beat_downbeat_alignment_target_ms": 58000,
+      "permitted_tempo_pitch_envelope": {
+        "tempo_ratio_max_deviation": 0.12,
+        "max_pitch_shift_semitones": 3
+      },
+      "confidence": "N/A -- policy does not model confidence",
+      "reason_codes": [
+        "BPM_KEY_COMPATIBLE_ABOVE_FLOOR"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-06-C1",
+          "t_ms": 58000,
+          "fraction_consumed": 0.2578,
+          "source": "technical_mix_point",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "BPM_KEY_COMPATIBLE_ABOVE_FLOOR"
+          ],
+          "song_preservation_score": 0.2578,
+          "musical_structure_score": 0.0,
+          "timing_score": 0.2578,
+          "confidence": "N/A -- policy does not model confidence",
+          "preferred_transition_class_set": [
+            "SIMPLE_CROSSFADE",
+            "FULL_DJ_BLEND"
+          ]
+        }
+      ]
+    },
+    "TP-07": {
+      "fixture_id": "TP-07",
+      "listener_intent": "FULL_SONG_DEFAULT",
+      "policy_name": "BPM_KEY_ONLY_EARLY",
+      "decision_type": "TRANSITION",
+      "current_track_exit_window_ms": {
+        "t_start_ms": 95000,
+        "t_end_ms": 95000
+      },
+      "next_track_entry_window_ms": {
+        "t_start_ms": 0,
+        "t_end_ms": 0
+      },
+      "preferred_transition_class_set": [
+        "SIMPLE_CROSSFADE",
+        "FULL_DJ_BLEND"
+      ],
+      "beat_downbeat_alignment_target_ms": 95000,
+      "permitted_tempo_pitch_envelope": {
+        "tempo_ratio_max_deviation": 0.12,
+        "max_pitch_shift_semitones": 3
+      },
+      "confidence": "N/A -- policy does not model confidence",
+      "reason_codes": [
+        "BPM_KEY_COMPATIBLE_ABOVE_FLOOR"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-07-C1",
+          "t_ms": 15000,
+          "fraction_consumed": 0.075,
+          "source": "technical_mix_point",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "BELOW_FIXED_SMALL_FRACTION_FLOOR"
+          ],
+          "acceptance_reason_codes": [],
+          "song_preservation_score": 0.075,
+          "musical_structure_score": 0.0,
+          "timing_score": 0.0,
+          "confidence": "N/A -- policy does not model confidence",
+          "preferred_transition_class_set": []
+        },
+        {
+          "candidate_id": "TP-07-C2",
+          "t_ms": 95000,
+          "fraction_consumed": 0.475,
+          "source": "instrumental_break_section_end",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "BPM_KEY_COMPATIBLE_ABOVE_FLOOR"
+          ],
+          "song_preservation_score": 0.475,
+          "musical_structure_score": 0.0,
+          "timing_score": 0.475,
+          "confidence": "N/A -- policy does not model confidence",
+          "preferred_transition_class_set": [
+            "SIMPLE_CROSSFADE",
+            "FULL_DJ_BLEND"
+          ]
+        }
+      ]
+    },
+    "TP-08": {
+      "fixture_id": "TP-08",
+      "listener_intent": "FULL_SONG_DEFAULT",
+      "policy_name": "BPM_KEY_ONLY_EARLY",
+      "decision_type": "TRANSITION",
+      "current_track_exit_window_ms": {
+        "t_start_ms": 150000,
+        "t_end_ms": 150000
+      },
+      "next_track_entry_window_ms": {
+        "t_start_ms": 0,
+        "t_end_ms": 0
+      },
+      "preferred_transition_class_set": [
+        "SIMPLE_CROSSFADE",
+        "FULL_DJ_BLEND"
+      ],
+      "beat_downbeat_alignment_target_ms": 150000,
+      "permitted_tempo_pitch_envelope": {
+        "tempo_ratio_max_deviation": 0.12,
+        "max_pitch_shift_semitones": 3
+      },
+      "confidence": "N/A -- policy does not model confidence",
+      "reason_codes": [
+        "BPM_KEY_COMPATIBLE_ABOVE_FLOOR"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-08-C1",
+          "t_ms": 150000,
+          "fraction_consumed": 0.7143,
+          "source": "bridge_section_end",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "BPM_KEY_COMPATIBLE_ABOVE_FLOOR"
+          ],
+          "song_preservation_score": 0.7143,
+          "musical_structure_score": 0.0,
+          "timing_score": 0.7143,
+          "confidence": "N/A -- policy does not model confidence",
+          "preferred_transition_class_set": [
+            "SIMPLE_CROSSFADE",
+            "FULL_DJ_BLEND"
+          ]
+        }
+      ]
+    },
+    "TP-09": {
+      "fixture_id": "TP-09",
+      "listener_intent": "FULL_SONG_DEFAULT",
+      "policy_name": "BPM_KEY_ONLY_EARLY",
+      "decision_type": "TRANSITION",
+      "current_track_exit_window_ms": {
+        "t_start_ms": 45000,
+        "t_end_ms": 45000
+      },
+      "next_track_entry_window_ms": {
+        "t_start_ms": 0,
+        "t_end_ms": 0
+      },
+      "preferred_transition_class_set": [
+        "SIMPLE_CROSSFADE",
+        "FULL_DJ_BLEND"
+      ],
+      "beat_downbeat_alignment_target_ms": 45000,
+      "permitted_tempo_pitch_envelope": {
+        "tempo_ratio_max_deviation": 0.12,
+        "max_pitch_shift_semitones": 3
+      },
+      "confidence": "N/A -- policy does not model confidence",
+      "reason_codes": [
+        "BPM_KEY_COMPATIBLE_ABOVE_FLOOR"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-09-C1",
+          "t_ms": 45000,
+          "fraction_consumed": 0.225,
+          "source": "technical_mix_point",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "BPM_KEY_COMPATIBLE_ABOVE_FLOOR"
+          ],
+          "song_preservation_score": 0.225,
+          "musical_structure_score": 0.0,
+          "timing_score": 0.225,
+          "confidence": "N/A -- policy does not model confidence",
+          "preferred_transition_class_set": [
+            "SIMPLE_CROSSFADE",
+            "FULL_DJ_BLEND"
+          ]
+        }
+      ]
+    },
+    "TP-10": {
+      "fixture_id": "TP-10",
+      "listener_intent": "FULL_SONG_DEFAULT",
+      "policy_name": "BPM_KEY_ONLY_EARLY",
+      "decision_type": "TRANSITION",
+      "current_track_exit_window_ms": {
+        "t_start_ms": 50000,
+        "t_end_ms": 50000
+      },
+      "next_track_entry_window_ms": {
+        "t_start_ms": 0,
+        "t_end_ms": 0
+      },
+      "preferred_transition_class_set": [
+        "SIMPLE_CROSSFADE",
+        "FULL_DJ_BLEND"
+      ],
+      "beat_downbeat_alignment_target_ms": 50000,
+      "permitted_tempo_pitch_envelope": {
+        "tempo_ratio_max_deviation": 0.12,
+        "max_pitch_shift_semitones": 3
+      },
+      "confidence": "N/A -- policy does not model confidence",
+      "reason_codes": [
+        "BPM_KEY_COMPATIBLE_ABOVE_FLOOR"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-10-C1",
+          "t_ms": 50000,
+          "fraction_consumed": 0.2083,
+          "source": "post_first_chorus_highlight_point",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "BPM_KEY_COMPATIBLE_ABOVE_FLOOR"
+          ],
+          "song_preservation_score": 0.2083,
+          "musical_structure_score": 0.0,
+          "timing_score": 0.2083,
+          "confidence": "N/A -- policy does not model confidence",
+          "preferred_transition_class_set": [
+            "SIMPLE_CROSSFADE",
+            "FULL_DJ_BLEND"
+          ]
+        }
+      ]
+    }
+  },
+  "TAIL_ONLY_NATURAL_EXIT_BIASED@FULL_SONG_DEFAULT": {
+    "TP-01": {
+      "fixture_id": "TP-01",
+      "listener_intent": "FULL_SONG_DEFAULT",
+      "policy_name": "TAIL_ONLY_NATURAL_EXIT_BIASED",
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "current_track_exit_window_ms": null,
+      "next_track_entry_window_ms": null,
+      "preferred_transition_class_set": [],
+      "beat_downbeat_alignment_target_ms": null,
+      "permitted_tempo_pitch_envelope": null,
+      "confidence": "HIGH",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "LATE_STRUCTURAL_REGION"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-01-C1",
+          "t_ms": 30000,
+          "fraction_consumed": 0.1429,
+          "source": "technical_mix_point",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "NO_STRUCTURAL_EVIDENCE",
+            "BELOW_HARD_LATE_FRACTION_RULE"
+          ],
+          "acceptance_reason_codes": [],
+          "song_preservation_score": 0.1429,
+          "musical_structure_score": 0.0,
+          "timing_score": 0.0,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": []
+        },
+        {
+          "candidate_id": "TP-01-C2-END",
+          "t_ms": 210000,
+          "fraction_consumed": 1.0,
+          "source": "authored_outro",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "LATE_STRUCTURAL_REGION"
+          ],
+          "song_preservation_score": 1.0,
+          "musical_structure_score": 1.0,
+          "timing_score": 1.0,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "SHORT_EQ_BLEND",
+            "SIMPLE_CROSSFADE"
+          ]
+        }
+      ]
+    },
+    "TP-02": {
+      "fixture_id": "TP-02",
+      "listener_intent": "FULL_SONG_DEFAULT",
+      "policy_name": "TAIL_ONLY_NATURAL_EXIT_BIASED",
+      "decision_type": "TRANSITION",
+      "current_track_exit_window_ms": {
+        "t_start_ms": 185000,
+        "t_end_ms": 185000
+      },
+      "next_track_entry_window_ms": {
+        "t_start_ms": 0,
+        "t_end_ms": 0
+      },
+      "preferred_transition_class_set": [
+        "SHORT_EQ_BLEND",
+        "SIMPLE_CROSSFADE"
+      ],
+      "beat_downbeat_alignment_target_ms": 185000,
+      "permitted_tempo_pitch_envelope": null,
+      "confidence": "HIGH",
+      "reason_codes": [
+        "LATE_STRUCTURAL_REGION"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-02-C1",
+          "t_ms": 90000,
+          "fraction_consumed": 0.45,
+          "source": "technical_mix_point",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "NO_STRUCTURAL_EVIDENCE",
+            "BELOW_HARD_LATE_FRACTION_RULE"
+          ],
+          "acceptance_reason_codes": [],
+          "song_preservation_score": 0.45,
+          "musical_structure_score": 0.0,
+          "timing_score": 0.0,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": []
+        },
+        {
+          "candidate_id": "TP-02-C2",
+          "t_ms": 185000,
+          "fraction_consumed": 0.925,
+          "source": "authored_outro",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "LATE_STRUCTURAL_REGION"
+          ],
+          "song_preservation_score": 0.925,
+          "musical_structure_score": 1.0,
+          "timing_score": 0.925,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "SHORT_EQ_BLEND",
+            "SIMPLE_CROSSFADE"
+          ]
+        }
+      ]
+    },
+    "TP-03": {
+      "fixture_id": "TP-03",
+      "listener_intent": "FULL_SONG_DEFAULT",
+      "policy_name": "TAIL_ONLY_NATURAL_EXIT_BIASED",
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "current_track_exit_window_ms": null,
+      "next_track_entry_window_ms": null,
+      "preferred_transition_class_set": [],
+      "beat_downbeat_alignment_target_ms": null,
+      "permitted_tempo_pitch_envelope": null,
+      "confidence": "HIGH",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "LATE_STRUCTURAL_REGION"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-03-C1",
+          "t_ms": 8000,
+          "fraction_consumed": 0.1067,
+          "source": "technical_mix_point",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "NO_STRUCTURAL_EVIDENCE",
+            "BELOW_HARD_LATE_FRACTION_RULE"
+          ],
+          "acceptance_reason_codes": [],
+          "song_preservation_score": 0.1067,
+          "musical_structure_score": 0.0,
+          "timing_score": 0.0,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": []
+        },
+        {
+          "candidate_id": "TP-03-C2",
+          "t_ms": 33000,
+          "fraction_consumed": 0.44,
+          "source": "authored_bridge_exit",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "BELOW_HARD_LATE_FRACTION_RULE"
+          ],
+          "acceptance_reason_codes": [],
+          "song_preservation_score": 0.44,
+          "musical_structure_score": 1.0,
+          "timing_score": 0.0,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": []
+        },
+        {
+          "candidate_id": "TP-03-C3-END",
+          "t_ms": 75000,
+          "fraction_consumed": 1.0,
+          "source": "authored_outro",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "LATE_STRUCTURAL_REGION"
+          ],
+          "song_preservation_score": 1.0,
+          "musical_structure_score": 1.0,
+          "timing_score": 1.0,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "SHORT_EQ_BLEND",
+            "SIMPLE_CROSSFADE"
+          ]
+        }
+      ]
+    },
+    "TP-04": {
+      "fixture_id": "TP-04",
+      "listener_intent": "FULL_SONG_DEFAULT",
+      "policy_name": "TAIL_ONLY_NATURAL_EXIT_BIASED",
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "current_track_exit_window_ms": null,
+      "next_track_entry_window_ms": null,
+      "preferred_transition_class_set": [],
+      "beat_downbeat_alignment_target_ms": null,
+      "permitted_tempo_pitch_envelope": null,
+      "confidence": "HIGH",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "LATE_STRUCTURAL_REGION"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-04-C1",
+          "t_ms": 40000,
+          "fraction_consumed": 0.0833,
+          "source": "technical_mix_point",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "NO_STRUCTURAL_EVIDENCE",
+            "BELOW_HARD_LATE_FRACTION_RULE"
+          ],
+          "acceptance_reason_codes": [],
+          "song_preservation_score": 0.0833,
+          "musical_structure_score": 0.0,
+          "timing_score": 0.0,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": []
+        },
+        {
+          "candidate_id": "TP-04-C2",
+          "t_ms": 270000,
+          "fraction_consumed": 0.5625,
+          "source": "instrumental_break_section_end",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "BELOW_HARD_LATE_FRACTION_RULE"
+          ],
+          "acceptance_reason_codes": [],
+          "song_preservation_score": 0.5625,
+          "musical_structure_score": 1.0,
+          "timing_score": 0.0,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": []
+        },
+        {
+          "candidate_id": "TP-04-C3-END",
+          "t_ms": 480000,
+          "fraction_consumed": 1.0,
+          "source": "authored_outro",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "LATE_STRUCTURAL_REGION"
+          ],
+          "song_preservation_score": 1.0,
+          "musical_structure_score": 1.0,
+          "timing_score": 1.0,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "SHORT_EQ_BLEND",
+            "SIMPLE_CROSSFADE"
+          ]
+        }
+      ]
+    },
+    "TP-05": {
+      "fixture_id": "TP-05",
+      "listener_intent": "FULL_SONG_DEFAULT",
+      "policy_name": "TAIL_ONLY_NATURAL_EXIT_BIASED",
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "current_track_exit_window_ms": null,
+      "next_track_entry_window_ms": null,
+      "preferred_transition_class_set": [],
+      "beat_downbeat_alignment_target_ms": null,
+      "permitted_tempo_pitch_envelope": null,
+      "confidence": "HIGH",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_STRUCTURAL_EVIDENCE"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-05-C1",
+          "t_ms": 100000,
+          "fraction_consumed": 0.5128,
+          "source": "technical_mix_point",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "NO_STRUCTURAL_EVIDENCE",
+            "BELOW_HARD_LATE_FRACTION_RULE"
+          ],
+          "acceptance_reason_codes": [],
+          "song_preservation_score": 0.5128,
+          "musical_structure_score": 0.0,
+          "timing_score": 0.0,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": []
+        },
+        {
+          "candidate_id": "TP-05-C2-END",
+          "t_ms": 195000,
+          "fraction_consumed": 1.0,
+          "source": "unstructured_fade",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "NO_STRUCTURAL_EVIDENCE"
+          ],
+          "acceptance_reason_codes": [],
+          "song_preservation_score": 1.0,
+          "musical_structure_score": 0.0,
+          "timing_score": 0.0,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": []
+        }
+      ]
+    },
+    "TP-06": {
+      "fixture_id": "TP-06",
+      "listener_intent": "FULL_SONG_DEFAULT",
+      "policy_name": "TAIL_ONLY_NATURAL_EXIT_BIASED",
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "current_track_exit_window_ms": null,
+      "next_track_entry_window_ms": null,
+      "preferred_transition_class_set": [],
+      "beat_downbeat_alignment_target_ms": null,
+      "permitted_tempo_pitch_envelope": null,
+      "confidence": "HIGH",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "LATE_STRUCTURAL_REGION"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-06-C1",
+          "t_ms": 58000,
+          "fraction_consumed": 0.2578,
+          "source": "technical_mix_point",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "NO_STRUCTURAL_EVIDENCE",
+            "BELOW_HARD_LATE_FRACTION_RULE"
+          ],
+          "acceptance_reason_codes": [],
+          "song_preservation_score": 0.2578,
+          "musical_structure_score": 0.0,
+          "timing_score": 0.0,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": []
+        },
+        {
+          "candidate_id": "TP-06-C2-END",
+          "t_ms": 215000,
+          "fraction_consumed": 0.9556,
+          "source": "authored_outro",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "LATE_STRUCTURAL_REGION"
+          ],
+          "song_preservation_score": 0.9556,
+          "musical_structure_score": 1.0,
+          "timing_score": 0.9556,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "SHORT_EQ_BLEND",
+            "SIMPLE_CROSSFADE"
+          ]
+        }
+      ]
+    },
+    "TP-07": {
+      "fixture_id": "TP-07",
+      "listener_intent": "FULL_SONG_DEFAULT",
+      "policy_name": "TAIL_ONLY_NATURAL_EXIT_BIASED",
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "current_track_exit_window_ms": null,
+      "next_track_entry_window_ms": null,
+      "preferred_transition_class_set": [],
+      "beat_downbeat_alignment_target_ms": null,
+      "permitted_tempo_pitch_envelope": null,
+      "confidence": "HIGH",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "LATE_STRUCTURAL_REGION"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-07-C1",
+          "t_ms": 15000,
+          "fraction_consumed": 0.075,
+          "source": "technical_mix_point",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "NO_STRUCTURAL_EVIDENCE",
+            "BELOW_HARD_LATE_FRACTION_RULE"
+          ],
+          "acceptance_reason_codes": [],
+          "song_preservation_score": 0.075,
+          "musical_structure_score": 0.0,
+          "timing_score": 0.0,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": []
+        },
+        {
+          "candidate_id": "TP-07-C2",
+          "t_ms": 95000,
+          "fraction_consumed": 0.475,
+          "source": "instrumental_break_section_end",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "BELOW_HARD_LATE_FRACTION_RULE"
+          ],
+          "acceptance_reason_codes": [],
+          "song_preservation_score": 0.475,
+          "musical_structure_score": 1.0,
+          "timing_score": 0.0,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": []
+        },
+        {
+          "candidate_id": "TP-07-C3-END",
+          "t_ms": 200000,
+          "fraction_consumed": 1.0,
+          "source": "authored_outro",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "LATE_STRUCTURAL_REGION"
+          ],
+          "song_preservation_score": 1.0,
+          "musical_structure_score": 1.0,
+          "timing_score": 1.0,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "SHORT_EQ_BLEND",
+            "SIMPLE_CROSSFADE"
+          ]
+        }
+      ]
+    },
+    "TP-08": {
+      "fixture_id": "TP-08",
+      "listener_intent": "FULL_SONG_DEFAULT",
+      "policy_name": "TAIL_ONLY_NATURAL_EXIT_BIASED",
+      "decision_type": "TRANSITION",
+      "current_track_exit_window_ms": {
+        "t_start_ms": 198000,
+        "t_end_ms": 198000
+      },
+      "next_track_entry_window_ms": {
+        "t_start_ms": 0,
+        "t_end_ms": 0
+      },
+      "preferred_transition_class_set": [
+        "SHORT_EQ_BLEND",
+        "SIMPLE_CROSSFADE"
+      ],
+      "beat_downbeat_alignment_target_ms": 198000,
+      "permitted_tempo_pitch_envelope": null,
+      "confidence": "HIGH",
+      "reason_codes": [
+        "LATE_STRUCTURAL_REGION"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-08-C1",
+          "t_ms": 150000,
+          "fraction_consumed": 0.7143,
+          "source": "bridge_section_end",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "VOCAL_COLLISION_RISK_HIGH"
+          ],
+          "acceptance_reason_codes": [],
+          "song_preservation_score": 0.7143,
+          "musical_structure_score": 1.0,
+          "timing_score": 0.0,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": []
+        },
+        {
+          "candidate_id": "TP-08-C2",
+          "t_ms": 198000,
+          "fraction_consumed": 0.9429,
+          "source": "authored_outro",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "LATE_STRUCTURAL_REGION"
+          ],
+          "song_preservation_score": 0.9429,
+          "musical_structure_score": 1.0,
+          "timing_score": 0.9429,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "SHORT_EQ_BLEND",
+            "SIMPLE_CROSSFADE"
+          ]
+        }
+      ]
+    },
+    "TP-09": {
+      "fixture_id": "TP-09",
+      "listener_intent": "FULL_SONG_DEFAULT",
+      "policy_name": "TAIL_ONLY_NATURAL_EXIT_BIASED",
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "current_track_exit_window_ms": null,
+      "next_track_entry_window_ms": null,
+      "preferred_transition_class_set": [],
+      "beat_downbeat_alignment_target_ms": null,
+      "permitted_tempo_pitch_envelope": null,
+      "confidence": "NONE",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_STRUCTURAL_EVIDENCE"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-09-C1",
+          "t_ms": 45000,
+          "fraction_consumed": 0.225,
+          "source": "technical_mix_point",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "NO_STRUCTURAL_EVIDENCE",
+            "BELOW_HARD_LATE_FRACTION_RULE"
+          ],
+          "acceptance_reason_codes": [],
+          "song_preservation_score": 0.225,
+          "musical_structure_score": 0.0,
+          "timing_score": 0.0,
+          "confidence": "NONE",
+          "preferred_transition_class_set": []
+        },
+        {
+          "candidate_id": "TP-09-C2-END",
+          "t_ms": 200000,
+          "fraction_consumed": 1.0,
+          "source": "unknown",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "NO_STRUCTURAL_EVIDENCE"
+          ],
+          "acceptance_reason_codes": [],
+          "song_preservation_score": 1.0,
+          "musical_structure_score": 0.0,
+          "timing_score": 0.0,
+          "confidence": "NONE",
+          "preferred_transition_class_set": []
+        }
+      ]
+    },
+    "TP-10": {
+      "fixture_id": "TP-10",
+      "listener_intent": "FULL_SONG_DEFAULT",
+      "policy_name": "TAIL_ONLY_NATURAL_EXIT_BIASED",
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "current_track_exit_window_ms": null,
+      "next_track_entry_window_ms": null,
+      "preferred_transition_class_set": [],
+      "beat_downbeat_alignment_target_ms": null,
+      "permitted_tempo_pitch_envelope": null,
+      "confidence": "HIGH",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "LATE_STRUCTURAL_REGION"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-10-C1",
+          "t_ms": 50000,
+          "fraction_consumed": 0.2083,
+          "source": "post_first_chorus_highlight_point",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "BELOW_HARD_LATE_FRACTION_RULE"
+          ],
+          "acceptance_reason_codes": [],
+          "song_preservation_score": 0.2083,
+          "musical_structure_score": 1.0,
+          "timing_score": 0.0,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": []
+        },
+        {
+          "candidate_id": "TP-10-C2-END",
+          "t_ms": 240000,
+          "fraction_consumed": 1.0,
+          "source": "authored_outro",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "LATE_STRUCTURAL_REGION"
+          ],
+          "song_preservation_score": 1.0,
+          "musical_structure_score": 1.0,
+          "timing_score": 1.0,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "SHORT_EQ_BLEND",
+            "SIMPLE_CROSSFADE"
+          ]
+        }
+      ]
+    }
+  },
+  "STRUCTURE_AWARE_PRESERVATION@FULL_SONG_DEFAULT": {
+    "TP-01": {
+      "fixture_id": "TP-01",
+      "listener_intent": "FULL_SONG_DEFAULT",
+      "policy_name": "STRUCTURE_AWARE_PRESERVATION",
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "current_track_exit_window_ms": null,
+      "next_track_entry_window_ms": null,
+      "preferred_transition_class_set": [],
+      "beat_downbeat_alignment_target_ms": null,
+      "permitted_tempo_pitch_envelope": null,
+      "confidence": "HIGH",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-01-C1",
+          "t_ms": 30000,
+          "fraction_consumed": 0.1429,
+          "source": "technical_mix_point",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "NO_STRUCTURAL_EVIDENCE",
+            "BELOW_PRESERVATION_FRACTION_FLOOR"
+          ],
+          "acceptance_reason_codes": [],
+          "song_preservation_score": 0.1429,
+          "musical_structure_score": 0.2,
+          "timing_score": 0.1714,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "SIMPLE_CROSSFADE"
+          ]
+        },
+        {
+          "candidate_id": "TP-01-C2-END",
+          "t_ms": 210000,
+          "fraction_consumed": 1.0,
+          "source": "authored_outro",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "STRUCTURAL_EVIDENCE_PRESENT"
+          ],
+          "song_preservation_score": 1.0,
+          "musical_structure_score": 1.0,
+          "timing_score": 1.0,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "FULL_DJ_BLEND",
+            "SHORT_EQ_BLEND",
+            "SIMPLE_CROSSFADE"
+          ]
+        }
+      ]
+    },
+    "TP-02": {
+      "fixture_id": "TP-02",
+      "listener_intent": "FULL_SONG_DEFAULT",
+      "policy_name": "STRUCTURE_AWARE_PRESERVATION",
+      "decision_type": "TRANSITION",
+      "current_track_exit_window_ms": {
+        "t_start_ms": 185000,
+        "t_end_ms": 185000
+      },
+      "next_track_entry_window_ms": {
+        "t_start_ms": 0,
+        "t_end_ms": 0
+      },
+      "preferred_transition_class_set": [
+        "FULL_DJ_BLEND",
+        "SHORT_EQ_BLEND",
+        "SIMPLE_CROSSFADE"
+      ],
+      "beat_downbeat_alignment_target_ms": 185000,
+      "permitted_tempo_pitch_envelope": {
+        "tempo_ratio_max_deviation": 0.12,
+        "max_pitch_shift_semitones": 3
+      },
+      "confidence": "HIGH",
+      "reason_codes": [
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-02-C1",
+          "t_ms": 90000,
+          "fraction_consumed": 0.45,
+          "source": "technical_mix_point",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "NO_STRUCTURAL_EVIDENCE",
+            "BELOW_PRESERVATION_FRACTION_FLOOR"
+          ],
+          "acceptance_reason_codes": [],
+          "song_preservation_score": 0.45,
+          "musical_structure_score": 0.2,
+          "timing_score": 0.325,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "SIMPLE_CROSSFADE"
+          ]
+        },
+        {
+          "candidate_id": "TP-02-C2",
+          "t_ms": 185000,
+          "fraction_consumed": 0.925,
+          "source": "authored_outro",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "STRUCTURAL_EVIDENCE_PRESENT"
+          ],
+          "song_preservation_score": 0.925,
+          "musical_structure_score": 1.0,
+          "timing_score": 0.9625,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "FULL_DJ_BLEND",
+            "SHORT_EQ_BLEND",
+            "SIMPLE_CROSSFADE"
+          ]
+        }
+      ]
+    },
+    "TP-03": {
+      "fixture_id": "TP-03",
+      "listener_intent": "FULL_SONG_DEFAULT",
+      "policy_name": "STRUCTURE_AWARE_PRESERVATION",
+      "decision_type": "TRANSITION",
+      "current_track_exit_window_ms": {
+        "t_start_ms": 33000,
+        "t_end_ms": 33000
+      },
+      "next_track_entry_window_ms": {
+        "t_start_ms": 0,
+        "t_end_ms": 0
+      },
+      "preferred_transition_class_set": [
+        "FULL_DJ_BLEND",
+        "SHORT_EQ_BLEND",
+        "SIMPLE_CROSSFADE"
+      ],
+      "beat_downbeat_alignment_target_ms": 33000,
+      "permitted_tempo_pitch_envelope": {
+        "tempo_ratio_max_deviation": 0.12,
+        "max_pitch_shift_semitones": 3
+      },
+      "confidence": "HIGH",
+      "reason_codes": [
+        "STRUCTURAL_EVIDENCE_PRESENT",
+        "SHORT_TRACK_EXCEPTION_APPLIED"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-03-C1",
+          "t_ms": 8000,
+          "fraction_consumed": 0.1067,
+          "source": "technical_mix_point",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "NO_STRUCTURAL_EVIDENCE",
+            "BELOW_PRESERVATION_FRACTION_FLOOR"
+          ],
+          "acceptance_reason_codes": [],
+          "song_preservation_score": 0.1067,
+          "musical_structure_score": 0.2,
+          "timing_score": 0.1534,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "SIMPLE_CROSSFADE"
+          ]
+        },
+        {
+          "candidate_id": "TP-03-C2",
+          "t_ms": 33000,
+          "fraction_consumed": 0.44,
+          "source": "authored_bridge_exit",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "STRUCTURAL_EVIDENCE_PRESENT",
+            "SHORT_TRACK_EXCEPTION_APPLIED"
+          ],
+          "song_preservation_score": 0.44,
+          "musical_structure_score": 0.8,
+          "timing_score": 0.62,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "FULL_DJ_BLEND",
+            "SHORT_EQ_BLEND",
+            "SIMPLE_CROSSFADE"
+          ]
+        }
+      ]
+    },
+    "TP-04": {
+      "fixture_id": "TP-04",
+      "listener_intent": "FULL_SONG_DEFAULT",
+      "policy_name": "STRUCTURE_AWARE_PRESERVATION",
+      "decision_type": "TRANSITION",
+      "current_track_exit_window_ms": {
+        "t_start_ms": 270000,
+        "t_end_ms": 270000
+      },
+      "next_track_entry_window_ms": {
+        "t_start_ms": 0,
+        "t_end_ms": 0
+      },
+      "preferred_transition_class_set": [
+        "FULL_DJ_BLEND",
+        "SHORT_EQ_BLEND",
+        "SIMPLE_CROSSFADE"
+      ],
+      "beat_downbeat_alignment_target_ms": 270000,
+      "permitted_tempo_pitch_envelope": {
+        "tempo_ratio_max_deviation": 0.12,
+        "max_pitch_shift_semitones": 3
+      },
+      "confidence": "HIGH",
+      "reason_codes": [
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-04-C1",
+          "t_ms": 40000,
+          "fraction_consumed": 0.0833,
+          "source": "technical_mix_point",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "NO_STRUCTURAL_EVIDENCE",
+            "BELOW_PRESERVATION_FRACTION_FLOOR"
+          ],
+          "acceptance_reason_codes": [],
+          "song_preservation_score": 0.0833,
+          "musical_structure_score": 0.2,
+          "timing_score": 0.1416,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "SIMPLE_CROSSFADE"
+          ]
+        },
+        {
+          "candidate_id": "TP-04-C2",
+          "t_ms": 270000,
+          "fraction_consumed": 0.5625,
+          "source": "instrumental_break_section_end",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "STRUCTURAL_EVIDENCE_PRESENT"
+          ],
+          "song_preservation_score": 0.5625,
+          "musical_structure_score": 0.8,
+          "timing_score": 0.6813,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "FULL_DJ_BLEND",
+            "SHORT_EQ_BLEND",
+            "SIMPLE_CROSSFADE"
+          ]
+        }
+      ]
+    },
+    "TP-05": {
+      "fixture_id": "TP-05",
+      "listener_intent": "FULL_SONG_DEFAULT",
+      "policy_name": "STRUCTURE_AWARE_PRESERVATION",
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "current_track_exit_window_ms": null,
+      "next_track_entry_window_ms": null,
+      "preferred_transition_class_set": [],
+      "beat_downbeat_alignment_target_ms": null,
+      "permitted_tempo_pitch_envelope": null,
+      "confidence": "HIGH",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_STRUCTURAL_EVIDENCE"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-05-C1",
+          "t_ms": 100000,
+          "fraction_consumed": 0.5128,
+          "source": "technical_mix_point",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "NO_STRUCTURAL_EVIDENCE",
+            "BELOW_PRESERVATION_FRACTION_FLOOR"
+          ],
+          "acceptance_reason_codes": [],
+          "song_preservation_score": 0.5128,
+          "musical_structure_score": 0.2,
+          "timing_score": 0.3564,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "SIMPLE_CROSSFADE"
+          ]
+        },
+        {
+          "candidate_id": "TP-05-C2-END",
+          "t_ms": 195000,
+          "fraction_consumed": 1.0,
+          "source": "unstructured_fade",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "NO_STRUCTURAL_EVIDENCE"
+          ],
+          "acceptance_reason_codes": [],
+          "song_preservation_score": 1.0,
+          "musical_structure_score": 0.0,
+          "timing_score": 0.5,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "SIMPLE_CROSSFADE"
+          ]
+        }
+      ]
+    },
+    "TP-06": {
+      "fixture_id": "TP-06",
+      "listener_intent": "FULL_SONG_DEFAULT",
+      "policy_name": "STRUCTURE_AWARE_PRESERVATION",
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "current_track_exit_window_ms": null,
+      "next_track_entry_window_ms": null,
+      "preferred_transition_class_set": [],
+      "beat_downbeat_alignment_target_ms": null,
+      "permitted_tempo_pitch_envelope": null,
+      "confidence": "HIGH",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-06-C1",
+          "t_ms": 58000,
+          "fraction_consumed": 0.2578,
+          "source": "technical_mix_point",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "NO_STRUCTURAL_EVIDENCE",
+            "BELOW_PRESERVATION_FRACTION_FLOOR"
+          ],
+          "acceptance_reason_codes": [],
+          "song_preservation_score": 0.2578,
+          "musical_structure_score": 0.2,
+          "timing_score": 0.2289,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "SIMPLE_CROSSFADE"
+          ]
+        },
+        {
+          "candidate_id": "TP-06-C2-END",
+          "t_ms": 215000,
+          "fraction_consumed": 0.9556,
+          "source": "authored_outro",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "STRUCTURAL_EVIDENCE_PRESENT"
+          ],
+          "song_preservation_score": 0.9556,
+          "musical_structure_score": 1.0,
+          "timing_score": 0.9778,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "FULL_DJ_BLEND",
+            "SHORT_EQ_BLEND",
+            "SIMPLE_CROSSFADE"
+          ]
+        }
+      ]
+    },
+    "TP-07": {
+      "fixture_id": "TP-07",
+      "listener_intent": "FULL_SONG_DEFAULT",
+      "policy_name": "STRUCTURE_AWARE_PRESERVATION",
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "current_track_exit_window_ms": null,
+      "next_track_entry_window_ms": null,
+      "preferred_transition_class_set": [],
+      "beat_downbeat_alignment_target_ms": null,
+      "permitted_tempo_pitch_envelope": null,
+      "confidence": "HIGH",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-07-C1",
+          "t_ms": 15000,
+          "fraction_consumed": 0.075,
+          "source": "technical_mix_point",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "NO_STRUCTURAL_EVIDENCE",
+            "BELOW_PRESERVATION_FRACTION_FLOOR"
+          ],
+          "acceptance_reason_codes": [],
+          "song_preservation_score": 0.075,
+          "musical_structure_score": 0.2,
+          "timing_score": 0.1375,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "SIMPLE_CROSSFADE"
+          ]
+        },
+        {
+          "candidate_id": "TP-07-C2",
+          "t_ms": 95000,
+          "fraction_consumed": 0.475,
+          "source": "instrumental_break_section_end",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "BELOW_PRESERVATION_FRACTION_FLOOR"
+          ],
+          "acceptance_reason_codes": [
+            "STRUCTURAL_EVIDENCE_PRESENT"
+          ],
+          "song_preservation_score": 0.475,
+          "musical_structure_score": 0.8,
+          "timing_score": 0.6375,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "FULL_DJ_BLEND",
+            "SHORT_EQ_BLEND",
+            "SIMPLE_CROSSFADE"
+          ]
+        },
+        {
+          "candidate_id": "TP-07-C3-END",
+          "t_ms": 200000,
+          "fraction_consumed": 1.0,
+          "source": "authored_outro",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "STRUCTURAL_EVIDENCE_PRESENT"
+          ],
+          "song_preservation_score": 1.0,
+          "musical_structure_score": 1.0,
+          "timing_score": 1.0,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "FULL_DJ_BLEND",
+            "SHORT_EQ_BLEND",
+            "SIMPLE_CROSSFADE"
+          ]
+        }
+      ]
+    },
+    "TP-08": {
+      "fixture_id": "TP-08",
+      "listener_intent": "FULL_SONG_DEFAULT",
+      "policy_name": "STRUCTURE_AWARE_PRESERVATION",
+      "decision_type": "TRANSITION",
+      "current_track_exit_window_ms": {
+        "t_start_ms": 198000,
+        "t_end_ms": 198000
+      },
+      "next_track_entry_window_ms": {
+        "t_start_ms": 0,
+        "t_end_ms": 0
+      },
+      "preferred_transition_class_set": [
+        "FULL_DJ_BLEND",
+        "SHORT_EQ_BLEND",
+        "SIMPLE_CROSSFADE"
+      ],
+      "beat_downbeat_alignment_target_ms": 198000,
+      "permitted_tempo_pitch_envelope": {
+        "tempo_ratio_max_deviation": 0.12,
+        "max_pitch_shift_semitones": 3
+      },
+      "confidence": "HIGH",
+      "reason_codes": [
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-08-C1",
+          "t_ms": 150000,
+          "fraction_consumed": 0.7143,
+          "source": "bridge_section_end",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "VOCAL_COLLISION_RISK_HIGH"
+          ],
+          "acceptance_reason_codes": [
+            "STRUCTURAL_EVIDENCE_PRESENT"
+          ],
+          "song_preservation_score": 0.7143,
+          "musical_structure_score": 0.8,
+          "timing_score": 0.7571,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "FULL_DJ_BLEND",
+            "SHORT_EQ_BLEND",
+            "SIMPLE_CROSSFADE"
+          ]
+        },
+        {
+          "candidate_id": "TP-08-C2",
+          "t_ms": 198000,
+          "fraction_consumed": 0.9429,
+          "source": "authored_outro",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "STRUCTURAL_EVIDENCE_PRESENT"
+          ],
+          "song_preservation_score": 0.9429,
+          "musical_structure_score": 1.0,
+          "timing_score": 0.9714,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "FULL_DJ_BLEND",
+            "SHORT_EQ_BLEND",
+            "SIMPLE_CROSSFADE"
+          ]
+        }
+      ]
+    },
+    "TP-09": {
+      "fixture_id": "TP-09",
+      "listener_intent": "FULL_SONG_DEFAULT",
+      "policy_name": "STRUCTURE_AWARE_PRESERVATION",
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "current_track_exit_window_ms": null,
+      "next_track_entry_window_ms": null,
+      "preferred_transition_class_set": [],
+      "beat_downbeat_alignment_target_ms": null,
+      "permitted_tempo_pitch_envelope": null,
+      "confidence": "NONE",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "NO_STRUCTURAL_EVIDENCE"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-09-C1",
+          "t_ms": 45000,
+          "fraction_consumed": 0.225,
+          "source": "technical_mix_point",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+            "NO_STRUCTURAL_EVIDENCE",
+            "BELOW_PRESERVATION_FRACTION_FLOOR"
+          ],
+          "acceptance_reason_codes": [],
+          "song_preservation_score": 0.225,
+          "musical_structure_score": 0.2,
+          "timing_score": 0.0,
+          "confidence": "NONE",
+          "preferred_transition_class_set": [
+            "SIMPLE_CROSSFADE"
+          ]
+        },
+        {
+          "candidate_id": "TP-09-C2-END",
+          "t_ms": 200000,
+          "fraction_consumed": 1.0,
+          "source": "unknown",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+            "NO_STRUCTURAL_EVIDENCE"
+          ],
+          "acceptance_reason_codes": [],
+          "song_preservation_score": 1.0,
+          "musical_structure_score": 0.0,
+          "timing_score": 0.0,
+          "confidence": "NONE",
+          "preferred_transition_class_set": [
+            "SIMPLE_CROSSFADE"
+          ]
+        }
+      ]
+    },
+    "TP-10": {
+      "fixture_id": "TP-10",
+      "listener_intent": "FULL_SONG_DEFAULT",
+      "policy_name": "STRUCTURE_AWARE_PRESERVATION",
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "current_track_exit_window_ms": null,
+      "next_track_entry_window_ms": null,
+      "preferred_transition_class_set": [],
+      "beat_downbeat_alignment_target_ms": null,
+      "permitted_tempo_pitch_envelope": null,
+      "confidence": "HIGH",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-10-C1",
+          "t_ms": 50000,
+          "fraction_consumed": 0.2083,
+          "source": "post_first_chorus_highlight_point",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "BELOW_PRESERVATION_FRACTION_FLOOR"
+          ],
+          "acceptance_reason_codes": [
+            "STRUCTURAL_EVIDENCE_PRESENT"
+          ],
+          "song_preservation_score": 0.2083,
+          "musical_structure_score": 0.8,
+          "timing_score": 0.5041,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "FULL_DJ_BLEND",
+            "SHORT_EQ_BLEND",
+            "SIMPLE_CROSSFADE"
+          ]
+        },
+        {
+          "candidate_id": "TP-10-C2-END",
+          "t_ms": 240000,
+          "fraction_consumed": 1.0,
+          "source": "authored_outro",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "STRUCTURAL_EVIDENCE_PRESENT"
+          ],
+          "song_preservation_score": 1.0,
+          "musical_structure_score": 1.0,
+          "timing_score": 1.0,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "FULL_DJ_BLEND",
+            "SHORT_EQ_BLEND",
+            "SIMPLE_CROSSFADE"
+          ]
+        }
+      ]
+    }
+  },
+  "STRUCTURE_AWARE_PRESERVATION@BALANCED_MIX": {
+    "TP-01": {
+      "fixture_id": "TP-01",
+      "listener_intent": "BALANCED_MIX",
+      "policy_name": "STRUCTURE_AWARE_PRESERVATION",
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "current_track_exit_window_ms": null,
+      "next_track_entry_window_ms": null,
+      "preferred_transition_class_set": [],
+      "beat_downbeat_alignment_target_ms": null,
+      "permitted_tempo_pitch_envelope": null,
+      "confidence": "HIGH",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-01-C1",
+          "t_ms": 30000,
+          "fraction_consumed": 0.1429,
+          "source": "technical_mix_point",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "NO_STRUCTURAL_EVIDENCE",
+            "BELOW_PRESERVATION_FRACTION_FLOOR"
+          ],
+          "acceptance_reason_codes": [],
+          "song_preservation_score": 0.1429,
+          "musical_structure_score": 0.2,
+          "timing_score": 0.1714,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "SIMPLE_CROSSFADE"
+          ]
+        },
+        {
+          "candidate_id": "TP-01-C2-END",
+          "t_ms": 210000,
+          "fraction_consumed": 1.0,
+          "source": "authored_outro",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "STRUCTURAL_EVIDENCE_PRESENT"
+          ],
+          "song_preservation_score": 1.0,
+          "musical_structure_score": 1.0,
+          "timing_score": 1.0,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "FULL_DJ_BLEND",
+            "SHORT_EQ_BLEND",
+            "SIMPLE_CROSSFADE"
+          ]
+        }
+      ]
+    },
+    "TP-02": {
+      "fixture_id": "TP-02",
+      "listener_intent": "BALANCED_MIX",
+      "policy_name": "STRUCTURE_AWARE_PRESERVATION",
+      "decision_type": "TRANSITION",
+      "current_track_exit_window_ms": {
+        "t_start_ms": 185000,
+        "t_end_ms": 185000
+      },
+      "next_track_entry_window_ms": {
+        "t_start_ms": 0,
+        "t_end_ms": 0
+      },
+      "preferred_transition_class_set": [
+        "FULL_DJ_BLEND",
+        "SHORT_EQ_BLEND",
+        "SIMPLE_CROSSFADE"
+      ],
+      "beat_downbeat_alignment_target_ms": 185000,
+      "permitted_tempo_pitch_envelope": {
+        "tempo_ratio_max_deviation": 0.12,
+        "max_pitch_shift_semitones": 3
+      },
+      "confidence": "HIGH",
+      "reason_codes": [
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-02-C1",
+          "t_ms": 90000,
+          "fraction_consumed": 0.45,
+          "source": "technical_mix_point",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "NO_STRUCTURAL_EVIDENCE"
+          ],
+          "acceptance_reason_codes": [],
+          "song_preservation_score": 0.45,
+          "musical_structure_score": 0.2,
+          "timing_score": 0.325,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "SIMPLE_CROSSFADE"
+          ]
+        },
+        {
+          "candidate_id": "TP-02-C2",
+          "t_ms": 185000,
+          "fraction_consumed": 0.925,
+          "source": "authored_outro",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "STRUCTURAL_EVIDENCE_PRESENT"
+          ],
+          "song_preservation_score": 0.925,
+          "musical_structure_score": 1.0,
+          "timing_score": 0.9625,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "FULL_DJ_BLEND",
+            "SHORT_EQ_BLEND",
+            "SIMPLE_CROSSFADE"
+          ]
+        }
+      ]
+    },
+    "TP-03": {
+      "fixture_id": "TP-03",
+      "listener_intent": "BALANCED_MIX",
+      "policy_name": "STRUCTURE_AWARE_PRESERVATION",
+      "decision_type": "TRANSITION",
+      "current_track_exit_window_ms": {
+        "t_start_ms": 33000,
+        "t_end_ms": 33000
+      },
+      "next_track_entry_window_ms": {
+        "t_start_ms": 0,
+        "t_end_ms": 0
+      },
+      "preferred_transition_class_set": [
+        "FULL_DJ_BLEND",
+        "SHORT_EQ_BLEND",
+        "SIMPLE_CROSSFADE"
+      ],
+      "beat_downbeat_alignment_target_ms": 33000,
+      "permitted_tempo_pitch_envelope": {
+        "tempo_ratio_max_deviation": 0.12,
+        "max_pitch_shift_semitones": 3
+      },
+      "confidence": "HIGH",
+      "reason_codes": [
+        "STRUCTURAL_EVIDENCE_PRESENT",
+        "SHORT_TRACK_EXCEPTION_APPLIED"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-03-C1",
+          "t_ms": 8000,
+          "fraction_consumed": 0.1067,
+          "source": "technical_mix_point",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "NO_STRUCTURAL_EVIDENCE",
+            "BELOW_PRESERVATION_FRACTION_FLOOR"
+          ],
+          "acceptance_reason_codes": [],
+          "song_preservation_score": 0.1067,
+          "musical_structure_score": 0.2,
+          "timing_score": 0.1534,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "SIMPLE_CROSSFADE"
+          ]
+        },
+        {
+          "candidate_id": "TP-03-C2",
+          "t_ms": 33000,
+          "fraction_consumed": 0.44,
+          "source": "authored_bridge_exit",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "STRUCTURAL_EVIDENCE_PRESENT",
+            "SHORT_TRACK_EXCEPTION_APPLIED"
+          ],
+          "song_preservation_score": 0.44,
+          "musical_structure_score": 0.8,
+          "timing_score": 0.62,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "FULL_DJ_BLEND",
+            "SHORT_EQ_BLEND",
+            "SIMPLE_CROSSFADE"
+          ]
+        }
+      ]
+    },
+    "TP-04": {
+      "fixture_id": "TP-04",
+      "listener_intent": "BALANCED_MIX",
+      "policy_name": "STRUCTURE_AWARE_PRESERVATION",
+      "decision_type": "TRANSITION",
+      "current_track_exit_window_ms": {
+        "t_start_ms": 270000,
+        "t_end_ms": 270000
+      },
+      "next_track_entry_window_ms": {
+        "t_start_ms": 0,
+        "t_end_ms": 0
+      },
+      "preferred_transition_class_set": [
+        "FULL_DJ_BLEND",
+        "SHORT_EQ_BLEND",
+        "SIMPLE_CROSSFADE"
+      ],
+      "beat_downbeat_alignment_target_ms": 270000,
+      "permitted_tempo_pitch_envelope": {
+        "tempo_ratio_max_deviation": 0.12,
+        "max_pitch_shift_semitones": 3
+      },
+      "confidence": "HIGH",
+      "reason_codes": [
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-04-C1",
+          "t_ms": 40000,
+          "fraction_consumed": 0.0833,
+          "source": "technical_mix_point",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "NO_STRUCTURAL_EVIDENCE",
+            "BELOW_PRESERVATION_FRACTION_FLOOR"
+          ],
+          "acceptance_reason_codes": [],
+          "song_preservation_score": 0.0833,
+          "musical_structure_score": 0.2,
+          "timing_score": 0.1416,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "SIMPLE_CROSSFADE"
+          ]
+        },
+        {
+          "candidate_id": "TP-04-C2",
+          "t_ms": 270000,
+          "fraction_consumed": 0.5625,
+          "source": "instrumental_break_section_end",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "STRUCTURAL_EVIDENCE_PRESENT"
+          ],
+          "song_preservation_score": 0.5625,
+          "musical_structure_score": 0.8,
+          "timing_score": 0.6813,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "FULL_DJ_BLEND",
+            "SHORT_EQ_BLEND",
+            "SIMPLE_CROSSFADE"
+          ]
+        }
+      ]
+    },
+    "TP-05": {
+      "fixture_id": "TP-05",
+      "listener_intent": "BALANCED_MIX",
+      "policy_name": "STRUCTURE_AWARE_PRESERVATION",
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "current_track_exit_window_ms": null,
+      "next_track_entry_window_ms": null,
+      "preferred_transition_class_set": [],
+      "beat_downbeat_alignment_target_ms": null,
+      "permitted_tempo_pitch_envelope": null,
+      "confidence": "HIGH",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_STRUCTURAL_EVIDENCE"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-05-C1",
+          "t_ms": 100000,
+          "fraction_consumed": 0.5128,
+          "source": "technical_mix_point",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "NO_STRUCTURAL_EVIDENCE"
+          ],
+          "acceptance_reason_codes": [],
+          "song_preservation_score": 0.5128,
+          "musical_structure_score": 0.2,
+          "timing_score": 0.3564,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "SIMPLE_CROSSFADE"
+          ]
+        },
+        {
+          "candidate_id": "TP-05-C2-END",
+          "t_ms": 195000,
+          "fraction_consumed": 1.0,
+          "source": "unstructured_fade",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "NO_STRUCTURAL_EVIDENCE"
+          ],
+          "acceptance_reason_codes": [],
+          "song_preservation_score": 1.0,
+          "musical_structure_score": 0.0,
+          "timing_score": 0.5,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "SIMPLE_CROSSFADE"
+          ]
+        }
+      ]
+    },
+    "TP-06": {
+      "fixture_id": "TP-06",
+      "listener_intent": "BALANCED_MIX",
+      "policy_name": "STRUCTURE_AWARE_PRESERVATION",
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "current_track_exit_window_ms": null,
+      "next_track_entry_window_ms": null,
+      "preferred_transition_class_set": [],
+      "beat_downbeat_alignment_target_ms": null,
+      "permitted_tempo_pitch_envelope": null,
+      "confidence": "HIGH",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-06-C1",
+          "t_ms": 58000,
+          "fraction_consumed": 0.2578,
+          "source": "technical_mix_point",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "NO_STRUCTURAL_EVIDENCE",
+            "BELOW_PRESERVATION_FRACTION_FLOOR"
+          ],
+          "acceptance_reason_codes": [],
+          "song_preservation_score": 0.2578,
+          "musical_structure_score": 0.2,
+          "timing_score": 0.2289,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "SIMPLE_CROSSFADE"
+          ]
+        },
+        {
+          "candidate_id": "TP-06-C2-END",
+          "t_ms": 215000,
+          "fraction_consumed": 0.9556,
+          "source": "authored_outro",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "STRUCTURAL_EVIDENCE_PRESENT"
+          ],
+          "song_preservation_score": 0.9556,
+          "musical_structure_score": 1.0,
+          "timing_score": 0.9778,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "FULL_DJ_BLEND",
+            "SHORT_EQ_BLEND",
+            "SIMPLE_CROSSFADE"
+          ]
+        }
+      ]
+    },
+    "TP-07": {
+      "fixture_id": "TP-07",
+      "listener_intent": "BALANCED_MIX",
+      "policy_name": "STRUCTURE_AWARE_PRESERVATION",
+      "decision_type": "TRANSITION",
+      "current_track_exit_window_ms": {
+        "t_start_ms": 95000,
+        "t_end_ms": 95000
+      },
+      "next_track_entry_window_ms": {
+        "t_start_ms": 0,
+        "t_end_ms": 0
+      },
+      "preferred_transition_class_set": [
+        "FULL_DJ_BLEND",
+        "SHORT_EQ_BLEND",
+        "SIMPLE_CROSSFADE"
+      ],
+      "beat_downbeat_alignment_target_ms": 95000,
+      "permitted_tempo_pitch_envelope": {
+        "tempo_ratio_max_deviation": 0.12,
+        "max_pitch_shift_semitones": 3
+      },
+      "confidence": "HIGH",
+      "reason_codes": [
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-07-C1",
+          "t_ms": 15000,
+          "fraction_consumed": 0.075,
+          "source": "technical_mix_point",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "NO_STRUCTURAL_EVIDENCE",
+            "BELOW_PRESERVATION_FRACTION_FLOOR"
+          ],
+          "acceptance_reason_codes": [],
+          "song_preservation_score": 0.075,
+          "musical_structure_score": 0.2,
+          "timing_score": 0.1375,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "SIMPLE_CROSSFADE"
+          ]
+        },
+        {
+          "candidate_id": "TP-07-C2",
+          "t_ms": 95000,
+          "fraction_consumed": 0.475,
+          "source": "instrumental_break_section_end",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "STRUCTURAL_EVIDENCE_PRESENT"
+          ],
+          "song_preservation_score": 0.475,
+          "musical_structure_score": 0.8,
+          "timing_score": 0.6375,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "FULL_DJ_BLEND",
+            "SHORT_EQ_BLEND",
+            "SIMPLE_CROSSFADE"
+          ]
+        }
+      ]
+    },
+    "TP-08": {
+      "fixture_id": "TP-08",
+      "listener_intent": "BALANCED_MIX",
+      "policy_name": "STRUCTURE_AWARE_PRESERVATION",
+      "decision_type": "TRANSITION",
+      "current_track_exit_window_ms": {
+        "t_start_ms": 198000,
+        "t_end_ms": 198000
+      },
+      "next_track_entry_window_ms": {
+        "t_start_ms": 0,
+        "t_end_ms": 0
+      },
+      "preferred_transition_class_set": [
+        "FULL_DJ_BLEND",
+        "SHORT_EQ_BLEND",
+        "SIMPLE_CROSSFADE"
+      ],
+      "beat_downbeat_alignment_target_ms": 198000,
+      "permitted_tempo_pitch_envelope": {
+        "tempo_ratio_max_deviation": 0.12,
+        "max_pitch_shift_semitones": 3
+      },
+      "confidence": "HIGH",
+      "reason_codes": [
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-08-C1",
+          "t_ms": 150000,
+          "fraction_consumed": 0.7143,
+          "source": "bridge_section_end",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "VOCAL_COLLISION_RISK_HIGH"
+          ],
+          "acceptance_reason_codes": [
+            "STRUCTURAL_EVIDENCE_PRESENT"
+          ],
+          "song_preservation_score": 0.7143,
+          "musical_structure_score": 0.8,
+          "timing_score": 0.7571,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "FULL_DJ_BLEND",
+            "SHORT_EQ_BLEND",
+            "SIMPLE_CROSSFADE"
+          ]
+        },
+        {
+          "candidate_id": "TP-08-C2",
+          "t_ms": 198000,
+          "fraction_consumed": 0.9429,
+          "source": "authored_outro",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "STRUCTURAL_EVIDENCE_PRESENT"
+          ],
+          "song_preservation_score": 0.9429,
+          "musical_structure_score": 1.0,
+          "timing_score": 0.9714,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "FULL_DJ_BLEND",
+            "SHORT_EQ_BLEND",
+            "SIMPLE_CROSSFADE"
+          ]
+        }
+      ]
+    },
+    "TP-09": {
+      "fixture_id": "TP-09",
+      "listener_intent": "BALANCED_MIX",
+      "policy_name": "STRUCTURE_AWARE_PRESERVATION",
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "current_track_exit_window_ms": null,
+      "next_track_entry_window_ms": null,
+      "preferred_transition_class_set": [],
+      "beat_downbeat_alignment_target_ms": null,
+      "permitted_tempo_pitch_envelope": null,
+      "confidence": "NONE",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "NO_STRUCTURAL_EVIDENCE"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-09-C1",
+          "t_ms": 45000,
+          "fraction_consumed": 0.225,
+          "source": "technical_mix_point",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+            "NO_STRUCTURAL_EVIDENCE",
+            "BELOW_PRESERVATION_FRACTION_FLOOR"
+          ],
+          "acceptance_reason_codes": [],
+          "song_preservation_score": 0.225,
+          "musical_structure_score": 0.2,
+          "timing_score": 0.0,
+          "confidence": "NONE",
+          "preferred_transition_class_set": [
+            "SIMPLE_CROSSFADE"
+          ]
+        },
+        {
+          "candidate_id": "TP-09-C2-END",
+          "t_ms": 200000,
+          "fraction_consumed": 1.0,
+          "source": "unknown",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+            "NO_STRUCTURAL_EVIDENCE"
+          ],
+          "acceptance_reason_codes": [],
+          "song_preservation_score": 1.0,
+          "musical_structure_score": 0.0,
+          "timing_score": 0.0,
+          "confidence": "NONE",
+          "preferred_transition_class_set": [
+            "SIMPLE_CROSSFADE"
+          ]
+        }
+      ]
+    },
+    "TP-10": {
+      "fixture_id": "TP-10",
+      "listener_intent": "BALANCED_MIX",
+      "policy_name": "STRUCTURE_AWARE_PRESERVATION",
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "current_track_exit_window_ms": null,
+      "next_track_entry_window_ms": null,
+      "preferred_transition_class_set": [],
+      "beat_downbeat_alignment_target_ms": null,
+      "permitted_tempo_pitch_envelope": null,
+      "confidence": "HIGH",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-10-C1",
+          "t_ms": 50000,
+          "fraction_consumed": 0.2083,
+          "source": "post_first_chorus_highlight_point",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "BELOW_PRESERVATION_FRACTION_FLOOR"
+          ],
+          "acceptance_reason_codes": [
+            "STRUCTURAL_EVIDENCE_PRESENT"
+          ],
+          "song_preservation_score": 0.2083,
+          "musical_structure_score": 0.8,
+          "timing_score": 0.5041,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "FULL_DJ_BLEND",
+            "SHORT_EQ_BLEND",
+            "SIMPLE_CROSSFADE"
+          ]
+        },
+        {
+          "candidate_id": "TP-10-C2-END",
+          "t_ms": 240000,
+          "fraction_consumed": 1.0,
+          "source": "authored_outro",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "STRUCTURAL_EVIDENCE_PRESENT"
+          ],
+          "song_preservation_score": 1.0,
+          "musical_structure_score": 1.0,
+          "timing_score": 1.0,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "FULL_DJ_BLEND",
+            "SHORT_EQ_BLEND",
+            "SIMPLE_CROSSFADE"
+          ]
+        }
+      ]
+    }
+  },
+  "EXPLICIT_HIGHLIGHT@HIGHLIGHT_EXPLICIT": {
+    "TP-01": {
+      "fixture_id": "TP-01",
+      "listener_intent": "HIGHLIGHT_EXPLICIT",
+      "policy_name": "EXPLICIT_HIGHLIGHT",
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "current_track_exit_window_ms": null,
+      "next_track_entry_window_ms": null,
+      "preferred_transition_class_set": [],
+      "beat_downbeat_alignment_target_ms": null,
+      "permitted_tempo_pitch_envelope": null,
+      "confidence": "HIGH",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "STRUCTURAL_EVIDENCE_PRESENT",
+        "HIGHLIGHT_INTENT_BYPASSES_FRACTION_FLOOR"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-01-C1",
+          "t_ms": 30000,
+          "fraction_consumed": 0.1429,
+          "source": "technical_mix_point",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "NO_STRUCTURAL_EVIDENCE"
+          ],
+          "acceptance_reason_codes": [
+            "HIGHLIGHT_INTENT_BYPASSES_FRACTION_FLOOR"
+          ],
+          "song_preservation_score": 0.1429,
+          "musical_structure_score": 0.2,
+          "timing_score": 0.1714,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "SIMPLE_CROSSFADE"
+          ]
+        },
+        {
+          "candidate_id": "TP-01-C2-END",
+          "t_ms": 210000,
+          "fraction_consumed": 1.0,
+          "source": "authored_outro",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "STRUCTURAL_EVIDENCE_PRESENT",
+            "HIGHLIGHT_INTENT_BYPASSES_FRACTION_FLOOR"
+          ],
+          "song_preservation_score": 1.0,
+          "musical_structure_score": 1.0,
+          "timing_score": 1.0,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "FULL_DJ_BLEND",
+            "SHORT_EQ_BLEND",
+            "SIMPLE_CROSSFADE"
+          ]
+        }
+      ]
+    },
+    "TP-02": {
+      "fixture_id": "TP-02",
+      "listener_intent": "HIGHLIGHT_EXPLICIT",
+      "policy_name": "EXPLICIT_HIGHLIGHT",
+      "decision_type": "TRANSITION",
+      "current_track_exit_window_ms": {
+        "t_start_ms": 185000,
+        "t_end_ms": 185000
+      },
+      "next_track_entry_window_ms": {
+        "t_start_ms": 0,
+        "t_end_ms": 0
+      },
+      "preferred_transition_class_set": [
+        "FULL_DJ_BLEND",
+        "SHORT_EQ_BLEND",
+        "SIMPLE_CROSSFADE"
+      ],
+      "beat_downbeat_alignment_target_ms": 185000,
+      "permitted_tempo_pitch_envelope": {
+        "tempo_ratio_max_deviation": 0.12,
+        "max_pitch_shift_semitones": 3
+      },
+      "confidence": "HIGH",
+      "reason_codes": [
+        "STRUCTURAL_EVIDENCE_PRESENT",
+        "HIGHLIGHT_INTENT_BYPASSES_FRACTION_FLOOR"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-02-C1",
+          "t_ms": 90000,
+          "fraction_consumed": 0.45,
+          "source": "technical_mix_point",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "NO_STRUCTURAL_EVIDENCE"
+          ],
+          "acceptance_reason_codes": [
+            "HIGHLIGHT_INTENT_BYPASSES_FRACTION_FLOOR"
+          ],
+          "song_preservation_score": 0.45,
+          "musical_structure_score": 0.2,
+          "timing_score": 0.325,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "SIMPLE_CROSSFADE"
+          ]
+        },
+        {
+          "candidate_id": "TP-02-C2",
+          "t_ms": 185000,
+          "fraction_consumed": 0.925,
+          "source": "authored_outro",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "STRUCTURAL_EVIDENCE_PRESENT",
+            "HIGHLIGHT_INTENT_BYPASSES_FRACTION_FLOOR"
+          ],
+          "song_preservation_score": 0.925,
+          "musical_structure_score": 1.0,
+          "timing_score": 0.9625,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "FULL_DJ_BLEND",
+            "SHORT_EQ_BLEND",
+            "SIMPLE_CROSSFADE"
+          ]
+        }
+      ]
+    },
+    "TP-03": {
+      "fixture_id": "TP-03",
+      "listener_intent": "HIGHLIGHT_EXPLICIT",
+      "policy_name": "EXPLICIT_HIGHLIGHT",
+      "decision_type": "TRANSITION",
+      "current_track_exit_window_ms": {
+        "t_start_ms": 33000,
+        "t_end_ms": 33000
+      },
+      "next_track_entry_window_ms": {
+        "t_start_ms": 0,
+        "t_end_ms": 0
+      },
+      "preferred_transition_class_set": [
+        "FULL_DJ_BLEND",
+        "SHORT_EQ_BLEND",
+        "SIMPLE_CROSSFADE"
+      ],
+      "beat_downbeat_alignment_target_ms": 33000,
+      "permitted_tempo_pitch_envelope": {
+        "tempo_ratio_max_deviation": 0.12,
+        "max_pitch_shift_semitones": 3
+      },
+      "confidence": "HIGH",
+      "reason_codes": [
+        "STRUCTURAL_EVIDENCE_PRESENT",
+        "HIGHLIGHT_INTENT_BYPASSES_FRACTION_FLOOR"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-03-C1",
+          "t_ms": 8000,
+          "fraction_consumed": 0.1067,
+          "source": "technical_mix_point",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "NO_STRUCTURAL_EVIDENCE"
+          ],
+          "acceptance_reason_codes": [
+            "HIGHLIGHT_INTENT_BYPASSES_FRACTION_FLOOR"
+          ],
+          "song_preservation_score": 0.1067,
+          "musical_structure_score": 0.2,
+          "timing_score": 0.1534,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "SIMPLE_CROSSFADE"
+          ]
+        },
+        {
+          "candidate_id": "TP-03-C2",
+          "t_ms": 33000,
+          "fraction_consumed": 0.44,
+          "source": "authored_bridge_exit",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "STRUCTURAL_EVIDENCE_PRESENT",
+            "HIGHLIGHT_INTENT_BYPASSES_FRACTION_FLOOR"
+          ],
+          "song_preservation_score": 0.44,
+          "musical_structure_score": 0.8,
+          "timing_score": 0.62,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "FULL_DJ_BLEND",
+            "SHORT_EQ_BLEND",
+            "SIMPLE_CROSSFADE"
+          ]
+        }
+      ]
+    },
+    "TP-04": {
+      "fixture_id": "TP-04",
+      "listener_intent": "HIGHLIGHT_EXPLICIT",
+      "policy_name": "EXPLICIT_HIGHLIGHT",
+      "decision_type": "TRANSITION",
+      "current_track_exit_window_ms": {
+        "t_start_ms": 270000,
+        "t_end_ms": 270000
+      },
+      "next_track_entry_window_ms": {
+        "t_start_ms": 0,
+        "t_end_ms": 0
+      },
+      "preferred_transition_class_set": [
+        "FULL_DJ_BLEND",
+        "SHORT_EQ_BLEND",
+        "SIMPLE_CROSSFADE"
+      ],
+      "beat_downbeat_alignment_target_ms": 270000,
+      "permitted_tempo_pitch_envelope": {
+        "tempo_ratio_max_deviation": 0.12,
+        "max_pitch_shift_semitones": 3
+      },
+      "confidence": "HIGH",
+      "reason_codes": [
+        "STRUCTURAL_EVIDENCE_PRESENT",
+        "HIGHLIGHT_INTENT_BYPASSES_FRACTION_FLOOR"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-04-C1",
+          "t_ms": 40000,
+          "fraction_consumed": 0.0833,
+          "source": "technical_mix_point",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "NO_STRUCTURAL_EVIDENCE"
+          ],
+          "acceptance_reason_codes": [
+            "HIGHLIGHT_INTENT_BYPASSES_FRACTION_FLOOR"
+          ],
+          "song_preservation_score": 0.0833,
+          "musical_structure_score": 0.2,
+          "timing_score": 0.1416,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "SIMPLE_CROSSFADE"
+          ]
+        },
+        {
+          "candidate_id": "TP-04-C2",
+          "t_ms": 270000,
+          "fraction_consumed": 0.5625,
+          "source": "instrumental_break_section_end",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "STRUCTURAL_EVIDENCE_PRESENT",
+            "HIGHLIGHT_INTENT_BYPASSES_FRACTION_FLOOR"
+          ],
+          "song_preservation_score": 0.5625,
+          "musical_structure_score": 0.8,
+          "timing_score": 0.6813,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "FULL_DJ_BLEND",
+            "SHORT_EQ_BLEND",
+            "SIMPLE_CROSSFADE"
+          ]
+        }
+      ]
+    },
+    "TP-05": {
+      "fixture_id": "TP-05",
+      "listener_intent": "HIGHLIGHT_EXPLICIT",
+      "policy_name": "EXPLICIT_HIGHLIGHT",
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "current_track_exit_window_ms": null,
+      "next_track_entry_window_ms": null,
+      "preferred_transition_class_set": [],
+      "beat_downbeat_alignment_target_ms": null,
+      "permitted_tempo_pitch_envelope": null,
+      "confidence": "HIGH",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_STRUCTURAL_EVIDENCE",
+        "HIGHLIGHT_INTENT_BYPASSES_FRACTION_FLOOR"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-05-C1",
+          "t_ms": 100000,
+          "fraction_consumed": 0.5128,
+          "source": "technical_mix_point",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "NO_STRUCTURAL_EVIDENCE"
+          ],
+          "acceptance_reason_codes": [
+            "HIGHLIGHT_INTENT_BYPASSES_FRACTION_FLOOR"
+          ],
+          "song_preservation_score": 0.5128,
+          "musical_structure_score": 0.2,
+          "timing_score": 0.3564,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "SIMPLE_CROSSFADE"
+          ]
+        },
+        {
+          "candidate_id": "TP-05-C2-END",
+          "t_ms": 195000,
+          "fraction_consumed": 1.0,
+          "source": "unstructured_fade",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "NO_STRUCTURAL_EVIDENCE"
+          ],
+          "acceptance_reason_codes": [
+            "HIGHLIGHT_INTENT_BYPASSES_FRACTION_FLOOR"
+          ],
+          "song_preservation_score": 1.0,
+          "musical_structure_score": 0.0,
+          "timing_score": 0.5,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "SIMPLE_CROSSFADE"
+          ]
+        }
+      ]
+    },
+    "TP-06": {
+      "fixture_id": "TP-06",
+      "listener_intent": "HIGHLIGHT_EXPLICIT",
+      "policy_name": "EXPLICIT_HIGHLIGHT",
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "current_track_exit_window_ms": null,
+      "next_track_entry_window_ms": null,
+      "preferred_transition_class_set": [],
+      "beat_downbeat_alignment_target_ms": null,
+      "permitted_tempo_pitch_envelope": null,
+      "confidence": "HIGH",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "STRUCTURAL_EVIDENCE_PRESENT",
+        "HIGHLIGHT_INTENT_BYPASSES_FRACTION_FLOOR"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-06-C1",
+          "t_ms": 58000,
+          "fraction_consumed": 0.2578,
+          "source": "technical_mix_point",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "NO_STRUCTURAL_EVIDENCE"
+          ],
+          "acceptance_reason_codes": [
+            "HIGHLIGHT_INTENT_BYPASSES_FRACTION_FLOOR"
+          ],
+          "song_preservation_score": 0.2578,
+          "musical_structure_score": 0.2,
+          "timing_score": 0.2289,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "SIMPLE_CROSSFADE"
+          ]
+        },
+        {
+          "candidate_id": "TP-06-C2-END",
+          "t_ms": 215000,
+          "fraction_consumed": 0.9556,
+          "source": "authored_outro",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "STRUCTURAL_EVIDENCE_PRESENT",
+            "HIGHLIGHT_INTENT_BYPASSES_FRACTION_FLOOR"
+          ],
+          "song_preservation_score": 0.9556,
+          "musical_structure_score": 1.0,
+          "timing_score": 0.9778,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "FULL_DJ_BLEND",
+            "SHORT_EQ_BLEND",
+            "SIMPLE_CROSSFADE"
+          ]
+        }
+      ]
+    },
+    "TP-07": {
+      "fixture_id": "TP-07",
+      "listener_intent": "HIGHLIGHT_EXPLICIT",
+      "policy_name": "EXPLICIT_HIGHLIGHT",
+      "decision_type": "TRANSITION",
+      "current_track_exit_window_ms": {
+        "t_start_ms": 95000,
+        "t_end_ms": 95000
+      },
+      "next_track_entry_window_ms": {
+        "t_start_ms": 0,
+        "t_end_ms": 0
+      },
+      "preferred_transition_class_set": [
+        "FULL_DJ_BLEND",
+        "SHORT_EQ_BLEND",
+        "SIMPLE_CROSSFADE"
+      ],
+      "beat_downbeat_alignment_target_ms": 95000,
+      "permitted_tempo_pitch_envelope": {
+        "tempo_ratio_max_deviation": 0.12,
+        "max_pitch_shift_semitones": 3
+      },
+      "confidence": "HIGH",
+      "reason_codes": [
+        "STRUCTURAL_EVIDENCE_PRESENT",
+        "HIGHLIGHT_INTENT_BYPASSES_FRACTION_FLOOR"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-07-C1",
+          "t_ms": 15000,
+          "fraction_consumed": 0.075,
+          "source": "technical_mix_point",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "NO_STRUCTURAL_EVIDENCE"
+          ],
+          "acceptance_reason_codes": [
+            "HIGHLIGHT_INTENT_BYPASSES_FRACTION_FLOOR"
+          ],
+          "song_preservation_score": 0.075,
+          "musical_structure_score": 0.2,
+          "timing_score": 0.1375,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "SIMPLE_CROSSFADE"
+          ]
+        },
+        {
+          "candidate_id": "TP-07-C2",
+          "t_ms": 95000,
+          "fraction_consumed": 0.475,
+          "source": "instrumental_break_section_end",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "STRUCTURAL_EVIDENCE_PRESENT",
+            "HIGHLIGHT_INTENT_BYPASSES_FRACTION_FLOOR"
+          ],
+          "song_preservation_score": 0.475,
+          "musical_structure_score": 0.8,
+          "timing_score": 0.6375,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "FULL_DJ_BLEND",
+            "SHORT_EQ_BLEND",
+            "SIMPLE_CROSSFADE"
+          ]
+        }
+      ]
+    },
+    "TP-08": {
+      "fixture_id": "TP-08",
+      "listener_intent": "HIGHLIGHT_EXPLICIT",
+      "policy_name": "EXPLICIT_HIGHLIGHT",
+      "decision_type": "TRANSITION",
+      "current_track_exit_window_ms": {
+        "t_start_ms": 198000,
+        "t_end_ms": 198000
+      },
+      "next_track_entry_window_ms": {
+        "t_start_ms": 0,
+        "t_end_ms": 0
+      },
+      "preferred_transition_class_set": [
+        "FULL_DJ_BLEND",
+        "SHORT_EQ_BLEND",
+        "SIMPLE_CROSSFADE"
+      ],
+      "beat_downbeat_alignment_target_ms": 198000,
+      "permitted_tempo_pitch_envelope": {
+        "tempo_ratio_max_deviation": 0.12,
+        "max_pitch_shift_semitones": 3
+      },
+      "confidence": "HIGH",
+      "reason_codes": [
+        "STRUCTURAL_EVIDENCE_PRESENT",
+        "HIGHLIGHT_INTENT_BYPASSES_FRACTION_FLOOR"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-08-C1",
+          "t_ms": 150000,
+          "fraction_consumed": 0.7143,
+          "source": "bridge_section_end",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "VOCAL_COLLISION_RISK_HIGH"
+          ],
+          "acceptance_reason_codes": [
+            "STRUCTURAL_EVIDENCE_PRESENT",
+            "HIGHLIGHT_INTENT_BYPASSES_FRACTION_FLOOR"
+          ],
+          "song_preservation_score": 0.7143,
+          "musical_structure_score": 0.8,
+          "timing_score": 0.7571,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "FULL_DJ_BLEND",
+            "SHORT_EQ_BLEND",
+            "SIMPLE_CROSSFADE"
+          ]
+        },
+        {
+          "candidate_id": "TP-08-C2",
+          "t_ms": 198000,
+          "fraction_consumed": 0.9429,
+          "source": "authored_outro",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "STRUCTURAL_EVIDENCE_PRESENT",
+            "HIGHLIGHT_INTENT_BYPASSES_FRACTION_FLOOR"
+          ],
+          "song_preservation_score": 0.9429,
+          "musical_structure_score": 1.0,
+          "timing_score": 0.9714,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "FULL_DJ_BLEND",
+            "SHORT_EQ_BLEND",
+            "SIMPLE_CROSSFADE"
+          ]
+        }
+      ]
+    },
+    "TP-09": {
+      "fixture_id": "TP-09",
+      "listener_intent": "HIGHLIGHT_EXPLICIT",
+      "policy_name": "EXPLICIT_HIGHLIGHT",
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "current_track_exit_window_ms": null,
+      "next_track_entry_window_ms": null,
+      "preferred_transition_class_set": [],
+      "beat_downbeat_alignment_target_ms": null,
+      "permitted_tempo_pitch_envelope": null,
+      "confidence": "NONE",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "NO_STRUCTURAL_EVIDENCE",
+        "HIGHLIGHT_INTENT_BYPASSES_FRACTION_FLOOR"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-09-C1",
+          "t_ms": 45000,
+          "fraction_consumed": 0.225,
+          "source": "technical_mix_point",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+            "NO_STRUCTURAL_EVIDENCE"
+          ],
+          "acceptance_reason_codes": [
+            "HIGHLIGHT_INTENT_BYPASSES_FRACTION_FLOOR"
+          ],
+          "song_preservation_score": 0.225,
+          "musical_structure_score": 0.2,
+          "timing_score": 0.0,
+          "confidence": "NONE",
+          "preferred_transition_class_set": [
+            "SIMPLE_CROSSFADE"
+          ]
+        },
+        {
+          "candidate_id": "TP-09-C2-END",
+          "t_ms": 200000,
+          "fraction_consumed": 1.0,
+          "source": "unknown",
+          "eligible": false,
+          "rejection_reason_codes": [
+            "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+            "NO_STRUCTURAL_EVIDENCE"
+          ],
+          "acceptance_reason_codes": [
+            "HIGHLIGHT_INTENT_BYPASSES_FRACTION_FLOOR"
+          ],
+          "song_preservation_score": 1.0,
+          "musical_structure_score": 0.0,
+          "timing_score": 0.0,
+          "confidence": "NONE",
+          "preferred_transition_class_set": [
+            "SIMPLE_CROSSFADE"
+          ]
+        }
+      ]
+    },
+    "TP-10": {
+      "fixture_id": "TP-10",
+      "listener_intent": "HIGHLIGHT_EXPLICIT",
+      "policy_name": "EXPLICIT_HIGHLIGHT",
+      "decision_type": "TRANSITION",
+      "current_track_exit_window_ms": {
+        "t_start_ms": 50000,
+        "t_end_ms": 50000
+      },
+      "next_track_entry_window_ms": {
+        "t_start_ms": 0,
+        "t_end_ms": 0
+      },
+      "preferred_transition_class_set": [
+        "FULL_DJ_BLEND",
+        "SHORT_EQ_BLEND",
+        "SIMPLE_CROSSFADE"
+      ],
+      "beat_downbeat_alignment_target_ms": 50000,
+      "permitted_tempo_pitch_envelope": {
+        "tempo_ratio_max_deviation": 0.12,
+        "max_pitch_shift_semitones": 3
+      },
+      "confidence": "HIGH",
+      "reason_codes": [
+        "STRUCTURAL_EVIDENCE_PRESENT",
+        "HIGHLIGHT_INTENT_BYPASSES_FRACTION_FLOOR"
+      ],
+      "queue_order_independent_of_exit_timing": true,
+      "candidate_trace": [
+        {
+          "candidate_id": "TP-10-C1",
+          "t_ms": 50000,
+          "fraction_consumed": 0.2083,
+          "source": "post_first_chorus_highlight_point",
+          "eligible": true,
+          "rejection_reason_codes": [],
+          "acceptance_reason_codes": [
+            "STRUCTURAL_EVIDENCE_PRESENT",
+            "HIGHLIGHT_INTENT_BYPASSES_FRACTION_FLOOR"
+          ],
+          "song_preservation_score": 0.2083,
+          "musical_structure_score": 0.8,
+          "timing_score": 0.5041,
+          "confidence": "HIGH",
+          "preferred_transition_class_set": [
+            "FULL_DJ_BLEND",
+            "SHORT_EQ_BLEND",
+            "SIMPLE_CROSSFADE"
+          ]
+        }
+      ]
+    }
+  }
+}
