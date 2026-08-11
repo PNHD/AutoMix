@@ -70,17 +70,43 @@ def score_against_gt(fixture_id: str, gt: dict, result_dict: dict) -> dict:
         out["meter_predicted"] = pred_meter
         out["meter_gt"] = n_bar
 
+    n_bar = gt["meter"]["numerator"] if gt.get("meter") else 4
+    bar_period_ms = beat_period_ms * n_bar if beat_period_ms else None
+
     gt_phrase = gt.get("phrase_boundaries_ms")
     pred_phrase = result_dict.get("phrase_boundaries_ms")
     if gt_phrase and pred_phrase:
         out["phrase_boundary_distance"] = M.phrase_section_boundary_distance_ms(pred_phrase, gt_phrase)
+        if beat_period_ms:
+            # COND_PHRASE_OK (P0-M2 benchmark contract Sec 7/8): phrase-boundary
+            # distance <= 0.5x local beat period. Tolerance is read from that
+            # contract, not invented here (PM REPAIR R2/R5).
+            out["phrase_boundary_events"] = M.boundary_event_metrics(
+                pred_phrase, gt_phrase, tolerance_ms=0.5 * beat_period_ms, tolerance_kind="COND_PHRASE_OK")
 
     gt_sections = gt.get("section_boundaries")
     pred_sections = result_dict.get("section_boundaries")
     if gt_sections and pred_sections:
         gt_starts = [s["t_start_ms"] for s in gt_sections]
         pred_starts = [s["t_start_ms"] for s in pred_sections]
+        # NOTE (PM REPAIR R2): this is boundary TIMING only -- whether a
+        # predicted section-change instant lands near a true one. It is NOT a
+        # semantic section-LABEL score: baselines/candidates in this pass use
+        # label vocabularies (e.g. energy_onset_heuristic's low/mid/high_energy)
+        # that do not correspond 1:1 to the ground truth's intro/verse/chorus/
+        # outro vocabulary, so no label-accuracy metric is computed anywhere in
+        # this pass. Both facts are recorded side by side so neither is implied
+        # by the other's presence.
         out["section_boundary_distance"] = M.phrase_section_boundary_distance_ms(pred_starts, gt_starts)
+        out["section_label_semantic_accuracy"] = None
+        out["section_label_semantic_accuracy_note"] = (
+            "NOT_COMPUTED: predicted label vocabulary is not reconciled with ground-truth vocabulary "
+            "for this candidate; only boundary timing (section_boundary_distance / section_boundary_events) "
+            "is scored.")
+        if bar_period_ms:
+            # COND_SECTION_OK: section-boundary distance <= 1x local bar period.
+            out["section_boundary_events"] = M.boundary_event_metrics(
+                pred_starts, gt_starts, tolerance_ms=1.0 * bar_period_ms, tolerance_kind="COND_SECTION_OK")
 
     gt_bpm = gt.get("bpm")
     pred_bpm = result_dict.get("bpm")
@@ -183,6 +209,23 @@ def write_summary_md(manifest, all_raw, all_scores, results_dir):
         err = (r.get("error") or "").replace("|", "/")[:80]
         lines.append(f"| {r['candidate_id']} | {r['fixture_id']} | {r['run_state']} | "
                       f"{r.get('wall_time_sec')} | {err} |")
+
+    lines.append("")
+    lines.append("## Runtime lifecycle / memory / model-size (PM REPAIR R1)")
+    lines.append("")
+    lines.append("| candidate | fixture | run_phase | asset_fetch_wall_sec | wall_time_sec | "
+                  "process_peak_rss_mb | python_tracemalloc_peak_mb | memory_measurement_method | "
+                  "checkpoint_size_mb | total_model_asset_footprint_mb |")
+    lines.append("|---|---|---|---|---|---|---|---|---|---|")
+    for r in all_raw:
+        lines.append(
+            f"| {r['candidate_id']} | {r['fixture_id']} | {r.get('run_phase')} | "
+            f"{r.get('asset_fetch_wall_sec')} | {r.get('wall_time_sec')} | "
+            f"{r.get('process_peak_rss_mb')} | {r.get('python_tracemalloc_peak_mb')} | "
+            f"{r.get('memory_measurement_method')} | {r.get('checkpoint_size_mb')} | "
+            f"{r.get('total_model_asset_footprint_mb')} |"
+        )
+
     lines.append("")
     lines.append("## Scored metrics")
     lines.append("")
@@ -200,6 +243,38 @@ def write_summary_md(manifest, all_raw, all_scores, results_dir):
             f"{db.get('within_10pct_bar_rate')} | {ebp.get('exact_bar_phase_accuracy')} | "
             f"{s.get('meter_correct')} | {bpme.get('abs_error_pct')} |"
         )
+
+    lines.append("")
+    lines.append("## Phrase/section boundary event metrics (PM REPAIR R2/R5, tolerance grounded in "
+                  "P0-M2 COND_PHRASE_OK / COND_SECTION_OK)")
+    lines.append("")
+    lines.append("| candidate | fixture | kind | tolerance_ms | n_gt | n_pred | TP | FP | FN | precision | recall | F1 |")
+    lines.append("|---|---|---|---|---|---|---|---|---|---|---|---|")
+    for s in all_scores:
+        for field_name in ("phrase_boundary_events", "section_boundary_events"):
+            ev = s.get(field_name)
+            if ev:
+                lines.append(
+                    f"| {s['candidate_id']} | {s['fixture_id']} | {ev['tolerance_kind']} | "
+                    f"{ev['tolerance_ms']} | {ev['n_gt']} | {ev['n_pred']} | {ev['tp']} | {ev['fp']} | "
+                    f"{ev['fn']} | {ev['precision']} | {ev['recall']} | {ev['f1']} |"
+                )
+
+    lines.append("")
+    lines.append("## CUE-DETR score/validation fields (PM REPAIR R5/R10)")
+    lines.append("")
+    lines.append("| candidate | fixture | cue_score_kind | cue_confidence | n_raw | n_validated | "
+                  "n_invalid | invalid_raw_ms |")
+    lines.append("|---|---|---|---|---|---|---|---|")
+    for r in all_raw:
+        if r["candidate_id"] == "cue_detr" and r["run_state"] == "OK":
+            lines.append(
+                f"| {r['candidate_id']} | {r['fixture_id']} | {r.get('cue_score_kind')} | "
+                f"{r.get('cue_confidence')} | {len(r.get('raw_cue_points_ms') or [])} | "
+                f"{len(r.get('cue_points_ms') or [])} | {r.get('n_invalid_cue_predictions')} | "
+                f"{r.get('invalid_cue_points_raw_ms')} |"
+            )
+
     with open(os.path.join(results_dir, "SUMMARY.md"), "w") as fh:
         fh.write("\n".join(lines) + "\n")
 

@@ -28,6 +28,11 @@
     19005.0,
     20875.0
   ],
+  "raw_cue_points_ms": null,
+  "n_invalid_cue_predictions": null,
+  "invalid_cue_points_raw_ms": null,
+  "cue_score": null,
+  "cue_score_kind": null,
   "cue_confidence": null,
   "phrase_boundaries_ms": null,
   "section_boundaries": [
@@ -47,10 +52,14 @@
       "label": "low_energy"
     }
   ],
-  "wall_time_sec": 0.039167599999927916,
-  "is_cold_run": true,
-  "peak_memory_mb": null,
+  "run_phase": "N_A",
+  "asset_fetch_wall_sec": null,
+  "wall_time_sec": 0.05573119999826304,
+  "memory_measurement_method": "N_A",
+  "process_peak_rss_mb": null,
+  "python_tracemalloc_peak_mb": null,
   "device": "cpu",
-  "model_checkpoint_size_mb": null,
+  "checkpoint_size_mb": null,
+  "total_model_asset_footprint_mb": null,
   "notes": "Negative baseline: RMS-envelope peak picking as 'cue candidates', coarse energy-level segmentation as a weak structure proxy. No beat/downbeat/phrase model of any kind."
 }

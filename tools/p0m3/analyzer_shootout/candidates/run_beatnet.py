@@ -32,6 +32,18 @@ exactly as numpy's own deprecation notice recommends. This is a real,
 reproducible environment blocker for BeatNet on any current Python
 (documented for the portability matrix, Issue #5 Task E), not something
 papered over silently -- see docs/research/P0-M3-R1-ANALYZER-SHOOTOUT.md.
+
+--- PM REPAIR R1: honest cold/warm lifecycle ---
+The BeatNet estimator is constructed exactly once per (model, mode,
+inference_model, device) key and cached at module scope; every later call
+that reuses that SAME estimator object is reported as WARM_INFERENCE with
+wall time covering .process(path) only. The first call that constructs a
+new estimator is COLD_MODEL_LOAD_INFERENCE, with the construction time
+attributed to asset_fetch_wall_sec (this is in-process model construction
+from the already-pip-installed, on-disk .pt checkpoint -- no network
+fetch happens at run time; the label still separates "getting the model
+into memory" from "running inference" per PM's requested lifecycle, even
+though for BeatNet specifically that load has no network component).
 """
 from __future__ import annotations
 
@@ -57,6 +69,38 @@ for _name, _val in (("float", float), ("int", int), ("complex", complex), ("bool
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from common.schema import AnalyzerResult  # noqa: E402
+from common.runtime import process_peak_rss_mb  # noqa: E402
+
+_ESTIMATORS: dict[tuple, object] = {}
+_CHECKPOINT_SIZES_MB: dict[int, float] = {}
+
+
+def _checkpoint_size_mb(model: int) -> float | None:
+    if model in _CHECKPOINT_SIZES_MB:
+        return _CHECKPOINT_SIZES_MB[model]
+    try:
+        import BeatNet
+        models_dir = os.path.join(os.path.dirname(BeatNet.__file__), "models")
+        path = os.path.join(models_dir, f"model-{model}.pt")
+        size = round(os.path.getsize(path) / (1024 * 1024), 3)
+        _CHECKPOINT_SIZES_MB[model] = size
+        return size
+    except Exception:
+        return None
+
+
+def _get_estimator(model: int, mode: str, inference_model: str, device: str):
+    """Returns (estimator, load_wall_sec). load_wall_sec is 0.0 unless THIS
+    call actually constructed a new estimator (real cold path)."""
+    key = (model, mode, inference_model, device)
+    if key in _ESTIMATORS:
+        return _ESTIMATORS[key], 0.0
+    from BeatNet.BeatNet import BeatNet
+    t0 = time.perf_counter()
+    estimator = BeatNet(model, mode=mode, inference_model=inference_model, plot=[], thread=False, device=device)
+    load_wall = time.perf_counter() - t0
+    _ESTIMATORS[key] = estimator
+    return estimator, load_wall
 
 
 def run(fixture_id: str, wav_path: str, model: int = 1) -> AnalyzerResult:
@@ -66,32 +110,49 @@ def run(fixture_id: str, wav_path: str, model: int = 1) -> AnalyzerResult:
         fixture_id=fixture_id,
         run_state="OK",
         device="cpu",
+        checkpoint_size_mb=_checkpoint_size_mb(model),
         notes="Offline mode, DBN (non-causal) inference, pinned model checkpoint "
-              f"model-{model}.pt (repo-bundled). beats_per_bar candidates=[2,3,4] "
-              "(meter-adaptive).",
+              f"model-{model}.pt (repo-bundled, CC BY 4.0). beats_per_bar candidates=[2,3,4] "
+              "(meter-adaptive). checkpoint_size_mb/total_model_asset_footprint_mb are equal here: "
+              "exactly one .pt file is loaded per estimator instance (PM REPAIR R1).",
     )
+    result.total_model_asset_footprint_mb = result.checkpoint_size_mb
     tracemalloc.start()
     t0 = time.perf_counter()
     try:
-        from BeatNet.BeatNet import BeatNet
-        estimator = BeatNet(model, mode="offline", inference_model="DBN", plot=[], thread=False, device="cpu")
+        key = (model, "offline", "DBN", "cpu")
+        was_first_call = key not in _ESTIMATORS
+        estimator, load_wall = _get_estimator(model, "offline", "DBN", "cpu")
+        result.run_phase = "COLD_MODEL_LOAD_INFERENCE" if was_first_call else "WARM_INFERENCE"
+        if was_first_call:
+            result.asset_fetch_wall_sec = round(load_wall, 4)
         output = estimator.process(wav_path)
     except Exception as exc:
         result.run_state = "FAILED"
         result.error = f"{type(exc).__name__}: {exc}"
-        result.wall_time_sec = time.perf_counter() - t0
+        wall = time.perf_counter() - t0
+        _, py_peak = tracemalloc.get_traced_memory()
         tracemalloc.stop()
+        rss_mb, mem_method = process_peak_rss_mb()
+        result.wall_time_sec = round(wall, 4)
+        result.process_peak_rss_mb = rss_mb
+        result.python_tracemalloc_peak_mb = round(py_peak / (1024 * 1024), 2)
+        result.memory_measurement_method = mem_method
         return result
 
     wall = time.perf_counter() - t0
-    _, peak = tracemalloc.get_traced_memory()
+    _, py_peak = tracemalloc.get_traced_memory()
     tracemalloc.stop()
+    rss_mb, mem_method = process_peak_rss_mb()
 
     output = np.asarray(output)
     if output.ndim != 2 or output.shape[1] < 2:
         result.run_state = "FAILED"
         result.error = f"unexpected BeatNet output shape {output.shape}"
-        result.wall_time_sec = wall
+        result.wall_time_sec = round(wall, 4)
+        result.process_peak_rss_mb = rss_mb
+        result.python_tracemalloc_peak_mb = round(py_peak / (1024 * 1024), 2)
+        result.memory_measurement_method = mem_method
         return result
 
     beat_times_ms = (output[:, 0] * 1000.0).tolist()
@@ -107,7 +168,7 @@ def run(fixture_id: str, wav_path: str, model: int = 1) -> AnalyzerResult:
     result.meter_confidence = None  # DBN does not expose a scalar meter-confidence via this API
     result.bpm = None  # BeatNet's offline/DBN path does not directly return a scalar BPM
     result.wall_time_sec = round(wall, 4)
-    result.is_cold_run = True
-    result.peak_memory_mb = round(peak / (1024 * 1024), 2)
-    result.model_checkpoint_size_mb = None
+    result.process_peak_rss_mb = rss_mb
+    result.python_tracemalloc_peak_mb = round(py_peak / (1024 * 1024), 2)
+    result.memory_measurement_method = mem_method
     return result

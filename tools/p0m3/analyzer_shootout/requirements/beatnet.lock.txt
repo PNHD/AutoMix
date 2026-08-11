@@ -38,6 +38,7 @@ platformdirs==4.11.2
 pluggy==1.6.0
 pooch==1.9.0
 protobuf==7.35.1
+psutil==7.2.2
 PyAudio==0.2.14
 pycparser==3.0
 Pygments==2.20.0

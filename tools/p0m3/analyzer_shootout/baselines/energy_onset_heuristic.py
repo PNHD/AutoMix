@@ -126,6 +126,7 @@ def run(fixture_id: str, wav_path: str) -> AnalyzerResult:
     except Exception as exc:  # pragma: no cover - defensive, harness reports real failures
         result.run_state = "FAILED"
         result.error = f"{type(exc).__name__}: {exc}"
+    result.run_phase = "N_A"  # PM REPAIR R1: no model to load; lifecycle concept doesn't apply
+    result.memory_measurement_method = "N_A"
     result.wall_time_sec = time.perf_counter() - t0
-    result.is_cold_run = True
     return result

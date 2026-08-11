@@ -184,15 +184,24 @@
     "meter_denominator": 4,
     "meter_confidence": null,
     "cue_points_ms": null,
+    "raw_cue_points_ms": null,
+    "n_invalid_cue_predictions": null,
+    "invalid_cue_points_raw_ms": null,
+    "cue_score": null,
+    "cue_score_kind": null,
     "cue_confidence": null,
     "phrase_boundaries_ms": null,
     "section_boundaries": null,
-    "wall_time_sec": 12.7042,
-    "is_cold_run": true,
-    "peak_memory_mb": 184.9,
+    "run_phase": "COLD_MODEL_LOAD_INFERENCE",
+    "asset_fetch_wall_sec": 0.0732,
+    "wall_time_sec": 22.4525,
+    "memory_measurement_method": "PSUTIL_PROCESS_PEAK_WSET_RSS",
+    "process_peak_rss_mb": 544.84,
+    "python_tracemalloc_peak_mb": 185.42,
     "device": "cpu",
-    "model_checkpoint_size_mb": null,
-    "notes": "Offline mode, DBN (non-causal) inference, pinned model checkpoint model-1.pt (repo-bundled). beats_per_bar candidates=[2,3,4] (meter-adaptive)."
+    "checkpoint_size_mb": 1.54,
+    "total_model_asset_footprint_mb": 1.54,
+    "notes": "Offline mode, DBN (non-causal) inference, pinned model checkpoint model-1.pt (repo-bundled, CC BY 4.0). beats_per_bar candidates=[2,3,4] (meter-adaptive). checkpoint_size_mb/total_model_asset_footprint_mb are equal here: exactly one .pt file is loaded per estimator instance (PM REPAIR R1)."
   },
   {
     "candidate_id": "beatnet",
@@ -339,15 +348,24 @@
     "meter_denominator": 4,
     "meter_confidence": null,
     "cue_points_ms": null,
+    "raw_cue_points_ms": null,
+    "n_invalid_cue_predictions": null,
+    "invalid_cue_points_raw_ms": null,
+    "cue_score": null,
+    "cue_score_kind": null,
     "cue_confidence": null,
     "phrase_boundaries_ms": null,
     "section_boundaries": null,
-    "wall_time_sec": 0.2979,
-    "is_cold_run": true,
-    "peak_memory_mb": 37.21,
+    "run_phase": "WARM_INFERENCE",
+    "asset_fetch_wall_sec": null,
+    "wall_time_sec": 0.2084,
+    "memory_measurement_method": "PSUTIL_PROCESS_PEAK_WSET_RSS",
+    "process_peak_rss_mb": 544.84,
+    "python_tracemalloc_peak_mb": 35.82,
     "device": "cpu",
-    "model_checkpoint_size_mb": null,
-    "notes": "Offline mode, DBN (non-causal) inference, pinned model checkpoint model-1.pt (repo-bundled). beats_per_bar candidates=[2,3,4] (meter-adaptive)."
+    "checkpoint_size_mb": 1.54,
+    "total_model_asset_footprint_mb": 1.54,
+    "notes": "Offline mode, DBN (non-causal) inference, pinned model checkpoint model-1.pt (repo-bundled, CC BY 4.0). beats_per_bar candidates=[2,3,4] (meter-adaptive). checkpoint_size_mb/total_model_asset_footprint_mb are equal here: exactly one .pt file is loaded per estimator instance (PM REPAIR R1)."
   },
   {
     "candidate_id": "beatnet",
@@ -358,7 +376,6 @@
     "bpm": null,
     "bpm_confidence": null,
     "beat_timestamps_ms": [
-      0.0,
       580.0,
       1180.0,
       1780.0,
@@ -410,7 +427,6 @@
     ],
     "beat_confidence": null,
     "downbeat_timestamps_ms": [
-      0.0,
       1180.0,
       2380.0,
       3580.0,
@@ -437,7 +453,6 @@
       28780.0
     ],
     "beat_position_in_bar": [
-      1,
       2,
       1,
       2,
@@ -492,15 +507,24 @@
     "meter_denominator": 4,
     "meter_confidence": null,
     "cue_points_ms": null,
+    "raw_cue_points_ms": null,
+    "n_invalid_cue_predictions": null,
+    "invalid_cue_points_raw_ms": null,
+    "cue_score": null,
+    "cue_score_kind": null,
     "cue_confidence": null,
     "phrase_boundaries_ms": null,
     "section_boundaries": null,
-    "wall_time_sec": 0.3479,
-    "is_cold_run": true,
-    "peak_memory_mb": 46.19,
+    "run_phase": "WARM_INFERENCE",
+    "asset_fetch_wall_sec": null,
+    "wall_time_sec": 0.3604,
+    "memory_measurement_method": "PSUTIL_PROCESS_PEAK_WSET_RSS",
+    "process_peak_rss_mb": 544.84,
+    "python_tracemalloc_peak_mb": 44.99,
     "device": "cpu",
-    "model_checkpoint_size_mb": null,
-    "notes": "Offline mode, DBN (non-causal) inference, pinned model checkpoint model-1.pt (repo-bundled). beats_per_bar candidates=[2,3,4] (meter-adaptive)."
+    "checkpoint_size_mb": 1.54,
+    "total_model_asset_footprint_mb": 1.54,
+    "notes": "Offline mode, DBN (non-causal) inference, pinned model checkpoint model-1.pt (repo-bundled, CC BY 4.0). beats_per_bar candidates=[2,3,4] (meter-adaptive). checkpoint_size_mb/total_model_asset_footprint_mb are equal here: exactly one .pt file is loaded per estimator instance (PM REPAIR R1)."
   },
   {
     "candidate_id": "beatnet",
@@ -515,7 +539,7 @@
       840.0,
       1280.0,
       1700.0,
-      2140.0,
+      2120.0,
       2560.0,
       2980.0,
       3420.0,
@@ -644,15 +668,24 @@
     "meter_denominator": 4,
     "meter_confidence": null,
     "cue_points_ms": null,
+    "raw_cue_points_ms": null,
+    "n_invalid_cue_predictions": null,
+    "invalid_cue_points_raw_ms": null,
+    "cue_score": null,
+    "cue_score_kind": null,
     "cue_confidence": null,
     "phrase_boundaries_ms": null,
     "section_boundaries": null,
-    "wall_time_sec": 0.2595,
-    "is_cold_run": true,
-    "peak_memory_mb": 33.95,
+    "run_phase": "WARM_INFERENCE",
+    "asset_fetch_wall_sec": null,
+    "wall_time_sec": 0.2275,
+    "memory_measurement_method": "PSUTIL_PROCESS_PEAK_WSET_RSS",
+    "process_peak_rss_mb": 544.84,
+    "python_tracemalloc_peak_mb": 32.75,
     "device": "cpu",
-    "model_checkpoint_size_mb": null,
-    "notes": "Offline mode, DBN (non-causal) inference, pinned model checkpoint model-1.pt (repo-bundled). beats_per_bar candidates=[2,3,4] (meter-adaptive)."
+    "checkpoint_size_mb": 1.54,
+    "total_model_asset_footprint_mb": 1.54,
+    "notes": "Offline mode, DBN (non-causal) inference, pinned model checkpoint model-1.pt (repo-bundled, CC BY 4.0). beats_per_bar candidates=[2,3,4] (meter-adaptive). checkpoint_size_mb/total_model_asset_footprint_mb are equal here: exactly one .pt file is loaded per estimator instance (PM REPAIR R1)."
   },
   {
     "candidate_id": "beatnet",
@@ -663,7 +696,6 @@
     "bpm": null,
     "bpm_confidence": null,
     "beat_timestamps_ms": [
-      0.0,
       660.0,
       1320.0,
       1980.0,
@@ -741,7 +773,6 @@
       31320.0
     ],
     "beat_position_in_bar": [
-      2,
       1,
       2,
       1,
@@ -796,15 +827,24 @@
     "meter_denominator": 4,
     "meter_confidence": null,
     "cue_points_ms": null,
+    "raw_cue_points_ms": null,
+    "n_invalid_cue_predictions": null,
+    "invalid_cue_points_raw_ms": null,
+    "cue_score": null,
+    "cue_score_kind": null,
     "cue_confidence": null,
     "phrase_boundaries_ms": null,
     "section_boundaries": null,
-    "wall_time_sec": 0.3728,
-    "is_cold_run": true,
-    "peak_memory_mb": 50.91,
+    "run_phase": "WARM_INFERENCE",
+    "asset_fetch_wall_sec": null,
+    "wall_time_sec": 0.4029,
+    "memory_measurement_method": "PSUTIL_PROCESS_PEAK_WSET_RSS",
+    "process_peak_rss_mb": 544.84,
+    "python_tracemalloc_peak_mb": 49.71,
     "device": "cpu",
-    "model_checkpoint_size_mb": null,
-    "notes": "Offline mode, DBN (non-causal) inference, pinned model checkpoint model-1.pt (repo-bundled). beats_per_bar candidates=[2,3,4] (meter-adaptive)."
+    "checkpoint_size_mb": 1.54,
+    "total_model_asset_footprint_mb": 1.54,
+    "notes": "Offline mode, DBN (non-causal) inference, pinned model checkpoint model-1.pt (repo-bundled, CC BY 4.0). beats_per_bar candidates=[2,3,4] (meter-adaptive). checkpoint_size_mb/total_model_asset_footprint_mb are equal here: exactly one .pt file is loaded per estimator instance (PM REPAIR R1)."
   },
   {
     "candidate_id": "beatnet",
@@ -815,7 +855,6 @@
     "bpm": null,
     "bpm_confidence": null,
     "beat_timestamps_ms": [
-      0.0,
       460.0,
       920.0,
       1400.0,
@@ -1064,7 +1103,6 @@
       75500.0
     ],
     "beat_position_in_bar": [
-      2,
       1,
       2,
       1,
@@ -1233,15 +1271,24 @@
     "meter_denominator": 4,
     "meter_confidence": null,
     "cue_points_ms": null,
+    "raw_cue_points_ms": null,
+    "n_invalid_cue_predictions": null,
+    "invalid_cue_points_raw_ms": null,
+    "cue_score": null,
+    "cue_score_kind": null,
     "cue_confidence": null,
     "phrase_boundaries_ms": null,
     "section_boundaries": null,
-    "wall_time_sec": 0.7381,
-    "is_cold_run": true,
-    "peak_memory_mb": 117.07,
+    "run_phase": "WARM_INFERENCE",
+    "asset_fetch_wall_sec": null,
+    "wall_time_sec": 0.7728,
+    "memory_measurement_method": "PSUTIL_PROCESS_PEAK_WSET_RSS",
+    "process_peak_rss_mb": 597.07,
+    "python_tracemalloc_peak_mb": 115.8,
     "device": "cpu",
-    "model_checkpoint_size_mb": null,
-    "notes": "Offline mode, DBN (non-causal) inference, pinned model checkpoint model-1.pt (repo-bundled). beats_per_bar candidates=[2,3,4] (meter-adaptive)."
+    "checkpoint_size_mb": 1.54,
+    "total_model_asset_footprint_mb": 1.54,
+    "notes": "Offline mode, DBN (non-causal) inference, pinned model checkpoint model-1.pt (repo-bundled, CC BY 4.0). beats_per_bar candidates=[2,3,4] (meter-adaptive). checkpoint_size_mb/total_model_asset_footprint_mb are equal here: exactly one .pt file is loaded per estimator instance (PM REPAIR R1)."
   },
   {
     "candidate_id": "beatnet",
@@ -1252,7 +1299,6 @@
     "bpm": null,
     "bpm_confidence": null,
     "beat_timestamps_ms": [
-      0.0,
       540.0,
       1080.0,
       1620.0,
@@ -1385,7 +1431,6 @@
     ],
     "beat_confidence": null,
     "downbeat_timestamps_ms": [
-      0.0,
       1080.0,
       2180.0,
       3260.0,
@@ -1452,7 +1497,6 @@
       69800.0
     ],
     "beat_position_in_bar": [
-      1,
       2,
       1,
       2,
@@ -1588,15 +1632,24 @@
     "meter_denominator": 4,
     "meter_confidence": null,
     "cue_points_ms": null,
+    "raw_cue_points_ms": null,
+    "n_invalid_cue_predictions": null,
+    "invalid_cue_points_raw_ms": null,
+    "cue_score": null,
+    "cue_score_kind": null,
     "cue_confidence": null,
     "phrase_boundaries_ms": null,
     "section_boundaries": null,
-    "wall_time_sec": 0.6972,
-    "is_cold_run": true,
-    "peak_memory_mb": 108.81,
+    "run_phase": "WARM_INFERENCE",
+    "asset_fetch_wall_sec": null,
+    "wall_time_sec": 0.6502,
+    "memory_measurement_method": "PSUTIL_PROCESS_PEAK_WSET_RSS",
+    "process_peak_rss_mb": 597.07,
+    "python_tracemalloc_peak_mb": 107.56,
     "device": "cpu",
-    "model_checkpoint_size_mb": null,
-    "notes": "Offline mode, DBN (non-causal) inference, pinned model checkpoint model-1.pt (repo-bundled). beats_per_bar candidates=[2,3,4] (meter-adaptive)."
+    "checkpoint_size_mb": 1.54,
+    "total_model_asset_footprint_mb": 1.54,
+    "notes": "Offline mode, DBN (non-causal) inference, pinned model checkpoint model-1.pt (repo-bundled, CC BY 4.0). beats_per_bar candidates=[2,3,4] (meter-adaptive). checkpoint_size_mb/total_model_asset_footprint_mb are equal here: exactly one .pt file is loaded per estimator instance (PM REPAIR R1)."
   },
   {
     "candidate_id": "beatnet",
@@ -1607,7 +1660,6 @@
     "bpm": null,
     "bpm_confidence": null,
     "beat_timestamps_ms": [
-      0.0,
       580.0,
       1180.0,
       1780.0,
@@ -1707,7 +1759,6 @@
     ],
     "beat_confidence": null,
     "downbeat_timestamps_ms": [
-      0.0,
       1180.0,
       2380.0,
       3560.0,
@@ -1758,7 +1809,6 @@
       50340.0
     ],
     "beat_position_in_bar": [
-      1,
       2,
       1,
       2,
@@ -1861,15 +1911,24 @@
     "meter_denominator": 4,
     "meter_confidence": null,
     "cue_points_ms": null,
+    "raw_cue_points_ms": null,
+    "n_invalid_cue_predictions": null,
+    "invalid_cue_points_raw_ms": null,
+    "cue_score": null,
+    "cue_score_kind": null,
     "cue_confidence": null,
     "phrase_boundaries_ms": null,
     "section_boundaries": null,
-    "wall_time_sec": 0.5416,
-    "is_cold_run": true,
-    "peak_memory_mb": 78.51,
+    "run_phase": "WARM_INFERENCE",
+    "asset_fetch_wall_sec": null,
+    "wall_time_sec": 0.5022,
+    "memory_measurement_method": "PSUTIL_PROCESS_PEAK_WSET_RSS",
+    "process_peak_rss_mb": 597.07,
+    "python_tracemalloc_peak_mb": 77.3,
     "device": "cpu",
-    "model_checkpoint_size_mb": null,
-    "notes": "Offline mode, DBN (non-causal) inference, pinned model checkpoint model-1.pt (repo-bundled). beats_per_bar candidates=[2,3,4] (meter-adaptive)."
+    "checkpoint_size_mb": 1.54,
+    "total_model_asset_footprint_mb": 1.54,
+    "notes": "Offline mode, DBN (non-causal) inference, pinned model checkpoint model-1.pt (repo-bundled, CC BY 4.0). beats_per_bar candidates=[2,3,4] (meter-adaptive). checkpoint_size_mb/total_model_asset_footprint_mb are equal here: exactly one .pt file is loaded per estimator instance (PM REPAIR R1)."
   },
   {
     "candidate_id": "cue_detr",
@@ -1891,18 +1950,30 @@
       69.7,
       31718.5
     ],
-    "cue_confidence": [
+    "raw_cue_points_ms": [
+      69.7,
+      31718.5
+    ],
+    "n_invalid_cue_predictions": 0,
+    "invalid_cue_points_raw_ms": [],
+    "cue_score": [
       1.0,
       0.9105813584226546
     ],
+    "cue_score_kind": "MINMAX_NORMALIZED_DETR_DETECTION_SCORE",
+    "cue_confidence": null,
     "phrase_boundaries_ms": null,
     "section_boundaries": null,
-    "wall_time_sec": 11.2251,
-    "is_cold_run": true,
-    "peak_memory_mb": 72.47,
+    "run_phase": "COLD_MODEL_LOAD_INFERENCE",
+    "asset_fetch_wall_sec": 1.6332,
+    "wall_time_sec": 6.7223,
+    "memory_measurement_method": "PSUTIL_PROCESS_PEAK_WSET_RSS",
+    "process_peak_rss_mb": 926.72,
+    "python_tracemalloc_peak_mb": 72.73,
     "device": "cpu",
-    "model_checkpoint_size_mb": null,
-    "notes": "Direct port of upstream cue_points.py (MIT). SMOKE/REGRESSION evidence only on synthetic fixtures -- no authored cue-point ground truth exists for these fixtures (Issue #5 Task D). facebook/detr-resnet-50 image-processor config (Apache-2.0, Meta) downloaded alongside the disco-eth/cue-detr checkpoint (MIT per HF tag)."
+    "checkpoint_size_mb": 158.78,
+    "total_model_asset_footprint_mb": 158.78,
+    "notes": "Direct port of upstream cue_points.py (MIT; see THIRD_PARTY_NOTICES.md). SMOKE/REGRESSION evidence only on synthetic fixtures -- no authored cue-point ground truth exists for these fixtures (Issue #5 Task D). use_pretrained_backbone=False (PM REPAIR R4): timm backbone download removed, proven bit-identical output vs. the upstream-default pretrained-backbone path."
   },
   {
     "candidate_id": "cue_detr",
@@ -1923,17 +1994,28 @@
     "cue_points_ms": [
       232.2
     ],
-    "cue_confidence": [
+    "raw_cue_points_ms": [
+      232.2
+    ],
+    "n_invalid_cue_predictions": 0,
+    "invalid_cue_points_raw_ms": [],
+    "cue_score": [
       1.0
     ],
+    "cue_score_kind": "MINMAX_NORMALIZED_DETR_DETECTION_SCORE",
+    "cue_confidence": null,
     "phrase_boundaries_ms": null,
     "section_boundaries": null,
-    "wall_time_sec": 1.5918,
-    "is_cold_run": true,
-    "peak_memory_mb": 33.57,
+    "run_phase": "WARM_INFERENCE",
+    "asset_fetch_wall_sec": null,
+    "wall_time_sec": 1.3141,
+    "memory_measurement_method": "PSUTIL_PROCESS_PEAK_WSET_RSS",
+    "process_peak_rss_mb": 926.72,
+    "python_tracemalloc_peak_mb": 33.57,
     "device": "cpu",
-    "model_checkpoint_size_mb": null,
-    "notes": "Direct port of upstream cue_points.py (MIT). SMOKE/REGRESSION evidence only on synthetic fixtures -- no authored cue-point ground truth exists for these fixtures (Issue #5 Task D). facebook/detr-resnet-50 image-processor config (Apache-2.0, Meta) downloaded alongside the disco-eth/cue-detr checkpoint (MIT per HF tag)."
+    "checkpoint_size_mb": 158.78,
+    "total_model_asset_footprint_mb": 158.78,
+    "notes": "Direct port of upstream cue_points.py (MIT; see THIRD_PARTY_NOTICES.md). SMOKE/REGRESSION evidence only on synthetic fixtures -- no authored cue-point ground truth exists for these fixtures (Issue #5 Task D). use_pretrained_backbone=False (PM REPAIR R4): timm backbone download removed, proven bit-identical output vs. the upstream-default pretrained-backbone path."
   },
   {
     "candidate_id": "cue_detr",
@@ -1954,17 +2036,28 @@
     "cue_points_ms": [
       46.4
     ],
-    "cue_confidence": [
+    "raw_cue_points_ms": [
+      46.4
+    ],
+    "n_invalid_cue_predictions": 0,
+    "invalid_cue_points_raw_ms": [],
+    "cue_score": [
       1.0
     ],
+    "cue_score_kind": "MINMAX_NORMALIZED_DETR_DETECTION_SCORE",
+    "cue_confidence": null,
     "phrase_boundaries_ms": null,
     "section_boundaries": null,
-    "wall_time_sec": 1.6044,
-    "is_cold_run": true,
-    "peak_memory_mb": 38.41,
+    "run_phase": "WARM_INFERENCE",
+    "asset_fetch_wall_sec": null,
+    "wall_time_sec": 1.6259,
+    "memory_measurement_method": "PSUTIL_PROCESS_PEAK_WSET_RSS",
+    "process_peak_rss_mb": 926.72,
+    "python_tracemalloc_peak_mb": 38.41,
     "device": "cpu",
-    "model_checkpoint_size_mb": null,
-    "notes": "Direct port of upstream cue_points.py (MIT). SMOKE/REGRESSION evidence only on synthetic fixtures -- no authored cue-point ground truth exists for these fixtures (Issue #5 Task D). facebook/detr-resnet-50 image-processor config (Apache-2.0, Meta) downloaded alongside the disco-eth/cue-detr checkpoint (MIT per HF tag)."
+    "checkpoint_size_mb": 158.78,
+    "total_model_asset_footprint_mb": 158.78,
+    "notes": "Direct port of upstream cue_points.py (MIT; see THIRD_PARTY_NOTICES.md). SMOKE/REGRESSION evidence only on synthetic fixtures -- no authored cue-point ground truth exists for these fixtures (Issue #5 Task D). use_pretrained_backbone=False (PM REPAIR R4): timm backbone download removed, proven bit-identical output vs. the upstream-default pretrained-backbone path."
   },
   {
     "candidate_id": "cue_detr",
@@ -1985,17 +2078,28 @@
     "cue_points_ms": [
       46.4
     ],
-    "cue_confidence": [
+    "raw_cue_points_ms": [
+      46.4
+    ],
+    "n_invalid_cue_predictions": 0,
+    "invalid_cue_points_raw_ms": [],
+    "cue_score": [
       1.0
     ],
+    "cue_score_kind": "MINMAX_NORMALIZED_DETR_DETECTION_SCORE",
+    "cue_confidence": null,
     "phrase_boundaries_ms": null,
     "section_boundaries": null,
-    "wall_time_sec": 1.7476,
-    "is_cold_run": true,
-    "peak_memory_mb": 29.4,
+    "run_phase": "WARM_INFERENCE",
+    "asset_fetch_wall_sec": null,
+    "wall_time_sec": 1.0998,
+    "memory_measurement_method": "PSUTIL_PROCESS_PEAK_WSET_RSS",
+    "process_peak_rss_mb": 926.72,
+    "python_tracemalloc_peak_mb": 29.4,
     "device": "cpu",
-    "model_checkpoint_size_mb": null,
-    "notes": "Direct port of upstream cue_points.py (MIT). SMOKE/REGRESSION evidence only on synthetic fixtures -- no authored cue-point ground truth exists for these fixtures (Issue #5 Task D). facebook/detr-resnet-50 image-processor config (Apache-2.0, Meta) downloaded alongside the disco-eth/cue-detr checkpoint (MIT per HF tag)."
+    "checkpoint_size_mb": 158.78,
+    "total_model_asset_footprint_mb": 158.78,
+    "notes": "Direct port of upstream cue_points.py (MIT; see THIRD_PARTY_NOTICES.md). SMOKE/REGRESSION evidence only on synthetic fixtures -- no authored cue-point ground truth exists for these fixtures (Issue #5 Task D). use_pretrained_backbone=False (PM REPAIR R4): timm backbone download removed, proven bit-identical output vs. the upstream-default pretrained-backbone path."
   },
   {
     "candidate_id": "cue_detr",
@@ -2014,21 +2118,33 @@
     "meter_denominator": null,
     "meter_confidence": null,
     "cue_points_ms": [
+      69.7
+    ],
+    "raw_cue_points_ms": [
       -139.3,
       69.7
     ],
-    "cue_confidence": [
-      0.9095660218369986,
+    "n_invalid_cue_predictions": 1,
+    "invalid_cue_points_raw_ms": [
+      -139.3
+    ],
+    "cue_score": [
       1.0
     ],
+    "cue_score_kind": "MINMAX_NORMALIZED_DETR_DETECTION_SCORE",
+    "cue_confidence": null,
     "phrase_boundaries_ms": null,
     "section_boundaries": null,
-    "wall_time_sec": 1.8901,
-    "is_cold_run": true,
-    "peak_memory_mb": 42.76,
+    "run_phase": "WARM_INFERENCE",
+    "asset_fetch_wall_sec": null,
+    "wall_time_sec": 1.708,
+    "memory_measurement_method": "PSUTIL_PROCESS_PEAK_WSET_RSS",
+    "process_peak_rss_mb": 926.72,
+    "python_tracemalloc_peak_mb": 42.76,
     "device": "cpu",
-    "model_checkpoint_size_mb": null,
-    "notes": "Direct port of upstream cue_points.py (MIT). SMOKE/REGRESSION evidence only on synthetic fixtures -- no authored cue-point ground truth exists for these fixtures (Issue #5 Task D). facebook/detr-resnet-50 image-processor config (Apache-2.0, Meta) downloaded alongside the disco-eth/cue-detr checkpoint (MIT per HF tag)."
+    "checkpoint_size_mb": 158.78,
+    "total_model_asset_footprint_mb": 158.78,
+    "notes": "Direct port of upstream cue_points.py (MIT; see THIRD_PARTY_NOTICES.md). SMOKE/REGRESSION evidence only on synthetic fixtures -- no authored cue-point ground truth exists for these fixtures (Issue #5 Task D). use_pretrained_backbone=False (PM REPAIR R4): timm backbone download removed, proven bit-identical output vs. the upstream-default pretrained-backbone path."
   },
   {
     "candidate_id": "cue_detr",
@@ -2046,20 +2162,29 @@
     "meter_numerator": null,
     "meter_denominator": null,
     "meter_confidence": null,
-    "cue_points_ms": [
+    "cue_points_ms": [],
+    "raw_cue_points_ms": [
       -69.7
     ],
-    "cue_confidence": [
-      1.0
+    "n_invalid_cue_predictions": 1,
+    "invalid_cue_points_raw_ms": [
+      -69.7
     ],
+    "cue_score": [],
+    "cue_score_kind": "MINMAX_NORMALIZED_DETR_DETECTION_SCORE",
+    "cue_confidence": null,
     "phrase_boundaries_ms": null,
     "section_boundaries": null,
-    "wall_time_sec": 3.8741,
-    "is_cold_run": true,
-    "peak_memory_mb": 90.06,
+    "run_phase": "WARM_INFERENCE",
+    "asset_fetch_wall_sec": null,
+    "wall_time_sec": 3.84,
+    "memory_measurement_method": "PSUTIL_PROCESS_PEAK_WSET_RSS",
+    "process_peak_rss_mb": 1263.85,
+    "python_tracemalloc_peak_mb": 90.06,
     "device": "cpu",
-    "model_checkpoint_size_mb": null,
-    "notes": "Direct port of upstream cue_points.py (MIT). SMOKE/REGRESSION evidence only on synthetic fixtures -- no authored cue-point ground truth exists for these fixtures (Issue #5 Task D). facebook/detr-resnet-50 image-processor config (Apache-2.0, Meta) downloaded alongside the disco-eth/cue-detr checkpoint (MIT per HF tag)."
+    "checkpoint_size_mb": 158.78,
+    "total_model_asset_footprint_mb": 158.78,
+    "notes": "Direct port of upstream cue_points.py (MIT; see THIRD_PARTY_NOTICES.md). SMOKE/REGRESSION evidence only on synthetic fixtures -- no authored cue-point ground truth exists for these fixtures (Issue #5 Task D). use_pretrained_backbone=False (PM REPAIR R4): timm backbone download removed, proven bit-identical output vs. the upstream-default pretrained-backbone path."
   },
   {
     "candidate_id": "cue_detr",
@@ -2077,22 +2202,31 @@
     "meter_numerator": null,
     "meter_denominator": null,
     "meter_confidence": null,
-    "cue_points_ms": [
+    "cue_points_ms": [],
+    "raw_cue_points_ms": [
       -46.4,
       71842.5
     ],
-    "cue_confidence": [
-      1.0,
-      0.9209535400608685
+    "n_invalid_cue_predictions": 2,
+    "invalid_cue_points_raw_ms": [
+      -46.4,
+      71842.5
     ],
+    "cue_score": [],
+    "cue_score_kind": "MINMAX_NORMALIZED_DETR_DETECTION_SCORE",
+    "cue_confidence": null,
     "phrase_boundaries_ms": null,
     "section_boundaries": null,
-    "wall_time_sec": 4.3144,
-    "is_cold_run": true,
-    "peak_memory_mb": 83.46,
+    "run_phase": "WARM_INFERENCE",
+    "asset_fetch_wall_sec": null,
+    "wall_time_sec": 3.5017,
+    "memory_measurement_method": "PSUTIL_PROCESS_PEAK_WSET_RSS",
+    "process_peak_rss_mb": 1263.85,
+    "python_tracemalloc_peak_mb": 83.46,
     "device": "cpu",
-    "model_checkpoint_size_mb": null,
-    "notes": "Direct port of upstream cue_points.py (MIT). SMOKE/REGRESSION evidence only on synthetic fixtures -- no authored cue-point ground truth exists for these fixtures (Issue #5 Task D). facebook/detr-resnet-50 image-processor config (Apache-2.0, Meta) downloaded alongside the disco-eth/cue-detr checkpoint (MIT per HF tag)."
+    "checkpoint_size_mb": 158.78,
+    "total_model_asset_footprint_mb": 158.78,
+    "notes": "Direct port of upstream cue_points.py (MIT; see THIRD_PARTY_NOTICES.md). SMOKE/REGRESSION evidence only on synthetic fixtures -- no authored cue-point ground truth exists for these fixtures (Issue #5 Task D). use_pretrained_backbone=False (PM REPAIR R4): timm backbone download removed, proven bit-identical output vs. the upstream-default pretrained-backbone path."
   },
   {
     "candidate_id": "cue_detr",
@@ -2113,17 +2247,28 @@
     "cue_points_ms": [
       69.7
     ],
-    "cue_confidence": [
+    "raw_cue_points_ms": [
+      69.7
+    ],
+    "n_invalid_cue_predictions": 0,
+    "invalid_cue_points_raw_ms": [],
+    "cue_score": [
       1.0
     ],
+    "cue_score_kind": "MINMAX_NORMALIZED_DETR_DETECTION_SCORE",
+    "cue_confidence": null,
     "phrase_boundaries_ms": null,
     "section_boundaries": null,
-    "wall_time_sec": 3.1413,
-    "is_cold_run": true,
-    "peak_memory_mb": 62.94,
+    "run_phase": "WARM_INFERENCE",
+    "asset_fetch_wall_sec": null,
+    "wall_time_sec": 2.4971,
+    "memory_measurement_method": "PSUTIL_PROCESS_PEAK_WSET_RSS",
+    "process_peak_rss_mb": 1263.85,
+    "python_tracemalloc_peak_mb": 62.94,
     "device": "cpu",
-    "model_checkpoint_size_mb": null,
-    "notes": "Direct port of upstream cue_points.py (MIT). SMOKE/REGRESSION evidence only on synthetic fixtures -- no authored cue-point ground truth exists for these fixtures (Issue #5 Task D). facebook/detr-resnet-50 image-processor config (Apache-2.0, Meta) downloaded alongside the disco-eth/cue-detr checkpoint (MIT per HF tag)."
+    "checkpoint_size_mb": 158.78,
+    "total_model_asset_footprint_mb": 158.78,
+    "notes": "Direct port of upstream cue_points.py (MIT; see THIRD_PARTY_NOTICES.md). SMOKE/REGRESSION evidence only on synthetic fixtures -- no authored cue-point ground truth exists for these fixtures (Issue #5 Task D). use_pretrained_backbone=False (PM REPAIR R4): timm backbone download removed, proven bit-identical output vs. the upstream-default pretrained-backbone path."
   },
   {
     "candidate_id": "energy_onset_heuristic_baseline",
@@ -2158,6 +2303,11 @@
       28025.0,
       30025.0
     ],
+    "raw_cue_points_ms": null,
+    "n_invalid_cue_predictions": null,
+    "invalid_cue_points_raw_ms": null,
+    "cue_score": null,
+    "cue_score_kind": null,
     "cue_confidence": null,
     "phrase_boundaries_ms": null,
     "section_boundaries": [
@@ -2177,11 +2327,15 @@
         "label": "low_energy"
       }
     ],
-    "wall_time_sec": 0.04946200000267709,
-    "is_cold_run": true,
-    "peak_memory_mb": null,
+    "run_phase": "N_A",
+    "asset_fetch_wall_sec": null,
+    "wall_time_sec": 0.04889360000015586,
+    "memory_measurement_method": "N_A",
+    "process_peak_rss_mb": null,
+    "python_tracemalloc_peak_mb": null,
     "device": "cpu",
-    "model_checkpoint_size_mb": null,
+    "checkpoint_size_mb": null,
+    "total_model_asset_footprint_mb": null,
     "notes": "Negative baseline: RMS-envelope peak picking as 'cue candidates', coarse energy-level segmentation as a weak structure proxy. No beat/downbeat/phrase model of any kind."
   },
   {
@@ -2214,6 +2368,11 @@
       19005.0,
       20875.0
     ],
+    "raw_cue_points_ms": null,
+    "n_invalid_cue_predictions": null,
+    "invalid_cue_points_raw_ms": null,
+    "cue_score": null,
+    "cue_score_kind": null,
     "cue_confidence": null,
     "phrase_boundaries_ms": null,
     "section_boundaries": [
@@ -2233,11 +2392,15 @@
         "label": "low_energy"
       }
     ],
-    "wall_time_sec": 0.039167599999927916,
-    "is_cold_run": true,
-    "peak_memory_mb": null,
+    "run_phase": "N_A",
+    "asset_fetch_wall_sec": null,
+    "wall_time_sec": 0.05573119999826304,
+    "memory_measurement_method": "N_A",
+    "process_peak_rss_mb": null,
+    "python_tracemalloc_peak_mb": null,
     "device": "cpu",
-    "model_checkpoint_size_mb": null,
+    "checkpoint_size_mb": null,
+    "total_model_asset_footprint_mb": null,
     "notes": "Negative baseline: RMS-envelope peak picking as 'cue candidates', coarse energy-level segmentation as a weak structure proxy. No beat/downbeat/phrase model of any kind."
   },
   {
@@ -2270,6 +2433,11 @@
       25225.0,
       27625.0
     ],
+    "raw_cue_points_ms": null,
+    "n_invalid_cue_predictions": null,
+    "invalid_cue_points_raw_ms": null,
+    "cue_score": null,
+    "cue_score_kind": null,
     "cue_confidence": null,
     "phrase_boundaries_ms": null,
     "section_boundaries": [
@@ -2379,11 +2547,15 @@
         "label": "low_energy"
       }
     ],
-    "wall_time_sec": 0.04909939999924973,
-    "is_cold_run": true,
-    "peak_memory_mb": null,
+    "run_phase": "N_A",
+    "asset_fetch_wall_sec": null,
+    "wall_time_sec": 0.07771860000138986,
+    "memory_measurement_method": "N_A",
+    "process_peak_rss_mb": null,
+    "python_tracemalloc_peak_mb": null,
     "device": "cpu",
-    "model_checkpoint_size_mb": null,
+    "checkpoint_size_mb": null,
+    "total_model_asset_footprint_mb": null,
     "notes": "Negative baseline: RMS-envelope peak picking as 'cue candidates', coarse energy-level segmentation as a weak structure proxy. No beat/downbeat/phrase model of any kind."
   },
   {
@@ -2415,6 +2587,11 @@
       17165.0,
       18875.0
     ],
+    "raw_cue_points_ms": null,
+    "n_invalid_cue_predictions": null,
+    "invalid_cue_points_raw_ms": null,
+    "cue_score": null,
+    "cue_score_kind": null,
     "cue_confidence": null,
     "phrase_boundaries_ms": null,
     "section_boundaries": [
@@ -2434,11 +2611,15 @@
         "label": "low_energy"
       }
     ],
-    "wall_time_sec": 0.03606899999795132,
-    "is_cold_run": true,
-    "peak_memory_mb": null,
+    "run_phase": "N_A",
+    "asset_fetch_wall_sec": null,
+    "wall_time_sec": 0.04840159999730531,
+    "memory_measurement_method": "N_A",
+    "process_peak_rss_mb": null,
+    "python_tracemalloc_peak_mb": null,
     "device": "cpu",
-    "model_checkpoint_size_mb": null,
+    "checkpoint_size_mb": null,
+    "total_model_asset_footprint_mb": null,
     "notes": "Negative baseline: RMS-envelope peak picking as 'cue candidates', coarse energy-level segmentation as a weak structure proxy. No beat/downbeat/phrase model of any kind."
   },
   {
@@ -2474,6 +2655,11 @@
       28025.0,
       30025.0
     ],
+    "raw_cue_points_ms": null,
+    "n_invalid_cue_predictions": null,
+    "invalid_cue_points_raw_ms": null,
+    "cue_score": null,
+    "cue_score_kind": null,
     "cue_confidence": null,
     "phrase_boundaries_ms": null,
     "section_boundaries": [
@@ -2493,11 +2679,15 @@
         "label": "low_energy"
       }
     ],
-    "wall_time_sec": 0.05453010000201175,
-    "is_cold_run": true,
-    "peak_memory_mb": null,
+    "run_phase": "N_A",
+    "asset_fetch_wall_sec": null,
+    "wall_time_sec": 0.06781839999894146,
+    "memory_measurement_method": "N_A",
+    "process_peak_rss_mb": null,
+    "python_tracemalloc_peak_mb": null,
     "device": "cpu",
-    "model_checkpoint_size_mb": null,
+    "checkpoint_size_mb": null,
+    "total_model_asset_footprint_mb": null,
     "notes": "Negative baseline: RMS-envelope peak picking as 'cue candidates', coarse energy-level segmentation as a weak structure proxy. No beat/downbeat/phrase model of any kind."
   },
   {
@@ -2571,6 +2761,11 @@
       72205.0,
       73615.0
     ],
+    "raw_cue_points_ms": null,
+    "n_invalid_cue_predictions": null,
+    "invalid_cue_points_raw_ms": null,
+    "cue_score": null,
+    "cue_score_kind": null,
     "cue_confidence": null,
     "phrase_boundaries_ms": null,
     "section_boundaries": [
@@ -2595,11 +2790,15 @@
         "label": "low_energy"
       }
     ],
-    "wall_time_sec": 0.12454000000070664,
-    "is_cold_run": true,
-    "peak_memory_mb": null,
+    "run_phase": "N_A",
+    "asset_fetch_wall_sec": null,
+    "wall_time_sec": 0.15258220000032452,
+    "memory_measurement_method": "N_A",
+    "process_peak_rss_mb": null,
+    "python_tracemalloc_peak_mb": null,
     "device": "cpu",
-    "model_checkpoint_size_mb": null,
+    "checkpoint_size_mb": null,
+    "total_model_asset_footprint_mb": null,
     "notes": "Negative baseline: RMS-envelope peak picking as 'cue candidates', coarse energy-level segmentation as a weak structure proxy. No beat/downbeat/phrase model of any kind."
   },
   {
@@ -2660,6 +2859,11 @@
       58925.0,
       60025.0
     ],
+    "raw_cue_points_ms": null,
+    "n_invalid_cue_predictions": null,
+    "invalid_cue_points_raw_ms": null,
+    "cue_score": null,
+    "cue_score_kind": null,
     "cue_confidence": null,
     "phrase_boundaries_ms": null,
     "section_boundaries": [
@@ -2689,11 +2893,15 @@
         "label": "low_energy"
       }
     ],
-    "wall_time_sec": 0.10691070000029868,
-    "is_cold_run": true,
-    "peak_memory_mb": null,
+    "run_phase": "N_A",
+    "asset_fetch_wall_sec": null,
+    "wall_time_sec": 0.1286863000023004,
+    "memory_measurement_method": "N_A",
+    "process_peak_rss_mb": null,
+    "python_tracemalloc_peak_mb": null,
     "device": "cpu",
-    "model_checkpoint_size_mb": null,
+    "checkpoint_size_mb": null,
+    "total_model_asset_footprint_mb": null,
     "notes": "Negative baseline: RMS-envelope peak picking as 'cue candidates', coarse energy-level segmentation as a weak structure proxy. No beat/downbeat/phrase model of any kind."
   },
   {
@@ -2737,6 +2945,11 @@
       46665.0,
       48535.0
     ],
+    "raw_cue_points_ms": null,
+    "n_invalid_cue_predictions": null,
+    "invalid_cue_points_raw_ms": null,
+    "cue_score": null,
+    "cue_score_kind": null,
     "cue_confidence": null,
     "phrase_boundaries_ms": null,
     "section_boundaries": [
@@ -2821,11 +3034,15 @@
         "label": "low_energy"
       }
     ],
-    "wall_time_sec": 0.07695810000222991,
-    "is_cold_run": true,
-    "peak_memory_mb": null,
+    "run_phase": "N_A",
+    "asset_fetch_wall_sec": null,
+    "wall_time_sec": 0.09669980000035139,
+    "memory_measurement_method": "N_A",
+    "process_peak_rss_mb": null,
+    "python_tracemalloc_peak_mb": null,
     "device": "cpu",
-    "model_checkpoint_size_mb": null,
+    "checkpoint_size_mb": null,
+    "total_model_asset_footprint_mb": null,
     "notes": "Negative baseline: RMS-envelope peak picking as 'cue candidates', coarse energy-level segmentation as a weak structure proxy. No beat/downbeat/phrase model of any kind."
   },
   {
@@ -2845,17 +3062,26 @@
     "meter_denominator": null,
     "meter_confidence": null,
     "cue_points_ms": null,
+    "raw_cue_points_ms": null,
+    "n_invalid_cue_predictions": null,
+    "invalid_cue_points_raw_ms": null,
+    "cue_score": null,
+    "cue_score_kind": null,
     "cue_confidence": null,
     "phrase_boundaries_ms": [
       0,
       16000
     ],
     "section_boundaries": null,
-    "wall_time_sec": 5.300000339047983e-06,
-    "is_cold_run": true,
-    "peak_memory_mb": null,
+    "run_phase": "N_A",
+    "asset_fetch_wall_sec": null,
+    "wall_time_sec": 5.699999746866524e-06,
+    "memory_measurement_method": "N_A",
+    "process_peak_rss_mb": null,
+    "python_tracemalloc_peak_mb": null,
     "device": "cpu",
-    "model_checkpoint_size_mb": null,
+    "checkpoint_size_mb": null,
+    "total_model_asset_footprint_mb": null,
     "notes": "Negative baseline: phrase boundary asserted every 32 beats from beat 0, with no regard for actual musical structure."
   },
   {
@@ -2875,17 +3101,26 @@
     "meter_denominator": null,
     "meter_confidence": null,
     "cue_points_ms": null,
+    "raw_cue_points_ms": null,
+    "n_invalid_cue_predictions": null,
+    "invalid_cue_points_raw_ms": null,
+    "cue_score": null,
+    "cue_score_kind": null,
     "cue_confidence": null,
     "phrase_boundaries_ms": [
       234,
       15234
     ],
     "section_boundaries": null,
-    "wall_time_sec": 6.000002031214535e-06,
-    "is_cold_run": true,
-    "peak_memory_mb": null,
+    "run_phase": "N_A",
+    "asset_fetch_wall_sec": null,
+    "wall_time_sec": 8.099999831756577e-06,
+    "memory_measurement_method": "N_A",
+    "process_peak_rss_mb": null,
+    "python_tracemalloc_peak_mb": null,
     "device": "cpu",
-    "model_checkpoint_size_mb": null,
+    "checkpoint_size_mb": null,
+    "total_model_asset_footprint_mb": null,
     "notes": "Negative baseline: phrase boundary asserted every 32 beats from beat 0, with no regard for actual musical structure."
   },
   {
@@ -2905,17 +3140,26 @@
     "meter_denominator": null,
     "meter_confidence": null,
     "cue_points_ms": null,
+    "raw_cue_points_ms": null,
+    "n_invalid_cue_predictions": null,
+    "invalid_cue_points_raw_ms": null,
+    "cue_score": null,
+    "cue_score_kind": null,
     "cue_confidence": null,
     "phrase_boundaries_ms": [
       0,
       19200
     ],
     "section_boundaries": null,
-    "wall_time_sec": 1.0399999155197293e-05,
-    "is_cold_run": true,
-    "peak_memory_mb": null,
+    "run_phase": "N_A",
+    "asset_fetch_wall_sec": null,
+    "wall_time_sec": 8.099999831756577e-06,
+    "memory_measurement_method": "N_A",
+    "process_peak_rss_mb": null,
+    "python_tracemalloc_peak_mb": null,
     "device": "cpu",
-    "model_checkpoint_size_mb": null,
+    "checkpoint_size_mb": null,
+    "total_model_asset_footprint_mb": null,
     "notes": "Negative baseline: phrase boundary asserted every 32 beats from beat 0, with no regard for actual musical structure."
   },
   {
@@ -2935,17 +3179,26 @@
     "meter_denominator": null,
     "meter_confidence": null,
     "cue_points_ms": null,
+    "raw_cue_points_ms": null,
+    "n_invalid_cue_predictions": null,
+    "invalid_cue_points_raw_ms": null,
+    "cue_score": null,
+    "cue_score_kind": null,
     "cue_confidence": null,
     "phrase_boundaries_ms": [
       0,
       13714
     ],
     "section_boundaries": null,
-    "wall_time_sec": 8.499999239575118e-06,
-    "is_cold_run": true,
-    "peak_memory_mb": null,
+    "run_phase": "N_A",
+    "asset_fetch_wall_sec": null,
+    "wall_time_sec": 8.400002116104588e-06,
+    "memory_measurement_method": "N_A",
+    "process_peak_rss_mb": null,
+    "python_tracemalloc_peak_mb": null,
     "device": "cpu",
-    "model_checkpoint_size_mb": null,
+    "checkpoint_size_mb": null,
+    "total_model_asset_footprint_mb": null,
     "notes": "Negative baseline: phrase boundary asserted every 32 beats from beat 0, with no regard for actual musical structure."
   },
   {
@@ -2965,17 +3218,26 @@
     "meter_denominator": null,
     "meter_confidence": null,
     "cue_points_ms": null,
+    "raw_cue_points_ms": null,
+    "n_invalid_cue_predictions": null,
+    "invalid_cue_points_raw_ms": null,
+    "cue_score": null,
+    "cue_score_kind": null,
     "cue_confidence": null,
     "phrase_boundaries_ms": [
       0,
       21333
     ],
     "section_boundaries": null,
-    "wall_time_sec": 4.999998054699972e-06,
-    "is_cold_run": true,
-    "peak_memory_mb": null,
+    "run_phase": "N_A",
+    "asset_fetch_wall_sec": null,
+    "wall_time_sec": 5.799996870337054e-06,
+    "memory_measurement_method": "N_A",
+    "process_peak_rss_mb": null,
+    "python_tracemalloc_peak_mb": null,
     "device": "cpu",
-    "model_checkpoint_size_mb": null,
+    "checkpoint_size_mb": null,
+    "total_model_asset_footprint_mb": null,
     "notes": "Negative baseline: phrase boundary asserted every 32 beats from beat 0, with no regard for actual musical structure."
   },
   {
@@ -2995,6 +3257,11 @@
     "meter_denominator": null,
     "meter_confidence": null,
     "cue_points_ms": null,
+    "raw_cue_points_ms": null,
+    "n_invalid_cue_predictions": null,
+    "invalid_cue_points_raw_ms": null,
+    "cue_score": null,
+    "cue_score_kind": null,
     "cue_confidence": null,
     "phrase_boundaries_ms": [
       0,
@@ -3004,11 +3271,15 @@
       60000
     ],
     "section_boundaries": null,
-    "wall_time_sec": 6.70000008540228e-06,
-    "is_cold_run": true,
-    "peak_memory_mb": null,
+    "run_phase": "N_A",
+    "asset_fetch_wall_sec": null,
+    "wall_time_sec": 6.499998562503606e-06,
+    "memory_measurement_method": "N_A",
+    "process_peak_rss_mb": null,
+    "python_tracemalloc_peak_mb": null,
     "device": "cpu",
-    "model_checkpoint_size_mb": null,
+    "checkpoint_size_mb": null,
+    "total_model_asset_footprint_mb": null,
     "notes": "Negative baseline: phrase boundary asserted every 32 beats from beat 0, with no regard for actual musical structure."
   },
   {
@@ -3028,6 +3299,11 @@
     "meter_denominator": null,
     "meter_confidence": null,
     "cue_points_ms": null,
+    "raw_cue_points_ms": null,
+    "n_invalid_cue_predictions": null,
+    "invalid_cue_points_raw_ms": null,
+    "cue_score": null,
+    "cue_score_kind": null,
     "cue_confidence": null,
     "phrase_boundaries_ms": [
       0,
@@ -3036,11 +3312,15 @@
       52364
     ],
     "section_boundaries": null,
-    "wall_time_sec": 6.199999916134402e-06,
-    "is_cold_run": true,
-    "peak_memory_mb": null,
+    "run_phase": "N_A",
+    "asset_fetch_wall_sec": null,
+    "wall_time_sec": 8.999999408842996e-06,
+    "memory_measurement_method": "N_A",
+    "process_peak_rss_mb": null,
+    "python_tracemalloc_peak_mb": null,
     "device": "cpu",
-    "model_checkpoint_size_mb": null,
+    "checkpoint_size_mb": null,
+    "total_model_asset_footprint_mb": null,
     "notes": "Negative baseline: phrase boundary asserted every 32 beats from beat 0, with no regard for actual musical structure."
   },
   {
@@ -3060,6 +3340,11 @@
     "meter_denominator": null,
     "meter_confidence": null,
     "cue_points_ms": null,
+    "raw_cue_points_ms": null,
+    "n_invalid_cue_predictions": null,
+    "invalid_cue_points_raw_ms": null,
+    "cue_score": null,
+    "cue_score_kind": null,
     "cue_confidence": null,
     "phrase_boundaries_ms": [
       0,
@@ -3067,11 +3352,15 @@
       35006
     ],
     "section_boundaries": null,
-    "wall_time_sec": 5.999998393235728e-06,
-    "is_cold_run": true,
-    "peak_memory_mb": null,
+    "run_phase": "N_A",
+    "asset_fetch_wall_sec": null,
+    "wall_time_sec": 7.099999493220821e-06,
+    "memory_measurement_method": "N_A",
+    "process_peak_rss_mb": null,
+    "python_tracemalloc_peak_mb": null,
     "device": "cpu",
-    "model_checkpoint_size_mb": null,
+    "checkpoint_size_mb": null,
+    "total_model_asset_footprint_mb": null,
     "notes": "Negative baseline: phrase boundary asserted every 32 beats from beat 0, with no regard for actual musical structure."
   },
   {
@@ -3161,14 +3450,23 @@
     "meter_denominator": null,
     "meter_confidence": null,
     "cue_points_ms": null,
+    "raw_cue_points_ms": null,
+    "n_invalid_cue_predictions": null,
+    "invalid_cue_points_raw_ms": null,
+    "cue_score": null,
+    "cue_score_kind": null,
     "cue_confidence": null,
     "phrase_boundaries_ms": null,
     "section_boundaries": null,
-    "wall_time_sec": 4.3799998820759356e-05,
-    "is_cold_run": true,
-    "peak_memory_mb": null,
+    "run_phase": "N_A",
+    "asset_fetch_wall_sec": null,
+    "wall_time_sec": 4.220000118948519e-05,
+    "memory_measurement_method": "N_A",
+    "process_peak_rss_mb": null,
+    "python_tracemalloc_peak_mb": null,
     "device": "cpu",
-    "model_checkpoint_size_mb": null,
+    "checkpoint_size_mb": null,
+    "total_model_asset_footprint_mb": null,
     "notes": "Negative baseline: theoretical i*(60000/BPM) grid from t=0. No phase/downbeat/meter/cue/phrase/section awareness by construction."
   },
   {
@@ -3242,14 +3540,23 @@
     "meter_denominator": null,
     "meter_confidence": null,
     "cue_points_ms": null,
+    "raw_cue_points_ms": null,
+    "n_invalid_cue_predictions": null,
+    "invalid_cue_points_raw_ms": null,
+    "cue_score": null,
+    "cue_score_kind": null,
     "cue_confidence": null,
     "phrase_boundaries_ms": null,
     "section_boundaries": null,
-    "wall_time_sec": 3.130000186502002e-05,
-    "is_cold_run": true,
-    "peak_memory_mb": null,
+    "run_phase": "N_A",
+    "asset_fetch_wall_sec": null,
+    "wall_time_sec": 6.319999738479964e-05,
+    "memory_measurement_method": "N_A",
+    "process_peak_rss_mb": null,
+    "python_tracemalloc_peak_mb": null,
     "device": "cpu",
-    "model_checkpoint_size_mb": null,
+    "checkpoint_size_mb": null,
+    "total_model_asset_footprint_mb": null,
     "notes": "Negative baseline: theoretical i*(60000/BPM) grid from t=0. No phase/downbeat/meter/cue/phrase/section awareness by construction."
   },
   {
@@ -3322,14 +3629,23 @@
     "meter_denominator": null,
     "meter_confidence": null,
     "cue_points_ms": null,
+    "raw_cue_points_ms": null,
+    "n_invalid_cue_predictions": null,
+    "invalid_cue_points_raw_ms": null,
+    "cue_score": null,
+    "cue_score_kind": null,
     "cue_confidence": null,
     "phrase_boundaries_ms": null,
     "section_boundaries": null,
-    "wall_time_sec": 5.160000000614673e-05,
-    "is_cold_run": true,
-    "peak_memory_mb": null,
+    "run_phase": "N_A",
+    "asset_fetch_wall_sec": null,
+    "wall_time_sec": 5.830000009154901e-05,
+    "memory_measurement_method": "N_A",
+    "process_peak_rss_mb": null,
+    "python_tracemalloc_peak_mb": null,
     "device": "cpu",
-    "model_checkpoint_size_mb": null,
+    "checkpoint_size_mb": null,
+    "total_model_asset_footprint_mb": null,
     "notes": "Negative baseline: theoretical i*(60000/BPM) grid from t=0. No phase/downbeat/meter/cue/phrase/section awareness by construction."
   },
   {
@@ -3403,14 +3719,23 @@
     "meter_denominator": null,
     "meter_confidence": null,
     "cue_points_ms": null,
+    "raw_cue_points_ms": null,
+    "n_invalid_cue_predictions": null,
+    "invalid_cue_points_raw_ms": null,
+    "cue_score": null,
+    "cue_score_kind": null,
     "cue_confidence": null,
     "phrase_boundaries_ms": null,
     "section_boundaries": null,
-    "wall_time_sec": 5.6000000768108293e-05,
-    "is_cold_run": true,
-    "peak_memory_mb": null,
+    "run_phase": "N_A",
+    "asset_fetch_wall_sec": null,
+    "wall_time_sec": 4.740000076708384e-05,
+    "memory_measurement_method": "N_A",
+    "process_peak_rss_mb": null,
+    "python_tracemalloc_peak_mb": null,
     "device": "cpu",
-    "model_checkpoint_size_mb": null,
+    "checkpoint_size_mb": null,
+    "total_model_asset_footprint_mb": null,
     "notes": "Negative baseline: theoretical i*(60000/BPM) grid from t=0. No phase/downbeat/meter/cue/phrase/section awareness by construction."
   },
   {
@@ -3483,14 +3808,23 @@
     "meter_denominator": null,
     "meter_confidence": null,
     "cue_points_ms": null,
+    "raw_cue_points_ms": null,
+    "n_invalid_cue_predictions": null,
+    "invalid_cue_points_raw_ms": null,
+    "cue_score": null,
+    "cue_score_kind": null,
     "cue_confidence": null,
     "phrase_boundaries_ms": null,
     "section_boundaries": null,
-    "wall_time_sec": 3.070000093430281e-05,
-    "is_cold_run": true,
-    "peak_memory_mb": null,
+    "run_phase": "N_A",
+    "asset_fetch_wall_sec": null,
+    "wall_time_sec": 3.1500003387918696e-05,
+    "memory_measurement_method": "N_A",
+    "process_peak_rss_mb": null,
+    "python_tracemalloc_peak_mb": null,
     "device": "cpu",
-    "model_checkpoint_size_mb": null,
+    "checkpoint_size_mb": null,
+    "total_model_asset_footprint_mb": null,
     "notes": "Negative baseline: theoretical i*(60000/BPM) grid from t=0. No phase/downbeat/meter/cue/phrase/section awareness by construction."
   },
   {
@@ -3676,14 +4010,23 @@
     "meter_denominator": null,
     "meter_confidence": null,
     "cue_points_ms": null,
+    "raw_cue_points_ms": null,
+    "n_invalid_cue_predictions": null,
+    "invalid_cue_points_raw_ms": null,
+    "cue_score": null,
+    "cue_score_kind": null,
     "cue_confidence": null,
     "phrase_boundaries_ms": null,
     "section_boundaries": null,
-    "wall_time_sec": 0.0001100999979826156,
-    "is_cold_run": true,
-    "peak_memory_mb": null,
+    "run_phase": "N_A",
+    "asset_fetch_wall_sec": null,
+    "wall_time_sec": 7.829999958630651e-05,
+    "memory_measurement_method": "N_A",
+    "process_peak_rss_mb": null,
+    "python_tracemalloc_peak_mb": null,
     "device": "cpu",
-    "model_checkpoint_size_mb": null,
+    "checkpoint_size_mb": null,
+    "total_model_asset_footprint_mb": null,
     "notes": "Negative baseline: theoretical i*(60000/BPM) grid from t=0. No phase/downbeat/meter/cue/phrase/section awareness by construction."
   },
   {
@@ -3836,14 +4179,23 @@
     "meter_denominator": null,
     "meter_confidence": null,
     "cue_points_ms": null,
+    "raw_cue_points_ms": null,
+    "n_invalid_cue_predictions": null,
+    "invalid_cue_points_raw_ms": null,
+    "cue_score": null,
+    "cue_score_kind": null,
     "cue_confidence": null,
     "phrase_boundaries_ms": null,
     "section_boundaries": null,
-    "wall_time_sec": 6.779999966965988e-05,
-    "is_cold_run": true,
-    "peak_memory_mb": null,
+    "run_phase": "N_A",
+    "asset_fetch_wall_sec": null,
+    "wall_time_sec": 0.00013800000306218863,
+    "memory_measurement_method": "N_A",
+    "process_peak_rss_mb": null,
+    "python_tracemalloc_peak_mb": null,
     "device": "cpu",
-    "model_checkpoint_size_mb": null,
+    "checkpoint_size_mb": null,
+    "total_model_asset_footprint_mb": null,
     "notes": "Negative baseline: theoretical i*(60000/BPM) grid from t=0. No phase/downbeat/meter/cue/phrase/section awareness by construction."
   },
   {
@@ -3964,14 +4316,23 @@
     "meter_denominator": null,
     "meter_confidence": null,
     "cue_points_ms": null,
+    "raw_cue_points_ms": null,
+    "n_invalid_cue_predictions": null,
+    "invalid_cue_points_raw_ms": null,
+    "cue_score": null,
+    "cue_score_kind": null,
     "cue_confidence": null,
     "phrase_boundaries_ms": null,
     "section_boundaries": null,
-    "wall_time_sec": 6.629999916185625e-05,
-    "is_cold_run": true,
-    "peak_memory_mb": null,
+    "run_phase": "N_A",
+    "asset_fetch_wall_sec": null,
+    "wall_time_sec": 5.4299998737405986e-05,
+    "memory_measurement_method": "N_A",
+    "process_peak_rss_mb": null,
+    "python_tracemalloc_peak_mb": null,
     "device": "cpu",
-    "model_checkpoint_size_mb": null,
+    "checkpoint_size_mb": null,
+    "total_model_asset_footprint_mb": null,
     "notes": "Negative baseline: theoretical i*(60000/BPM) grid from t=0. No phase/downbeat/meter/cue/phrase/section awareness by construction."
   }
 ]

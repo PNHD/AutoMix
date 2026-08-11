@@ -1,6 +1,6 @@
 # P0-M3-R1 — Artifact / License Gate
 
-Status date: 2026-08-11
+Status date: 2026-08-11 (PM REPAIR PASS — Sec 1.1 added per PM REVIEW R4; supersedes commit `8a419b1b51aa341ebe53a5e62727357a07e7cb1b`)
 
 Companion to `docs/research/P0-M3-R1-ANALYZER-SHOOTOUT.md`. Produced for
 GitHub Issue #5 Task A. Per `.agents/skills/automix-forensic-research`,
@@ -40,6 +40,24 @@ Verdict enum used (Issue #5 Task A): `CLEAR_FOR_BENCHMARK` /
 | Commercial use permitted? | MIT permits it for the tagged artifacts themselves; the unresolved training-provenance question above is a separate, un-mitigated risk that a permissive *tag* on the output weights does not resolve. | INFERENCE |
 | **Benchmark verdict** | **`CLEAR_FOR_BENCHMARK`** — code MIT (audited: LICENSE file read directly), checkpoint/dataset MIT-tagged, no audio was downloaded or redistributed by this task, and the checkpoint was used only for local, non-redistributed inference (see main report; not committed to this repository). | — |
 | **Production-evaluation verdict** | **`UNKNOWN_NEEDS_LEGAL_REVIEW`** — before any production embedding, resolve (a) whether the HF `mit` tag is an authoritative grant from ETH-DISCO (the actual rights holder) and (b) ETH-DISCO's own training-audio provenance/rights, per AGENTS.md rule 6 (do not infer permissive rights from a convenient tag alone). | — |
+
+### 1.1 Transitive model/config assets actually downloaded/required (PM REPAIR R4)
+
+The original P0-M3-R1 pass omitted these from the matrix even though they
+were actually downloaded/required by `candidates/run_cuedetr.py`. Every
+asset the runner touches at inference time is now audited here, not
+assumed to be covered by CUE-DETR's own MIT tag.
+
+| Asset | Source | Purpose | License | Kept in current runner? | Benchmark verdict | Production verdict |
+|---|---|---|---|---|---|---|
+| `facebook/detr-resnet-50` processor config | `https://huggingface.co/facebook/detr-resnet-50`, `DetrImageProcessor.from_pretrained(...)` | Image-preprocessing config only (resize/normalize parameters) — **no model weights** from this repo are loaded or used | `apache-2.0` (HF metadata tag, confirmed FACT via direct repository fetch; official Meta AI repo, trained on COCO 2017) | **Yes** — required; the pinned CUE-DETR code itself specifies this exact call | `CLEAR_FOR_BENCHMARK` | `CLEAR_FOR_PRODUCTION_EVALUATION` for the config artifact itself (Apache-2.0, no training-audio provenance question since it carries no audio-domain weights) — still gated by CUE-DETR's own overall `UNKNOWN_NEEDS_LEGAL_REVIEW` verdict (Sec 1) for the composite pipeline |
+| `timm/resnet50.a1_in1k` pretrained backbone weights | `https://huggingface.co/timm/resnet50.a1_in1k` | ImageNet-1k-pretrained ResNet-50 weights, auto-downloaded by `transformers`' default `use_pretrained_backbone=True` behavior to initialize the DETR backbone **before** `disco-eth/cue-detr`'s own checkpoint state_dict is loaded on top and overwrites every backbone parameter | `apache-2.0` (HF metadata tag, confirmed FACT) | **No — removed this repair pass.** Empirically verified (this repair pass): `DetrForObjectDetection.from_pretrained('disco-eth/cue-detr', use_pretrained_backbone=False)` vs. the upstream-default `use_pretrained_backbone=True` produce **bit-identical** inference output (detection scores and box positions compared exactly equal, max score diff = 0.0) on the same input file, proving the checkpoint's own state_dict fully supplies the backbone and the timm download changes nothing about the result. `candidates/run_cuedetr.py` now passes `use_pretrained_backbone=False`. | `N/A` — no longer part of the dependency graph | `N/A` |
+
+Recorded even though removed, per R4's instruction not to silently drop an
+asset from the audit trail — this is what *was* downloaded in the original
+pass and *why* it is no longer necessary, not a claim it was ever
+license-blocked (Apache-2.0 was never the problem; it was simply
+unnecessary weight).
 
 ## 2. All-In-One Music Structure Analyzer
 

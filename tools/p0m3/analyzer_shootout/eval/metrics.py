@@ -116,6 +116,66 @@ def exact_bar_phase_correctness(pred_beat_positions: list[int], gt_beats_ms: lis
     return {"exact_bar_phase_accuracy": correct / total}
 
 
+def boundary_event_metrics(pred_boundaries_ms: list[float], gt_boundaries_ms: list[float],
+                            tolerance_ms: float, tolerance_kind: str) -> dict:
+    """Two-sided boundary-event metric (TP/FP/FN/precision/recall/F1), added
+    per PM REPAIR R2/R5: docs/research/P0-M2-AUTOMIX-QUALITY-BENCHMARK-CONTRACT.md
+    Sec 8's Condition Registry already defines the tolerance this function uses
+    (never invented here) -- COND_PHRASE_OK: phrase-boundary distance
+    <=0.5x local beat period; COND_SECTION_OK: section-boundary distance
+    <=1x local bar period. Caller passes the concrete tolerance_ms computed
+    from the fixture's own BPM/meter and a tolerance_kind label naming which
+    P0-M2 condition it implements, so the provenance of the number is never
+    ambiguous in the output.
+
+    Matching is greedy nearest-neighbor without replacement (each GT boundary
+    matches at most one prediction and vice versa), which is exact for the
+    small, well-separated boundary counts in this harness's fixtures.
+    """
+    gt = sorted(gt_boundaries_ms or [])
+    pred = sorted(pred_boundaries_ms or [])
+    gt_matched = [False] * len(gt)
+    pred_matched = [False] * len(pred)
+
+    # Build all within-tolerance (gt_idx, pred_idx, distance) candidate pairs,
+    # then greedily confirm the closest pairs first.
+    candidates = []
+    for gi, gt_t in enumerate(gt):
+        for pi, pred_t in enumerate(pred):
+            d = abs(gt_t - pred_t)
+            if d <= tolerance_ms:
+                candidates.append((d, gi, pi))
+    candidates.sort(key=lambda c: c[0])
+    for d, gi, pi in candidates:
+        if not gt_matched[gi] and not pred_matched[pi]:
+            gt_matched[gi] = True
+            pred_matched[pi] = True
+
+    tp = sum(1 for m in gt_matched if m)
+    fn = sum(1 for m in gt_matched if not m)
+    fp = sum(1 for m in pred_matched if not m)
+    precision = tp / (tp + fp) if (tp + fp) > 0 else None
+    recall = tp / (tp + fn) if (tp + fn) > 0 else None
+    f1 = (2 * precision * recall / (precision + recall)) if precision and recall and (precision + recall) > 0 else \
+        (0.0 if (precision == 0 or recall == 0) else None)
+
+    return {
+        "tolerance_ms": round(tolerance_ms, 3),
+        "tolerance_kind": tolerance_kind,
+        "n_gt": len(gt),
+        "n_pred": len(pred),
+        "tp": tp,
+        "fp": fp,
+        "fn": fn,
+        "precision": precision,
+        "recall": recall,
+        "f1": f1,
+        "matched_gt_ms": [gt[gi] for gi in range(len(gt)) if gt_matched[gi]],
+        "unmatched_gt_ms": [gt[gi] for gi in range(len(gt)) if not gt_matched[gi]],
+        "unmatched_pred_ms": [pred[pi] for pi in range(len(pred)) if not pred_matched[pi]],
+    }
+
+
 def phrase_section_boundary_distance_ms(pred_boundaries_ms: list[float], gt_boundaries_ms: list[float]) -> dict:
     if not pred_boundaries_ms or not gt_boundaries_ms:
         return {"median_abs_error_ms": None, "n_gt": len(gt_boundaries_ms), "n_pred": len(pred_boundaries_ms or [])}

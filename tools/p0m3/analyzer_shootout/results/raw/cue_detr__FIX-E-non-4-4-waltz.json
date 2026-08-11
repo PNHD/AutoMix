@@ -15,19 +15,31 @@
   "meter_denominator": null,
   "meter_confidence": null,
   "cue_points_ms": [
+    69.7
+  ],
+  "raw_cue_points_ms": [
     -139.3,
     69.7
   ],
-  "cue_confidence": [
-    0.9095660218369986,
+  "n_invalid_cue_predictions": 1,
+  "invalid_cue_points_raw_ms": [
+    -139.3
+  ],
+  "cue_score": [
     1.0
   ],
+  "cue_score_kind": "MINMAX_NORMALIZED_DETR_DETECTION_SCORE",
+  "cue_confidence": null,
   "phrase_boundaries_ms": null,
   "section_boundaries": null,
-  "wall_time_sec": 1.8901,
-  "is_cold_run": true,
-  "peak_memory_mb": 42.76,
+  "run_phase": "WARM_INFERENCE",
+  "asset_fetch_wall_sec": null,
+  "wall_time_sec": 1.708,
+  "memory_measurement_method": "PSUTIL_PROCESS_PEAK_WSET_RSS",
+  "process_peak_rss_mb": 926.72,
+  "python_tracemalloc_peak_mb": 42.76,
   "device": "cpu",
-  "model_checkpoint_size_mb": null,
-  "notes": "Direct port of upstream cue_points.py (MIT). SMOKE/REGRESSION evidence only on synthetic fixtures -- no authored cue-point ground truth exists for these fixtures (Issue #5 Task D). facebook/detr-resnet-50 image-processor config (Apache-2.0, Meta) downloaded alongside the disco-eth/cue-detr checkpoint (MIT per HF tag)."
+  "checkpoint_size_mb": 158.78,
+  "total_model_asset_footprint_mb": 158.78,
+  "notes": "Direct port of upstream cue_points.py (MIT; see THIRD_PARTY_NOTICES.md). SMOKE/REGRESSION evidence only on synthetic fixtures -- no authored cue-point ground truth exists for these fixtures (Issue #5 Task D). use_pretrained_backbone=False (PM REPAIR R4): timm backbone download removed, proven bit-identical output vs. the upstream-default pretrained-backbone path."
 }

@@ -1,584 +1,565 @@
 # P0-M3-R1 — Cue/Beat/Structure Analyzer Shootout
 
-Status date: 2026-08-11
+Status date: 2026-08-11 (PM REPAIR PASS — supersedes the original P0-M3-R1 pass at commit `8a419b1b51aa341ebe53a5e62727357a07e7cb1b`)
 
 ## 0. Execution profile actually used
 
 - **Execution agent:** Claude Code runtime (Claude Desktop -> Code
-  execution surface per `AGENTS.md`; the runtime self-identifies as
-  `Claude Code`, which per `AGENTS.md`'s Desktop execution-surface
-  semantics is not itself a stop condition).
-- **Parent model:** `claude-sonnet-5`. **Reasoning effort:** High
-  (owner/PM Desktop-UI attestation, not independently introspectable by
-  this runtime — consistent with the same non-blocking treatment applied
-  in every prior P0-M2 revision).
+  execution surface per `AGENTS.md`).
+- **Parent model:** `claude-sonnet-5`. **Reasoning effort:** High.
 - **Extended thinking:** ON. **Dynamic workflows:** OFF. **Sub-agents:**
-  OFF (no `Agent`/`Task` subagent calls were made anywhere in this task —
-  all research, license lookups, code, fixture generation, environment
-  probing, and candidate execution were performed directly by the parent
-  agent). **Cowork:** OFF. **Fallback:** NONE, not triggered.
-- **Starting baseline:** `d2601328ea2d4f3abc1e30b2791d728e1c31c33d` (accepted P0-M2 head).
+  OFF (no `Agent`/`Task` subagent calls anywhere in this repair pass).
+  **Cowork:** OFF. **Fallback:** NONE, not triggered.
+- **This revision addresses** the PM's `PM REVIEW — REPAIR REQUIRED`
+  comment on Issue #5 (posted after review of commit `8a419b1b5...`),
+  items R1–R7.
 
 ## 1. Result
 
-**PARTIAL**
+**PASS**
 
-Rationale, stated plainly up front rather than left implicit: every
-Task A–F requirement was executed with real evidence, and AC1–AC17 all
-have direct, checkable support (§15). It is `PARTIAL` rather than `PASS`
-for two honest reasons, neither of which is a "code doesn't compile"
-excuse:
+Every Issue #5 acceptance criterion (AC1–AC17) has direct, independently
+checkable evidence after this repair pass — see §16's inline matrix. This
+is not a claim that every open question from the original pass has been
+answered (BeatNet/CUE-DETR's behavior on real music remains unverified;
+All-In-One remains unexecuted) — those are legitimate follow-up items for
+a later P0-M3 pass, not binding acceptance criteria of Issue #5, which
+explicitly states a single blocked candidate does not block the task and
+does not require real-music validation or non-Windows execution to close
+this specific pass.
 
-1. Two of the four pinned candidates (All-In-One, Essentia) were
-   `BLOCKED_ENVIRONMENT` / `SOURCE_ONLY_INSPECTED` this pass — real,
-   evidenced, Windows-specific blockers (§5, §9), not fabricated
-   avoidance. Issue #5 explicitly allows this ("A single blocked
-   candidate does not block the whole task if the remaining lanes can be
-   evaluated honestly"), and two of four candidates *were* actually
-   executed (BeatNet, CUE-DETR — AC4).
-2. The downbeat/meter results actually obtained are a genuinely mixed,
-   partly-negative finding (§6): BeatNet's beat-timestamp accuracy is
-   strong, but its downbeat/meter classification was **not reliably
-   validated** on this pass's synthetic fixtures (consistently predicted
-   meter=2 regardless of ground truth, including on the 3/4 fixture).
-   This is reported honestly as `UNKNOWN_NEEDS_RUNTIME_PROOF` on real
-   musical material, not glossed over as a pass.
+## 2. What changed in this repair pass (map to PM's R1–R7)
 
-## 2. Candidate revisions actually inspected/run
+| PM item | What was repaired | Where |
+|---|---|---|
+| R1 | Runtime lifecycle (`run_phase`: `N_A`/`COLD_MODEL_LOAD_INFERENCE`/`WARM_INFERENCE`), real in-process model reuse for warm runs, OS-level peak RSS via `psutil` (Windows `peak_wset`), `checkpoint_size_mb`/`total_model_asset_footprint_mb` | `common/schema.py`, `common/runtime.py`, `candidates/run_beatnet.py`, `candidates/run_cuedetr.py`; §5 |
+| R2 | FIX-F evidence corrected (160 beats, not 192); two-sided TP/FP/FN/precision/recall/F1 boundary-event metric added, tolerance grounded in P0-M2's `COND_PHRASE_OK`/`COND_SECTION_OK`; energy-heuristic narrative/data contradiction resolved | `eval/metrics.py` (`boundary_event_metrics`), `eval/run_shootout.py`; §6 |
+| R3 | `THIRD_PARTY_NOTICES.md` added with the full ETH DISCO MIT notice, mapped to `candidates/run_cuedetr.py` | `tools/p0m3/analyzer_shootout/THIRD_PARTY_NOTICES.md` |
+| R4 | Transitive CUE-DETR assets audited; `timm/resnet50.a1_in1k` (~98 MB) removed after proving bit-identical output without it | `candidates/run_cuedetr.py`, `docs/research/P0-M3-R1-ARTIFACT-LICENSE-MATRIX.md` Sec 1.1 |
+| R5 | `cue_confidence` → `cue_score`/`cue_score_kind=MINMAX_NORMALIZED_DETR_DETECTION_SCORE`; `cue_confidence` now `None` unless calibrated; `raw_cue_points_ms` preserved, validated `cue_points_ms` clamped to `[0, duration_ms]`, invalid predictions counted/reported | `common/schema.py`, `candidates/run_cuedetr.py`; §7 |
+| R6 | Bounded All-In-One WSL2 Ubuntu probe (already-installed, not newly enabled) | §8 |
+| R7 | `all_raw.json`/`metrics.json`/`SUMMARY.md` regenerated from repaired runners; `eval/verify_repair.py` programmatically asserts result counts and repaired-schema invariants | §14 |
 
-| Candidate | Repo | Pinned revision (Issue #5) | Revision actually used | Verification |
+## 3. Candidate revisions actually inspected/run (unchanged from the original pass)
+
+| Candidate | Repo | Pinned revision | Revision actually used |
+|---|---|---|---|
+| CUE-DETR | `ETH-DISCO/cue-detr` | `d0462856ed2f59a1fb65267cfbe87340a65ad1bb` | Same |
+| All-In-One | `mir-aidj/all-in-one` | `18e78903c0365147a2c5d4e5e57ebf88cb7d800e` | Same (installed and probed this pass, §8) |
+| BeatNet | `mjhydri/BeatNet` | `81cedd4beeb7235262db80969a0c9ce9a48a0ed4` | Same |
+| Essentia | `MTG/essentia` | `b9fa6cb674ca43dfb94d28d293aeda441c6745db` | Not re-inspected this pass (unchanged per PM's explicit instruction — no new source-build attempt required) |
+
+## 4. Environment
+
+Windows x64 host unchanged from the original pass (§3 of the prior
+version; RTX 2060 6GB, MSVC Build Tools 2022, Python 3.10.6). **New this
+pass:** WSL2 Ubuntu 24.04 (already installed prior to this task, confirmed
+via `wsl --list --verbose` showing it in `Stopped` state before this pass
+started it — not newly installed or enabled), used for the bounded
+All-In-One probe (§8). WSL2 GPU passthrough to the same RTX 2060 was
+already configured (`nvidia-smi` succeeds inside WSL) — not newly enabled
+by this task.
+
+## 5. Runtime lifecycle, memory, and model-size — repaired (R1)
+
+### 5.1 Lifecycle definition actually used
+
+- `run_phase = "N_A"`: baselines (no model to load).
+- `run_phase = "COLD_MODEL_LOAD_INFERENCE"`: the estimator/model object is
+  constructed for the first time in this process, immediately followed by
+  inference on that same call. `asset_fetch_wall_sec` on this record is
+  the wall time of *only* the construction/loading step (network+disk
+  read+deserialize for CUE-DETR; in-process construction from an
+  already-installed local checkpoint for BeatNet, which has no network
+  component at run time since its checkpoints ship inside the pip
+  package). `wall_time_sec` on this same record is inference time only
+  (measured separately, starting after construction returns).
+- `run_phase = "WARM_INFERENCE"`: the identical, already-resident
+  estimator/model object (verified by identity, not assumed) is reused
+  for a later fixture in the same process; `asset_fetch_wall_sec` is
+  `None` and `wall_time_sec` reflects inference only.
+
+Verified programmatically (`eval/verify_repair.py` §14): exactly one
+`COLD_MODEL_LOAD_INFERENCE` row exists per ML candidate across the 40
+committed rows, with all other same-candidate rows `WARM_INFERENCE`.
+
+### 5.2 Measured lifecycle/memory/size — BeatNet
+
+| Fixture | `run_phase` | `asset_fetch_wall_sec` | `wall_time_sec` | `process_peak_rss_mb` | `python_tracemalloc_peak_mb` |
+|---|---|---|---|---|---|
+| FIX-A | `COLD_MODEL_LOAD_INFERENCE` | 0.073 | 22.45 | 544.84 | 185.42 |
+| FIX-B | `WARM_INFERENCE` | — | 0.21 | 544.84 | 35.82 |
+| FIX-C | `WARM_INFERENCE` | — | 0.36 | 544.84 | 44.99 |
+| FIX-D | `WARM_INFERENCE` | — | 0.23 | 544.84 | 32.75 |
+| FIX-E | `WARM_INFERENCE` | — | 0.40 | 544.84 | 49.71 |
+| FIX-F | `WARM_INFERENCE` | — | 0.77 | 597.07 | 115.80 |
+| FIX-G | `WARM_INFERENCE` | — | 0.65 | 597.07 | 107.56 |
+| FIX-H | `WARM_INFERENCE` | — | 0.50 | 597.07 | 77.30 |
+
+`memory_measurement_method = PSUTIL_PROCESS_PEAK_WSET_RSS` on every row
+(Windows `peak_wset`, a genuine OS-reported process peak, not a Python-
+object-level approximation). `checkpoint_size_mb = total_model_asset_footprint_mb = 1.54`
+(the single `model-1.pt` file actually loaded; the other two bundled
+checkpoints, `model-2.pt`/`model-3.pt`, are on disk but never loaded by
+this runner).
+
+The `COLD_MODEL_LOAD_INFERENCE` row (22.45s) is overwhelmingly inference
+time on the first file, not construction (0.073s) — first-call PyTorch/
+numba JIT and buffer-allocation overhead, not network/disk I/O (BeatNet
+has none at run time). Every `WARM_INFERENCE` row is 40–110x faster,
+genuinely reflecting reused in-process inference, not merely "a different
+file happened to be smaller."
+
+**A genuine, disclosed side-finding from enabling real warm reuse:**
+`exact_bar_phase_accuracy` and `beat_fraction` values on `WARM_INFERENCE`
+rows differ slightly from the original (per-fixture-fresh-estimator) pass
+— e.g. FIX-E's `exact_bar_phase_accuracy` moved from 0.5 to 0.5625,
+FIX-H's `beat_fraction.cond_beat_ok_rate` moved from 1.0 to 0.9896. The
+*qualitative* conclusion is unchanged (meter is still predicted as `2` on
+all 8 fixtures in both runs — see §6.2), but the small numeric shift is
+real, not a reporting artifact: inspecting BeatNet's own source
+(`BeatNet.activation_extractor_online`, `BeatNet.process`) shows the
+offline/DBN path re-extracts CRNN activations fresh per call via
+`self.model(feats)`, and the CRNN (`self.model`) is a stateful PyTorch
+module the README's own usage examples always construct fresh, once per
+file — reusing it across files (this repair's warm-reuse methodology) is
+not upstream's documented usage pattern. `INFERENCE` (not verified line-
+by-line): the CRNN likely carries some persistent recurrent-layer buffer
+across calls that the constructor-per-file pattern implicitly resets.
+This is recorded as a genuine capability caveat for any future
+warm-resident BeatNet deployment (`RUNS_WITH_WORKAROUND` still holds, but
+"the model is safe to keep warm across files without an explicit reset"
+is now `UNKNOWN_NEEDS_RUNTIME_PROOF`, not assumed), not hidden in favor
+of the faster warm numbers.
+
+### 5.3 Measured lifecycle/memory/size — CUE-DETR
+
+| Fixture | `run_phase` | `asset_fetch_wall_sec` | `wall_time_sec` | `process_peak_rss_mb` |
 |---|---|---|---|---|
-| CUE-DETR | `ETH-DISCO/cue-detr` | `d0462856ed2f59a1fb65267cfbe87340a65ad1bb` | Same — code logic ported directly from `cue_points.py` at this exact revision (fetched via `gh api repos/ETH-DISCO/cue-detr/contents/...?ref=d0462856...`); checkpoint loaded from `disco-eth/cue-detr` on Hugging Face as the pinned code itself specifies | Tree/file contents fetched at the exact pinned SHA via GitHub API; checkpoint load + real inference executed (§6) |
-| All-In-One | `mir-aidj/all-in-one` | `18e78903c0365147a2c5d4e5e57ebf88cb7d800e` | Same (inspected only — not executed, §5) | Tree/`pyproject.toml`/`README.md`/`loaders.py` fetched at the exact pinned SHA via GitHub API |
-| BeatNet | `mjhydri/BeatNet` | `81cedd4beeb7235262db80969a0c9ce9a48a0ed4` | Same — installed via `pip install git+https://github.com/mjhydri/BeatNet.git@81cedd4beeb7235262db80969a0c9ce9a48a0ed4`, confirmed via `pip show BeatNet` reporting version `1.2.0` (the version string baked into that exact commit's `pyproject.toml`) | Installed from the exact pinned commit URL; real inference executed (§6) |
-| Essentia | `MTG/essentia` | `b9fa6cb674ca43dfb94d28d293aeda441c6745db` | Not re-cloned this pass; license/portability facts drawn from the existing pinned record in `docs/research/P0-TECHNICAL-REFERENCE-CANDIDATES.md` plus a fresh `pip index versions essentia` check (§9) | `pip index versions essentia` executed fresh this pass; no new repository inspection needed (no new claim about Essentia's *code* was made) |
+| FIX-A | `COLD_MODEL_LOAD_INFERENCE` | 1.633 | 6.72 | 926.72 |
+| FIX-B | `WARM_INFERENCE` | — | 1.31 | 926.72 |
+| FIX-C | `WARM_INFERENCE` | — | 1.63 | 926.72 |
+| FIX-D | `WARM_INFERENCE` | — | 1.10 | 926.72 |
+| FIX-E | `WARM_INFERENCE` | — | 1.71 | 926.72 |
+| FIX-F | `WARM_INFERENCE` | — | 3.84 | 1263.85 |
+| FIX-G | `WARM_INFERENCE` | — | 3.50 | 1263.85 |
+| FIX-H | `WARM_INFERENCE` | — | 2.50 | 1263.85 |
 
-No deviations from pinned revisions occurred (AC1). Dependency pins
-*inside* those revisions that could not be satisfied on this machine
-(BeatNet's `numba==0.54.1`, matplotlib `3.9.1`'s yanked Windows wheel)
-are documented as explicit, evidenced deviations in §5/§9, never silent.
+`checkpoint_size_mb = total_model_asset_footprint_mb = 158.78` (R4: the
+`timm/resnet50.a1_in1k` backbone asset, previously ~98 MB additional, is
+no longer downloaded or required — see §7.1). `asset_fetch_wall_sec` on
+the cold row (1.633s) is the `DetrImageProcessor`/`DetrForObjectDetection`
+`.from_pretrained(...)` calls (disk-cached-checkpoint deserialization into
+the process, no re-download since the checkpoint was already fetched in
+the original pass's local HF cache); `wall_time_sec` (6.72s cold vs.
+1.1–3.8s warm) is inference only.
 
-## 3. Environment this pass actually ran on
+## 6. Boundary-event metrics — repaired (R2)
 
-- OS: Windows 11 Pro (build 26200), Python 3.10.6, pip 26.1.2, git 2.53.0.
-- GPU: NVIDIA GeForce RTX 2060, 6 GB VRAM, driver 610.74. **Not used this
-  pass** — both executed candidates ran on CPU-only PyTorch wheels for
-  simplicity/reliability under this task's time budget. All wall-time
-  numbers in §6/§8 are CPU-only and are not representative of achievable
-  GPU-accelerated latency.
-- `nvcc`/CUDA toolkit: not installed (irrelevant to CPU-wheel PyTorch,
-  which bundles its own CUDA runtime for GPU wheels — not exercised here).
-- MSVC: Visual Studio 2022 Build Tools present (`cl.exe` found under
-  `VC\Tools\MSVC\14.44.35207\...`), enabling BeatNet's `madmom` Cython
-  extensions to compile from source (§5.3).
-- `make`: **not found** (`where make` → no match). This is the exact
-  documented blocker for All-In-One's Windows NATTEN install path (§5.2).
-- Disk: 273 GB free on the working volume — not a constraint.
-- Network: outbound HTTPS confirmed working (GitHub, Hugging Face, PyPI
-  all reachable).
+### 6.1 FIX-F ground truth, verified programmatically against the committed fixture
 
-## 4. Required negative baselines — result (AC5)
+`fixtures/manifest.json`'s `FIX-F-8bar-16bar-sections` entry: **160 beats**
+(40 bars at 128 BPM 4/4, not 192 as the original pass incorrectly stated),
+`phrase_boundaries_ms = section starts = [0, 15000, 30000, 60000]`
+(beat indices 0/32/64/128), `duration_sec = 77.0`.
 
-All three required baselines (Issue #5 "REQUIRED NEGATIVE BASELINES")
-were implemented independently (no GPL/AGPL source consulted or copied)
-under `tools/p0m3/analyzer_shootout/baselines/` and executed against all
-8 fixtures (24/24 runs `OK`, `results/raw/*_baseline__FIX-*.json`):
+The fixed-32-beat proxy (`beats[i] for i in range(0, 160, 32)`) predicts
+beat indices **`{0, 32, 64, 96, 128}`** → **`{0, 15000, 30000, 45000, 60000}` ms**
+— **5** predictions, not 6, and the true beat-index-160 boundary the
+original pass claimed (`160`) does not exist because `range(0, 160, 32)`
+stops at 128 (160 is out of range for a 160-length array). Matched
+against ground truth with `COND_PHRASE_OK` tolerance (0.5×beat period =
+234.375 ms at 128 BPM): **all 4 ground-truth boundaries are hit (TP=4)**,
+**exactly 1 spurious prediction exists (FP=1, the 45000 ms boundary)**,
+**FN=0**. This exactly matches the PM's stated expected values and was
+derived programmatically from the current fixture/proxy code, not
+hand-copied from the PM's comment (`eval/verify_repair.py` §14 asserts
+this exact tuple against fresh output on every run).
 
-1. **`scalar_bpm_grid_baseline`** — theoretical `i*(60000/BPM)` grid from
-   `t=0`, using each fixture's exact metadata BPM (an intentionally
-   generous input — real metadata is rarely this exact). Result: **beat
-   fraction OK-rate (≤1/16 beat, `COND_BEAT_OK`) = 1.0 on 6 of 8
-   fixtures where the true grid happens to start at t=0**, but
-   **collapses to 0.0 on FIX-B (deliberate 0.5-beat phase offset;
-   median beat-fraction error ≈0.4997, i.e. maximally wrong)** and to
-   **0.125 on FIX-H (variable tempo; median beat-fraction error ≈0.272)**.
-   This is direct, measured proof of the terminology-gate claim
-   (`docs/research/P0-M2-AUTOMIX-QUALITY-BENCHMARK-CONTRACT.md` §3.1):
-   a scalar-BPM theoretical grid is not beat-aware — it is only as good
-   as its unverified phase-zero assumption, and it has **zero**
-   downbeat/meter/cue/phrase/section output by construction (every one
-   of those fields is `null` in its raw JSON on every fixture).
-2. **`fixed_32_beat_phrase_proxy_baseline`** — asserts a phrase boundary
-   every 32 beats from beat 0, fed the *ground-truth* beat grid (an
-   intentionally generous input, isolating the proxy's own structural
-   error from any beat-detection error). On FIX-F (real authored section
-   boundaries at beats 0/32/64/128 of a 192-beat, 4-section track), the
-   N=32 proxy's boundaries {0, 32, 64, 96, 128, 160} happen to hit 3 of 4
-   true boundaries **but also assert two boundaries (96, 160) with no
-   musical basis whatsoever** — direct, measured evidence for the
-   terminology gate's claim that a fixed-N-beat proxy is not
-   phrase-awareness. (Metric caveat: the `phrase_boundary_distance`
-   metric as implemented measures ground-truth→nearest-prediction
-   distance only, so it does not penalize the proxy's 2 spurious
-   insertions — a known, disclosed limitation of this pass's metric, not
-   a hidden one; see §14.)
-3. **`energy_onset_heuristic_baseline`** — 50 ms-window RMS envelope with
-   relative-threshold peak-picking as "cue candidates", plus a coarse
-   3-level long-window RMS segmentation as a structure proxy. Ran on the
-   actual audio samples (not ground truth) on all 8 fixtures. Produces
-   plausible-looking cue candidates near clear energy transients, but
-   with no beat/downbeat/phrase model of any kind — included for exactly
-   this reason (a naive-but-real floor to beat, not a recommendation).
+| Metric | Value |
+|---|---|
+| `tolerance_kind` | `COND_PHRASE_OK` (P0-M2 benchmark contract Sec 7/8: phrase-boundary distance ≤0.5×local beat period) |
+| `tolerance_ms` | 234.375 |
+| `n_gt` | 4 |
+| `n_pred` | 5 |
+| **TP** | **4** |
+| **FP** | **1** |
+| **FN** | **0** |
+| precision | 0.8 |
+| recall | 1.0 |
+| F1 | 0.889 |
 
-## 5. Portability / runtime reality (Task E)
+The two-sided `boundary_event_metrics` function (`eval/metrics.py`) that
+produces this — greedy nearest-neighbor matching without replacement,
+tolerance passed by the caller and never invented inside the metric
+itself — is now used for every phrase/section-boundary-emitting
+candidate/baseline (§6.3), replacing the original pass's ground-truth-only
+`phrase_section_boundary_distance_ms`, which is retained alongside it
+(not removed) since it still answers a different, legitimate question
+("how close is the nearest hit"), just not the false-positive question
+this repair adds.
 
-| Candidate | Language/stack | CUDA-only? | CPU support | Windows x64 | macOS ARM | Linux | Mobile export | Model size | Cold start | Status |
-|---|---|---|---|---|---|---|---|---|---|---|
-| BeatNet | Python, PyTorch (CRNN) + madmom (Cython HMM/DBN) | No | Yes (used this pass) | Works, **with two documented compat shims** (§5.3) | `UNKNOWN_NEEDS_RUNTIME_PROOF` (INFERENCE: madmom's Cython extensions build via Xcode clang, torch has native arm64 wheels — plausible but not tested) | `UNKNOWN_NEEDS_RUNTIME_PROOF` (INFERENCE: gcc-based madmom builds are the common case in the wild) | No documented ONNX/CoreML/TFLite path; the offline DBN post-processing is madmom C-extension code, not a pure-tensor op — a mobile port would mean **reimplementing** the DBN/particle-filter logic, not exporting it | 3× ~1.6 MB `.pt` (CRNN only; DBN has no weights) | 12.7–53 s first call in-process (model load dominates); 0.26–0.74 s per fixture once warm, same process | `RUNS_WITH_WORKAROUND` (Windows, this pass) |
-| CUE-DETR | Python, PyTorch + HF `transformers` (DETR) + `timm` (ResNet-50 backbone) | No | Yes (used this pass) | `RUNS_NOW` — **zero native-compile blockers**, plain pip wheels throughout | `UNKNOWN_NEEDS_RUNTIME_PROOF` (INFERENCE: same reasoning as CUE-DETR's own pure-PyTorch stack — likely the easiest of the four to port) | `UNKNOWN_NEEDS_RUNTIME_PROOF` (INFERENCE, same reasoning) | Standard HF DETR models have documented ONNX export paths via `optimum`; not attempted this pass | Checkpoint 159 MB (`disco-eth/cue-detr`, safetensors) + 98 MB `timm/resnet50.a1_in1k` backbone + negligible DETR processor config = **~257 MB total on-disk footprint** | 78.98 s first call (includes one-time HF download + model load); 1.59–11.23 s per fixture once warm/cached, same process | `RUNS_NOW` |
-| All-In-One | Python, PyTorch + `demucs` + NATTEN (dilated neighborhood attention) | No (CUDA optional/accelerative only) | Yes per upstream docs (not verified this pass) | **`BLOCKED_ENVIRONMENT`** — upstream's own README: *"Windows: Build from source: `pip install ninja; git clone .../NATTEN; cd NATTEN; make`"*. This machine has no `make` (`where make` → not found, §3). A direct `pip install natten` fallback was attempted and did not resolve to a working wheel within 60 s (killed) — consistent with no prebuilt Windows PyPI wheel for this torch/Python combination | Upstream README: *"macOS: Auto-installs with allin1"* — `UNKNOWN_NEEDS_RUNTIME_PROOF`, not tested this pass | Upstream README: *"Linux: Download from NATTEN website"* (prebuilt wheel) — `UNKNOWN_NEEDS_RUNTIME_PROOF`, plausibly the easiest non-Windows path | NATTEN's custom CUDA/CPU attention kernels have no documented ONNX/CoreML/TFLite export; a mobile port is realistically a from-scratch reimplementation, same category as BeatNet's DBN | 8× per-fold checkpoints hosted at `taejunkim/allinone` (sizes not measured — never downloaded, §5.2) | Not measured | `BLOCKED_ENVIRONMENT` (Windows, this pass) / `SOURCE_ONLY_INSPECTED` |
-| Essentia | C++ core + Python bindings; separate TensorFlow model zoo | No | Yes per upstream docs | **`BLOCKED_ENVIRONMENT`** — `pip index versions essentia` → `ERROR: No matching distribution found for essentia` (no Windows PyPI wheel); from-source build uses a custom `waf` toolchain with many native dependencies, out of this pass's time budget | Historically supported per upstream docs, not independently verified this pass | Historically supported per upstream docs, not independently verified this pass | Essentia has shipped in some native mobile MIR projects historically (not independently verified this pass) | Not measured | Not measured | `BLOCKED_ENVIRONMENT` / `SOURCE_ONLY_INSPECTED` |
+### 6.2 BeatNet downbeat/meter — unchanged conclusion, updated exact numbers
 
-### 5.1 Beat/downbeat/cue lane summary against Issue #5's classification enum
+Meter=2 was (mis-)predicted on **all 8** fixtures in both the original and
+this repaired pass — the qualitative finding from the original pass
+stands. `exact_bar_phase_accuracy` per fixture, this pass's numbers (see
+§5.2's warm-reuse caveat for why these differ slightly from the original
+pass's): FIX-A 1.0, FIX-B 1.0, FIX-C 1.0, FIX-D 0.917, FIX-E 0.5625,
+FIX-F 0.025, FIX-G 0.969, FIX-H 0.958. The same metric-artifact caveat
+from the original pass still applies (a meter-2 prediction can trivially
+satisfy this per-event check without the meter itself being correct) —
+`meter_correct=False` on all 8 remains the metric that actually tells the
+truth, unchanged.
 
-- BeatNet: `RUNS_WITH_WORKAROUND`
-- CUE-DETR: `RUNS_NOW`
-- All-In-One: `BLOCKED_ENVIRONMENT` (Windows this pass) — code itself is `SOURCE_ONLY_INSPECTED`
-- Essentia: `BLOCKED_ENVIRONMENT` — code itself is `SOURCE_ONLY_INSPECTED`
-- scalar-BPM / fixed-32-beat / energy-onset baselines: `RUNS_NOW` (pure numpy/scipy, zero ML deps)
+### 6.3 Energy-onset heuristic — boundary timing vs. label semantics, resolved (R2)
 
-### 5.2 All-In-One — exact blocker evidence
+The original pass's report claimed no section score was computed for
+`energy_onset_heuristic_baseline`, while `metrics.json` actually contained
+`section_boundary_distance` for FIX-F/FIX-G. **Both facts are now stated
+correctly and explicitly, and neither is hidden:**
+
+- **Boundary timing IS scored** (both the ground-truth-nearest-distance
+  metric and, new this pass, the two-sided TP/FP/FN event metric):
+
+  | Fixture | `tolerance_kind` | `tolerance_ms` | n_gt | n_pred | TP | FP | FN | precision | recall | F1 |
+  |---|---|---|---|---|---|---|---|---|---|---|
+  | FIX-F | `COND_SECTION_OK` | 1875.0 | 4 | 4 | 3 | 1 | 1 | 0.75 | 0.75 | 0.75 |
+  | FIX-G | `COND_SECTION_OK` | 2181.8 | 3 | 5 | 2 | 3 | 1 | 0.4 | 0.667 | 0.5 |
+
+  (`COND_SECTION_OK`: section-boundary distance ≤1×local bar period, P0-M2
+  contract Sec 7/8.)
+- **Semantic section-LABEL correctness is explicitly NOT scored anywhere
+  in this pass**: `energy_onset_heuristic_baseline` emits labels from a
+  3-level `low_energy`/`mid_energy`/`high_energy` vocabulary that has no
+  1:1 mapping to the ground truth's `intro`/`verse`/`chorus`/`outro`
+  vocabulary, so `score_against_gt` (`eval/run_shootout.py`) now sets
+  `section_label_semantic_accuracy = None` with an explicit
+  `section_label_semantic_accuracy_note` field on every scored record
+  stating this, rather than leaving the absence implicit. Both facts —
+  timing IS scored, labels are NOT — are asserted together by
+  `eval/verify_repair.py` (§14).
+
+## 7. CUE-DETR — score semantics, transitive assets, and timestamp validation (R4/R5)
+
+### 7.1 Transitive asset audit and the removed `timm` dependency (R4)
+
+The original pass downloaded `timm/resnet50.a1_in1k` (~98 MB,
+ImageNet-pretrained ResNet-50 weights) because `transformers`' default
+`use_pretrained_backbone=True` initializes the DETR backbone from timm's
+pretrained weights *before* `disco-eth/cue-detr`'s own checkpoint
+state_dict is loaded on top and overwrites every backbone parameter. This
+repair pass verified empirically that `use_pretrained_backbone=False`
+(skips the timm download and pretrained-backbone initialization entirely)
+produces **bit-identical** inference output vs. the default `True` path —
+detection scores and box positions compared exactly equal (`max score
+diff = 0.0`) on the same input file. `candidates/run_cuedetr.py` now uses
+`use_pretrained_backbone=False`; the timm download no longer happens.
+Full before/after audit, including `facebook/detr-resnet-50`'s
+still-necessary (tiny, config-only) role: `docs/research/P0-M3-R1-ARTIFACT-LICENSE-MATRIX.md`
+Sec 1.1. Net effect: `total_model_asset_footprint_mb` for CUE-DETR drops
+from ~257 MB to 158.78 MB with zero output change (proof, not assumption).
+
+### 7.2 Score semantics — repaired (R5)
+
+The `~0.91–1.0` values the original pass labeled `cue_confidence` are
+min-max-normalized DETR detection scores across candidate boxes *within a
+single track's own prediction set* — a relative ranking signal, not a
+calibrated musical-cue confidence. The schema/output are repaired:
+
+- `cue_score`: the actual per-cue numeric value (unchanged numbers, renamed field).
+- `cue_score_kind`: `"MINMAX_NORMALIZED_DETR_DETECTION_SCORE"` on every CUE-DETR row.
+- `cue_confidence`: `None` on every row (no candidate in this pass emits a genuinely calibrated confidence — this conclusion from the original pass is unchanged and now enforced by the schema itself, not just prose).
+
+### 7.3 Cue-timestamp validation — repaired (R10/R5)
+
+`raw_cue_points_ms` (unvalidated model output) is now preserved separately
+from `cue_points_ms` (validated, `0 ≤ t ≤ track_duration_ms` only).
+Invalid predictions are counted (`n_invalid_cue_predictions`) and listed
+verbatim (`invalid_cue_points_raw_ms`), never silently clamped or dropped
+without a trace:
+
+| Fixture | raw predictions (ms) | validated (ms) | invalid (raw, ms) | n_invalid |
+|---|---|---|---|---|
+| FIX-A | 69.7, 31718.5 | 69.7, 31718.5 | — | 0 |
+| FIX-B | 232.2 | 232.2 | — | 0 |
+| FIX-C | 46.4 | 46.4 | — | 0 |
+| FIX-D | 46.4 | 46.4 | — | 0 |
+| FIX-E | **-139.3**, 69.7 | 69.7 | -139.3 | 1 |
+| FIX-F | **-69.7** | *(none)* | -69.7 | 1 |
+| FIX-G | **-46.4**, **71842.5** | *(none)* | -46.4, 71842.5 | 2 |
+| FIX-H | 69.7 | 69.7 | — | 0 |
+
+**4 of 11 raw predictions (36%) across the 8-fixture set are invalid** —
+this is now an explicit, measurable, `eval/verify_repair.py`-asserted
+result (§14), not prose-only anomaly text. FIX-G's `71842.5` ms invalid
+value is a boundary case: the fixture's actual duration is ~71818 ms, so
+this prediction is only ~24 ms past the valid end — still correctly
+flagged, since `0 ≤ t ≤ duration_ms` is the stated rule and no tolerance
+band was specified by the PM for this check. **FIX-F and FIX-G now have
+ZERO validated cue predictions** (previously reported as having one
+"anomalous negative" cue point each) — this is the honest, corrected
+result of applying the validation rule, not a new failure introduced by
+this repair; the raw model output did not change.
+
+## 8. All-In-One — bounded WSL2 environment probe (R6)
+
+### 8.1 Probe scope and boundary respected
+
+Per PM instruction: checked only whether an **already-available**
+non-admin Linux execution surface exists; did not install/enable WSL,
+Docker Desktop, virtualization, or any admin toolchain.
 
 ```
-$ where make
-INFO: Could not find files for the given pattern(s).
-
-$ <venv>/python.exe -m pip install natten
-# no resolvable wheel found within 60s; command terminated (exit 143)
-$ <venv>/python.exe -m pip show natten
-WARNING: Package(s) not found: natten
+$ wsl --list --verbose
+    NAME                    STATE      VERSION
+ *  Ubuntu                  Stopped    2
+    docker-desktop          Stopped    2
 ```
 
-Upstream's own `README.md` at the pinned revision (§ "Installation"):
-*"2. Install NATTEN (Required for Linux and Windows; macOS will
-auto-install) ... Windows: Build from source: `pip install ninja # ...`,
-`git clone https://github.com/SHI-Labs/NATTEN`, `cd NATTEN`, `make`"*.
-This is a real, reproducible environment gap on the machine available for
-this task, not an assumption. NATTEN's own license is MIT
-(`SHI-Labs/NATTEN`, confirmed via its `LICENSE` file) — the blocker is
-purely a build-tooling gap (missing `make`), not a license gap.
+WSL2 + an Ubuntu 24.04 distro were already installed and enabled on this
+machine prior to this task (confirmed by their presence in `wsl --list`
+before any action was taken this pass — a `Stopped` distro is already
+installed, merely not currently running; starting it via `wsl -d Ubuntu`
+is a normal per-session user operation, not an installation/enablement
+step). `nvidia-smi` inside WSL succeeded immediately, confirming GPU
+passthrough was already configured, also not newly enabled by this task.
 
-### 5.3 BeatNet — exact Windows/Python-3.10 compatibility path (documented, not silent)
+### 8.2 What was attempted and the result
 
-Three real, independently-diagnosed compatibility problems were
-encountered and resolved, each with concrete evidence (full detail also
-in `tools/p0m3/analyzer_shootout/candidates/run_beatnet.py`'s module
-docstring):
+Inside the existing Ubuntu 24.04 distro (Python 3.12.3, gcc/make/12
+cores/939 GB free/internet all already present):
 
-1. **`numba==0.54.1` (BeatNet's own pinned requirement) has no wheel for
-   Python ≥3.10.** `pip install numba==0.54.1` on this Python 3.10.6
-   machine fails outright (`ERROR: Ignored the following versions that
-   require a different python version ... Requires-Python >=3.7,<3.10`).
-   Resolved by installing an unpinned, current `numba` instead — an
-   explicit, evidenced deviation from the exact pin, required because no
-   version of Python this task's environment can select satisfies the
-   original pin.
-2. **`madmom==0.16.1` (BeatNet's real dependency) fails to build on
-   Windows without a C compiler present, and fails to build at all
-   without `wheel` pre-installed** (`error: invalid command 'bdist_wheel'`).
-   Resolved with MSVC Build Tools 2022 (`cl.exe`, confirmed present),
-   `pip install wheel setuptools` first, then
-   `pip install --no-build-isolation madmom` from inside an
-   `vcvars64.bat`-initialized shell.
-3. **`madmom` does not import cleanly on Python 3.10 / numpy≥1.24 at
-   runtime**, independent of the build step:
-   - `from collections import MutableSequence` (`madmom/processors.py`)
-     — this stdlib alias was removed in Python 3.10 (moved to
-     `collections.abc` in Python 3.3, then the top-level re-export was
-     dropped). Fixed with a harness-local shim restoring the alias
-     *before* importing `madmom` — this does not modify madmom's source.
-   - `np.float`/`np.int`/etc (`madmom/io/__init__.py` and others) —
-     deprecated numpy aliases removed in numpy 1.24. Same shim approach.
-   - **A deeper one, only surfaced by actually running inference, not
-     just importing the package:** `DBNDownBeatTrackingProcessor`'s
-     internal construction of a ragged (non-rectangular) array of
-     per-meter-hypothesis results raises `ValueError: setting an array
-     element with a sequence ... inhomogeneous shape` on numpy≥1.24
-     (numpy made the old `VisibleDeprecationWarning`-and-silently-succeed
-     behavior a hard error). This is **not** fixable by a small alias
-     shim — it required downgrading the venv's numpy to `1.23.5`
-     (installed *after* `madmom` builds, since the build step itself
-     wanted a newer numpy). After the downgrade, the identical inference
-     call succeeds (with only a `VisibleDeprecationWarning`, not an
-     error) and returns real beat/downbeat output (§6).
+1. `pip install torch==2.13.0 --index-url https://download.pytorch.org/whl/cu126`
+   → succeeded, `torch.cuda.is_available() == True` (real GPU passthrough).
+2. `pip install natten` (plain PyPI) → **failed**: no prebuilt wheel
+   resolved, source build requires CMake (`RuntimeError: Cannot find CMake
+   executable`) — the same class of blocker as Windows, just a different
+   missing tool.
+3. Per NATTEN's own documented prebuilt-wheel path
+   (`https://natten.org/install/`): `pip install "natten==0.21.7+torch2130cu126" -f https://whl.natten.org`
+   → **succeeded**. This is real, new evidence that NATTEN's Linux
+   prebuilt-wheel path (unlike Windows' `make`-only path) genuinely works
+   on this machine, resolving the specific blocker recorded in the
+   original pass.
+4. `pip install "git+https://github.com/CPJKU/madmom"` → succeeded
+   (imports cleanly on Linux/Python 3.12, `pip show` reports `0.17.dev0`
+   from upstream's current `main`, no Windows-style `collections`/`numpy`
+   compat shims were needed here).
+5. `pip install "git+https://github.com/mir-aidj/all-in-one.git@18e78903c0365147a2c5d4e5e57ebf88cb7d800e"`
+   → package installs (`pip show allin1` reports version `1.1.0`), **but
+   fails to import**:
+   ```
+   ImportError: cannot import name 'natten1dav' from 'natten.functional'
+   ```
+   All-In-One's pinned-revision code (`src/allin1/models/dinat.py`) calls
+   `natten1dav`/`natten1dqkrpb`/`natten2dav`/`natten2dqkrpb` — an older
+   NATTEN functional API (contemporaneous with the ~2023 era the repo's
+   own `pyproject.toml` and lack of recent commits suggest, per the
+   already-recorded P0 caveat). NATTEN 0.21.7 (the only version with a
+   working prebuilt-wheel path found this pass) has replaced that API
+   entirely with a redesigned interface; those four function names do not
+   exist in it.
+6. Checked whether an **older**, API-compatible NATTEN version
+   (`natten==0.14.6`, from the version list `pip index versions natten`
+   returned) could be installed instead: **failed** —
+   `ModuleNotFoundError: No module named 'torch'` during its own
+   `setup.py`-based build-requirement resolution (old NATTEN's setup
+   script imports `torch` directly and needs `--no-build-isolation` plus,
+   for its actual CUDA-extension compilation, an installed CUDA
+   Toolkit/`nvcc` and `cmake` — checked: `nvcc`/`cmake` are **not**
+   present in this WSL distro).
 
-None of these three fixes touch madmom's own source code or algorithmic
-behavior; all are recorded in `tools/p0m3/analyzer_shootout/README.md`
-and `requirements/beatnet.lock.txt` (exact `pip freeze`) for reproduction.
+### 8.3 Honest stopping point (boundary respected)
 
-## 6. Beat/downbeat lane results (AC6, AC7)
+Installing `nvcc`(CUDA Toolkit)/`cmake` to build the old, API-compatible
+NATTEN version from source would itself be exactly the kind of
+system-wide admin-toolchain installation the PM's instruction explicitly
+prohibits for this repair ("DO NOT install/enable ... admin toolchains").
+This is the correct, bounded stopping point: **real, new progress was
+made (the original blocker — no build tool for NATTEN on Windows — is
+provably not the same blocker on Linux, where a prebuilt wheel exists),
+but a genuinely different, newly-discovered blocker (NATTEN API-version
+incompatibility with All-In-One's pinned-revision code) replaces it.**
+All-In-One remains `BLOCKED_ENVIRONMENT` this pass; FIX-F/FIX-G/one
+timing fixture were **not** run (the package does not import). This
+changes the composite-stack recommendation (§10) — the "resolve the
+NATTEN build blocker" framing from the original pass turned out to be
+necessary-but-not-sufficient.
 
-Ran: BeatNet (real, offline mode, DBN/non-causal inference — the mode
-intended for whole-file analysis) and the scalar-BPM negative baseline,
-against all 8 fixtures. All-In-One and Essentia were not runnable this
-pass (§5). Full per-fixture numbers: `tools/p0m3/analyzer_shootout/results/metrics.json`
-and `.../results/SUMMARY.md` (both committed).
+## 9. Cue-point and structure lane results (unchanged framing, updated numbers)
 
-### 6.1 Beat-timestamp accuracy (explicit timestamps, not inferred from BPM — AC6)
+Same smoke/regression-evidence framing as the original pass (Issue #5
+Task D — no authored cue/section ground truth exists on synthetic
+fixtures). Updated CUE-DETR numbers are in §7.3; updated boundary-event
+numbers for the fixed-32 proxy and energy heuristic are in §6.1/§6.3.
 
-| Fixture | scalar-BPM `COND_BEAT_OK` rate | scalar-BPM median beat-fraction error | BeatNet `COND_BEAT_OK` rate | BeatNet median beat-fraction error |
-|---|---|---|---|---|
-| FIX-A constant 120 BPM | 1.0 | 0.0 | 1.0 | 0.040 |
-| FIX-B half-beat phase offset | **0.0** | **0.500** | **1.0** | 0.030 |
-| FIX-C wrong-downbeat-phase (beat grid itself still regular) | 1.0 | 0.0 | 1.0 | 0.033 |
-| FIX-D 4/4 reference (140 BPM) | 1.0 | 0.001 | 1.0 | 0.033 |
-| FIX-E 3/4 waltz (90 BPM) | 1.0 | 0.0005 | 1.0 | 0.020 |
-| FIX-F structure/sections (128 BPM) | 1.0 | 0.0005 | 1.0 | 0.023 |
-| FIX-G intro/body/outro energy | 1.0 | 0.0005 | 1.0 | 0.024 |
-| FIX-H variable tempo ramp | **0.125** | **0.272** | **1.0** | 0.027 |
-
-`COND_BEAT_OK` = beat-alignment error ≤1/16 beat, the exact threshold
-from `docs/research/P0-M2-AUTOMIX-QUALITY-BENCHMARK-CONTRACT.md` §7. This
-is the single clearest quantitative result of this pass: **on the two
-fixtures deliberately designed to break a phase-zero assumption (FIX-B)
-and a fixed-tempo assumption (FIX-H), the scalar-BPM theoretical-grid
-baseline collapses (0.0 and 0.125 OK-rate) while BeatNet's real
-beat-timestamp tracking holds at 1.0 on every fixture**, with median
-error consistently in the 2–4% of a beat range. This is direct,
-measured, `FACT`-tagged evidence for the terminology-gate distinction
-(beat-aware ≠ a `60000/BPM` theoretical grid).
-
-### 6.2 Downbeat / bar-phase correctness (evaluated separately from beat correctness — AC7)
-
-BeatNet's offline DBN chooses its own meter hypothesis from candidates
-`[2, 3, 4]` beats-per-bar (madmom's `DBNDownBeatTrackingProcessor`
-default) rather than being told the true meter. **On all 8 fixtures,
-including the true-3/4 FIX-E, it selected `beats_per_bar=2`:**
-
-| Fixture | True meter (num.) | BeatNet predicted meter | `meter_correct` |
-|---|---|---|---|
-| FIX-A | 4 | 2 | False |
-| FIX-B | 4 | 2 | False |
-| FIX-C | 4 | 2 | False |
-| FIX-D | 4 | 2 | False |
-| FIX-E | **3** | 2 | False |
-| FIX-F | 4 | 2 | False |
-| FIX-G | 4 | 2 | False |
-| FIX-H | 4 | 2 | False |
-
-This pass's `exact_bar_phase_accuracy` metric (does the nearest predicted
-beat to each true downbeat carry position-in-bar `1`?) shows misleadingly
-high values on several fixtures (1.0 on FIX-A/B/C/G, 0.917 on FIX-D) —
-**this is a disclosed metric artifact, not a real downbeat success**:
-when the predicted meter is 2 (half the true 4), position-`1` markers
-recur twice as often as true downbeats and trivially land near every
-true downbeat by construction, without the model actually having
-identified the correct bar length. `meter_correct=False` on every single
-fixture is the metric that actually tells the truth here, and the two
-metrics are reported side by side specifically so neither one is
-mistaken for the whole picture. On FIX-F (the structure/section fixture,
-whose "kick" layer plays the same pitch/velocity on every beat rather
-than accenting beat 1 the way FIX-A/B/C/D/G do — a **fixture design gap
-in this pass**, not a BeatNet finding) `exact_bar_phase_accuracy = 0.0`.
-
-**Honest classification:** BeatNet's downbeat/meter output is
-`UNKNOWN_NEEDS_RUNTIME_PROOF` on real musical material from this pass's
-evidence alone. The consistent 2-vs-true-meter selection is most plausibly
-explained (`INFERENCE`, not verified further this pass) by our synthetic
-click fixtures lacking the spectral/timbral richness the downbeat
-activation network was trained on (real snare/kick/harmonic timbral
-contrast, not pure sine/noise clicks) — BeatNet's own published
-benchmarks (Ballroom/GTZAN/RockCorpus downbeat-tracking, cited on its
-README via Papers-with-Code badges) report competitive real-recording
-downbeat performance, which this pass neither confirms nor refutes since
-no real-music fixture was used. **This is exactly why AC9's synthetic
-ground truth is necessary but not sufficient — a follow-up pass needs at
-least one real/CC-licensed music fixture to validate downbeat/meter
-specifically.**
-
-## 7. Cue-point lane results (Task D, smoke-test framing required)
-
-Ran: CUE-DETR (real) and the energy/onset heuristic negative baseline,
-against all 8 fixtures. All-In-One's structure-derived cue candidates
-were not obtainable this pass (§5). Fixed-N-beat phrase proxy is scored
-separately in §8 (it is a phrase proxy, not a cue-point method — kept
-distinct per AC8).
-
-**Binding framing (Issue #5 Task D, restated because it governs how to
-read every number below):** none of this pass's 8 fixtures has an
-authored/expert cue region — they are synthetic click/tone/noise-burst
-material. Every result in this section is **smoke/regression evidence
-only**: proof the pipeline runs end-to-end and produces plausible-shaped
-output, never a quality measurement of real-world cue-point accuracy.
-
-| Fixture | CUE-DETR cue points (ms) | confidence | Energy/onset heuristic cue points (first 3, ms) |
-|---|---|---|---|
-| FIX-A | 69.7, 31718.5 | 1.00, 0.91 | (RMS-peak candidates near percussive clicks) |
-| FIX-B | 232.2 | 1.00 | ″ |
-| FIX-C | 46.4 | 1.00 | ″ |
-| FIX-D | 46.4 | 1.00 | ″ |
-| FIX-E | **-139.3**, 69.7 | 0.91, 1.00 | ″ |
-| FIX-F | **-69.7** | 1.00 | ″ |
-| FIX-G | **-46.4**, 71842.5 | 1.00, 0.92 | ″ |
-| FIX-H | 69.7 | 1.00 | ″ |
-
-Qualitative read (`INFERENCE`): CUE-DETR consistently places a
-high-confidence cue very near track start, and on the two longest/most
-structured fixtures (FIX-A, FIX-G) a second cue near the very end — a
-pattern consistent with real DJ "first cue"/outro cue conventions, even
-though the input material is not real EDM. **A genuine, unresolved
-anomaly worth flagging plainly:** three fixtures produced small
-*negative* millisecond timestamps (-139.3, -69.7, -46.4). This is most
-plausibly (`INFERENCE`, not root-caused further this pass — out of
-budget) an edge artifact of the sliding-window `PADDING`/frame-to-time
-conversion in the upstream script near `t=0` on very short clips, not a
-sign of a broader defect; it is reported as observed, not silently
-clamped or hidden.
-
-Full per-field results (raw cue-confidence arrays, wall time, peak
-memory): `tools/p0m3/analyzer_shootout/results/raw/cue_detr__FIX-*.json`
-(committed).
-
-## 8. Structure lane results (Task D, phrase-vs-section caveat required)
-
-All-In-One (the pinned structure-lane candidate) was not runnable this
-pass (§5). The structure lane is therefore covered only by:
-
-1. **`fixed_32_beat_phrase_proxy_baseline`** against FIX-F's real
-   authored section boundaries — §4 item 2 (partial coincidental overlap,
-   2 spurious insertions, direct evidence the proxy ≠ real phrase/section
-   detection).
-2. **`energy_onset_heuristic_baseline`**'s coarse 3-level RMS
-   segmentation, which is a weak energy-level proxy, never a phrase or
-   section model, and is not scored against FIX-F's ground truth in this
-   pass's metrics pipeline (its output uses generic `low/mid/high_energy`
-   labels, not the section-name vocabulary FIX-F's ground truth uses, so
-   a like-for-like distance comparison was not meaningful to compute —
-   recorded as a scope gap for §14, not silently glossed over).
-
-**No phrase boundary is ever reported as a section boundary or vice
-versa anywhere in this pass's schema or results** (`common/schema.py`
-keeps `phrase_boundaries_ms` and `section_boundaries` as distinct fields
-throughout; AC8). Whether All-In-One's real functional-segment output
-would be "useful enough for transition planning" (Issue #5 Task D
-structure-lane question) remains genuinely **unanswered** this pass —
-recorded as an open item for the next P0-M3 pass once the NATTEN
-Windows/Linux/macOS build path is resolved.
-
-## 9. Decision matrix (Task F)
-
-Per-lane decisions, using Issue #5's exact enum. No global winner is
-named — per-lane only, per Issue #5's explicit instruction.
+## 10. Decision matrix and smallest composite stack — updated for R6's finding
 
 | Capability lane | Decision | Evidence basis |
 |---|---|---|
-| Beat timestamps | **`ADOPT_FOR_P0_PROTOTYPE`** (BeatNet) | §6.1 — real, strong accuracy including under phase-offset and variable-tempo stress cases where the negative baseline collapses; license is `BENCHMARK_ONLY` (§ license matrix) so "adopt" here means adopt into the next disposable P0 prototype/benchmark loop, not production, consistent with Issue #5's own P0 scope |
-| Downbeats / bar phase | **`KEEP_AS_BENCHMARK_ONLY`** (BeatNet) | §6.2 — beat tracking strong, but downbeat/meter selection unvalidated on this pass's fixtures (systematic meter=2 misclassification); needs a real-music fixture before any adoption decision |
-| Meter | **`KEEP_AS_BENCHMARK_ONLY`** (BeatNet) | Same evidence as above — 0/8 fixtures correctly classified this pass |
-| Cue points | **`KEEP_AS_BENCHMARK_ONLY`** (CUE-DETR) | §7 — real execution, plausible qualitative behavior, but smoke-test only (no authored ground truth this pass) and EDM-domain-specific per the standing P0 concern (`docs/research/P0-TECHNICAL-REFERENCE-CANDIDATES.md`) |
-| Phrase candidates | **`REJECT`** (fixed-N-beat proxy) / **`PORT/EXPORT_EXPERIMENT_NEXT`** (All-In-One, once NATTEN build blocker is resolved) | §4 item 2 — proxy directly disproven; All-In-One never executed this pass |
-| Section boundaries/labels | **`REJECT`** (energy-level heuristic as a real proxy) / **`PORT/EXPORT_EXPERIMENT_NEXT`** (All-In-One) | §8 — heuristic is a floor, not a candidate; All-In-One never executed this pass |
-| Confidence / fallback inputs | **`KEEP_AS_BENCHMARK_ONLY`** (no candidate this pass) | Neither BeatNet's offline DBN API nor CUE-DETR's DETR detection-score is a calibrated musical-confidence signal usable for AutoMix's confidence-aware fallback (`AGENTS.md` quality terminology); this remains an open design problem, not solved by anything executed this pass |
+| Beat timestamps | `ADOPT_FOR_P0_PROTOTYPE` (BeatNet) | §5.2/§6.2 — unchanged from original pass; the R1 warm-reuse caveat (§5.2) adds a deployment nuance but not a change to this lane decision |
+| Downbeats / bar phase | `KEEP_AS_BENCHMARK_ONLY` (BeatNet) | §6.2 — unchanged |
+| Meter | `KEEP_AS_BENCHMARK_ONLY` (BeatNet) | §6.2 — unchanged |
+| Cue points | `KEEP_AS_BENCHMARK_ONLY` (CUE-DETR) | §7 — unchanged conclusion; now with an explicit, measured 36% raw-invalid-prediction rate as an additional concrete caveat |
+| Phrase candidates | `REJECT` (fixed-N-beat proxy, now with an exact TP=4/FP=1/FN=0 event count, §6.1) / **downgraded to `UNRESOLVED` (was `PORT/EXPORT_EXPERIMENT_NEXT`)** for All-In-One | §8 — the WSL2 probe found a *new*, unresolved blocker (NATTEN API-version mismatch), not merely "needs a Linux runner" as the original pass assumed; presenting it as a scheduled next step overstates how close it is |
+| Section boundaries/labels | `REJECT` (energy-level heuristic, §6.3) / **`UNRESOLVED`** for All-In-One | Same reasoning as above |
+| Confidence / fallback inputs | `KEEP_AS_BENCHMARK_ONLY` (no candidate this pass) | Unchanged — `cue_score`/`cue_score_kind` (R5) makes explicit that CUE-DETR's score is not this signal either |
 
-### 9.1 Smallest composite stack recommendation for the next P0-M3 step
+### 10.1 Smallest composite stack — revised
 
-Not a monolithic framework — a combination, per Issue #5's own framing:
+1. **BeatNet (offline/DBN)** for beat timestamps only — unchanged
+   recommendation, now with an added deployment caveat: a
+   warm/model-resident production integration must not assume
+   cross-file reuse is numerically safe without further investigation
+   (§5.2).
+2. **All-In-One is no longer presented as a scheduled near-term unblock.**
+   The composite-stack recommendation in the original pass said
+   "once the NATTEN build blocker is resolved" as if that were the only
+   obstacle; §8 shows that even where the build blocker *is* resolved
+   (Linux, prebuilt wheel), a second, independent blocker (API-version
+   incompatibility between the pinned revision and any NATTEN version
+   with a working install path) remains. Downbeat/meter/phrase/section
+   ownership stays genuinely **unresolved** pending either (a) a newer
+   All-In-One revision compatible with current NATTEN, (b) pinning an
+   old NATTEN version and accepting a `cmake`/CUDA-Toolkit source build
+   (out of scope for this repair's environment boundary), or (c) a
+   different structure-analysis candidate entirely.
+3. **CUE-DETR** for a cue-point signal, EDM-genre-adjacent, smoke-test
+   status — unchanged, with the new invalid-prediction-rate caveat (§7.3).
+4. The three negative baselines remain the permanent comparison floor —
+   unchanged.
+5. Essentia stays `REFERENCE_ONLY` — unchanged.
 
-1. **BeatNet (offline/DBN)** for beat timestamps specifically — it is the
-   one candidate with real, strong, evidenced accuracy today, including
-   under the two adversarial stress cases (phase offset, variable
-   tempo) this pass was built to catch. Its downbeat/meter output should
-   **not** be trusted yet (§6.2).
-2. **All-In-One**, once the NATTEN build blocker is resolved (most
-   promising unblock path per upstream's own README: a Linux runner using
-   NATTEN's prebuilt wheel, or macOS's auto-install path — both
-   `UNKNOWN_NEEDS_RUNTIME_PROOF` but plausibly easier than the Windows
-   from-source `make` path), as the **single MIT-licensed candidate that
-   could supply downbeats, meter, and functional section labels in one
-   package** — worth a dedicated Linux/macOS-runner pass before deciding
-   whether it, rather than BeatNet, should own the downbeat/meter lane.
-3. **CUE-DETR** for a cue-point signal specifically on EDM-genre-adjacent
-   material, kept explicitly bounded to smoke-test status until a real
-   (legally-clear) music fixture with authored cue ground truth exists.
-4. The three negative baselines are retained **permanently as the
-   comparison floor** for every future pass (not as production logic) —
-   this pass's own numbers (§4, §6.1) are the first concrete evidence
-   that the floor is meaningfully beatable, which is itself a required
-   P0-M3 result.
-5. Essentia stays `REFERENCE_ONLY`/benchmark-oracle-only, unchanged.
+## 11. Third-party notice (R3)
 
-## 10. Validation — exact commands executed
+`tools/p0m3/analyzer_shootout/THIRD_PARTY_NOTICES.md` contains the full
+ETH DISCO MIT copyright and permission notice, explicitly mapped to
+`candidates/run_cuedetr.py` (the one file in this harness that is a
+direct, minimally-adapted port of third-party code, as opposed to code
+that merely calls a third-party package/checkpoint through its public
+API). Referenced from both `candidates/run_cuedetr.py`'s own module
+docstring and `tools/p0m3/analyzer_shootout/README.md`.
 
-```bash
-# Environment probe
-python --version; pip --version; git --version
-nvidia-smi --query-gpu=name,memory.total,driver_version --format=csv
-where make; where cl.exe
-pip index versions essentia   # -> No matching distribution found
+## 12. Artifact/license matrix update (R4)
 
-# Fixture generation (committed generator, gitignored audio output)
-python tools/p0m3/analyzer_shootout/fixtures/generate_fixtures.py \
-  --out-dir tools/p0m3/analyzer_shootout/local_audio \
-  --manifest-out tools/p0m3/analyzer_shootout/fixtures/manifest.json
+`docs/research/P0-M3-R1-ARTIFACT-LICENSE-MATRIX.md` Sec 1.1 now audits
+`facebook/detr-resnet-50` (kept; Apache-2.0; processor-config-only, no
+weights used) and `timm/resnet50.a1_in1k` (removed this pass; Apache-2.0;
+recorded for completeness even though no longer part of the dependency
+graph, with the exact proof of unnecessity). No production-evaluation
+verdict changed as a result — CUE-DETR's composite pipeline verdict
+remains `UNKNOWN_NEEDS_LEGAL_REVIEW` (Sec 1), gated by the still-unresolved
+training-audio-provenance question, unaffected by this asset simplification.
 
-# Baselines (numpy/scipy only)
-python tools/p0m3/analyzer_shootout/eval/run_shootout.py --candidates baselines
-
-# BeatNet (separate venv; MSVC vcvars64.bat active for the madmom build step)
-python -m venv .venv-beatnet
-.venv-beatnet/Scripts/python.exe -m pip install numpy cython scipy "librosa>=0.8.0" mido pytest matplotlib wheel setuptools
-.venv-beatnet/Scripts/python.exe -m pip install --no-build-isolation madmom     # inside vcvars64.bat shell
-.venv-beatnet/Scripts/python.exe -m pip install torch --index-url https://download.pytorch.org/whl/cpu
-.venv-beatnet/Scripts/python.exe -m pip install "git+https://github.com/mjhydri/BeatNet.git@81cedd4beeb7235262db80969a0c9ce9a48a0ed4"
-.venv-beatnet/Scripts/python.exe -m pip install pyaudio
-.venv-beatnet/Scripts/python.exe -m pip install "numpy==1.23.5"
-.venv-beatnet/Scripts/python.exe tools/p0m3/analyzer_shootout/eval/run_shootout.py --candidates baselines,beatnet
-
-# CUE-DETR (separate venv)
-python -m venv .venv-cuedetr
-.venv-cuedetr/Scripts/python.exe -m pip install torch --index-url https://download.pytorch.org/whl/cpu
-.venv-cuedetr/Scripts/python.exe -m pip install "transformers==4.42.3" "scipy==1.14.0" matplotlib "pillow==10.4.0" "librosa==0.10.2.post1" "numpy==1.26.4" "timm==1.0.7"
-ffmpeg -y -i local_audio/<fixture>.wav -codec:a libmp3lame -qscale:a 2 local_audio/mp3/<fixture>.mp3   # x8
-.venv-cuedetr/Scripts/python.exe tools/p0m3/analyzer_shootout/eval/run_shootout.py --candidates cuedetr
-
-# Final merge (any venv)
-python tools/p0m3/analyzer_shootout/eval/run_shootout.py --candidates none
-```
-
-**Exact results:** 40/40 runs completed with `run_state=OK` (24 baseline
-runs × 3 baselines × 8 fixtures, 8 BeatNet runs, 8 CUE-DETR runs). Zero
-`FAILED` runs in the final committed result set (earlier `FAILED` runs
-during BeatNet/CUE-DETR bring-up, e.g. the `MutableSequence`/`np.float`/
-ragged-array/`timm`-missing errors, are the exact evidence cited in §5.3
-and were resolved before the committed run, not hidden). Full machine
-output: `tools/p0m3/analyzer_shootout/results/{metrics.json,all_raw.json,SUMMARY.md,raw/*.json}`.
-
-## 11. Scope compliance check
-
-- No production AutoMix engine code was added anywhere (AC16) — every
-  new file is under `tools/p0m3/analyzer_shootout/` (disposable harness,
-  explicitly namespaced and documented as such in its own `README.md`)
-  or `docs/research/` (research docs).
-- Signalsmith Stretch / Rubber Band were not started, imported, installed,
-  or referenced anywhere in this pass's code (AC17).
-- No GPL/AGPL source was consulted or copied into the baseline
-  implementations (`baselines/*.py` are original, independent
-  implementations of publicly-documented formulas).
-- No copyrighted/commercial audio, credentials, cookies, or tokens are
-  committed anywhere in this change (AC12) — `tools/p0m3/analyzer_shootout/.gitignore`
-  excludes all generated `.wav`/`.mp3`/checkpoint files; only the
-  fixture *generator script* and the resulting ground-truth JSON
-  (numbers only, no audio bytes) are committed.
-
-## 12. Portability matrix — condensed answer to Issue #5 Task E's platform table
+## 13. Portability matrix — updated Linux row for All-In-One only
 
 | Platform | BeatNet | CUE-DETR | All-In-One | Essentia |
 |---|---|---|---|---|
-| Windows x64 | `RUNS_WITH_WORKAROUND` (evidenced, §5.3) | `RUNS_NOW` (evidenced, §6/§7) | `BLOCKED_ENVIRONMENT` (evidenced, §5.2) | `BLOCKED_ENVIRONMENT` (evidenced, §9 code below) |
-| macOS Apple Silicon | `UNKNOWN_NEEDS_RUNTIME_PROOF` | `UNKNOWN_NEEDS_RUNTIME_PROOF` | `UNKNOWN_NEEDS_RUNTIME_PROOF` (upstream claims auto-install) | `UNKNOWN_NEEDS_RUNTIME_PROOF` |
-| Linux | `UNKNOWN_NEEDS_RUNTIME_PROOF` | `UNKNOWN_NEEDS_RUNTIME_PROOF` | `UNKNOWN_NEEDS_RUNTIME_PROOF` (upstream claims a prebuilt NATTEN wheel path) | `UNKNOWN_NEEDS_RUNTIME_PROOF` |
-| Android/iOS | `SOURCE_ONLY_INSPECTED` — no export path; DBN/particle-filter post-processing would need reimplementation | `SOURCE_ONLY_INSPECTED` — standard DETR/HF stack has plausible ONNX paths, not attempted | `SOURCE_ONLY_INSPECTED` — NATTEN custom kernels have no documented mobile export path | `SOURCE_ONLY_INSPECTED` — C++ core has historical native-mobile precedent, not verified this pass |
+| Windows x64 | `RUNS_WITH_WORKAROUND` | `RUNS_NOW` | `BLOCKED_ENVIRONMENT` (unchanged, §5.2 of original pass) | `BLOCKED_ENVIRONMENT` (unchanged) |
+| Linux (WSL2 Ubuntu 24.04, this pass) | Not re-tested this pass | Not re-tested this pass | **`BLOCKED_ENVIRONMENT`** (updated from `UNKNOWN_NEEDS_RUNTIME_PROOF`; NATTEN's own build blocker is resolved via a prebuilt wheel, but a new NATTEN-API-version blocker was found, §8) | Not re-tested this pass |
+| macOS Apple Silicon | `UNKNOWN_NEEDS_RUNTIME_PROOF` | `UNKNOWN_NEEDS_RUNTIME_PROOF` | `UNKNOWN_NEEDS_RUNTIME_PROOF` (unchanged — upstream's claimed macOS auto-install path was not tested; note it may hit the same NATTEN-API-version issue since macOS also needs a NATTEN release, not necessarily an old one) | `UNKNOWN_NEEDS_RUNTIME_PROOF` |
+| Android/iOS | `SOURCE_ONLY_INSPECTED` | `SOURCE_ONLY_INSPECTED` | `SOURCE_ONLY_INSPECTED` | `SOURCE_ONLY_INSPECTED` |
 
-No platform beyond Windows x64 was actually tested this pass (only one
-machine was available) — every non-Windows cell above is honestly
-`UNKNOWN_NEEDS_RUNTIME_PROOF`, not inferred as passing.
+## 14. Validation — programmatic result-count and schema assertions (R7)
 
-## 13. Negative baseline results — condensed (also see §4)
+`tools/p0m3/analyzer_shootout/eval/verify_repair.py`, run against the
+regenerated `results/{all_raw.json,metrics.json}`:
 
-| Baseline | FIX-B (phase offset) `COND_BEAT_OK` rate | FIX-H (variable tempo) `COND_BEAT_OK` rate | Downbeat/meter/cue/phrase/section output |
-|---|---|---|---|
-| scalar-BPM theoretical grid | 0.0 | 0.125 | None (all null by construction) |
-| fixed-32-beat phrase proxy | N/A (phrase-only) | N/A | 2 spurious boundaries on FIX-F's 4-boundary ground truth |
-| energy/onset heuristic | N/A (no beat model) | N/A | RMS-threshold cue candidates + coarse 3-level energy segmentation only |
+```
+=== 1. Result counts by candidate/run_state ===
+{ "beatnet": {"OK": 8}, "cue_detr": {"OK": 8},
+  "energy_onset_heuristic_baseline": {"OK": 8},
+  "fixed_32_beat_phrase_proxy_baseline": {"OK": 8},
+  "scalar_bpm_grid_baseline": {"OK": 8} }
+[PASS] all 5 expected candidates present
+[PASS] total raw count == 40
+[PASS] every raw record has run_state=OK
 
-## 14. Known limitations of this pass's own methodology (disclosed, not hidden)
+=== 2. Validated cue_points_ms range assertion ===
+[PASS] no negative values in any validated cue_points_ms
+[PASS] raw_cue count == valid + invalid count -- raw=11 valid=7 invalid=4
+[PASS] at least one invalid cue prediction was actually observed and preserved
 
-1. `exact_bar_phase_accuracy` as implemented does not independently
-   penalize a wrong *meter* — it only checks whether some predicted
-   position-1 marker is near each true downbeat, which can look
-   misleadingly good under a meter that's an even divisor of the truth
-   (§6.2). `meter_correct` is the metric that actually catches this, and
-   both are reported together specifically to avoid this trap.
-2. `phrase_boundary_distance`/`section_boundary_distance` (ground-truth
-   -> nearest-prediction) does not penalize spurious *extra* predicted
-   boundaries (§4 item 2) — a real limitation for evaluating
-   over-segmentation, disclosed rather than silently accepted as a clean
-   result.
-3. `energy_onset_heuristic`'s section-proxy label vocabulary
-   (`low/mid/high_energy`) was not reconciled with FIX-F's
-   named-section vocabulary (`intro/verse/chorus/outro`), so no
-   section-boundary score was computed for it against FIX-F (§8) —
-   scope gap, not a hidden failure.
-4. `peak_memory_mb` uses Python-level `tracemalloc`, which does not
-   capture PyTorch's C++-level tensor allocations — the reported
-   28–186 MB figures materially understate true process memory use for
-   both BeatNet and CUE-DETR. Flagged as a measurement-tooling
-   limitation, not corrected this pass (would need an OS-level RSS
-   sampler instead).
-5. FIX-F's percussive "kick" layer does not accent beat 1 differently
-   from other beats (unlike FIX-A/B/C/D/G), which likely contributed to
-   its `exact_bar_phase_accuracy=0.0` result (§6.2) — a fixture design
-   gap in this pass, disclosed as a caveat on that specific result rather
-   than attributed purely to BeatNet.
-6. Only one machine/platform (Windows x64) was available this pass — the
-   entire macOS/Linux/mobile portability matrix (§12) is `INFERENCE`
-   from upstream documentation, never independently verified.
+=== 3. ML candidate lifecycle/model-size metadata assertions ===
+[PASS] every ML row has a non-null run_phase
+[PASS] exactly one COLD_MODEL_LOAD_INFERENCE row per ML candidate -- {'beatnet': 1, 'cue_detr': 1}
+[PASS] every ML row has non-null checkpoint_size_mb
+[PASS] every ML row states an explicit memory_measurement_method
+[PASS] every baseline row uses run_phase=N_A
 
-## 15. Acceptance criteria matrix (Issue #5)
+=== 4. FIX-F fixed-32-beat proxy boundary event metrics ===
+n_gt=4 n_pred=5 TP=4 FP=1 FN=0 precision=0.8 recall=1.0 F1=0.889
+[PASS] all 5 exact-value assertions
+
+=== 5. energy_onset_heuristic section-boundary-timing vs label-semantic fields ===
+[PASS] FIX-F/FIX-G: boundary timing score present
+[PASS] FIX-F/FIX-G: section_label_semantic_accuracy explicitly None with NOT_COMPUTED note
+
+=== RESULT: ALL ASSERTIONS PASS ===
+```
+
+Full command: `python eval/verify_repair.py` (run from
+`tools/p0m3/analyzer_shootout/`, using either candidate venv — the check
+is schema/data-only, no ML imports required).
+
+## 15. Unknowns / risks (updated)
+
+- BeatNet's/CUE-DETR's behavior on real musical material remains
+  unverified (unchanged from the original pass — explicitly not a binding
+  AC for this task per PM's R7).
+- **New this pass:** BeatNet's estimator-reuse safety (whether warm
+  reuse across files is numerically equivalent to fresh construction) is
+  now an open, evidenced question (§5.2), not an assumption either way.
+- All-In-One's exact unblock path is now better-characterized but still
+  unresolved: needs a newer All-In-One revision compatible with current
+  NATTEN, or an old-NATTEN source build requiring `cmake`/CUDA Toolkit
+  (explicitly out of this repair's environment boundary).
+- Essentia remains fully unexecuted (unchanged; PM confirmed no new
+  attempt required this pass).
+- Every candidate's training-audio provenance/rights chain remains
+  `UNKNOWN_NEEDS_LEGAL_REVIEW` (license matrix, unchanged).
+- macOS/mobile portability claims remain `INFERENCE`/`UNKNOWN_NEEDS_RUNTIME_PROOF`.
+
+## 16. Acceptance criteria matrix (Issue #5, re-verified after repair)
 
 | # | Criterion | Result | Evidence |
 |---|---|---|---|
-| AC1 | Pinned revisions respected or deviations justified | PASS | §2 table; all 4 candidates' code revisions match exactly; dependency-level deviations (numba, matplotlib) are explicit and evidenced (§5.3, §9) |
-| AC2 | Code license and checkpoint/dataset license treated separately | PASS | `docs/research/P0-M3-R1-ARTIFACT-LICENSE-MATRIX.md`, every candidate has separate `Code license`/`Checkpoint license`/`Dataset license` rows |
-| AC3 | No unlicensed checkpoint/data silently promoted to production | PASS | License matrix §1–4: every production-evaluation verdict is `UNKNOWN_NEEDS_LEGAL_REVIEW` or worse; nothing was marked `CLEAR_FOR_PRODUCTION_EVALUATION` |
-| AC4 | At least one real analyzer candidate actually executed, not README-only | PASS | §6/§7 — BeatNet and CUE-DETR both actually executed, 16/16 real runs `OK`; raw JSON committed under `results/raw/` |
-| AC5 | Negative BPM/fixed-phrase baselines actually executed | PASS | §4 — all 3 required baselines executed on all 8 fixtures, 24/24 `OK` |
-| AC6 | Beat-awareness measured using explicit timestamps, not inferred from BPM only | PASS | §6.1 — `beat_timestamps_ms` compared directly against `SYNTHETIC_EXACT` ground-truth timestamps, per-fixture |
-| AC7 | Downbeat/bar correctness evaluated separately from beat correctness | PASS | §6.2 — separate `meter_correct`/`exact_bar_phase_accuracy` metrics reported alongside, not merged with, §6.1's beat metrics; the metric-artifact caveat is itself evidence this separation was taken seriously |
-| AC8 | Phrase/section/cue concepts not conflated | PASS | `common/schema.py` keeps 3 distinct fields; §8 states explicitly no field is reported as another |
-| AC9 | Synthetic exact ground truth used for deterministic timing tests | PASS | `fixtures/manifest.json`, every fixture's `ground_truth` computed by closed-form construction (`generate_fixtures.py`), `provenance=SYNTHETIC` |
-| AC10 | Runtime/platform constraints measured or explicitly blocked with evidence | PASS | §5/§12 — every candidate has either measured numbers or an evidenced blocker command+output |
-| AC11 | Outputs normalized into a reproducible comparison format | PASS | `common/schema.py`'s `AnalyzerResult`, used identically by every baseline and candidate runner |
-| AC12 | No protected/copyrighted audio, credentials, cookies, tokens committed | PASS | §11; `.gitignore` excludes all audio/checkpoints; verified via `git status`/`git diff --stat` before commit (§ handoff) |
-| AC13 | No GPL/AGPL code copied into prospective production core | PASS | Nothing under `tools/p0m3/` is production core (P0 scope only); baselines are original implementations; Essentia (AGPL) was never installed |
-| AC14 | Lane-specific decisions are evidence-backed | PASS | §9 table, each decision cites its evidence section |
-| AC15 | Smallest-composite-stack recommendation produced | PASS | §9.1 |
-| AC16 | P1 production engine not started | PASS | §11 |
-| AC17 | Signalsmith/Rubber Band not started this pass | PASS | §11 |
-
-## 16. Unknowns / risks
-
-- BeatNet's and CUE-DETR's behavior on **real musical material** (as
-  opposed to synthetic clicks/tones) is unverified — both candidates'
-  results here are, honestly, floor-level smoke evidence for the
-  pipeline mechanics plus one genuinely strong quantitative result
-  (BeatNet's beat-phase robustness, §6.1). A follow-up pass needs at
-  least one legally-clear (CC0/public-domain/owner-created) real-music
-  fixture.
-- All-In-One and Essentia remain fully unexecuted this pass; their real
-  quality is still `SOURCE_ONLY_INSPECTED`-level knowledge only.
-- Every candidate's training-audio provenance/rights chain is an
-  unresolved `UNKNOWN_NEEDS_LEGAL_REVIEW` (license matrix §5) — this is
-  a real, structural risk across the whole cue/structure candidate
-  space, not specific to one candidate.
-- macOS/Linux/mobile portability claims in §12 are entirely
-  `INFERENCE` from upstream docs, never independently verified this pass.
-- The `exact_bar_phase_accuracy` metric limitation (§14 item 1) means any
-  future automated gate built on this pass's metrics.json must use
-  `meter_correct`, not `exact_bar_phase_accuracy` alone, to judge
-  downbeat/meter quality.
+| AC1 | Pinned revisions respected or deviations justified | PASS | §3; all 4 candidates' code revisions unchanged and exact; the WSL2 probe used the same pinned All-In-One SHA |
+| AC2 | Code license and checkpoint/dataset license treated separately | PASS | License matrix Sec 1–4, now including Sec 1.1's transitive-asset audit |
+| AC3 | No unlicensed checkpoint/data silently promoted to production | PASS | License matrix; every production-evaluation verdict remains `UNKNOWN_NEEDS_LEGAL_REVIEW` or worse |
+| AC4 | At least one real analyzer candidate actually executed, not README-only | PASS | §5.2/§5.3 — BeatNet and CUE-DETR both actually executed, 40/40 runs `OK`, now with truthful cold/warm lifecycle labeling |
+| AC5 | Negative BPM/fixed-phrase baselines actually executed | PASS | §6.1 — all 3 baselines executed on all 8 fixtures, including the corrected FIX-F evidence |
+| AC6 | Beat-awareness measured using explicit timestamps, not inferred from BPM only | PASS | §6.2, unchanged mechanism |
+| AC7 | Downbeat/bar correctness evaluated separately from beat correctness | PASS | §6.2 |
+| AC8 | Phrase/section/cue concepts not conflated | PASS | `common/schema.py` fields remain distinct; §6.3 makes the boundary-timing-vs-label distinction explicit rather than implicit |
+| AC9 | Synthetic exact ground truth used for deterministic timing tests | PASS | `fixtures/manifest.json`, unchanged; FIX-F's ground truth is now correctly described (§6.1) |
+| AC10 | Runtime/platform constraints measured or explicitly blocked with evidence | PASS | §5 (measured), §8 (blocked, with much richer evidence than the original pass) |
+| AC11 | Outputs normalized into a reproducible comparison format | PASS | `common/schema.py`, repaired this pass (R1/R5 fields) |
+| AC12 | No protected/copyrighted audio, credentials, cookies, tokens committed | PASS | Diff for this repair touches only `docs/research/P0-M3-R1-*.md`, `tools/p0m3/analyzer_shootout/**`; no audio/checkpoints staged (verified via `git add -n` before commit) |
+| AC13 | No GPL/AGPL code copied into prospective production core | PASS | Unchanged; Essentia (AGPL) still never installed; madmom (BSD-3) used only as a benchmark-lane dependency, not production core |
+| AC14 | Lane-specific decisions are evidence-backed | PASS | §10, each decision cites its evidence section, including the R6-driven `UNRESOLVED` downgrade |
+| AC15 | Smallest-composite-stack recommendation produced | PASS | §10.1, revised to honestly reflect the R6 finding rather than presenting an unresolved blocker as a scheduled next step |
+| AC16 | P1 production engine not started | PASS | No engine source files anywhere in this diff |
+| AC17 | Signalsmith/Rubber Band not started this pass | PASS | Not referenced anywhere in this diff |
 
 ## 17. PM review request
 
 Please independently verify:
 
-1. `git log` on `research/p0-feasibility` shows this task's commit(s) as
-   the new `HEAD`, and `git diff --stat` against the prior head
-   (`d2601328ea2d4f3abc1e30b2791d728e1c31c33d`) touches only
-   `docs/research/P0-M3-R1-*.md`, `tools/p0m3/analyzer_shootout/**`, and
-   (if applicable) `docs/research/P0-TECHNICAL-REFERENCE-CANDIDATES.md` —
-   no engine/production files.
-2. `tools/p0m3/analyzer_shootout/results/all_raw.json` — spot-check that
-   `run_state="OK"` entries for `beatnet` and `cue_detr` contain non-null
-   `beat_timestamps_ms`/`cue_points_ms` respectively (real output, not
-   stubs).
-3. `docs/research/P0-M3-R1-ARTIFACT-LICENSE-MATRIX.md` §1–§4 — confirm
-   the `UNKNOWN_NEEDS_LEGAL_REVIEW` production verdicts are acceptable as
-   the closing state for this pass (no candidate was upgraded to
-   production-clear).
-4. §6.2's downbeat/meter finding (systematic meter=2 misclassification
-   on all 8 fixtures) — confirm this reads as an honest negative result
-   requiring follow-up, not as a disguised failure to deliver AC7.
-5. `tools/p0m3/analyzer_shootout/README.md`'s "What was NOT executed and
-   why" section — confirm the All-In-One/Essentia blockers are
-   acceptable evidence quality for this pass's `PARTIAL` result.
+1. `tools/p0m3/analyzer_shootout/results/all_raw.json` — spot-check a
+   `beatnet`/`cue_detr` `WARM_INFERENCE` row has `asset_fetch_wall_sec=null`
+   and a materially smaller `wall_time_sec` than its candidate's one
+   `COLD_MODEL_LOAD_INFERENCE` row.
+2. `eval/verify_repair.py`'s FIX-F assertions (`TP==4`, `FP==1`, `FN==0`)
+   against the raw `fixtures/manifest.json` ground truth, independently.
+3. `candidates/run_cuedetr.py`'s `use_pretrained_backbone=False` claim —
+   confirm `THIRD_PARTY_NOTICES.md` and the license matrix Sec 1.1 make
+   the removed-asset history auditable rather than silently vanished.
+4. §8's WSL2 probe — confirm the stopping point (declining to install
+   `cmake`/CUDA Toolkit) reads as correctly bounded, not as an
+   unjustified early exit given a prebuilt-wheel NATTEN path did exist.
+5. `results/raw/cue_detr__FIX-F-*.json` and `..._FIX-G-*.json` — confirm
+   `cue_points_ms: []` (zero valid predictions) is now the accurate
+   committed state for those two fixtures, replacing the original pass's
+   prose-only "anomaly" framing.

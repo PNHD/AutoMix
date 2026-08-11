@@ -9,6 +9,8 @@ isolated one-off runner scripts, not a library API.
 
 Full narrative report: [`docs/research/P0-M3-R1-ANALYZER-SHOOTOUT.md`](../../../docs/research/P0-M3-R1-ANALYZER-SHOOTOUT.md).
 Artifact/license audit: [`docs/research/P0-M3-R1-ARTIFACT-LICENSE-MATRIX.md`](../../../docs/research/P0-M3-R1-ARTIFACT-LICENSE-MATRIX.md).
+Third-party code notices (required by the MIT terms of the one direct code
+port in this harness): [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
 
 ## Layout
 
