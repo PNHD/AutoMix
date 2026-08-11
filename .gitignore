@@ -1,0 +1,52 @@
+# Environment / credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.mobileprovision
+secrets/
+credentials/
+
+# Local audio / benchmark fixtures
+fixtures/private/
+fixtures/local/
+*.wav
+*.flac
+*.mp3
+*.m4a
+*.aac
+*.ogg
+
+# IDE / OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# JavaScript / Node
+node_modules/
+.next/
+dist/
+build/
+coverage/
+
+# Kotlin / Gradle
+.gradle/
+**/build/
+local.properties
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Generated analysis/bench outputs
+artifacts/
+reports/generated/
+cache/
