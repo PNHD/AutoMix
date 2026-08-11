@@ -153,10 +153,10 @@ Represents one commercial-track transition pair used for private, real-world lis
 
 ```json
 {
-  "accepted_unconditional": ["SHORT_EQ_BLEND", "SIMPLE_CROSSFADE"],
+  "accepted_unconditional": ["SIMPLE_CROSSFADE"],
   "accepted_conditional": [
     {
-      "class": "FULL_DJ_BLEND",
+      "class": "SHORT_EQ_BLEND",
       "conditions": ["COND_BEAT_OK", "COND_DOWNBEAT_OK"],
       "all_required": true,
       "human_confirmations": [
@@ -170,14 +170,16 @@ Represents one commercial-track transition pair used for private, real-world lis
       "class": "FULL_DJ_BLEND",
       "unless_conditions": ["COND_VOCAL_OK"],
       "all_required": true,
-      "reason": "..."
+      "reason": "Illustrative only: acceptable if and only if the rendered output demonstrates COND_VOCAL_OK, by any technique."
     }
   ],
   "rejected": [
-    { "class": "GAPLESS", "reason": "..." }
+    { "class": "GAPLESS", "reason": "Illustrative only: this pair's fixtures are not authored as a continuous work (is_continuous_work=false), so a seamless no-processing join would misrepresent two independent tracks as one." }
   ]
 }
 ```
+
+**This example is itself valid under §6.1's constraints** — see the worked mutual-exclusivity check immediately below the field table (after §6.1). No class value is repeated across `accepted_unconditional`, `accepted_conditional[].class`, `rejected_conditional[].class`, and `rejected[].class`: `SIMPLE_CROSSFADE`, `SHORT_EQ_BLEND`, `FULL_DJ_BLEND`, and `GAPLESS` each appear exactly once, in exactly one list. `CUT` and `NO_SPECIAL_TRANSITION` appear in none of the four lists, which is valid and simply means both default to the closed-world rejection (§6.1 rule 2) for this illustrative pair.
 
 | Field | Type | Required | Nullable | Default | Semantics |
 |---|---|---|---|---|---|
@@ -206,6 +208,18 @@ Represents one commercial-track transition pair used for private, real-world lis
    - `observed_class` has a `rejected` entry → always mismatch and `C11`-eligible.
    - Otherwise → mismatch per the closed-world default (rule 2 above), not `C11`-eligible.
 4. `rejected_conditional[].reason` and `rejected[].reason` must never name a specific implementation technology (e.g. a named DSP technique or modifier flag) as the sole qualifying mechanism — acceptance/rejection must be defined in terms of Condition-Registry IDs (i.e., measured outcomes), which are technology-agnostic by construction.
+5. **Worked mutual-exclusivity check for the §6 example above:**
+
+   | Class | `accepted_unconditional` | `accepted_conditional[].class` | `rejected_conditional[].class` | `rejected[].class` | Appears in |
+   |---|---|---|---|---|---|
+   | `SIMPLE_CROSSFADE` | ✓ | — | — | — | exactly 1 list |
+   | `SHORT_EQ_BLEND` | — | ✓ | — | — | exactly 1 list |
+   | `FULL_DJ_BLEND` | — | — | ✓ | — | exactly 1 list |
+   | `GAPLESS` | — | — | — | ✓ | exactly 1 list |
+   | `CUT` | — | — | — | — | 0 lists (closed-world default applies) |
+   | `NO_SPECIAL_TRANSITION` | — | — | — | — | 0 lists (closed-world default applies) |
+
+   Reading across each row: every class appears in at most one column with a ✓, so the intersection of any two of the four lists is the empty set for this example. Rule 1 (mutual exclusivity) is satisfied.
 
 ## 7. `manipulation_constraints` object — full shape
 
@@ -241,7 +255,7 @@ A pair's `manipulation_constraints` object, when present, may override any subse
 | `has_sustained_beat_lock` | boolean | no | yes | `true` iff `sustained_beat_lock_ratio ≥0.8` **and** `overlap_ms ≥ 4×local_bar_period_ms`; `null` when `sustained_beat_lock_ratio` is `null` |
 | `cue_placement_ok` | boolean | yes (when `overlap_ms > epsilon`; otherwise irrelevant) | no | `true` if, for each side (outgoing exit / incoming entry) whose `acceptable_exit_regions_ms`/`acceptable_entry_regions_ms` carries reliable (`SYNTHETIC_EXACT`/`MANUAL`) ground truth, the actual rendered entry/exit point lands inside that fixture's annotated region (cue-region error =0, i.e. `COND_CUE_OK` satisfied for that side); when neither side has reliable region ground truth, defaults `true` (nothing to check — permissive, not a free pass to grant the label, since `has_sustained_beat_lock` is independently required); `false` whenever reliable ground truth exists for a side and that side's rendered point falls outside it |
 | `phrase_section_alignment_ok` | boolean | yes (when `overlap_ms > epsilon`) | no | `true` if, for whichever of `phrase_boundaries_ms`/`section_boundaries` carries reliable ground truth for the relevant track(s), the actual rendered entry/exit point satisfies the corresponding contract §7 condition (`COND_PHRASE_OK` and/or `COND_SECTION_OK`); when neither is reliably annotated, defaults `true` (nothing to check); `false` whenever reliably annotated and the corresponding condition is not satisfied |
-| `has_native_tempo_structural_evidence` | boolean | yes (when `overlap_ms > epsilon`) | no | `has_sustained_beat_lock AND cue_placement_ok AND phrase_section_alignment_ok`, where a `null` `has_sustained_beat_lock` (missing beat ground truth) resolves this composite to `false` — the no-correction `FULL_DJ_BLEND` path (§9.1 rule 3c) is never granted on missing evidence |
+| `has_native_tempo_structural_evidence` | boolean | yes (when `overlap_ms > epsilon`) | no | `has_sustained_beat_lock AND cue_placement_ok AND phrase_section_alignment_ok`, where a `null` `has_sustained_beat_lock` (missing beat ground truth) resolves this composite to `false` — the native-tempo/no-correction `FULL_DJ_BLEND` branch (§9.1 rule 3d — distinct from rule 3c, which is the tempo/pitch-automation path) is never granted on missing evidence |
 | `outgoing_used_natural_full_duration` | boolean | yes | no | Outgoing track played to its own `authored_exit_boundary_ms` (or `duration_ms` if that field was null), not truncated |
 | `incoming_used_natural_start` | boolean | yes | no | Incoming track began at its own `authored_entry_boundary_ms` (or `0` if null) |
 | `stem_separation_applied` | boolean | yes | no | **Diagnostic metadata only — never referenced by any `transition_class_policy` entry or classification rule.** Whether the system under test applied stem/source-separation or targeted vocal/instrument attenuation during the overlap |

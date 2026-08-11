@@ -339,7 +339,7 @@ Every row is independently verifiable by reading this repository at the current 
 | # | Acceptance criterion (Issue #4) | Result | Current evidence (this repository, this commit) |
 |---|---|---|---|
 | 1 | BPM-aware explicitly distinguished from beat/downbeat/phrase/cue/content-aware behavior | PASS | §3.1 terminology gate table |
-| 2 | Adversarial BPM/key-only failure cases exist | PASS | §4.1–§4.5 lane case tables; `docs/research/P0-M2-BENCHMARK-PAIR-CATALOG.md` (31 concrete pairs, e.g. `PAIR-SYN-A-001`–`A-003`, `PAIR-SYN-D-001`–`D-008`) |
+| 2 | Adversarial BPM/key-only failure cases exist | PASS | §4.1–§4.5 lane case tables; `docs/research/P0-M2-BENCHMARK-PAIR-CATALOG.md` (39 concrete pairs — Lane A 10, Lane B 7, Lane C 6, Lane D 8, Lane E 8 — e.g. `PAIR-SYN-A-001`–`A-003`, `PAIR-SYN-D-001`–`D-008`) |
 | 3 | Objective/proxy/human-only metrics defined with units and limitations | PASS | §8 objective metrics table (unit + ground truth + threshold + class column per row) |
 | 4 | Human listening rubric has anchored scoring and final veto | PASS | §9.1 anchored 1–5 scale; §9.2 veto flag forcing `FAIL` regardless of other scores |
 | 5 | Catastrophic failures are defined | PASS | §10, `C1`–`C11` with thresholds and safety-critical designation |
