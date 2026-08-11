@@ -21,6 +21,41 @@ No production app implementation is accepted during P0 unless a task explicitly 
 7. If a required capability is blocked by API policy or DRM, document the blocker and continue with the nearest legal test surface instead of bypassing it.
 8. No merge to `main` unless explicitly requested by the project owner/PM.
 
+## Mandatory task execution header
+
+Every task prompt issued by the PM MUST explicitly state all of the following. If any field is missing, the task is not ready to execute.
+
+- **Execution agent:** Codex / Claude / Gemini / other approved agent.
+- **Model:** exact model requested by the PM.
+- **Reasoning effort:** Low / Medium / High or the platform-equivalent exact setting.
+- **Extended thinking:** On / Off when applicable.
+- **Dynamic workflows:** default OFF unless the PM explicitly overrides it.
+- **Sub-agents:** default OFF. Do not spawn parallel/nested/delegated agents unless the task prompt explicitly authorizes them and pins their model/effort.
+- **Fallback policy:** no silent model fallback. If the requested model cannot be selected or verified, report BLOCKED unless the task prompt provides an approved fallback.
+
+For Claude repository work, the default unless a task says otherwise is:
+
+- Parent: Sonnet High
+- Extended thinking: ON
+- Dynamic workflows: OFF
+- Sub-agents: OFF
+
+## Mandatory PM handoff
+
+Every task prompt MUST end with a `HANDOFF TO PM` section that tells the executing agent exactly what to return for review. At minimum require:
+
+1. Result: PASS / PARTIAL / BLOCKED / FAIL.
+2. Repository + branch.
+3. Exact HEAD commit SHA after the task, or `NO COMMIT` with reason.
+4. Files created/modified.
+5. Commands/tests run and their exact results.
+6. Evidence supporting each acceptance criterion.
+7. Unknowns, failures, risks, and any assumptions.
+8. Links/IDs for PRs, issues, CI runs, artifacts, logs, or external research used.
+9. A concise `PM REVIEW REQUEST` stating exactly what the PM should inspect next.
+
+Do not end with only a prose summary such as “done”. The handoff must be sufficient for the PM to independently verify the work without reconstructing the agent's session.
+
 ## Quality terminology
 
 - **Crossfade**: volume overlap only.
