@@ -1,28 +1,58 @@
 {
-  "schema_version": "1.0.0",
-  "purpose": "P0-M3-R2 Task D adversarial fixture index. Metadata-only (no audio bytes, no copyrighted material). Fixtures describe candidate current-track exit points; the planner decides WHEN to leave the current track, independent of any specific next-track/DSP choice (P4).",
+  "schema_version": "2.0.0",
+  "purpose": "P0-M3-R2 Apple-like redesign adversarial fixture index (Issue #6 PM PRODUCT DIRECTION UPDATE). Metadata-only (no audio bytes, no copyrighted material). fixtures.json holds timing/preservation fixtures (candidate current-track exit points); pair_fixtures.json holds pair-level mixability/compatibility fixtures. The planner decides WHEN to leave the current track and, separately, WHICH transition class is appropriate given pair compatibility -- never conflating the two (P3/P4).",
   "fixtures_file": "fixtures.json",
-  "fixture_count": 10,
-  "task_d_coverage": [
-    { "task_d_item": 1, "fixture_id": "TP-01", "description": "normal 3-4 min track, attractive early technical mix point, no legitimate exit there" },
-    { "task_d_item": 2, "fixture_id": "TP-02", "description": "same track family with a strong late outro exit" },
-    { "task_d_item": 3, "fixture_id": "TP-03", "description": "short ~60-90s track where a percentage-only guard would be wrong" },
-    { "task_d_item": 4, "fixture_id": "TP-04", "description": "long track where waiting for absolute near-end is unnecessarily restrictive" },
-    { "task_d_item": 5, "fixture_id": "TP-05", "description": "track with no clean outro at all (authored absence)" },
-    { "task_d_item": 6, "fixture_id": "TP-06", "description": "intro/verse/chorus structure with an early false opportunity before the first chorus completes" },
-    { "task_d_item": 7, "fixture_id": "TP-07", "description": "instrumental / low-vocal case" },
-    { "task_d_item": 8, "fixture_id": "TP-08", "description": "dense vocal overlap case" },
-    { "task_d_item": 9, "fixture_id": "TP-09", "description": "no trustworthy cue/section annotation -- confidence-aware fallback" },
-    { "task_d_item": 10, "fixture_id": "TP-10", "description": "explicit HIGHLIGHT_EXPLICIT case where an earlier exit is intentionally allowed" }
+  "pair_fixtures_file": "pair_fixtures.json",
+  "fixture_count": 14,
+  "pair_fixture_count": 5,
+  "spec_letter_coverage": [
+    { "letter": "A", "fixture_id": "TP-01", "description": "normal 3-4 min track, technical mix point ~30s, no legitimate exit -> reject" },
+    { "letter": "B", "fixture_id": "TP-11", "description": "7-minute song, technically attractive candidate ~2 minutes -> catastrophic reject" },
+    { "letter": "C", "fixture_id": "TP-11", "description": "same 7-minute song, good near-end window in final ~tens of seconds -> accept" },
+    { "letter": "D", "fixture_id": "TP-12", "description": "same long song with TWO valid near-end windows; later/stronger wins, order-invariant" },
+    { "letter": "E", "fixture_id": "TP-03", "description": "60-90s short song -> duration normalization works" },
+    { "letter": "F", "fixture_id": "TP-04", "description": "8-10 minute long song -> fixed-seconds-only rule fails; normalized/structural planner still works" },
+    { "letter": "G", "fixture_id": "PAIR-01", "description": "compatible genre + compatible tempo + stable beat -> complex dynamic mix eligible" },
+    { "letter": "H", "fixture_id": "PAIR-02", "description": "strongly incompatible genre/style pair -> dynamic mix downgraded/disabled" },
+    { "letter": "I", "fixture_id": "PAIR-03", "description": "tempo relation requiring excessive time stretch -> dynamic mix downgraded/disabled" },
+    { "letter": "J", "fixture_id": "PAIR-04", "description": "genre/tempo compatible but dense vocal-on-vocal overlap -> dynamic mix downgraded" },
+    { "letter": "K", "fixture_id": "PAIR-05", "description": "strong energy-continuation pair with good structure -> preferred high-energy transition candidate" },
+    { "letter": "L", "fixture_id": "TP-09", "description": "missing/low analysis confidence -> conservative simple/no-special transition" },
+    { "letter": "M", "fixture_id": "TP-13", "description": "meaningful outro followed by long dead-air silence -> preserve outro, trim dead air, no false truncation report" },
+    { "letter": "N", "fixture_id": "TP-14", "description": "sequential album intent -> no forced DJ-style transition" }
+  ],
+  "retained_from_prior_pass": [
+    { "fixture_id": "TP-02", "description": "strong late outro exit (positive-capture control)" },
+    { "fixture_id": "TP-05", "description": "no clean outro at all (authored absence)" },
+    { "fixture_id": "TP-06", "description": "intro/verse/chorus early false opportunity before first chorus completes" },
+    { "fixture_id": "TP-07", "description": "instrumental / low-vocal case; mid-track opportunity reachable only by the BALANCED_MIX research control, never the default" },
+    { "fixture_id": "TP-08", "description": "dense single-track vocal collision case (contrast with pair-level PAIR-04/J)" },
+    { "fixture_id": "TP-10", "description": "explicit-highlight research-control case; also proves the intent-mismatch guard (R1)" }
   ],
   "candidate_ground_truth_fields": {
-    "is_premature_trap": "SYNTHETIC_EXACT fixture-design-intent label: this candidate is technically compatible but must never be selected as a real transition in FULL_SONG_DEFAULT or BALANCED_MIX.",
+    "is_premature_trap": "SYNTHETIC_EXACT fixture-design-intent label: this candidate is technically compatible but must never be selected as a real transition under SEAMLESS_FULL_TRACK_DEFAULT or BALANCED_MIX_RESEARCH_CONTROL.",
     "is_vocal_collision_trap": "SYNTHETIC_EXACT: structurally plausible candidate that must be rejected specifically due to vocal_collision_risk=HIGH.",
-    "is_valid_natural_exit": "SYNTHETIC_EXACT: a candidate that is an acceptable choice under FULL_SONG_DEFAULT/BALANCED_MIX (region-supported, musical-unit-complete, low vocal risk).",
-    "is_preferred_earliest_valid_exit": "SYNTHETIC_EXACT: of the valid candidates on this fixture, the single earliest one a non-over-restrictive policy should be able to capture; used to measure missed-transition-opportunity separately from mere song-preservation.",
-    "highlight_eligible": "SYNTHETIC_EXACT, TP-10 only: marks the candidate that is intentionally structurally sound but fraction-gated, to isolate the HIGHLIGHT_EXPLICIT intent effect from structural evidence."
+    "is_valid_natural_exit": "SYNTHETIC_EXACT: a candidate that is an acceptable choice under the product-default engine (region-supported, musical-unit-complete, low vocal risk, and -- as of this redesign -- near-end enough to clear the preservation floor).",
+    "is_preferred_earliest_valid_exit": "SYNTHETIC_EXACT, REDEFINED this pass: the single BEST valid candidate a non-greedy ranked planner should select -- historically named for the common case where 'best' and 'earliest-valid' coincided, but TP-12 (letter D) deliberately proves 'best' can be the LATER of two valid candidates. Field name kept for backward compatibility with run_benchmark.py's missed-opportunity metric; semantics are 'preferred', not literally 'earliest'.",
+    "highlight_eligible": "SYNTHETIC_EXACT, TP-10 only: marks the candidate that is intentionally structurally sound but preservation-gated, to isolate the HIGHLIGHT_EXPLICIT intent effect from structural evidence."
   },
-  "note_on_ground_truth_isolation": "Ground-truth labels (is_premature_trap, is_vocal_collision_trap, is_valid_natural_exit, is_preferred_earliest_valid_exit, highlight_eligible) are consumed ONLY by run_benchmark.py's scoring/metrics code, never by policy/eligibility.py's decision logic. This separation is asserted by verify.py so no policy can 'see the answer key'.",
+  "fixture_level_fields": {
+    "trailing_dead_air_ms": "Optional. Milliseconds of authored non-musical trailing silence after the musical content ends.",
+    "trailing_dead_air_is_authored_non_musical": "Optional, default false. Only when explicitly true does effective_content_end_ms subtract trailing_dead_air_ms from duration_ms -- an unannotated tail is NEVER silently treated as removable dead air.",
+    "sequential_album_intent": "Optional, default false. When true, FULL_DJ_BLEND and SHORT_EQ_BLEND are withheld from preferred_transition_class_set regardless of timing/pair-compatibility quality."
+  },
+  "pair_fixture_fields": {
+    "outgoing / incoming": "genre_tags + bpm for each side of the pair",
+    "beat_confidence / downbeat_confidence": "HIGH|MEDIUM|LOW|NONE",
+    "harmonic_relationship": "COMPATIBLE|INCOMPATIBLE|omitted(=UNKNOWN, neutral)",
+    "energy_continuity": "STRONG|omitted(=WEAK)",
+    "structure_compatibility": "COMPATIBLE|omitted(=UNKNOWN)",
+    "vocal_collision_risk / bass_percussion_collision_risk": "HIGH|MEDIUM|LOW|NONE",
+    "intro_outro_texture_compatible": "bool",
+    "analysis_confidence": "HIGH|MEDIUM|LOW|NONE",
+    "expected_overall_eligible": "SYNTHETIC_EXACT test-design label consumed only by build_fixtures.py-style validation / run_benchmark.py reporting, never by policy/compatibility.py itself"
+  },
+  "note_on_ground_truth_isolation": "Ground-truth-only fields (is_premature_trap, is_vocal_collision_trap, is_valid_natural_exit, is_preferred_earliest_valid_exit, highlight_eligible, expected_overall_eligible) are consumed ONLY by run_benchmark.py's scoring/metrics code and verify.py's assertions, never by policy/eligibility.py, policy/policies.py, policy/compatibility.py, or policy/ranking.py's decision logic. This separation is statically asserted by verify.py (AST-based, immune to prose mentions) so no policy can 'see the answer key'.",
   "no_copyrighted_audio": true,
   "no_provider_credentials_or_tokens": true
 }

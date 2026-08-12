@@ -1,0 +1,220 @@
+{
+  "purpose": "Proves pair compatibility gates FULL_DJ_BLEND independently of timing quality: every integration row reuses TP-11's already-excellent near-end candidate, varying ONLY the pair.",
+  "components_by_pair": {
+    "PAIR-01": {
+      "title": "compatible_genre_tempo_stable_beat",
+      "task_letter": "G",
+      "expected_overall_eligible": true,
+      "computed": {
+        "genre_compatibility": "COMPATIBLE",
+        "tempo_compatibility": "DIRECT",
+        "required_tempo_stretch_pct": 0.0078,
+        "beat_compatibility": "SUFFICIENT",
+        "downbeat_compatibility": "SUFFICIENT",
+        "harmonic_compatibility": "COMPATIBLE",
+        "energy_continuity": "WEAK",
+        "structure_compatibility": "COMPATIBLE",
+        "vocal_collision_risk": "LOW",
+        "bass_percussion_collision_risk": "LOW",
+        "intro_outro_texture_compatibility": "COMPATIBLE",
+        "analysis_confidence": "HIGH",
+        "overall_dynamic_mix_eligible": true,
+        "reason_codes": [
+          "GENRE_COMPATIBLE_SAME_FAMILY",
+          "TEMPO_DIRECT_COMPATIBLE",
+          "BEAT_CONFIDENCE_SUFFICIENT",
+          "DOWNBEAT_CONFIDENCE_SUFFICIENT",
+          "HARMONIC_COMPATIBLE",
+          "ENERGY_CONTINUITY_WEAK",
+          "STRUCTURE_COMPATIBLE",
+          "VOCAL_COLLISION_RISK_ACCEPTABLE",
+          "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+          "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+          "ANALYSIS_CONFIDENCE_SUFFICIENT",
+          "PAIR_FULLY_COMPATIBLE_COMPLEX_MIX_ELIGIBLE"
+        ]
+      },
+      "matches_expectation": true
+    },
+    "PAIR-02": {
+      "title": "strongly_incompatible_genre_style",
+      "task_letter": "H",
+      "expected_overall_eligible": false,
+      "computed": {
+        "genre_compatibility": "INCOMPATIBLE",
+        "tempo_compatibility": "DIRECT",
+        "required_tempo_stretch_pct": 0.0,
+        "beat_compatibility": "SUFFICIENT",
+        "downbeat_compatibility": "SUFFICIENT",
+        "harmonic_compatibility": "COMPATIBLE",
+        "energy_continuity": "STRONG",
+        "structure_compatibility": "COMPATIBLE",
+        "vocal_collision_risk": "LOW",
+        "bass_percussion_collision_risk": "LOW",
+        "intro_outro_texture_compatibility": "COMPATIBLE",
+        "analysis_confidence": "HIGH",
+        "overall_dynamic_mix_eligible": false,
+        "reason_codes": [
+          "GENRE_INCOMPATIBLE",
+          "TEMPO_DIRECT_COMPATIBLE",
+          "BEAT_CONFIDENCE_SUFFICIENT",
+          "DOWNBEAT_CONFIDENCE_SUFFICIENT",
+          "HARMONIC_COMPATIBLE",
+          "ENERGY_CONTINUITY_STRONG",
+          "STRUCTURE_COMPATIBLE",
+          "VOCAL_COLLISION_RISK_ACCEPTABLE",
+          "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+          "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+          "ANALYSIS_CONFIDENCE_SUFFICIENT"
+        ]
+      },
+      "matches_expectation": true
+    },
+    "PAIR-03": {
+      "title": "tempo_relation_requires_excessive_stretch",
+      "task_letter": "I",
+      "expected_overall_eligible": false,
+      "computed": {
+        "genre_compatibility": "COMPATIBLE",
+        "tempo_compatibility": "EXCESSIVE_STRETCH",
+        "required_tempo_stretch_pct": 0.5556,
+        "beat_compatibility": "SUFFICIENT",
+        "downbeat_compatibility": "SUFFICIENT",
+        "harmonic_compatibility": "COMPATIBLE",
+        "energy_continuity": "STRONG",
+        "structure_compatibility": "COMPATIBLE",
+        "vocal_collision_risk": "LOW",
+        "bass_percussion_collision_risk": "LOW",
+        "intro_outro_texture_compatibility": "COMPATIBLE",
+        "analysis_confidence": "HIGH",
+        "overall_dynamic_mix_eligible": false,
+        "reason_codes": [
+          "GENRE_COMPATIBLE_SAME_FAMILY",
+          "TEMPO_EXCESSIVE_STRETCH_REQUIRED",
+          "BEAT_CONFIDENCE_SUFFICIENT",
+          "DOWNBEAT_CONFIDENCE_SUFFICIENT",
+          "HARMONIC_COMPATIBLE",
+          "ENERGY_CONTINUITY_STRONG",
+          "STRUCTURE_COMPATIBLE",
+          "VOCAL_COLLISION_RISK_ACCEPTABLE",
+          "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+          "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+          "ANALYSIS_CONFIDENCE_SUFFICIENT"
+        ]
+      },
+      "matches_expectation": true
+    },
+    "PAIR-04": {
+      "title": "compatible_genre_tempo_dense_vocal_collision",
+      "task_letter": "J",
+      "expected_overall_eligible": false,
+      "computed": {
+        "genre_compatibility": "COMPATIBLE",
+        "tempo_compatibility": "DIRECT",
+        "required_tempo_stretch_pct": 0.0081,
+        "beat_compatibility": "SUFFICIENT",
+        "downbeat_compatibility": "SUFFICIENT",
+        "harmonic_compatibility": "COMPATIBLE",
+        "energy_continuity": "STRONG",
+        "structure_compatibility": "COMPATIBLE",
+        "vocal_collision_risk": "HIGH",
+        "bass_percussion_collision_risk": "LOW",
+        "intro_outro_texture_compatibility": "COMPATIBLE",
+        "analysis_confidence": "HIGH",
+        "overall_dynamic_mix_eligible": false,
+        "reason_codes": [
+          "GENRE_COMPATIBLE_SAME_FAMILY",
+          "TEMPO_DIRECT_COMPATIBLE",
+          "BEAT_CONFIDENCE_SUFFICIENT",
+          "DOWNBEAT_CONFIDENCE_SUFFICIENT",
+          "HARMONIC_COMPATIBLE",
+          "ENERGY_CONTINUITY_STRONG",
+          "STRUCTURE_COMPATIBLE",
+          "VOCAL_COLLISION_RISK_HIGH_PAIR",
+          "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+          "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+          "ANALYSIS_CONFIDENCE_SUFFICIENT"
+        ]
+      },
+      "matches_expectation": true
+    },
+    "PAIR-05": {
+      "title": "strong_energy_continuation_preferred_high_energy_candidate",
+      "task_letter": "K",
+      "expected_overall_eligible": true,
+      "computed": {
+        "genre_compatibility": "COMPATIBLE",
+        "tempo_compatibility": "DIRECT",
+        "required_tempo_stretch_pct": 0.0,
+        "beat_compatibility": "SUFFICIENT",
+        "downbeat_compatibility": "SUFFICIENT",
+        "harmonic_compatibility": "COMPATIBLE",
+        "energy_continuity": "STRONG",
+        "structure_compatibility": "COMPATIBLE",
+        "vocal_collision_risk": "LOW",
+        "bass_percussion_collision_risk": "LOW",
+        "intro_outro_texture_compatibility": "COMPATIBLE",
+        "analysis_confidence": "HIGH",
+        "overall_dynamic_mix_eligible": true,
+        "reason_codes": [
+          "GENRE_COMPATIBLE_SAME_FAMILY",
+          "TEMPO_DIRECT_COMPATIBLE",
+          "BEAT_CONFIDENCE_SUFFICIENT",
+          "DOWNBEAT_CONFIDENCE_SUFFICIENT",
+          "HARMONIC_COMPATIBLE",
+          "ENERGY_CONTINUITY_STRONG",
+          "STRUCTURE_COMPATIBLE",
+          "VOCAL_COLLISION_RISK_ACCEPTABLE",
+          "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+          "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+          "ANALYSIS_CONFIDENCE_SUFFICIENT",
+          "PAIR_FULLY_COMPATIBLE_COMPLEX_MIX_ELIGIBLE"
+        ]
+      },
+      "matches_expectation": true
+    }
+  },
+  "tp11_integration_by_pair": {
+    "PAIR-01": {
+      "timing_fixture": "TP-11 (near-end candidate, timing already excellent)",
+      "allowed_transition_class_set": [
+        "FULL_DJ_BLEND",
+        "SHORT_EQ_BLEND",
+        "SIMPLE_CROSSFADE"
+      ],
+      "full_dj_blend_offered": true
+    },
+    "PAIR-02": {
+      "timing_fixture": "TP-11 (near-end candidate, timing already excellent)",
+      "allowed_transition_class_set": [
+        "SIMPLE_CROSSFADE"
+      ],
+      "full_dj_blend_offered": false
+    },
+    "PAIR-03": {
+      "timing_fixture": "TP-11 (near-end candidate, timing already excellent)",
+      "allowed_transition_class_set": [
+        "SIMPLE_CROSSFADE"
+      ],
+      "full_dj_blend_offered": false
+    },
+    "PAIR-04": {
+      "timing_fixture": "TP-11 (near-end candidate, timing already excellent)",
+      "allowed_transition_class_set": [
+        "SIMPLE_CROSSFADE"
+      ],
+      "full_dj_blend_offered": false
+    },
+    "PAIR-05": {
+      "timing_fixture": "TP-11 (near-end candidate, timing already excellent)",
+      "allowed_transition_class_set": [
+        "FULL_DJ_BLEND",
+        "SHORT_EQ_BLEND",
+        "SIMPLE_CROSSFADE"
+      ],
+      "full_dj_blend_offered": true
+    }
+  },
+  "incompatible_pair_downgrade_rate": 0.6,
+  "incompatible_pair_downgrade_count_over_denominator": "3/5"
+}

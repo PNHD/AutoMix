@@ -1,0 +1,143 @@
+[
+  {
+    "pair_id": "PAIR-01",
+    "title": "compatible_genre_tempo_stable_beat",
+    "task_letter": "G",
+    "purpose": "Compatible genre family, direct-tempo-compatible BPM, HIGH beat/downbeat confidence, HIGH analysis confidence -> dynamic mix (FULL_DJ_BLEND) may be eligible.",
+    "outgoing": {
+      "genre_tags": [
+        "house"
+      ],
+      "bpm": 128
+    },
+    "incoming": {
+      "genre_tags": [
+        "electronic"
+      ],
+      "bpm": 129
+    },
+    "beat_confidence": "HIGH",
+    "downbeat_confidence": "HIGH",
+    "harmonic_relationship": "COMPATIBLE",
+    "energy_continuity": "WEAK",
+    "structure_compatibility": "COMPATIBLE",
+    "vocal_collision_risk": "LOW",
+    "bass_percussion_collision_risk": "LOW",
+    "intro_outro_texture_compatible": true,
+    "analysis_confidence": "HIGH",
+    "expected_overall_eligible": true
+  },
+  {
+    "pair_id": "PAIR-02",
+    "title": "strongly_incompatible_genre_style",
+    "task_letter": "H",
+    "purpose": "Genre families share no overlap even though BPM matches exactly and beat/downbeat/analysis confidence are all HIGH -- proves BPM alone never authorizes complex mixing (P5) and that genre incompatibility independently disables it, matching Apple's publicly documented 'some genres play without transitions'.",
+    "outgoing": {
+      "genre_tags": [
+        "ambient"
+      ],
+      "bpm": 140
+    },
+    "incoming": {
+      "genre_tags": [
+        "gabber",
+        "hardcore"
+      ],
+      "bpm": 140
+    },
+    "beat_confidence": "HIGH",
+    "downbeat_confidence": "HIGH",
+    "harmonic_relationship": "COMPATIBLE",
+    "energy_continuity": "STRONG",
+    "structure_compatibility": "COMPATIBLE",
+    "vocal_collision_risk": "LOW",
+    "bass_percussion_collision_risk": "LOW",
+    "intro_outro_texture_compatible": true,
+    "analysis_confidence": "HIGH",
+    "expected_overall_eligible": false
+  },
+  {
+    "pair_id": "PAIR-03",
+    "title": "tempo_relation_requires_excessive_stretch",
+    "task_letter": "I",
+    "purpose": "Genre-compatible, beat/downbeat confident, but the BPM relationship is neither direct nor a legitimate half/double-time relation -- required stretch exceeds MAX_JUSTIFIED_TEMPO_STRETCH_PCT -- proves tempo incompatibility alone disables complex mixing even with a compatible genre.",
+    "outgoing": {
+      "genre_tags": [
+        "pop"
+      ],
+      "bpm": 90
+    },
+    "incoming": {
+      "genre_tags": [
+        "pop"
+      ],
+      "bpm": 140
+    },
+    "beat_confidence": "HIGH",
+    "downbeat_confidence": "HIGH",
+    "harmonic_relationship": "COMPATIBLE",
+    "energy_continuity": "STRONG",
+    "structure_compatibility": "COMPATIBLE",
+    "vocal_collision_risk": "LOW",
+    "bass_percussion_collision_risk": "LOW",
+    "intro_outro_texture_compatible": true,
+    "analysis_confidence": "HIGH",
+    "expected_overall_eligible": false
+  },
+  {
+    "pair_id": "PAIR-04",
+    "title": "compatible_genre_tempo_dense_vocal_collision",
+    "task_letter": "J",
+    "purpose": "Genre and tempo compatible, beat/downbeat confident, but dense vocal-on-vocal overlap risk is HIGH -- proves vocal collision independently downgrades an otherwise technically beat-compatible pair.",
+    "outgoing": {
+      "genre_tags": [
+        "pop"
+      ],
+      "bpm": 124
+    },
+    "incoming": {
+      "genre_tags": [
+        "pop"
+      ],
+      "bpm": 125
+    },
+    "beat_confidence": "HIGH",
+    "downbeat_confidence": "HIGH",
+    "harmonic_relationship": "COMPATIBLE",
+    "energy_continuity": "STRONG",
+    "structure_compatibility": "COMPATIBLE",
+    "vocal_collision_risk": "HIGH",
+    "bass_percussion_collision_risk": "LOW",
+    "intro_outro_texture_compatible": true,
+    "analysis_confidence": "HIGH",
+    "expected_overall_eligible": false
+  },
+  {
+    "pair_id": "PAIR-05",
+    "title": "strong_energy_continuation_preferred_high_energy_candidate",
+    "task_letter": "K",
+    "purpose": "Every hard-gating component passes AND energy continuity is STRONG with compatible structure -- the preferred high-energy-momentum candidate once timing/compatibility safety gates already passed (spec: energy is a ranking signal AFTER safety gates, never a substitute for them).",
+    "outgoing": {
+      "genre_tags": [
+        "house"
+      ],
+      "bpm": 126
+    },
+    "incoming": {
+      "genre_tags": [
+        "house"
+      ],
+      "bpm": 126
+    },
+    "beat_confidence": "HIGH",
+    "downbeat_confidence": "HIGH",
+    "harmonic_relationship": "COMPATIBLE",
+    "energy_continuity": "STRONG",
+    "structure_compatibility": "COMPATIBLE",
+    "vocal_collision_risk": "LOW",
+    "bass_percussion_collision_risk": "LOW",
+    "intro_outro_texture_compatible": true,
+    "analysis_confidence": "HIGH",
+    "expected_overall_eligible": true
+  }
+]

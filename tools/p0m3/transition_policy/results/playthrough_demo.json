@@ -1,98 +1,220 @@
 {
   "fixture_id": "TP-01",
-  "note": "Same fixture, same policy, same intent, two different evaluation times -- demonstrates PLAY_THROUGH and NO_SPECIAL_TRANSITION are both reachable, distinct, first-class outcomes (AC10), and that 'keep playing' is the correct mid-track answer (Task C: 'if no good transition exists yet, playing longer is correct').",
+  "note": "Same fixture/policy/intent, two evaluation times -- PLAY_THROUGH and NO_SPECIAL_TRANSITION are both reachable, distinct, first-class outcomes (AC10). decide_at_time is the TIME-LOCAL query primitive (cannot see future candidates); decide() is the canonical full-track/offline ranked planner -- they are NOT presented as equivalent (spec 'FULL-TRACK VS TIME-LOCAL').",
   "query_at_60000ms_before_outro_region": {
     "fixture_id": "TP-01",
-    "listener_intent": "FULL_SONG_DEFAULT",
-    "policy_name": "STRUCTURE_AWARE_PRESERVATION",
+    "listener_intent": "SEAMLESS_FULL_TRACK_DEFAULT",
+    "policy_name": "SEAMLESS_FULL_TRACK_DEFAULT",
     "decision_type": "PLAY_THROUGH",
-    "current_track_exit_window_ms": null,
+    "current_track_effective_content_end_ms": 210000,
+    "transition_onset_window_ms": null,
+    "outgoing_last_audible_target_ms": null,
+    "outgoing_content_preservation_target": null,
     "next_track_entry_window_ms": null,
-    "preferred_transition_class_set": [],
-    "beat_downbeat_alignment_target_ms": null,
-    "permitted_tempo_pitch_envelope": null,
-    "confidence": "N/A -- re-evaluate later",
+    "allowed_transition_class_set": [],
+    "pair_compatibility_components": null,
+    "beat_alignment_target": null,
+    "downbeat_alignment_target": null,
+    "permitted_tempo_ratio": null,
+    "permitted_pitch_shift": null,
+    "energy_continuity_target": null,
+    "vocal_collision_constraints": null,
+    "bass_collision_constraints": null,
+    "analysis_confidence": "N/A -- re-evaluate later",
     "reason_codes": [
       "NO_ELIGIBLE_CANDIDATE_YET_MORE_TRACK_REMAINS"
     ],
     "queue_order_independent_of_exit_timing": true,
-    "candidate_trace": [
+    "candidate_rank_trace": [
       {
         "candidate_id": "TP-01-C1",
         "t_ms": 30000,
-        "fraction_consumed": 0.1429,
         "source": "technical_mix_point",
         "eligible": false,
         "rejection_reason_codes": [
           "NO_STRUCTURAL_EVIDENCE",
-          "BELOW_PRESERVATION_FRACTION_FLOOR"
+          "BELOW_PRESERVATION_FLOOR",
+          "CATASTROPHIC_PRESERVATION_LOSS"
         ],
         "acceptance_reason_codes": [],
-        "song_preservation_score": 0.1429,
+        "effective_content_end_ms": 210000,
+        "transition_onset_ms": 30000,
+        "transition_onset_ratio": 0.1429,
+        "overlap_duration_ms": 40000,
+        "outgoing_last_audible_ms": 70000,
+        "outgoing_content_preservation_ratio": 0.3333,
+        "outgoing_content_lost_ms": 140000,
         "musical_structure_score": 0.2,
-        "timing_score": 0.1714,
         "confidence": "HIGH",
         "preferred_transition_class_set": [
           "SIMPLE_CROSSFADE"
-        ]
+        ],
+        "energy_continuity_priority": "UNKNOWN",
+        "eligible_rank": null
+      }
+    ],
+    "candidate_trace": [
+      {
+        "candidate_id": "TP-01-C1",
+        "t_ms": 30000,
+        "source": "technical_mix_point",
+        "eligible": false,
+        "rejection_reason_codes": [
+          "NO_STRUCTURAL_EVIDENCE",
+          "BELOW_PRESERVATION_FLOOR",
+          "CATASTROPHIC_PRESERVATION_LOSS"
+        ],
+        "acceptance_reason_codes": [],
+        "effective_content_end_ms": 210000,
+        "transition_onset_ms": 30000,
+        "transition_onset_ratio": 0.1429,
+        "overlap_duration_ms": 40000,
+        "outgoing_last_audible_ms": 70000,
+        "outgoing_content_preservation_ratio": 0.3333,
+        "outgoing_content_lost_ms": 140000,
+        "musical_structure_score": 0.2,
+        "confidence": "HIGH",
+        "preferred_transition_class_set": [
+          "SIMPLE_CROSSFADE"
+        ],
+        "energy_continuity_priority": "UNKNOWN",
+        "eligible_rank": null
       }
     ]
   },
   "query_at_210000ms_natural_end": {
     "fixture_id": "TP-01",
-    "listener_intent": "FULL_SONG_DEFAULT",
-    "policy_name": "STRUCTURE_AWARE_PRESERVATION",
+    "listener_intent": "SEAMLESS_FULL_TRACK_DEFAULT",
+    "policy_name": "SEAMLESS_FULL_TRACK_DEFAULT",
     "decision_type": "NO_SPECIAL_TRANSITION",
-    "current_track_exit_window_ms": null,
+    "current_track_effective_content_end_ms": 210000,
+    "transition_onset_window_ms": null,
+    "outgoing_last_audible_target_ms": null,
+    "outgoing_content_preservation_target": null,
     "next_track_entry_window_ms": null,
-    "preferred_transition_class_set": [],
-    "beat_downbeat_alignment_target_ms": null,
-    "permitted_tempo_pitch_envelope": null,
-    "confidence": "HIGH",
+    "allowed_transition_class_set": [
+      "NO_SPECIAL_TRANSITION"
+    ],
+    "pair_compatibility_components": null,
+    "beat_alignment_target": null,
+    "downbeat_alignment_target": null,
+    "permitted_tempo_ratio": null,
+    "permitted_pitch_shift": null,
+    "energy_continuity_target": null,
+    "vocal_collision_constraints": null,
+    "bass_collision_constraints": null,
+    "analysis_confidence": "HIGH",
     "reason_codes": [
       "END_OF_TRACK_NATURAL_HANDOFF",
       "STRUCTURAL_EVIDENCE_PRESENT"
     ],
     "queue_order_independent_of_exit_timing": true,
-    "candidate_trace": [
+    "candidate_rank_trace": [
       {
         "candidate_id": "TP-01-C1",
         "t_ms": 30000,
-        "fraction_consumed": 0.1429,
         "source": "technical_mix_point",
         "eligible": false,
         "rejection_reason_codes": [
           "NO_STRUCTURAL_EVIDENCE",
-          "BELOW_PRESERVATION_FRACTION_FLOOR"
+          "BELOW_PRESERVATION_FLOOR",
+          "CATASTROPHIC_PRESERVATION_LOSS"
         ],
         "acceptance_reason_codes": [],
-        "song_preservation_score": 0.1429,
+        "effective_content_end_ms": 210000,
+        "transition_onset_ms": 30000,
+        "transition_onset_ratio": 0.1429,
+        "overlap_duration_ms": 40000,
+        "outgoing_last_audible_ms": 70000,
+        "outgoing_content_preservation_ratio": 0.3333,
+        "outgoing_content_lost_ms": 140000,
         "musical_structure_score": 0.2,
-        "timing_score": 0.1714,
         "confidence": "HIGH",
         "preferred_transition_class_set": [
           "SIMPLE_CROSSFADE"
-        ]
+        ],
+        "energy_continuity_priority": "UNKNOWN",
+        "eligible_rank": null
       },
       {
         "candidate_id": "TP-01-C2-END",
         "t_ms": 210000,
-        "fraction_consumed": 1.0,
         "source": "authored_outro",
         "eligible": true,
         "rejection_reason_codes": [],
         "acceptance_reason_codes": [
           "STRUCTURAL_EVIDENCE_PRESENT"
         ],
-        "song_preservation_score": 1.0,
+        "effective_content_end_ms": 210000,
+        "transition_onset_ms": 210000,
+        "transition_onset_ratio": 1.0,
+        "overlap_duration_ms": 0,
+        "outgoing_last_audible_ms": 210000,
+        "outgoing_content_preservation_ratio": 1.0,
+        "outgoing_content_lost_ms": 0,
         "musical_structure_score": 1.0,
-        "timing_score": 1.0,
         "confidence": "HIGH",
         "preferred_transition_class_set": [
           "FULL_DJ_BLEND",
           "SHORT_EQ_BLEND",
           "SIMPLE_CROSSFADE"
-        ]
+        ],
+        "energy_continuity_priority": "UNKNOWN",
+        "eligible_rank": null
+      }
+    ],
+    "candidate_trace": [
+      {
+        "candidate_id": "TP-01-C1",
+        "t_ms": 30000,
+        "source": "technical_mix_point",
+        "eligible": false,
+        "rejection_reason_codes": [
+          "NO_STRUCTURAL_EVIDENCE",
+          "BELOW_PRESERVATION_FLOOR",
+          "CATASTROPHIC_PRESERVATION_LOSS"
+        ],
+        "acceptance_reason_codes": [],
+        "effective_content_end_ms": 210000,
+        "transition_onset_ms": 30000,
+        "transition_onset_ratio": 0.1429,
+        "overlap_duration_ms": 40000,
+        "outgoing_last_audible_ms": 70000,
+        "outgoing_content_preservation_ratio": 0.3333,
+        "outgoing_content_lost_ms": 140000,
+        "musical_structure_score": 0.2,
+        "confidence": "HIGH",
+        "preferred_transition_class_set": [
+          "SIMPLE_CROSSFADE"
+        ],
+        "energy_continuity_priority": "UNKNOWN",
+        "eligible_rank": null
+      },
+      {
+        "candidate_id": "TP-01-C2-END",
+        "t_ms": 210000,
+        "source": "authored_outro",
+        "eligible": true,
+        "rejection_reason_codes": [],
+        "acceptance_reason_codes": [
+          "STRUCTURAL_EVIDENCE_PRESENT"
+        ],
+        "effective_content_end_ms": 210000,
+        "transition_onset_ms": 210000,
+        "transition_onset_ratio": 1.0,
+        "overlap_duration_ms": 0,
+        "outgoing_last_audible_ms": 210000,
+        "outgoing_content_preservation_ratio": 1.0,
+        "outgoing_content_lost_ms": 0,
+        "musical_structure_score": 1.0,
+        "confidence": "HIGH",
+        "preferred_transition_class_set": [
+          "FULL_DJ_BLEND",
+          "SHORT_EQ_BLEND",
+          "SIMPLE_CROSSFADE"
+        ],
+        "energy_continuity_priority": "UNKNOWN",
+        "eligible_rank": null
       }
     ]
   }

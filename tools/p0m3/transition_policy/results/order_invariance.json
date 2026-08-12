@@ -1,0 +1,23 @@
+{
+  "fixture_id": "TP-12",
+  "note": "Two simultaneously eligible near-end candidates (X earlier/acceptable, Y later/musically stronger). A first-eligible-wins planner would pick X in array order but Y under reversed/shuffled order -- proving order-dependence is a real bug class. The ranked planner must select Y under every ordering.",
+  "candidate_order_normal": [
+    "TP-12-X",
+    "TP-12-Y",
+    "TP-12-Z-END"
+  ],
+  "candidate_order_reversed": [
+    "TP-12-Z-END",
+    "TP-12-Y",
+    "TP-12-X"
+  ],
+  "candidate_order_shuffled": [
+    "TP-12-Z-END",
+    "TP-12-X",
+    "TP-12-Y"
+  ],
+  "winner_normal_order": "TP-12-Y",
+  "winner_reversed_order": "TP-12-Y",
+  "winner_shuffled_order": "TP-12-Y",
+  "order_invariant": true
+}
