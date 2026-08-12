@@ -1,0 +1,76 @@
+[
+  {
+    "transition_id": "R3-A",
+    "decision_type": "TRANSITION",
+    "allowed_transition_class_set": [
+      "FULL_DJ_BLEND",
+      "SHORT_EQ_BLEND",
+      "SIMPLE_CROSSFADE"
+    ],
+    "selected_outgoing_exit_candidate_id": "R3A-OUT-EXIT",
+    "selected_incoming_entry_candidate_id": "R3A-IN-ANCHOR",
+    "outgoing_content_preservation_target": 1.0,
+    "required_tempo_ratio": 1.0,
+    "tempo_requires_playback_rate_change": false,
+    "required_pitch_shift_semitones": 0,
+    "beat_alignment_action": "ALIGN_OUTGOING_BEAT_TARGET_TO_INCOMING_BEAT_TARGET",
+    "bar_alignment_action": "ALIGN_OUTGOING_DOWNBEAT_TARGET_TO_INCOMING_DOWNBEAT_TARGET",
+    "outgoing_beat_alignment_target_ms": 44000,
+    "incoming_beat_alignment_target_ms": 0
+  },
+  {
+    "transition_id": "R3-B",
+    "decision_type": "TRANSITION",
+    "allowed_transition_class_set": [
+      "FULL_DJ_BLEND",
+      "SHORT_EQ_BLEND",
+      "SIMPLE_CROSSFADE"
+    ],
+    "selected_outgoing_exit_candidate_id": "R3B-OUT-EXIT",
+    "selected_incoming_entry_candidate_id": "R3B-IN-ANCHOR",
+    "outgoing_content_preservation_target": 1.0,
+    "required_tempo_ratio": 1.05,
+    "tempo_requires_playback_rate_change": true,
+    "required_pitch_shift_semitones": 0,
+    "beat_alignment_action": "ALIGN_OUTGOING_BEAT_TARGET_TO_INCOMING_BEAT_TARGET",
+    "bar_alignment_action": "ALIGN_OUTGOING_DOWNBEAT_TARGET_TO_INCOMING_DOWNBEAT_TARGET",
+    "outgoing_beat_alignment_target_ms": 45000,
+    "incoming_beat_alignment_target_ms": 0
+  },
+  {
+    "transition_id": "R3-C",
+    "decision_type": "TRANSITION",
+    "allowed_transition_class_set": [
+      "FULL_DJ_BLEND",
+      "SHORT_EQ_BLEND",
+      "SIMPLE_CROSSFADE"
+    ],
+    "selected_outgoing_exit_candidate_id": "R3C-OUT-EXIT",
+    "selected_incoming_entry_candidate_id": "R3C-IN-ANCHOR",
+    "outgoing_content_preservation_target": 1.0,
+    "required_tempo_ratio": 0.9709,
+    "tempo_requires_playback_rate_change": true,
+    "required_pitch_shift_semitones": 0,
+    "beat_alignment_action": "ALIGN_OUTGOING_BEAT_TARGET_TO_INCOMING_BEAT_TARGET",
+    "bar_alignment_action": "ALIGN_OUTGOING_DOWNBEAT_TARGET_TO_INCOMING_DOWNBEAT_TARGET",
+    "outgoing_beat_alignment_target_ms": 44000,
+    "incoming_beat_alignment_target_ms": 0
+  },
+  {
+    "transition_id": "R3-D",
+    "decision_type": "TRANSITION",
+    "allowed_transition_class_set": [
+      "SIMPLE_CROSSFADE"
+    ],
+    "selected_outgoing_exit_candidate_id": "R3D-OUT-EXIT",
+    "selected_incoming_entry_candidate_id": "R3D-IN-ANCHOR",
+    "outgoing_content_preservation_target": 1.0,
+    "required_tempo_ratio": null,
+    "tempo_requires_playback_rate_change": false,
+    "required_pitch_shift_semitones": null,
+    "beat_alignment_action": "ALIGN_OUTGOING_BEAT_TARGET_TO_INCOMING_BEAT_TARGET",
+    "bar_alignment_action": "ALIGN_OUTGOING_DOWNBEAT_TARGET_TO_INCOMING_DOWNBEAT_TARGET",
+    "outgoing_beat_alignment_target_ms": 44000,
+    "incoming_beat_alignment_target_ms": 0
+  }
+]

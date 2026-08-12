@@ -1,0 +1,5 @@
+# Disposable P0-M3-R3 render-shootout harness dependencies.
+# Installed into a local .venv/ (gitignored, not system-wide).
+numpy>=2.0
+scipy>=1.17
+psutil>=7.0

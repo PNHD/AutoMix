@@ -1,0 +1,37 @@
+{
+  "method": "M3",
+  "method_role": "rubberband_quality_reference_only_documented_fallback",
+  "engine": "none_full_dj_blend_withheld_by_planner",
+  "transition_id": "R3-D",
+  "rendered_transition_class": "SIMPLE_CROSSFADE",
+  "planner_allowed_transition_class_set": [
+    "SIMPLE_CROSSFADE"
+  ],
+  "gain_law": "equal_power",
+  "bass_eq_handoff_applied": false,
+  "applied_tempo_ratio": 1.0,
+  "applied_pitch_shift_semitones": 0,
+  "applied_alignment_offset_ms": 0.0,
+  "beat_alignment_applied": false,
+  "fallback_reason": "FULL_DJ_BLEND withheld by R2 pair-compatibility gate -- see planner reason_codes",
+  "planner_reason_codes": [
+    "STRUCTURAL_EVIDENCE_PRESENT",
+    "BEST_RANKED_COMPLETE_BOUNDARY_PLAN"
+  ],
+  "onset_ms": 44000,
+  "content_end_ms": 54000,
+  "entry_ms": 0,
+  "overlap_len_samples": 441000,
+  "overlap_duration_ms": 10000.0,
+  "output_duration_s": 40.0,
+  "safety": {
+    "pre_peak_linear": 0.8500000238418579,
+    "pre_peak_dbfs": -1.4116212420815057,
+    "post_peak_linear": 0.8500000238418579,
+    "post_peak_dbfs": -1.4116212420815057,
+    "applied_headroom_gain_db": 0.0,
+    "nan_inf_sample_count": 0,
+    "clipped_sample_count": 0,
+    "ceiling_dbfs": -1.0
+  }
+}

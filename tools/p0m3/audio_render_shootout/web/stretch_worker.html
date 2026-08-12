@@ -1,0 +1,116 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>signalsmith stretch worker</title>
+<body>
+<pre id="status">INIT</pre>
+<script type="module">
+const statusEl = document.getElementById("status");
+function setStatus(s) {
+  statusEl.textContent = s;
+  document.title = s;
+  console.log("[stretch_worker]", s);
+}
+
+function encodeWavFloat32(audioBuffer) {
+  const numChannels = audioBuffer.numberOfChannels;
+  const sampleRate = audioBuffer.sampleRate;
+  const numFrames = audioBuffer.length;
+  const bytesPerSample = 4;
+  const blockAlign = numChannels * bytesPerSample;
+  const dataSize = numFrames * blockAlign;
+  const buffer = new ArrayBuffer(44 + dataSize);
+  const view = new DataView(buffer);
+  function writeStr(offset, s) {
+    for (let i = 0; i < s.length; i++) view.setUint8(offset + i, s.charCodeAt(i));
+  }
+  writeStr(0, "RIFF");
+  view.setUint32(4, 36 + dataSize, true);
+  writeStr(8, "WAVE");
+  writeStr(12, "fmt ");
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 3, true); // WAVE_FORMAT_IEEE_FLOAT
+  view.setUint16(22, numChannels, true);
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, sampleRate * blockAlign, true);
+  view.setUint16(32, blockAlign, true);
+  view.setUint16(34, bytesPerSample * 8, true);
+  writeStr(36, "data");
+  view.setUint32(40, dataSize, true);
+
+  const chans = [];
+  for (let c = 0; c < numChannels; c++) chans.push(audioBuffer.getChannelData(c));
+  let offset = 44;
+  for (let i = 0; i < numFrames; i++) {
+    for (let c = 0; c < numChannels; c++) {
+      view.setFloat32(offset, chans[c][i], true);
+      offset += 4;
+    }
+  }
+  return buffer;
+}
+
+async function run() {
+  try {
+    const mod = await import("../vendor/signalsmith-stretch/web/release/SignalsmithStretch.mjs?v=" + Date.now());
+    const SignalsmithStretch = mod.default;
+
+    const params = new URLSearchParams(location.search);
+    const inputUrl = params.get("input");
+    const rate = parseFloat(params.get("rate") || "1.0");
+    const semitones = parseFloat(params.get("semitones") || "0");
+    const outputName = params.get("output");
+    const blockMs = parseFloat(params.get("blockMs") || "120");
+    const tailPadS = parseFloat(params.get("tailPadS") || "1.5");
+    if (!inputUrl || !outputName) throw new Error("missing input/output query params");
+
+    setStatus("FETCHING");
+    const resp = await fetch(inputUrl);
+    if (!resp.ok) throw new Error("fetch input failed: HTTP " + resp.status);
+    const arrayBuf = await resp.arrayBuffer();
+
+    setStatus("DECODING");
+    const probeCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const audioBuffer = await probeCtx.decodeAudioData(arrayBuf.slice(0));
+    await probeCtx.close();
+
+    const sampleRate = audioBuffer.sampleRate;
+    const numChannels = audioBuffer.numberOfChannels;
+    const inputDurationS = audioBuffer.duration;
+    const outputDurationS = inputDurationS / rate + tailPadS;
+
+    setStatus("RENDERING rate=" + rate + " semitones=" + semitones);
+    const offlineCtx = new OfflineAudioContext(numChannels, Math.ceil(outputDurationS * sampleRate), sampleRate);
+    const stretchNode = await SignalsmithStretch(offlineCtx, {
+      numberOfInputs: 0,
+      numberOfOutputs: 1,
+      outputChannelCount: [numChannels],
+    });
+    if (blockMs) await stretchNode.configure({ blockMs });
+    stretchNode.connect(offlineCtx.destination);
+
+    const chans = [];
+    for (let c = 0; c < numChannels; c++) chans.push(audioBuffer.getChannelData(c));
+    await stretchNode.addBuffers(chans);
+    await stretchNode.schedule({ output: 0, input: 0, active: true, rate: rate, semitones: semitones });
+    await stretchNode.start(0);
+
+    const rendered = await offlineCtx.startRendering();
+    setStatus("ENCODING");
+    const wavBytes = encodeWavFloat32(rendered);
+
+    setStatus("UPLOADING");
+    const up = await fetch("/upload?name=" + encodeURIComponent(outputName), {
+      method: "POST",
+      body: wavBytes,
+    });
+    if (!up.ok) throw new Error("upload failed: HTTP " + up.status);
+
+    setStatus("DONE input_s=" + inputDurationS.toFixed(3) + " output_s=" + (rendered.length / sampleRate).toFixed(3));
+  } catch (e) {
+    console.error(e);
+    setStatus("ERROR: " + (e && e.message ? e.message : String(e)));
+  }
+}
+run();
+</script>
+</body>

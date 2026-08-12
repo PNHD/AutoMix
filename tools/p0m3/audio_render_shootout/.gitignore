@@ -1,0 +1,28 @@
+# Disposable research harness -- local-only build/audio/runtime artifacts.
+# Generator source, fixture metadata, planner-decision JSON, and result
+# JSON/markdown ARE committed; audio bytes and runtime environments are not.
+
+# Local Python environment
+.venv/
+
+# Rendered/generated/vendored audio -- LOCAL ONLY, never committed (AGENTS.md rule 4)
+*.wav
+*.wave
+*.aiff
+*.flac
+audio_local/
+serve_tmp/
+
+# Vendored third-party source (pinned via download script, re-fetchable, not vendored into git)
+vendor/signalsmith-stretch/
+vendor/rubberband/
+
+# Local-only deliverable ZIPs (never committed -- Issue #7 explicit instruction)
+*.zip
+
+# Node modules if any browser-harness tooling is added locally
+node_modules/
+
+# OS/editor noise
+__pycache__/
+*.pyc

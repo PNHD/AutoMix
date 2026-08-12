@@ -1,0 +1,137 @@
+{
+  "instructions": "Fill in one entry per clip. 1-5 scale for rating fields; 'yes'/'no' for the yes/no fields.",
+  "clips": {
+    "S1-A": {
+      "seamlessness_continuity": null,
+      "timing_rhythmic_naturalness": null,
+      "stretch_pitch_naturalness": null,
+      "bass_low_end_transition": null,
+      "momentum_excitement": null,
+      "overall_preference": null,
+      "noticeable_hard_discontinuity": null,
+      "annoying_or_fatiguing_artifact": null,
+      "acceptable_for_normal_automix": null,
+      "optional_note": ""
+    },
+    "S1-B": {
+      "seamlessness_continuity": null,
+      "timing_rhythmic_naturalness": null,
+      "stretch_pitch_naturalness": null,
+      "bass_low_end_transition": null,
+      "momentum_excitement": null,
+      "overall_preference": null,
+      "noticeable_hard_discontinuity": null,
+      "annoying_or_fatiguing_artifact": null,
+      "acceptable_for_normal_automix": null,
+      "optional_note": ""
+    },
+    "S1-C": {
+      "seamlessness_continuity": null,
+      "timing_rhythmic_naturalness": null,
+      "stretch_pitch_naturalness": null,
+      "bass_low_end_transition": null,
+      "momentum_excitement": null,
+      "overall_preference": null,
+      "noticeable_hard_discontinuity": null,
+      "annoying_or_fatiguing_artifact": null,
+      "acceptable_for_normal_automix": null,
+      "optional_note": ""
+    },
+    "S2-A": {
+      "seamlessness_continuity": null,
+      "timing_rhythmic_naturalness": null,
+      "stretch_pitch_naturalness": null,
+      "bass_low_end_transition": null,
+      "momentum_excitement": null,
+      "overall_preference": null,
+      "noticeable_hard_discontinuity": null,
+      "annoying_or_fatiguing_artifact": null,
+      "acceptable_for_normal_automix": null,
+      "optional_note": ""
+    },
+    "S2-B": {
+      "seamlessness_continuity": null,
+      "timing_rhythmic_naturalness": null,
+      "stretch_pitch_naturalness": null,
+      "bass_low_end_transition": null,
+      "momentum_excitement": null,
+      "overall_preference": null,
+      "noticeable_hard_discontinuity": null,
+      "annoying_or_fatiguing_artifact": null,
+      "acceptable_for_normal_automix": null,
+      "optional_note": ""
+    },
+    "S2-C": {
+      "seamlessness_continuity": null,
+      "timing_rhythmic_naturalness": null,
+      "stretch_pitch_naturalness": null,
+      "bass_low_end_transition": null,
+      "momentum_excitement": null,
+      "overall_preference": null,
+      "noticeable_hard_discontinuity": null,
+      "annoying_or_fatiguing_artifact": null,
+      "acceptable_for_normal_automix": null,
+      "optional_note": ""
+    },
+    "S3-A": {
+      "seamlessness_continuity": null,
+      "timing_rhythmic_naturalness": null,
+      "stretch_pitch_naturalness": null,
+      "bass_low_end_transition": null,
+      "momentum_excitement": null,
+      "overall_preference": null,
+      "noticeable_hard_discontinuity": null,
+      "annoying_or_fatiguing_artifact": null,
+      "acceptable_for_normal_automix": null,
+      "optional_note": ""
+    },
+    "S3-B": {
+      "seamlessness_continuity": null,
+      "timing_rhythmic_naturalness": null,
+      "stretch_pitch_naturalness": null,
+      "bass_low_end_transition": null,
+      "momentum_excitement": null,
+      "overall_preference": null,
+      "noticeable_hard_discontinuity": null,
+      "annoying_or_fatiguing_artifact": null,
+      "acceptable_for_normal_automix": null,
+      "optional_note": ""
+    },
+    "S3-C": {
+      "seamlessness_continuity": null,
+      "timing_rhythmic_naturalness": null,
+      "stretch_pitch_naturalness": null,
+      "bass_low_end_transition": null,
+      "momentum_excitement": null,
+      "overall_preference": null,
+      "noticeable_hard_discontinuity": null,
+      "annoying_or_fatiguing_artifact": null,
+      "acceptable_for_normal_automix": null,
+      "optional_note": ""
+    },
+    "S4-A": {
+      "seamlessness_continuity": null,
+      "timing_rhythmic_naturalness": null,
+      "stretch_pitch_naturalness": null,
+      "bass_low_end_transition": null,
+      "momentum_excitement": null,
+      "overall_preference": null,
+      "noticeable_hard_discontinuity": null,
+      "annoying_or_fatiguing_artifact": null,
+      "acceptable_for_normal_automix": null,
+      "optional_note": ""
+    },
+    "S4-B": {
+      "seamlessness_continuity": null,
+      "timing_rhythmic_naturalness": null,
+      "stretch_pitch_naturalness": null,
+      "bass_low_end_transition": null,
+      "momentum_excitement": null,
+      "overall_preference": null,
+      "noticeable_hard_discontinuity": null,
+      "annoying_or_fatiguing_artifact": null,
+      "acceptable_for_normal_automix": null,
+      "optional_note": ""
+    }
+  }
+}

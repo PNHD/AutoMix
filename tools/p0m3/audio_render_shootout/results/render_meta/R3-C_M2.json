@@ -1,0 +1,42 @@
+{
+  "method": "M2",
+  "method_role": "signalsmith_stretch_candidate",
+  "engine": "official_pinned_web_release_wasm_webaudio_fallback",
+  "engine_provenance_doc": "docs/research/P0-M3-R3-DSP-CANDIDATE-PROVENANCE.md",
+  "transition_id": "R3-C",
+  "rendered_transition_class": "FULL_DJ_BLEND",
+  "planner_allowed_transition_class_set": [
+    "FULL_DJ_BLEND",
+    "SHORT_EQ_BLEND",
+    "SIMPLE_CROSSFADE"
+  ],
+  "gain_law": "equal_power",
+  "bass_eq_handoff_applied": true,
+  "applied_tempo_ratio": 0.9709,
+  "planner_required_tempo_ratio": 0.9709,
+  "applied_pitch_shift_semitones": 0,
+  "planner_required_pitch_shift_semitones": 0,
+  "applied_alignment_offset_ms": 0.0,
+  "beat_alignment_applied": true,
+  "beat_alignment_action": "ALIGN_OUTGOING_BEAT_TARGET_TO_INCOMING_BEAT_TARGET",
+  "bar_alignment_action": "ALIGN_OUTGOING_DOWNBEAT_TARGET_TO_INCOMING_DOWNBEAT_TARGET",
+  "outgoing_beat_alignment_target_ms": 44000,
+  "incoming_beat_alignment_target_ms": 0,
+  "input_padded_samples": 0,
+  "onset_ms": 44000,
+  "content_end_ms": 54000,
+  "entry_ms": 0,
+  "overlap_len_samples": 441000,
+  "overlap_duration_ms": 9187.5,
+  "output_duration_s": 37.96875,
+  "safety": {
+    "pre_peak_linear": 0.8189272284507751,
+    "pre_peak_dbfs": -1.7350937764262313,
+    "post_peak_linear": 0.8189272284507751,
+    "post_peak_dbfs": -1.7350937764262313,
+    "applied_headroom_gain_db": 0.0,
+    "nan_inf_sample_count": 0,
+    "clipped_sample_count": 0,
+    "ceiling_dbfs": -1.0
+  }
+}

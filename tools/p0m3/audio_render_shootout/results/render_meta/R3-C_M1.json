@@ -1,0 +1,37 @@
+{
+  "method": "M1",
+  "method_role": "planner_correct_equal_power_simple_crossfade_reference",
+  "transition_id": "R3-C",
+  "rendered_transition_class": "SIMPLE_CROSSFADE",
+  "planner_allowed_transition_class_set": [
+    "FULL_DJ_BLEND",
+    "SHORT_EQ_BLEND",
+    "SIMPLE_CROSSFADE"
+  ],
+  "gain_law": "equal_power",
+  "bass_eq_handoff_applied": false,
+  "applied_tempo_ratio": 1.0,
+  "planner_required_tempo_ratio": 0.9709,
+  "tempo_correction_deliberately_skipped": true,
+  "applied_pitch_shift_semitones": 0,
+  "applied_alignment_offset_ms": 0.0,
+  "beat_alignment_applied": false,
+  "onset_ms": 44000,
+  "content_end_ms": 54000,
+  "entry_ms": 0,
+  "overlap_len_samples": 441000,
+  "overlap_duration_ms": 10000.0,
+  "output_duration_s": 40.0,
+  "safety": {
+    "pre_peak_linear": 0.8189272284507751,
+    "pre_peak_dbfs": -1.7350937764262313,
+    "post_peak_linear": 0.8189272284507751,
+    "post_peak_dbfs": -1.7350937764262313,
+    "applied_headroom_gain_db": 0.0,
+    "nan_inf_sample_count": 0,
+    "clipped_sample_count": 0,
+    "ceiling_dbfs": -1.0
+  },
+  "render_wall_time_s": 0.11600969999926747,
+  "real_time_factor": 0.0029002424999816866
+}
