@@ -29,6 +29,16 @@ results/blind_key.json
 results/.blind_seed_local
 premix_diag/
 
+# PM OWNER LISTENING DIRECTION UPDATE Task 3: Tier-B real-music harness --
+# the manifest (owner-supplied local file paths) and all its outputs
+# (converted/rendered audio, private-content-derived results) are LOCAL
+# ONLY. Only MANIFEST_SCHEMA.md and manifest.example.json (placeholder
+# paths) are committed.
+real_music/manifest.local.json
+real_music/manifest*.local.json
+real_music/work_local/
+real_music/*_test_manifest*.json
+
 # Node modules if any browser-harness tooling is added locally
 node_modules/
 

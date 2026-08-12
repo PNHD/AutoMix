@@ -754,4 +754,280 @@ Please independently verify:
 
 Do not start P1. Result remains `OWNER_LISTENING_REQUIRED`.
 
-**Do not start P1. Result: `OWNER_LISTENING_REQUIRED`, not `PASS`.**
+---
+
+# PM OWNER LISTENING DIRECTION UPDATE -- LOUDNESS + CONDITIONAL TEMPO + REAL-MUSIC HARNESS (2026-08-12)
+
+The owner's informal first listen of the repaired synthetic pack produced
+new binding subjective evidence that OVERRIDES the plan to complete Stage
+B from the synthetic listening matrix: the rating matrix is too
+cumbersome, synthetic music makes methods too hard to distinguish, real
+vocal music is required, and the most obvious shared defect is a sudden
+perceived volume drop. PM independently corroborated the loudness
+complaint from this pass's own committed machine metrics (R3-A M0:
+`5.85dB`/`6.49dB` jumps at the overlap boundaries). This section documents
+the five follow-on tasks: loudness/energy continuity repair, conditional
+tempo adaptation, a real-music Tier-B harness, a simplified owner-rating
+UX, and a Spotify public-reference note. **The synthetic pack and its
+blind mapping are NOT unblinded here** -- the owner already reported it
+insufficiently discriminative for the real product question; forcing a
+winner from it would not answer that question.
+
+## 20. Loudness / energy continuity repair
+
+### 20.1 Root cause (measured, not assumed)
+
+`dsp/loudness_diagnostics.py` (new) replaces the single before/after
+400ms comparison with a genuine 200ms-window/100ms-hop time series,
+anchored against a `pre_transition_reference_db` measured over a stable
+2-second window well before the transition (3-5s before onset, so
+transient noise from sparse percussive hits averages out). Run on the
+unmodified R3-A M0 render, the curve revealed two distinct, separable
+phenomena, not one:
+
+1. **Beat-phase measurement noise** (large, but NOT a real defect):
+   consecutive 100-200ms windows swing `~10-15dB` purely depending on
+   whether a kick/snare/hat transient happens to fall inside that
+   specific window -- this project's synthetic drums are deliberately
+   sparse and punchy (`fixtures/synth.py`), so any single short-window
+   RMS measurement is dominated by beat phase, not by the underlying
+   crossfade curve. This is why the PRIOR pass's single-point
+   `loudness_jump_at_handoff_db` numbers (`5.85dB`/`6.49dB` etc.) were
+   real numbers but not reliable evidence of a specific gain-curve
+   defect on their own.
+2. **A real, sustained mid-transition dip** (the genuine defect,
+   separable from #1 because it is visible as a slow trend across MANY
+   beat cycles, not a single-window artifact): comparing the SAME beat-
+   phase-aligned windows across the transition, both the "loud" peaks and
+   "quiet" valleys of the periodic pattern get measurably quieter through
+   the middle of the overlap and recover only near the end. Root cause,
+   confirmed by direct measurement: the incoming track's ENTRY region
+   (its authored intro, lower `energy` per `fixtures/synth.py`'s section
+   model) is objectively QUIETER than the outgoing track's EXIT region at
+   the moment of crossfade. Equal-power gain (`g_out^2+g_in^2=1`)
+   preserves total signal ENERGY only when both sides have equal
+   intrinsic loudness; crossfading from an objectively louder source to
+   an objectively quieter one necessarily dips in the middle even though
+   the gain law itself is mathematically "constant power." **This is
+   exactly the "equal-power gains alone do not guarantee constant
+   perceived loudness" finding PM's comment anticipated, now measured
+   directly rather than assumed** -- confirmed further by the fact that
+   `handoff_loudness_delta_db` (still noisy/beat-phase-sensitive) and
+   `maximum_loudness_dip_db` (the new, more reliable reference-anchored
+   metric) both point the same direction, and that ALL FOUR curve
+   variants below (§20.2), which share identical source content and beat
+   phase, show the SAME relative ordering regardless of the absolute
+   noise floor -- proving the between-curve comparison is a valid signal
+   even though the absolute numbers are inflated by beat-sparsity noise.
+
+Bass-handoff interaction: a quick sensitivity check (`bass_handoff_speed`
+2.2x vs. 1.0x on the late-hold curve, R3-A) showed a small but real
+additional improvement (`max_dip` `9.77dB -> 9.34dB`) from slowing the
+bass swap to match the full-band curve's duration -- confirming PM's
+hypothesis has SOME truth, though it is a smaller contributor than the
+source-loudness-mismatch root cause above.
+
+Static headroom policy (`dsp.mixing.apply_headroom_and_safety`, `-1.0dBFS`
+ceiling) was NOT a contributor to the dip -- it only ever reduces gain
+when the assembled peak exceeds ceiling (never during the dip, which is
+in the middle of the transition, well under peak).
+
+### 20.2 Curve shootout (`scripts/render_loudness_shootout.py`, `dsp/mixing.py`)
+
+Four variants, rendered on R3-A/B/C's diagnostic audio via the M1-style
+(no-stretch) pipeline to isolate the gain-curve variable exactly as the
+M0-M3 shootout isolates the stretch-engine variable:
+
+| Variant | Curve | Energy-aware makeup | Description |
+|---|---|---|---|
+| LA | `equal_power` | no | current reference (unchanged from M1) |
+| LB | `late_hold` | no | outgoing holds unity for the first 30% of overlap, then cosine-tapers; incoming ramps in via the full-duration sine curve regardless -- "incoming enters underneath, handoff occurs later" |
+| LC | `equal_power` | yes | equal-power curve + a capped (`±6dB`), boundary-measured static makeup gain on incoming, ramped in proportional to incoming's own gain envelope (never boosts silence) |
+| LD | `late_hold` | yes | LB + LC combined |
+
+Results (`results/loudness_shootout_meta/*.json`, `maximum_loudness_dip_db`):
+
+| Scenario | LA (reference) | LB (late-hold) | LC (energy-aware) | LD (combined) |
+|---|---|---|---|---|
+| R3-A | 10.63 dB | **9.09 dB** | 9.08 dB | 8.77 dB |
+| R3-B | 9.42 dB | **7.88 dB** | 7.90 dB | 7.53 dB |
+| R3-C | 14.08 dB | **11.87 dB** | 14.24 dB (worse) | 12.36 dB |
+
+**Recommendation: LB (late-outgoing-hold) adopted as this pass's default**
+for `scripts/real_music_pipeline.py` (`curve="late_hold"`). It is the
+ONLY variant that improves `maximum_loudness_dip_db` in all three
+scenarios with zero added clipping/headroom risk (`peak_dbfs` unchanged
+from LA in every case) and no increase in `maximum_loudness_rise_db`
+beyond what's expected from holding outgoing at unity slightly longer.
+LC/LD show larger dip reductions in some scenarios but (a) make R3-C
+WORSE than the unmodified reference (a static boundary-measured makeup
+gain doesn't generalize well to R3-C's half/double-tempo relation, where
+the "boundary" 500ms window is not representative of the incoming track's
+overall level), and (b) push peak level up to the `-1.00dBFS` headroom
+ceiling in several cells (LC/LD, R3-A and R3-C), meaning the static
+headroom limiter is already engaging -- i.e. LC/LD trade one loudness
+problem for a different, less predictable one. Per PM's explicit
+instruction ("Do not solve this by simply compressing or limiting
+everything"), LC/LD are recorded as a documented, evidence-backed
+direction for future tuning (e.g. a smaller makeup cap, or measuring
+incoming's loudness over a longer/more representative window), not
+adopted by default this pass.
+
+Absolute `maximum_loudness_dip_db` values remain double-digit even for
+the recommended curve -- per §20.1, this number is still inflated by
+beat-phase measurement noise inherent to sparse synthetic drums, not a
+literal claim that LB fully eliminates any perceptible dip. **Whether LB
+sounds sufficiently seamless is exactly the question Stage B (real-music,
+human) listening must answer** -- this section produces DIAGNOSTIC
+evidence and a defensible default, not a subjective PASS.
+
+## 21. Conditional tempo adaptation (`dsp/tempo_modes.py`, `dsp/tempo_ramp.py`)
+
+### 21.1 NATIVE / MATCH_DURING_OVERLAP / MATCH_AND_RETURN
+
+`select_tempo_mode(decision)` decides purely from the ACCEPTED R2
+`PlannerDecision` (never a new/independent tempo decision) using PM's
+6-rule test (pair compatibility passed, dynamic class allowed, correction
+modest/inside envelope, boundary alignment evidence present, project
+benchmark zone, never altering outgoing). Verified against all 4 scenario
+decisions:
+
+| Scenario | `required_tempo_ratio` | deviation | benchmark zone | Mode selected |
+|---|---|---|---|---|
+| R3-A | 1.0 | 0.0% | SAFE_ZONE_0_2_PCT | `NATIVE_TEMPO` (already aligned -- never corrected for its own sake) |
+| R3-B | 1.05 | 5.0% | CONDITIONAL_ZONE_2_6_PCT | `MATCH_AND_RETURN_TO_NATIVE` |
+| R3-C | 0.9709 | 2.91% | CONDITIONAL_ZONE_2_6_PCT | `MATCH_AND_RETURN_TO_NATIVE` |
+| R3-D | `None` | -- | -- | `NATIVE_TEMPO` (FULL_DJ_BLEND withheld -- never force-corrected for an incompatible pair) |
+
+This exactly matches the desired product behavior: no correction where
+tracks already align (A), no correction where the pair is incompatible
+(D), and conditional matching only where compatibility passed AND a real
+correction is inside both R2's hard envelope and this pass's stricter
+0-2%/2-6%/>6% project buckets (B, C). The `>6%` bucket is a **default
+downgrade candidate** even when still inside R2's wider 12% hard ceiling
+-- no fixture in this pass currently exercises that path (none of A/B/C/D
+require >6%), recorded honestly as untested this pass, not fabricated.
+Outgoing tempo is never altered by any code path in this harness; pitch
+is preserved (`semitones=0`) in every call, consistent with
+`fixtures/pitch_shift_stress_conclusion.md`'s finding that R2 never
+authorizes a nonzero pitch correction.
+
+### 21.2 Tempo-ramp results
+
+`dsp/tempo_ramp.py`'s `apply_return_to_native_ramp` implements the
+settling-region ramp as a single continuous sample-domain warp (smoothstep-
+interpolated instantaneous rate, linear-interpolation resample at the
+resulting continuously-varying input position) -- deterministic,
+from-scratch, no external engine, no block-splice seams by construction.
+Rendered on R3-B (`scripts/render_tempo_ramp_experiment.py`): ramp region
+= 2 bars at incoming's native 120bpm = `4.0s`, starting immediately at
+handoff (`hold_before_ramp_s=0`). Rate curve recorded at 100ms resolution
+(157 points over the full post-handoff region): `1.0` (still matched) at
+`t=0` -> smoothly approaches `0.952381` (`=1/1.05`, fully native) by
+`t=4.0s`, held flat thereafter (confirmed in `results/tempo_ramp_experiment/
+R3-B_tempo_ramp_result.json`).
+
+**Artifact check**: `discontinuity_proxy_at_edges` at the handoff splice
+itself shows `0` flagged discontinuities for BOTH the ramped and
+no-ramp comparators (identical `max_abs_delta=0.034`, i.e. the ramp
+introduces no seam at its own start). Scanning the FULL 5-second ramp
+region with the whole-clip discontinuity proxy shows **879** flagged
+events (ramped) vs. **1116** flagged events in the UNRAMPED comparator's
+IDENTICAL time span -- i.e. the ramped version is flagged LESS often than
+the reference, not more, and the largest single jump is also smaller
+(`0.492` vs `0.605`). Per this project's own established finding (this
+proxy legitimately fires on ordinary sparse drum transients, §8/§16),
+this is strong evidence the ramp adds no measurable new artifact beyond
+what the underlying synthetic content already contains -- not a
+subjective seamlessness claim, but a real, honest machine result in favor
+of the ramp being safe to include as this pass's default
+(`real_music_pipeline.py` selects `MATCH_AND_RETURN_TO_NATIVE` whenever
+`select_tempo_mode` does).
+
+**Known limitation, stated honestly**: the resampler is linear-
+interpolation based (a mild low-pass/anti-alias tradeoff for large jumps),
+adequate for the small (`<=6%`) corrections this project's conditional-
+zone ever authorizes, but not a production-grade band-limited resampler.
+No claim is made that the ramp is inaudible -- only that it introduces no
+MEASURABLE discontinuity beyond the source content's own baseline.
+
+## 22. Real-music Tier-B harness (`real_music/`, `scripts/real_music_pipeline.py`)
+
+Per Issue #7's original Tier-B anticipation and this update's Task 3:
+accepts an owner-supplied, **LOCAL-ONLY, never-committed** manifest
+(`real_music/MANIFEST_SCHEMA.md`) naming local WAV/FLAC/MP3/M4A files +
+the same structural annotations (`exit_candidate_t_ms`, `bpm`, pair-
+compatibility fields) the synthetic fixtures already supply, builds a
+real `transition_policy` TX-fixture from them, and calls the SAME
+`policy.boundary.plan_transition_boundary()` -- no separate/invented
+decision path for real music. Converts audio via `ffmpeg` only (local
+files, never a network/protected-stream source). Renders M1 (always, this
+pass's repaired `late_hold` curve) and M3 (ffmpeg Rubber Band,
+automatic) when a dynamic class is allowed and `select_tempo_mode`
+resolves to a matching mode, including the return-to-native ramp when
+applicable. M2 (Signalsmith) is NOT auto-rendered (it needs the same
+manual browser round-trip every synthetic scenario in this pass required)
+-- the script prints the exact follow-up command instead of silently
+skipping it.
+
+**Interface validated this pass** (NOT real-music evidence -- this
+project's OWN synthetic fixture audio was used purely as plumbing stand-in
+input, then deleted, never committed, never presented as a real-music
+result): all 3 representative pair categories (close-tempo/conditional-
+correction/incompatible-downgrade) round-tripped correctly --
+`close_tempo_minimal_stretch` -> `NATIVE_TEMPO`; `conditional_tempo_correction`
+-> `MATCH_AND_RETURN_TO_NATIVE` with a working M3 render (ratio `1.05`,
+4s ramp, 0 clipped/NaN samples); `incompatible_downgrade` -> planner
+correctly withheld `FULL_DJ_BLEND`/`SHORT_EQ_BLEND` down to
+`SIMPLE_CROSSFADE` only, no M3 attempted.
+
+**No owner-supplied real-music paths were made available to this
+session.** This project did not search, infer, or use any file from the
+owner's personal media libraries -- `real_music/manifest.local.json` does
+not exist, so per this task's own explicit instruction the harness stops
+here, honestly, rather than fabricating copyrighted examples.
+
+## 23. Simplified owner listening UX (`real_music/LISTENING_INSTRUCTIONS_SIMPLIFIED.md`, `scripts/build_simplified_rating_template.py`)
+
+Replaces the old 6-dimension-per-clip matrix with, per transition set:
+`BEST` / `SECOND` / `WORST` (clip letters), four YES/NO questions
+(`SEAMLESS_ENOUGH_FOR_NORMAL_LISTENING`, `VOLUME_DIP_OR_JUMP_NOTICEABLE`,
+`TEMPO_OR_STRETCH_ARTIFACT_NOTICEABLE`, `TIMING_OR_BEAT_FEELS_WRONG`), an
+optional free-text note, and an OPTIONAL 1-5 overall score. Generator
+verified in `--demo` mode against a representative 3-set shape matching
+this pass's 3 required real-music pair categories. Not yet used for a
+real pack (none exists yet -- §22).
+
+## 24. Spotify public reference
+
+See `docs/research/P0-M3-R3-SPOTIFY-PUBLIC-REFERENCE.md` (new) -- Automix
+(existing, always-on, beat-matched, select playlists), Mix (2025, editable
+per-playlist custom transitions, Premium), Smart Reorder (2026, BPM/key-
+based playlist reordering). All three quoted directly from Spotify's own
+public support/newsroom pages retrieved this session; no reverse
+engineering, no proprietary-internal claim.
+
+## 25. Updated STAGE RESULT
+
+**`OWNER_REAL_MUSIC_INPUT_REQUIRED`** -- the loudness repair (§20) and
+conditional tempo work (§21) are complete with reproducible evidence, and
+the real-music harness (§22) is built and interface-validated, but no
+owner-supplied real-music manifest was available this session, so no new
+listening pack could be built. This is NOT `OWNER_LISTENING_REQUIRED`
+against the old synthetic pack -- per the owner's own feedback, that pack
+is not being returned to for a quality verdict.
+
+### Next owner action
+
+Supply local file paths for >= 3 real-vocal transition pairs (categories:
+close-tempo/minimal-stretch, ~3-6%-conditional-correction,
+incompatible-should-downgrade) by copying `real_music/manifest.example.json`
+to a local path (e.g. `real_music/manifest.local.json`, already
+gitignored) and filling in real paths + honest annotations per
+`real_music/MANIFEST_SCHEMA.md`, then this pass's engineering work can
+resume with:
+```
+python scripts/real_music_pipeline.py --manifest real_music/manifest.local.json --work-dir real_music/work_local
+```
+
+**Do not start P1. Result: `OWNER_REAL_MUSIC_INPUT_REQUIRED`, not `PASS`.** (This supersedes every earlier "Do not start P1" line in this document -- §12/§19's `OWNER_LISTENING_REQUIRED` results are superseded by this section per the owner's own feedback that the synthetic pack is not being returned to for a quality verdict.)

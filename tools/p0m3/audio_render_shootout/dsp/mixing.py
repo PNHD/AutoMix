@@ -123,35 +123,131 @@ def bass_handoff_gains(n: int, speed: float = BASS_HANDOFF_SPEED) -> tuple[np.nd
     return np.cos(theta), np.sin(theta)
 
 
+LOUDNESS_ENERGY_AWARE_MAX_MAKEUP_DB = 6.0  # PM OWNER LISTENING DIRECTION UPDATE cap -- conservative, no hard limiting/compression
+LOUDNESS_ENERGY_MEASURE_MS = 500.0
+
+
+def late_outgoing_hold_gains(n: int, hold_frac: float = 0.3) -> tuple[np.ndarray, np.ndarray]:
+    """
+    Curve B (PM OWNER LISTENING DIRECTION UPDATE "late-outgoing-hold"):
+    outgoing remains at unity gain for the first `hold_frac` of the
+    overlap (instead of starting to fade immediately), then tapers to 0
+    over the remaining duration using the same cosine shape
+    `equal_power_gains` uses. Incoming still ramps in via the standard
+    full-duration sine curve, so it has already partly established
+    itself by the time outgoing starts receding -- "incoming enters
+    underneath, handoff occurs later." Total power exceeds 1.0 during the
+    hold phase (both signals present, outgoing still full); this is
+    intentional (louder, not quieter, during the hold) and is exactly the
+    behavior this curve is prototyping evidence for/against.
+    """
+    hold_n = int(round(n * hold_frac))
+    g_out = np.ones(n)
+    if hold_n < n:
+        theta_out = np.linspace(0.0, np.pi / 2.0, n - hold_n, endpoint=True)
+        g_out[hold_n:] = np.cos(theta_out)
+    theta_in = np.linspace(0.0, np.pi / 2.0, n, endpoint=True)
+    g_in = np.sin(theta_in)
+    return g_out, g_in
+
+
+def _rms_dbfs_local(x: np.ndarray) -> float:
+    if x.size == 0:
+        return -120.0
+    r = float(np.sqrt(np.mean(x.astype(np.float64) ** 2)))
+    return 20.0 * np.log10(r) if r > 0 else -120.0
+
+
+def energy_aware_makeup_db(
+    outgoing_overlap: np.ndarray,
+    incoming_overlap_pre_gain: np.ndarray,
+    measure_ms: float = LOUDNESS_ENERGY_MEASURE_MS,
+    sr: int = 44100,
+    max_makeup_db: float = LOUDNESS_ENERGY_AWARE_MAX_MAKEUP_DB,
+) -> float:
+    """
+    Curve C/D ingredient (PM OWNER LISTENING DIRECTION UPDATE
+    "energy-aware/crossfade-curve selection... curve parameters derived
+    from local outgoing/incoming energy/loudness"): measures the RAW
+    (pre-gain) short-term loudness of each side right at the boundary and
+    returns a symmetric, CAPPED makeup gain (dB) to apply to incoming so
+    that equal-power crossfading isn't crossfading from a loud source to
+    an objectively quieter one (the measured root cause of this pass's
+    mid-transition dip -- see
+    docs/research/P0-M3-R3-SEAMLESS-RENDER-SHOOTOUT.md's loudness-repair
+    section). Deliberately NOT dynamic-range compression/limiting: a
+    single static makeup gain derived once from the boundary content, not
+    a per-sample dynamics processor.
+    """
+    n = min(outgoing_overlap.shape[0], incoming_overlap_pre_gain.shape[0], int(round(measure_ms / 1000.0 * sr)))
+    if n <= 0:
+        return 0.0
+    l_out = _rms_dbfs_local(outgoing_overlap[:n])
+    l_in = _rms_dbfs_local(incoming_overlap_pre_gain[:n])
+    return float(np.clip(l_out - l_in, -max_makeup_db, max_makeup_db))
+
+
 def mix_overlap(
     outgoing_overlap: np.ndarray,
     incoming_overlap: np.ndarray,
     sr: int,
     use_equal_power: bool = True,
     use_bass_handoff: bool = False,
+    curve: str = "equal_power",
+    energy_aware: bool = False,
+    bass_handoff_speed: float = BASS_HANDOFF_SPEED,
 ) -> np.ndarray:
     """
     Mixes two equal-length (n, ch) buffers across the transition overlap
     window. Returns the mixed (n, ch) buffer, unclipped (headroom/clip
     handling is applied once, on the FULL assembled render, by
     `apply_headroom_and_safety`, not per-segment).
+
+    `curve`: "equal_power" (A) | "linear" (M0's negative baseline) |
+    "late_hold" (B). `use_equal_power` is kept for backward compatibility
+    with M0-M3's existing calls (False -> "linear", True -> whatever
+    `curve` says, default "equal_power") -- new code should pass `curve`
+    explicitly. `energy_aware` (C/D ingredient) applies
+    `energy_aware_makeup_db` to incoming before the gain curve, ramped in
+    proportional to incoming's own gain envelope so it never boosts
+    silence.
     """
     assert outgoing_overlap.shape == incoming_overlap.shape, "overlap buffers must be equal length for mixing"
     n = outgoing_overlap.shape[0]
     if n == 0:
         return np.zeros_like(outgoing_overlap)
 
-    gain_fn = equal_power_gains if use_equal_power else linear_crossfade_gains
-    g_out, g_in = gain_fn(n)
+    if not use_equal_power:
+        curve = "linear"
+    if curve == "linear":
+        g_out, g_in = linear_crossfade_gains(n)
+    elif curve == "late_hold":
+        g_out, g_in = late_outgoing_hold_gains(n)
+    else:
+        g_out, g_in = equal_power_gains(n)
+
+    incoming_working = incoming_overlap
+    if energy_aware:
+        makeup_db = energy_aware_makeup_db(outgoing_overlap, incoming_overlap, sr=sr)
+        if makeup_db != 0.0:
+            makeup_linear = 10.0 ** (makeup_db / 20.0)
+            # Ramp the makeup in proportional to incoming's own gain
+            # envelope (already 0->1 over the overlap) so the boost only
+            # applies once/as-much-as incoming is actually audible --
+            # never a flat gain change to silence.
+            envelope = (g_in / (g_in.max() + 1e-12))[:, None]
+            makeup_curve = 1.0 + (makeup_linear - 1.0) * envelope
+            incoming_working = incoming_overlap * makeup_curve
+
     g_out = g_out[:, None]
     g_in = g_in[:, None]
 
     if not use_bass_handoff:
-        return outgoing_overlap * g_out + incoming_overlap * g_in
+        return outgoing_overlap * g_out + incoming_working * g_in
 
     out_low, out_high = split_bass(outgoing_overlap, sr)
-    in_low, in_high = split_bass(incoming_overlap, sr)
-    bg_out, bg_in = bass_handoff_gains(n)
+    in_low, in_high = split_bass(incoming_working, sr)
+    bg_out, bg_in = bass_handoff_gains(n, speed=bass_handoff_speed)
     bg_out = bg_out[:, None]
     bg_in = bg_in[:, None]
     mixed_low = out_low * bg_out + in_low * bg_in
@@ -167,6 +263,9 @@ def assemble_transition_render(
     sr: int,
     use_equal_power: bool = True,
     use_bass_handoff: bool = False,
+    curve: str = "equal_power",
+    energy_aware: bool = False,
+    bass_handoff_speed: float = BASS_HANDOFF_SPEED,
 ) -> np.ndarray:
     """
     Assembles the full render: [outgoing solo pre-roll] + [mixed overlap] +
@@ -176,7 +275,8 @@ def assemble_transition_render(
     source audio, never independently re-triggered) -- see
     dsp/safety_metrics.discontinuity_proxy for the machine check.
     """
-    mixed = mix_overlap(outgoing_overlap, incoming_overlap, sr, use_equal_power, use_bass_handoff)
+    mixed = mix_overlap(outgoing_overlap, incoming_overlap, sr, use_equal_power, use_bass_handoff,
+                         curve=curve, energy_aware=energy_aware, bass_handoff_speed=bass_handoff_speed)
     return np.concatenate([outgoing_pre, mixed, incoming_post], axis=0)
 
 

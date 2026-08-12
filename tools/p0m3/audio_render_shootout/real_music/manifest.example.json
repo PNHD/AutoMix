@@ -1,0 +1,120 @@
+{
+  "_comment": "TEMPLATE ONLY -- placeholder paths, not real music. Copy to manifest.local.json (gitignored) and fill in real absolute local file paths + honest metadata before running scripts/real_music_pipeline.py. See MANIFEST_SCHEMA.md.",
+  "pairs": [
+    {
+      "pair_id": "REAL-R1",
+      "category": "close_tempo_minimal_stretch",
+      "outgoing": {
+        "path": "REPLACE_WITH_ABSOLUTE_LOCAL_PATH/outgoing_track_1.wav",
+        "duration_ms": 220000,
+        "bpm": 120.0,
+        "genre_tags": ["pop"],
+        "exit_candidate_t_ms": 205000,
+        "beat_downbeat_aligned": true,
+        "in_acceptable_exit_region": true,
+        "musical_unit_complete": true,
+        "is_outro_tail_opportunity": true,
+        "vocal_collision_risk": "LOW",
+        "structure_confidence": "HIGH",
+        "energy_continuity_hint": "STRONG"
+      },
+      "incoming": {
+        "path": "REPLACE_WITH_ABSOLUTE_LOCAL_PATH/incoming_track_1.wav",
+        "bpm": 121.0,
+        "genre_tags": ["pop"],
+        "entry_candidate_t_ms": 0,
+        "beat_downbeat_aligned": true,
+        "phrase_section_evidence": false,
+        "is_authored_silence_skip": false
+      },
+      "pair_compatibility": {
+        "beat_confidence": "HIGH",
+        "downbeat_confidence": "HIGH",
+        "harmonic_relationship": "COMPATIBLE",
+        "energy_continuity": "STRONG",
+        "structure_compatibility": "COMPATIBLE",
+        "vocal_collision_risk": "LOW",
+        "bass_percussion_collision_risk": "LOW",
+        "intro_outro_texture_compatible": true,
+        "analysis_confidence": "HIGH"
+      }
+    },
+    {
+      "pair_id": "REAL-R2",
+      "category": "conditional_tempo_correction",
+      "outgoing": {
+        "path": "REPLACE_WITH_ABSOLUTE_LOCAL_PATH/outgoing_track_2.wav",
+        "duration_ms": 195000,
+        "bpm": 128.0,
+        "genre_tags": ["house"],
+        "exit_candidate_t_ms": 180000,
+        "beat_downbeat_aligned": true,
+        "in_acceptable_exit_region": true,
+        "musical_unit_complete": true,
+        "is_outro_tail_opportunity": true,
+        "vocal_collision_risk": "LOW",
+        "structure_confidence": "HIGH",
+        "energy_continuity_hint": "STRONG"
+      },
+      "incoming": {
+        "path": "REPLACE_WITH_ABSOLUTE_LOCAL_PATH/incoming_track_2.wav",
+        "bpm": 123.0,
+        "genre_tags": ["house"],
+        "entry_candidate_t_ms": 0,
+        "beat_downbeat_aligned": true,
+        "phrase_section_evidence": false,
+        "is_authored_silence_skip": false
+      },
+      "pair_compatibility": {
+        "beat_confidence": "HIGH",
+        "downbeat_confidence": "HIGH",
+        "harmonic_relationship": "COMPATIBLE",
+        "energy_continuity": "STRONG",
+        "structure_compatibility": "COMPATIBLE",
+        "vocal_collision_risk": "LOW",
+        "bass_percussion_collision_risk": "LOW",
+        "intro_outro_texture_compatible": true,
+        "analysis_confidence": "HIGH"
+      }
+    },
+    {
+      "pair_id": "REAL-R3",
+      "category": "incompatible_downgrade",
+      "outgoing": {
+        "path": "REPLACE_WITH_ABSOLUTE_LOCAL_PATH/outgoing_track_3.wav",
+        "duration_ms": 210000,
+        "bpm": 95.0,
+        "genre_tags": ["r&b"],
+        "exit_candidate_t_ms": 195000,
+        "beat_downbeat_aligned": true,
+        "in_acceptable_exit_region": true,
+        "musical_unit_complete": true,
+        "is_outro_tail_opportunity": true,
+        "vocal_collision_risk": "LOW",
+        "structure_confidence": "HIGH",
+        "energy_continuity_hint": "WEAK"
+      },
+      "incoming": {
+        "path": "REPLACE_WITH_ABSOLUTE_LOCAL_PATH/incoming_track_3.wav",
+        "bpm": 174.0,
+        "genre_tags": ["drum-and-bass"],
+        "entry_candidate_t_ms": 0,
+        "beat_downbeat_aligned": true,
+        "phrase_section_evidence": false,
+        "is_authored_silence_skip": false
+      },
+      "pair_compatibility": {
+        "_comment": "Honest incompatibility example: genre families do not overlap AND tempo relation is excessive -- FULL_DJ_BLEND/SHORT_EQ_BLEND should be withheld by the real gate, not forced.",
+        "beat_confidence": "HIGH",
+        "downbeat_confidence": "MEDIUM",
+        "harmonic_relationship": "INCOMPATIBLE",
+        "energy_continuity": "WEAK",
+        "structure_compatibility": "UNKNOWN",
+        "vocal_collision_risk": "HIGH",
+        "bass_percussion_collision_risk": "MEDIUM",
+        "intro_outro_texture_compatible": false,
+        "analysis_confidence": "MEDIUM"
+      }
+    }
+  ]
+}
