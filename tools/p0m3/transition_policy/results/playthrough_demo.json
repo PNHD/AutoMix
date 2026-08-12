@@ -24,8 +24,10 @@
     "incoming_beat_alignment_target_ms": null,
     "outgoing_downbeat_alignment_target_ms": null,
     "incoming_downbeat_alignment_target_ms": null,
-    "beat_phase_relation": "UNKNOWN",
-    "bar_phase_relation": "UNKNOWN",
+    "beat_phase_relation": "NOT_APPLICABLE",
+    "bar_phase_relation": "NOT_APPLICABLE",
+    "beat_alignment_action": "NOT_APPLICABLE",
+    "bar_alignment_action": "NOT_APPLICABLE",
     "required_tempo_ratio": null,
     "permitted_tempo_ratio_max_deviation": null,
     "required_pitch_shift_semitones": null,
@@ -58,6 +60,7 @@
         "outgoing_last_audible_ms": 70000,
         "outgoing_content_preservation_ratio": 0.3333,
         "outgoing_content_lost_ms": 140000,
+        "preservation_band": "UNSAFE",
         "musical_structure_score": 0.2,
         "confidence": "HIGH",
         "preferred_transition_class_set": [
@@ -87,6 +90,7 @@
         "outgoing_last_audible_ms": 70000,
         "outgoing_content_preservation_ratio": 0.3333,
         "outgoing_content_lost_ms": 140000,
+        "preservation_band": "UNSAFE",
         "musical_structure_score": 0.2,
         "confidence": "HIGH",
         "preferred_transition_class_set": [
@@ -123,8 +127,10 @@
     "incoming_beat_alignment_target_ms": null,
     "outgoing_downbeat_alignment_target_ms": null,
     "incoming_downbeat_alignment_target_ms": null,
-    "beat_phase_relation": "UNKNOWN",
-    "bar_phase_relation": "UNKNOWN",
+    "beat_phase_relation": "NOT_APPLICABLE",
+    "bar_phase_relation": "NOT_APPLICABLE",
+    "beat_alignment_action": "NOT_APPLICABLE",
+    "bar_alignment_action": "NOT_APPLICABLE",
     "required_tempo_ratio": null,
     "permitted_tempo_ratio_max_deviation": null,
     "required_pitch_shift_semitones": null,
@@ -158,6 +164,7 @@
         "outgoing_last_audible_ms": 70000,
         "outgoing_content_preservation_ratio": 0.3333,
         "outgoing_content_lost_ms": 140000,
+        "preservation_band": "UNSAFE",
         "musical_structure_score": 0.2,
         "confidence": "HIGH",
         "preferred_transition_class_set": [
@@ -183,6 +190,7 @@
         "outgoing_last_audible_ms": 210000,
         "outgoing_content_preservation_ratio": 1.0,
         "outgoing_content_lost_ms": 0,
+        "preservation_band": "PREFERRED",
         "musical_structure_score": 1.0,
         "confidence": "HIGH",
         "preferred_transition_class_set": [
@@ -214,6 +222,7 @@
         "outgoing_last_audible_ms": 70000,
         "outgoing_content_preservation_ratio": 0.3333,
         "outgoing_content_lost_ms": 140000,
+        "preservation_band": "UNSAFE",
         "musical_structure_score": 0.2,
         "confidence": "HIGH",
         "preferred_transition_class_set": [
@@ -239,6 +248,7 @@
         "outgoing_last_audible_ms": 210000,
         "outgoing_content_preservation_ratio": 1.0,
         "outgoing_content_lost_ms": 0,
+        "preservation_band": "PREFERRED",
         "musical_structure_score": 1.0,
         "confidence": "HIGH",
         "preferred_transition_class_set": [

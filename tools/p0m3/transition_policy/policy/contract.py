@@ -70,8 +70,19 @@ class PlannerDecision:
     incoming_beat_alignment_target_ms: Optional[int] = None
     outgoing_downbeat_alignment_target_ms: Optional[int] = None
     incoming_downbeat_alignment_target_ms: Optional[int] = None
-    beat_phase_relation: str = "UNKNOWN"   # "ALIGNED" | "OFFSET" | "UNKNOWN" | "NOT_APPLICABLE"
-    bar_phase_relation: str = "UNKNOWN"    # "ALIGNED" | "OFFSET" | "UNKNOWN" | "NOT_APPLICABLE"
+    # R9 (PM REVIEW #3) repair: these are OBSERVED-relation fields only, and
+    # this project has no beat-index/bar-position metadata to ever actually
+    # DERIVE a measured phase relation -- so they must never claim "ALIGNED"
+    # (that was fabricated from eligibility, not measured). Valid values:
+    # "NOT_MEASURED" (both-side targets exist but no real phase measurement
+    # was computed) | "NOT_APPLICABLE" (one or both targets are missing).
+    beat_phase_relation: str = "NOT_APPLICABLE"
+    bar_phase_relation: str = "NOT_APPLICABLE"
+    # R9 (new): the RENDER-PLAN action for the DSP engine, explicitly
+    # distinct from the (never-fabricated) observed-relation fields above.
+    # "NOT_APPLICABLE" when either side's target is missing.
+    beat_alignment_action: str = "NOT_APPLICABLE"
+    bar_alignment_action: str = "NOT_APPLICABLE"
 
     # --- Tempo/pitch contract (R3 repair -- unambiguous units/semantics) ---
     required_tempo_ratio: Optional[float] = None                    # literal playback-rate ratio needed to beat-match
@@ -147,9 +158,14 @@ def build_transition_decision(fixture_id, intent, policy_name, chosen_eligibilit
     if "FULL_DJ_BLEND" in allowed_class_set and compat_result is not None:
         required_tempo_ratio = compat_result.required_tempo_ratio
         permitted_tempo_dev = PERMITTED_TEMPO_RATIO_MAX_DEVIATION
-        required_pitch_shift = 0 if compat_result.harmonic_compatibility == "COMPATIBLE" else None
-        permitted_pitch_min = -PERMITTED_MAX_PITCH_SHIFT_SEMITONES
-        permitted_pitch_max = PERMITTED_MAX_PITCH_SHIFT_SEMITONES
+        # R7 (PM REVIEW #3): deterministic pitch policy, mirrored from
+        # policy/boundary.py's per-boundary logic.
+        if compat_result.harmonic_compatibility == "COMPATIBLE":
+            required_pitch_shift = 0
+            permitted_pitch_min, permitted_pitch_max = -PERMITTED_MAX_PITCH_SHIFT_SEMITONES, PERMITTED_MAX_PITCH_SHIFT_SEMITONES
+        elif compat_result.harmonic_exception_applied:
+            required_pitch_shift = 0
+            permitted_pitch_min, permitted_pitch_max = 0, 0
 
     onset_window = _onset_window(candidate, chosen_eligibility.transition_onset_ms)
 
@@ -220,15 +236,18 @@ def build_boundary_transition_decision(
     incoming_beat_target = entry_candidate["t_ms"] if entry_candidate.get("beat_downbeat_aligned") else None
     incoming_downbeat_target = incoming_beat_target
 
-    if outgoing_beat_target is not None and incoming_beat_target is not None:
-        beat_phase_relation = "ALIGNED" if winner_entry["eligible_for_dynamic_mix"] else "OFFSET"
-        bar_phase_relation = beat_phase_relation
-    elif outgoing_beat_target is None and incoming_beat_target is None:
-        beat_phase_relation = "NOT_APPLICABLE"
-        bar_phase_relation = "NOT_APPLICABLE"
-    else:
-        beat_phase_relation = "UNKNOWN"
-        bar_phase_relation = "UNKNOWN"
+    # R9 (PM REVIEW #3) repair: beat_phase_relation/bar_phase_relation are
+    # OBSERVED-relation fields. This project has no beat-index/bar-position
+    # metadata to derive a real measured phase from, so they must NEVER
+    # claim "ALIGNED" -- that was previously fabricated from
+    # eligible_for_dynamic_mix, not measured. beat_alignment_action/
+    # bar_alignment_action are the separate, explicit RENDER-PLAN
+    # instruction for the DSP engine.
+    both_beat_targets_known = outgoing_beat_target is not None and incoming_beat_target is not None
+    beat_phase_relation = "NOT_MEASURED" if both_beat_targets_known else "NOT_APPLICABLE"
+    bar_phase_relation = "NOT_MEASURED" if both_beat_targets_known else "NOT_APPLICABLE"
+    beat_alignment_action = "ALIGN_OUTGOING_BEAT_TARGET_TO_INCOMING_BEAT_TARGET" if both_beat_targets_known else "NOT_APPLICABLE"
+    bar_alignment_action = "ALIGN_OUTGOING_DOWNBEAT_TARGET_TO_INCOMING_DOWNBEAT_TARGET" if both_beat_targets_known else "NOT_APPLICABLE"
 
     required_tempo_ratio = None
     required_pitch_shift = None
@@ -238,9 +257,13 @@ def build_boundary_transition_decision(
     if "FULL_DJ_BLEND" in allowed_class_set:
         required_tempo_ratio = winner_entry["required_tempo_ratio"]
         permitted_tempo_dev = PERMITTED_TEMPO_RATIO_MAX_DEVIATION
+        # R7 (PM REVIEW #3): pitch is computed per-boundary in
+        # policy/boundary.py (deterministic: real envelope for harmonic
+        # COMPATIBLE, an explicit ZERO-width envelope for a validated
+        # non-tonal exception -- never a nonzero range alongside a null
+        # required value).
         required_pitch_shift = winner_entry["required_pitch_shift_semitones"]
-        permitted_pitch_min = -PERMITTED_MAX_PITCH_SHIFT_SEMITONES
-        permitted_pitch_max = PERMITTED_MAX_PITCH_SHIFT_SEMITONES
+        permitted_pitch_min, permitted_pitch_max = winner_entry["permitted_pitch_shift_semitones_range"]
 
     compat_dict = compat_payload or {}
     vocal_constraint = f"PAIR_VOCAL_COLLISION_RISK={compat_dict.get('vocal_collision_risk', 'UNKNOWN')}"
@@ -277,6 +300,8 @@ def build_boundary_transition_decision(
         incoming_downbeat_alignment_target_ms=incoming_downbeat_target,
         beat_phase_relation=beat_phase_relation,
         bar_phase_relation=bar_phase_relation,
+        beat_alignment_action=beat_alignment_action,
+        bar_alignment_action=bar_alignment_action,
         required_tempo_ratio=required_tempo_ratio,
         permitted_tempo_ratio_max_deviation=permitted_tempo_dev,
         required_pitch_shift_semitones=required_pitch_shift,

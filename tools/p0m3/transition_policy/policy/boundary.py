@@ -45,6 +45,8 @@ INCOMING_REASON = {
     "ENTRY_SKIPS_MEANINGFUL_INTRO_WITHOUT_EVIDENCE": "entry candidate starts after 0ms with no authored-silence-skip or phrase/cue evidence -- would silently remove meaningful intro content; rejected",
     "NO_ELIGIBLE_ENTRY_FOR_ANY_SAFE_EXIT": "at least one outgoing exit was safe, but no incoming entry candidate was eligible for any of them",
     "NO_SAFE_OUTGOING_EXIT": "no outgoing candidate cleared the preservation/structural/confidence/vocal-safety guards; incoming entry was never evaluated",
+    "FULL_DJ_BLEND_WITHHELD_NO_BOUNDARY_ALIGNMENT_EVIDENCE": "R5 (PM REVIEW #3): FULL_DJ_BLEND requires explicit beat/downbeat alignment evidence on BOTH the outgoing exit AND the incoming entry candidates of THIS specific boundary -- pair-level beat/downbeat CONFIDENCE alone is not renderable alignment evidence",
+    "BOUNDARY_ALIGNMENT_EVIDENCE_PRESENT": "both the outgoing exit and incoming entry candidates of this boundary carry explicit beat/downbeat alignment evidence",
 }
 
 
@@ -136,6 +138,40 @@ def plan_transition_boundary(tx_fixture: dict, intent: str, floor_override=None,
             entry_ok, entry_reasons = _entry_eligibility(incoming_track, entry_c)
             compat = _boundary_pair_compat(tx_fixture, exit_c["candidate_id"], entry_c["candidate_id"])
             allowed_classes = downgrade_transition_class_set(exit_result.preferred_transition_class_set, compat)
+
+            # R5 (PM REVIEW #3): FULL_DJ_BLEND additionally requires
+            # explicit, renderable beat/downbeat alignment evidence on BOTH
+            # sides of THIS specific boundary -- pair-level beat/downbeat
+            # CONFIDENCE (compat.beat_compatibility/downbeat_compatibility,
+            # already required above) is analyzer trust, not proof that the
+            # SELECTED exit/entry candidates actually carry alignment
+            # targets. A candidate's single beat_downbeat_aligned boolean is
+            # used as the explicit machine-readable evidence for BOTH the
+            # beat and downbeat/bar target on that side (see
+            # contract.build_boundary_transition_decision).
+            boundary_alignable = bool(exit_c.get("beat_downbeat_aligned")) and bool(entry_c.get("beat_downbeat_aligned"))
+            if not boundary_alignable and "FULL_DJ_BLEND" in allowed_classes:
+                allowed_classes = [c for c in allowed_classes if c != "FULL_DJ_BLEND"]
+                entry_reasons = entry_reasons + ["FULL_DJ_BLEND_WITHHELD_NO_BOUNDARY_ALIGNMENT_EVIDENCE"]
+            elif boundary_alignable and "FULL_DJ_BLEND" in allowed_classes:
+                entry_reasons = entry_reasons + ["BOUNDARY_ALIGNMENT_EVIDENCE_PRESENT"]
+
+            # R7 (PM REVIEW #3): deterministic pitch policy. COMPATIBLE
+            # harmonic -> no correction needed, full envelope. A validated
+            # structured non-tonal exception -> no correction needed AND no
+            # envelope is offered either (there is no tonal basis to justify
+            # any pitch range). Anything else -> FULL_DJ_BLEND is already
+            # withheld by the hard gate, so pitch is simply unknown/unused.
+            if compat.harmonic_compatibility == "COMPATIBLE":
+                required_pitch = 0
+                pitch_range = (-3, 3)
+            elif compat.harmonic_exception_applied:
+                required_pitch = 0
+                pitch_range = (0, 0)
+            else:
+                required_pitch = None
+                pitch_range = (None, None)
+
             entry_struct = _entry_structure_score(entry_c)
             combined_structure_score = round((exit_result.musical_structure_score + entry_struct) / 2, 4)
 
@@ -145,6 +181,7 @@ def plan_transition_boundary(tx_fixture: dict, intent: str, floor_override=None,
                 "eligible": bool(entry_ok),
                 "entry_reason_codes": entry_reasons,
                 "outgoing_content_preservation_ratio": exit_result.outgoing_content_preservation_ratio,
+                "preservation_band": exit_result.preservation_band,
                 "musical_structure_score": combined_structure_score,
                 "outgoing_structure_score": exit_result.musical_structure_score,
                 "incoming_structure_score": entry_struct,
@@ -161,10 +198,12 @@ def plan_transition_boundary(tx_fixture: dict, intent: str, floor_override=None,
                     "musical_unit_complete": bool(exit_c.get("musical_unit_complete")),
                     "beat_downbeat_aligned": bool(exit_c.get("beat_downbeat_aligned")),
                 },
+                "boundary_beat_downbeat_alignable": boundary_alignable,
                 "pair_compatibility_components": compat.to_dict(),
                 "energy_continuity_priority": compat.energy_continuity,
                 "required_tempo_ratio": compat.required_tempo_ratio,
-                "required_pitch_shift_semitones": 0 if compat.harmonic_compatibility == "COMPATIBLE" else None,
+                "required_pitch_shift_semitones": required_pitch,
+                "permitted_pitch_shift_semitones_range": pitch_range,
                 "eligible_for_dynamic_mix": compat.overall_dynamic_mix_eligible,
                 "allowed_transition_class_set": allowed_classes,
                 "confidence": exit_result.confidence,

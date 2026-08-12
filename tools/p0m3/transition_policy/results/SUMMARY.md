@@ -30,7 +30,7 @@ normal=TP-12-Y reversed=TP-12-Y shuffled=TP-12-Y -> order_invariant=True
 
 ## Pair compatibility gate
 
-incompatible_pair_downgrade_rate=0.7 (7/10)
+incompatible_pair_downgrade_rate=0.7692 (10/13)
 
 | Pair | Letter | Expected eligible | Computed eligible | Matches | TP-11+pair: FULL_DJ_BLEND offered |
 |---|---|---|---|---|---|
@@ -44,6 +44,9 @@ incompatible_pair_downgrade_rate=0.7 (7/10)
 | PAIR-08 | R4 | False | False | True | False |
 | PAIR-09 | R4 | True | True | True | True |
 | PAIR-10 | R4 | False | False | True | False |
+| PAIR-11 | R7 | False | False | True | False |
+| PAIR-12 | R7 | False | False | True | False |
+| PAIR-13 | R7 | False | False | True | False |
 
 ## PM REVIEW #2 -- complete boundary-plan results (TX-01..05)
 
@@ -54,6 +57,8 @@ incompatible_pair_downgrade_rate=0.7 (7/10)
 | TX-03 | TX03-OUT-1 + TX03-IN-SKIP | TX03-OUT-1 + TX03-IN-SKIP | True |
 | TX-04 | TX04-OUT-1 + TX04-IN-CUE | TX04-OUT-1 + TX04-IN-CUE | True |
 | TX-05 | TX05-OUT-1 + TX05-IN-B | TX05-OUT-1 + TX05-IN-B | True |
+| TX-06 | TX06-OUT-1 + TX06-IN-ZERO-ANCHORED | TX06-OUT-1 + TX06-IN-ZERO-ANCHORED | True |
+| TX-07 | TX07-OUT-B + TX07-IN-1 | TX07-OUT-B + TX07-IN-1 | True |
 
 TX-01 order invariance (exit array x entry array, 5 orderings): order_invariant=True
 

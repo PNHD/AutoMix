@@ -252,6 +252,7 @@ def _trace_entry(candidate, result: EligibilityResult, pair_compat=None) -> dict
         "outgoing_last_audible_ms": result.outgoing_last_audible_ms,
         "outgoing_content_preservation_ratio": result.outgoing_content_preservation_ratio,
         "outgoing_content_lost_ms": result.outgoing_content_lost_ms,
+        "preservation_band": result.preservation_band,
         "musical_structure_score": result.musical_structure_score,
         "confidence": result.confidence,
         "preferred_transition_class_set": result.preferred_transition_class_set,

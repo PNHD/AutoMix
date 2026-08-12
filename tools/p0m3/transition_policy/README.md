@@ -1,30 +1,31 @@
 # P0-M3-R2 -- Apple-like Near-End Transition Planner + Compatibility Gate
 
-Disposable, research-only prototype for GitHub Issue #6, now on its second
-repair pass ("PM REVIEW #2 -- FINAL PRE-DSP CONTRACT REPAIR REQUIRED",
-following the "PM PRODUCT DIRECTION UPDATE -- APPLE-LIKE NEAR-END LISTENING
-TARGET" comment that preceded it). Answers **WHEN should AutoMix leave the
+Disposable, research-only prototype for GitHub Issue #6, now on its third
+repair pass ("PM REVIEW #3 -- TRUE FINAL DSP-SAFETY REPAIR REQUIRED",
+following "PM REVIEW #2 -- FINAL PRE-DSP CONTRACT REPAIR REQUIRED" and the
+"PM PRODUCT DIRECTION UPDATE -- APPLE-LIKE NEAR-END LISTENING TARGET"
+comment that started this pass). Answers **WHEN should AutoMix leave the
 current track, WHERE should it enter the next track, and WHICH transition
-class is appropriate for that complete boundary** -- not how to DSP-mix it.
-No audio is processed or committed; no Signalsmith Stretch / Rubber Band /
-production engine code exists here.
+class is appropriate for that complete, DSP-render-safe boundary** -- not
+how to DSP-mix it. No audio is processed or committed; no Signalsmith
+Stretch / Rubber Band / production engine code exists here.
 
 ## Layout
 
 ```
 fixtures/fixtures.json            14 timing/preservation fixtures (letters A-N), single-track/legacy planner, metadata-only
-fixtures/pair_fixtures.json       10 pair-compatibility fixtures (letters G-K + R4 mutation pairs PAIR-06..10), metadata-only
-fixtures/transition_fixtures.json 5 COMPLETE boundary-planning fixtures TX-01..05 (outgoing exit x incoming entry x pair), metadata-only
+fixtures/pair_fixtures.json       13 pair-compatibility fixtures (letters G-K + R4 mutations PAIR-06..08 + R7 mutations PAIR-09/11..13), metadata-only
+fixtures/transition_fixtures.json 7 COMPLETE boundary-planning fixtures TX-01..07 (outgoing exit x incoming entry x pair), metadata-only
 fixtures/manifest.json            index + spec-letter coverage map + ground-truth-isolation note
-policy/metrics.py                 effective_content_end_ms / transition_onset / preservation-ratio model
-policy/compatibility.py           pair-level mixability gate (genre/tempo/beat/harmonic/energy/vocal/...); R4 hard-gates structure+texture+harmonic
-policy/ranking.py                 deterministic, order-invariant ranking (single-candidate AND full boundary-plan variants)
+policy/metrics.py                 effective_content_end_ms / transition_onset / preservation-ratio model + preservation_band (R8)
+policy/compatibility.py           pair-level mixability gate; R4 hard-gates structure+texture+harmonic; R6 canonical tempo-ratio math; R7 structured harmonic exception
+policy/ranking.py                 deterministic, order-invariant ranking (single-candidate AND full boundary-plan variants); R8 bands preservation before raw ratio
 policy/eligibility.py             near-end eligibility model (the SEAMLESS_FULL_TRACK_DEFAULT engine) -- SAFE-exit filter only, never pair-aware
-policy/boundary.py                PM REVIEW #2 R1/R2: ranks COMPLETE (exit, entry, pair-at-that-boundary) plans; plans real incoming entries
+policy/boundary.py                ranks COMPLETE (exit, entry, pair-at-that-boundary) plans; plans real incoming entries; R5 boundary-specific beat/downbeat alignability gate
 policy/policies.py                7 policy candidates (4 baselines + recommended engine + 2 research controls) for the legacy single-track planner
-policy/contract.py                P0-M3-R3 planner output contract (PlannerDecision) -- both-sides alignment, unambiguous tempo/pitch fields
+policy/contract.py                P0-M3-R3 planner output contract (PlannerDecision) -- both-sides alignment, unambiguous tempo/pitch fields, R9 observed-vs-action phase semantics
 run_benchmark.py                  runs the full matrix, writes results/*.json + SUMMARY.md
-verify.py                         independent stop-condition-mapped assertion suite (111 checks)
+verify.py                         independent stop-condition-mapped assertion suite (151 checks)
 results/                          generated (committed) output
 ```
 
@@ -94,13 +95,54 @@ shuffle uses a fixed seed).
 - **Strict FULL_DJ_BLEND hard gate (R4).** `policy/compatibility.py`
   requires `structure_compatibility` and `intro_outro_texture_compatible`
   to be KNOWN and COMPATIBLE (not merely absent/UNKNOWN) before
-  `FULL_DJ_BLEND` is ever offered. `harmonic_relationship` UNKNOWN
-  downgrades FULL_DJ_BLEND unless an explicit, narrow
-  `harmonic_not_load_bearing_reason` exception is supplied (PAIR-08 vs
-  PAIR-09). `harmonic_relationship == INCOMPATIBLE` always rejects
-  FULL_DJ_BLEND regardless of any exception (PAIR-10). Energy continuity
-  remains a ranking/preference signal AFTER these hard gates, never a hard
-  rejection on its own.
+  `FULL_DJ_BLEND` is ever offered. `harmonic_relationship == INCOMPATIBLE`
+  always rejects FULL_DJ_BLEND regardless of any exception (PAIR-10).
+  Energy continuity remains a ranking/preference signal AFTER these hard
+  gates, never a hard rejection on its own.
+- **Boundary-specific beat/downbeat alignability, not just confidence (R5).**
+  `policy/boundary.py` additionally requires `beat_downbeat_aligned` on
+  BOTH the specific exit AND entry candidate of a boundary before
+  `FULL_DJ_BLEND` is offered -- pair-level beat/downbeat *confidence* alone
+  (`policy/compatibility.py`'s existing gate) is analyzer trust, not proof
+  the selected candidates carry renderable alignment targets. `t_ms == 0`
+  remains a valid entry for `SIMPLE_CROSSFADE`/other non-DJ classes even
+  with no anchor (TX-02); the same 0ms entry becomes `FULL_DJ_BLEND`-eligible
+  once explicitly authored as a beat/downbeat anchor (TX-06).
+- **One canonical tempo-ratio formula (R6).** `policy/compatibility._tempo_relation`
+  computes `required_tempo_ratio` (`bpm_out / effective_bpm_in`, where
+  `effective_bpm_in` is scaled by whichever octave multiplier -- 1x/2x/0.5x
+  -- best matches) and uses that SAME value for the DIRECT/HALF_DOUBLE
+  classification gate, so `abs(required_tempo_ratio - 1.0) <=
+  permitted_tempo_ratio_max_deviation` holds by construction for every
+  eligible DIRECT pair -- the gate and the emitted envelope can no longer
+  mathematically disagree. Non-exact HALF_DOUBLE relations report a real
+  residual `required_tempo_ratio` (not a hardcoded `1.0`) and
+  `tempo_requires_playback_rate_change = True`.
+- **Structured, machine-verifiable harmonic exception only (R7).** A bare
+  free-text `harmonic_not_load_bearing_reason` string can no longer unlock
+  FULL_DJ_BLEND under harmonic UNKNOWN (PAIR-11). The only path is
+  `harmonic_exception_kind` (enum) + `tonal_content_class == "NON_TONAL"` +
+  `tonal_analysis_confidence == "HIGH"`, ALL three valid simultaneously
+  (PAIR-09 valid; PAIR-12/13 each fail exactly one requirement). When the
+  exception applies, pitch correction is deterministic: `required=0` with a
+  ZERO-width permitted range (`0..0`), never a null required value
+  alongside a nonzero envelope.
+- **Rank within preservation safety bands (R8).** `policy/ranking.py`'s
+  primary key is now `preservation_band` (PREFERRED >=0.97 / ACCEPTABLE
+  >=floor,<0.97 / UNSAFE <floor -- `policy/metrics.preservation_band`), not
+  the raw rounded ratio. UNSAFE candidates are already excluded before
+  ranking by the existing hard eligibility-floor guard, so this does not
+  weaken preservation safety -- within the SAME band, pair compatibility
+  now outranks a marginal (e.g. 1%) preservation edge (TX-07: a 0.99
+  pair-compatible boundary beats a 1.00 pair-incompatible one).
+- **Honest phase semantics, explicit render actions (R9).**
+  `beat_phase_relation`/`bar_phase_relation` report only `NOT_MEASURED`
+  (both targets known, but no real phase measurement exists in this P0
+  prototype) or `NOT_APPLICABLE` -- never a fabricated `ALIGNED`. New
+  `beat_alignment_action`/`bar_alignment_action` fields carry the explicit
+  DSP-renderer instruction (e.g.
+  `ALIGN_OUTGOING_BEAT_TARGET_TO_INCOMING_BEAT_TARGET`), keeping "what was
+  observed" structurally distinct from "what the renderer should do."
 - `SEAMLESS_FULL_TRACK_DEFAULT` is the only current product-default policy.
   `BALANCED_MIX_RESEARCH_CONTROL` and `EXPLICIT_HIGHLIGHT_RESEARCH_CONTROL`
   are research/negative controls only -- independently computed rows that

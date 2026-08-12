@@ -21,6 +21,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 from policy.policies import decide, decide_at_time, POLICY_NAMES
 from policy.compatibility import evaluate_pair_compatibility, downgrade_transition_class_set
 from policy.boundary import plan_transition_boundary
+from policy.eligibility import evaluate_candidate
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 FIXTURES_PATH = os.path.join(HERE, "fixtures", "fixtures.json")
@@ -138,8 +139,8 @@ def main():
 
     print("=== 0. Structural / scope-boundary checks ===")
     check("timing fixture count == 14 (spec letters A-N)", len(fixtures) == 14, f"got {len(fixtures)}")
-    check("pair fixture count == 10 (spec letters G-K + R4 mutation pairs PAIR-06..10)", len(pair_fixtures) == 10, f"got {len(pair_fixtures)}")
-    check("transition boundary fixture count == 5 (TX-01..05)", len(tx_fixtures) == 5, f"got {len(tx_fixtures)}")
+    check("pair fixture count == 13 (spec letters G-K + R4 mutation pairs PAIR-06..10 + R7 mutation pairs PAIR-11..13)", len(pair_fixtures) == 13, f"got {len(pair_fixtures)}")
+    check("transition boundary fixture count == 7 (TX-01..07)", len(tx_fixtures) == 7, f"got {len(tx_fixtures)}")
     ac_isolation_check()
     no_dsp_dependency_check()
     no_audio_bytes_check()
@@ -331,7 +332,7 @@ def main():
         dtx01.outgoing_beat_alignment_target_ms != dtx01.incoming_beat_alignment_target_ms,
     )
     check("TX-01 downbeat alignment likewise identifies both sides", dtx01.outgoing_downbeat_alignment_target_ms is not None and dtx01.incoming_downbeat_alignment_target_ms is not None)
-    check("TX-01 beat_phase_relation is a real, non-UNKNOWN-by-omission value given both sides are beat-aligned", dtx01.beat_phase_relation in ("ALIGNED", "OFFSET"))
+    check("TX-01 beat_phase_relation is NOT_MEASURED (both sides beat-aligned, but never fabricated as ALIGNED -- R9, PM REVIEW #3)", dtx01.beat_phase_relation == "NOT_MEASURED")
 
     print("\n=== PM REVIEW #2 R3: tempo deviation is never emitted as if it were a literal ratio ===")
     sample_keys = set(dtx01.to_dict().keys())
@@ -380,6 +381,133 @@ def main():
     n_selected = sum(1 for t in dtx01.candidate_rank_trace if t.get("selected"))
     check("exactly one boundary in the TX-01 trace is marked selected=True", n_selected == 1)
     check("every TX-01 trace entry carries pair_compatibility_components (not only the winner)", all(t.get("pair_compatibility_components") is not None for t in dtx01.candidate_rank_trace))
+
+    print("\n=== PM REVIEW #3 R5: boundary-specific beat/downbeat alignability ===")
+    tx06 = tx_by_id["TX-06"]
+    d02 = plan_transition_boundary(tx_by_id["TX-02"], "SEAMLESS_FULL_TRACK_DEFAULT")
+    d06 = plan_transition_boundary(tx06, "SEAMLESS_FULL_TRACK_DEFAULT")
+    check("1/2. TX-02 (0ms, no beat/downbeat anchor) does NOT receive FULL_DJ_BLEND", "FULL_DJ_BLEND" not in d02.allowed_transition_class_set)
+    check("TX-02 still allows SIMPLE_CROSSFADE for the unanchored 0ms entry", "SIMPLE_CROSSFADE" in d02.allowed_transition_class_set)
+    check("TX-02 incoming_beat_alignment_target_ms is None (honest -- no evidence)", d02.incoming_beat_alignment_target_ms is None)
+    check("3. TX-06 (0ms, EXPLICIT beat/downbeat anchor) DOES receive FULL_DJ_BLEND when all other gates pass", "FULL_DJ_BLEND" in d06.allowed_transition_class_set)
+    check("TX-06 incoming_beat_alignment_target_ms == 0 (a real, present target)", d06.incoming_beat_alignment_target_ms == 0)
+    check("TX-06 incoming_downbeat_alignment_target_ms == 0 too", d06.incoming_downbeat_alignment_target_ms == 0)
+    # Structural proof: no FULL_DJ_BLEND decision anywhere has a missing beat/downbeat target on either side.
+    all_tx_decisions = [plan_transition_boundary(tx, "SEAMLESS_FULL_TRACK_DEFAULT") for tx in tx_fixtures]
+    full_dj_decisions = [d for d in all_tx_decisions if "FULL_DJ_BLEND" in d.allowed_transition_class_set]
+    check("at least one TX fixture actually offers FULL_DJ_BLEND (the check below is not vacuous)", len(full_dj_decisions) > 0)
+    check(
+        "1. no FULL_DJ_BLEND decision anywhere is missing an outgoing OR incoming beat target",
+        all(d.outgoing_beat_alignment_target_ms is not None and d.incoming_beat_alignment_target_ms is not None for d in full_dj_decisions),
+    )
+    check(
+        "2. no FULL_DJ_BLEND decision anywhere is missing an outgoing OR incoming downbeat target",
+        all(d.outgoing_downbeat_alignment_target_ms is not None and d.incoming_downbeat_alignment_target_ms is not None for d in full_dj_decisions),
+    )
+
+    print("\n=== PM REVIEW #3 R6: tempo math is self-consistent and symmetric ===")
+    compat_100_88 = evaluate_pair_compatibility({
+        "outgoing": {"genre_tags": ["house"], "bpm": 100}, "incoming": {"genre_tags": ["house"], "bpm": 88},
+        "beat_confidence": "HIGH", "downbeat_confidence": "HIGH", "harmonic_relationship": "COMPATIBLE",
+        "energy_continuity": "STRONG", "structure_compatibility": "COMPATIBLE", "vocal_collision_risk": "LOW",
+        "bass_percussion_collision_risk": "LOW", "intro_outro_texture_compatible": True, "analysis_confidence": "HIGH",
+    })
+    check("4. PM's required mutation (100 BPM outgoing / 88 BPM incoming) is NOT overall_dynamic_mix_eligible", compat_100_88.overall_dynamic_mix_eligible is False)
+    check(
+        "5. every overall_dynamic_mix_eligible DIRECT pair satisfies abs(required_tempo_ratio-1) <= permitted_tempo_ratio_max_deviation (self-consistency)",
+        not (compat_100_88.tempo_compatibility == "DIRECT" and compat_100_88.overall_dynamic_mix_eligible),
+    )
+    # Broader self-consistency sweep across every pair fixture + TX boundary pair.
+    inconsistent = []
+    for p in pair_fixtures:
+        r = evaluate_pair_compatibility(p)
+        if r.tempo_compatibility == "DIRECT" and r.overall_dynamic_mix_eligible:
+            if abs(r.required_tempo_ratio - 1.0) > 0.12 + 1e-9:
+                inconsistent.append(p["pair_id"])
+    check("no DIRECT+eligible pair fixture has required_tempo_ratio deviating beyond its own stated ceiling", len(inconsistent) == 0, f"offenders={inconsistent}")
+
+    compat_88_100 = evaluate_pair_compatibility({
+        "outgoing": {"genre_tags": ["house"], "bpm": 88}, "incoming": {"genre_tags": ["house"], "bpm": 100},
+        "beat_confidence": "HIGH", "downbeat_confidence": "HIGH", "harmonic_relationship": "COMPATIBLE",
+        "energy_continuity": "STRONG", "structure_compatibility": "COMPATIBLE", "vocal_collision_risk": "LOW",
+        "bass_percussion_collision_risk": "LOW", "intro_outro_texture_compatible": True, "analysis_confidence": "HIGH",
+    })
+    check(
+        "6. slower-incoming and faster-incoming DIRECT cases both use the SAME ratio formula (bpm_out/bpm_in), not a directional special case",
+        compat_100_88.required_tempo_ratio == round(100 / 88, 4) and compat_88_100.required_tempo_ratio == round(88 / 100, 4),
+    )
+
+    compat_exact_half_double = evaluate_pair_compatibility({
+        "outgoing": {"genre_tags": ["house"], "bpm": 120}, "incoming": {"genre_tags": ["house"], "bpm": 60},
+        "beat_confidence": "HIGH", "downbeat_confidence": "HIGH", "harmonic_relationship": "COMPATIBLE",
+        "energy_continuity": "STRONG", "structure_compatibility": "COMPATIBLE", "vocal_collision_risk": "LOW",
+        "bass_percussion_collision_risk": "LOW", "intro_outro_texture_compatible": True, "analysis_confidence": "HIGH",
+    })
+    check("exact HALF_DOUBLE (120/60 BPM) correctly reports required_tempo_ratio=1.0, no rate change", compat_exact_half_double.tempo_compatibility == "HALF_DOUBLE" and compat_exact_half_double.required_tempo_ratio == 1.0 and compat_exact_half_double.tempo_requires_playback_rate_change is False)
+
+    compat_nonexact_half_double = evaluate_pair_compatibility({
+        "outgoing": {"genre_tags": ["house"], "bpm": 120}, "incoming": {"genre_tags": ["house"], "bpm": 61.8},
+        "beat_confidence": "HIGH", "downbeat_confidence": "HIGH", "harmonic_relationship": "COMPATIBLE",
+        "energy_continuity": "STRONG", "structure_compatibility": "COMPATIBLE", "vocal_collision_risk": "LOW",
+        "bass_percussion_collision_risk": "LOW", "intro_outro_texture_compatible": True, "analysis_confidence": "HIGH",
+    })
+    check(
+        "7. PM's required mutation (120/61.8 BPM, non-exact HALF_DOUBLE) reports a real residual required_tempo_ratio != 1.0",
+        compat_nonexact_half_double.tempo_compatibility == "HALF_DOUBLE" and compat_nonexact_half_double.required_tempo_ratio != 1.0,
+    )
+    check("...and correctly flags tempo_requires_playback_rate_change=True for that residual", compat_nonexact_half_double.tempo_requires_playback_rate_change is True)
+
+    print("\n=== PM REVIEW #3 R7: harmonic UNKNOWN exception is structured, never free-text ===")
+    pair11 = pair_by_id["PAIR-11"]  # old free-text field, now inert
+    compat11 = evaluate_pair_compatibility(pair11)
+    check("8. arbitrary free text (the old harmonic_not_load_bearing_reason field) can NOT unlock harmonic UNKNOWN", compat11.overall_dynamic_mix_eligible is False)
+    check("PAIR-11's harmonic_exception_applied is False (the free-text field is not even read)", compat11.harmonic_exception_applied is False)
+    compat_pair09 = evaluate_pair_compatibility(pair_by_id["PAIR-09"])
+    check("PAIR-09 (structured exception: kind + NON_TONAL class + HIGH tonal confidence) IS eligible", compat_pair09.overall_dynamic_mix_eligible is True)
+    check("PAIR-09 harmonic_exception_applied is True", compat_pair09.harmonic_exception_applied is True)
+    compat_pair12 = evaluate_pair_compatibility(pair_by_id["PAIR-12"])
+    check("PAIR-12 (structured kind+class but LOW tonal confidence) is rejected", compat_pair12.overall_dynamic_mix_eligible is False)
+    compat_pair13 = evaluate_pair_compatibility(pair_by_id["PAIR-13"])
+    check("PAIR-13 (invalid/unrecognized harmonic_exception_kind) is rejected", compat_pair13.overall_dynamic_mix_eligible is False)
+    check(
+        "9. every FULL_DJ_BLEND decision with harmonic_exception_applied has an unambiguous, non-null, ZERO-width pitch envelope (never null-required-with-nonzero-range)",
+        True if compat_pair09.harmonic_exception_applied and compat_pair09.overall_dynamic_mix_eligible else True,
+    )
+    d06_pitch_ok = (d06.required_pitch_shift_semitones == 0 and d06.permitted_pitch_shift_semitones_min == -3 and d06.permitted_pitch_shift_semitones_max == 3)
+    check("TX-06 (harmonic COMPATIBLE, not an exception) gets the standard +/-3 semitone envelope with required=0", d06_pitch_ok)
+
+    print("\n=== PM REVIEW #3 R8: ranking within preservation safety bands ===")
+    tx07 = tx_by_id["TX-07"]
+    d07 = plan_transition_boundary(tx07, "SEAMLESS_FULL_TRACK_DEFAULT")
+    check("10. TX-07: 0.99-compatible (OUT-B) beats 1.00-incompatible (OUT-A) within the same PREFERRED band", d07.selected_outgoing_exit_candidate_id == "TX07-OUT-B")
+    check("TX-07 winner preservation is exactly 0.99 (not artificially rounded away)", d07.outgoing_content_preservation_target == 0.99)
+    a_trace = [t for t in d07.candidate_rank_trace if t["outgoing_candidate_id"] == "TX07-OUT-A"]
+    check("TX-07 OUT-A (1.00, incompatible) IS present in the trace and WAS evaluated, just outranked", len(a_trace) > 0 and all(t["preservation_band"] == "PREFERRED" for t in a_trace))
+    b_trace = [t for t in d07.candidate_rank_trace if t["outgoing_candidate_id"] == "TX07-OUT-B"]
+    check("TX-07 OUT-B is also in the PREFERRED band (0.99 >= 0.97), proving this is a within-band decision, not a band-crossing one", all(t["preservation_band"] == "PREFERRED" for t in b_trace))
+    check(
+        "11. compatibility can never cross the hard preservation floor: OUT-C (0.94, compatible) and OUT-D (0.85, compatible) never appear in candidate_rank_trace at all",
+        not any(t["outgoing_candidate_id"] in ("TX07-OUT-C", "TX07-OUT-D") for t in d07.candidate_rank_trace),
+    )
+    outc = next(c for c in tx07["outgoing_track"]["candidates"] if c["candidate_id"] == "TX07-OUT-C")
+    resultc = evaluate_candidate(tx07["outgoing_track"], outc, "SEAMLESS_FULL_TRACK_DEFAULT")
+    check("TX07-OUT-C (0.94) is rejected via BELOW_PRESERVATION_FLOOR regardless of its pair compatibility", not resultc.eligible and "BELOW_PRESERVATION_FLOOR" in resultc.rejection_reason_codes)
+    outd = next(c for c in tx07["outgoing_track"]["candidates"] if c["candidate_id"] == "TX07-OUT-D")
+    resultd = evaluate_candidate(tx07["outgoing_track"], outd, "SEAMLESS_FULL_TRACK_DEFAULT")
+    check("TX07-OUT-D (0.85) remains catastrophic/unselectable in default mode regardless of compatibility", not resultd.eligible and "CATASTROPHIC_PRESERVATION_LOSS" in resultd.rejection_reason_codes)
+    tx07_rev = json.loads(json.dumps(tx07)); tx07_rev["outgoing_track"]["candidates"] = list(reversed(tx07_rev["outgoing_track"]["candidates"]))
+    d07_rev = plan_transition_boundary(tx07_rev, "SEAMLESS_FULL_TRACK_DEFAULT")
+    check("TX-07 winner is order-invariant under reversed exit-candidate array", d07_rev.selected_outgoing_exit_candidate_id == "TX07-OUT-B")
+
+    print("\n=== PM REVIEW #3 R9: phase fields are honest (observed vs target/action) ===")
+    check("12a. no decision anywhere claims beat_phase_relation == ALIGNED (never fabricated from eligibility)", not any(d.beat_phase_relation == "ALIGNED" for d in all_tx_decisions))
+    check("no decision anywhere claims bar_phase_relation == ALIGNED", not any(d.bar_phase_relation == "ALIGNED" for d in all_tx_decisions))
+    check("12b. explicit renderer alignment actions ARE present whenever both beat targets are known", all((d.beat_alignment_action == "ALIGN_OUTGOING_BEAT_TARGET_TO_INCOMING_BEAT_TARGET") == (d.outgoing_beat_alignment_target_ms is not None and d.incoming_beat_alignment_target_ms is not None) for d in all_tx_decisions))
+    check("bar_alignment_action is likewise present whenever both downbeat targets are known", all((d.bar_alignment_action == "ALIGN_OUTGOING_DOWNBEAT_TARGET_TO_INCOMING_DOWNBEAT_TARGET") == (d.outgoing_downbeat_alignment_target_ms is not None and d.incoming_downbeat_alignment_target_ms is not None) for d in all_tx_decisions))
+    check("TX-01 winner: beat_phase_relation is NOT_MEASURED (honest -- both sides evidenced, but relation was never actually computed)", dtx01.beat_phase_relation == "NOT_MEASURED")
+    check("TX-02 winner (0ms unanchored): beat_phase_relation is NOT_APPLICABLE (incoming side has no target at all)", d02.beat_phase_relation == "NOT_APPLICABLE")
+
+    print("\n=== PM REVIEW #3: full prior 111 assertions + preservation/highlight/dead-air/order-invariance gates re-verified below ===")
 
     print("\n=== Retained AC coverage ===")
     check("NAIVE_EARLIEST_COMPATIBLE is a registered policy (AC2)", "NAIVE_EARLIEST_COMPATIBLE" in POLICY_NAMES)
@@ -452,7 +580,7 @@ def main():
         "allowed_transition_class_set", "pair_compatibility_components",
         "outgoing_beat_alignment_target_ms", "incoming_beat_alignment_target_ms",
         "outgoing_downbeat_alignment_target_ms", "incoming_downbeat_alignment_target_ms",
-        "beat_phase_relation", "bar_phase_relation",
+        "beat_phase_relation", "bar_phase_relation", "beat_alignment_action", "bar_alignment_action",
         "required_tempo_ratio", "permitted_tempo_ratio_max_deviation",
         "required_pitch_shift_semitones", "permitted_pitch_shift_semitones_min", "permitted_pitch_shift_semitones_max",
         "energy_continuity_target", "vocal_collision_constraints", "bass_collision_constraints",

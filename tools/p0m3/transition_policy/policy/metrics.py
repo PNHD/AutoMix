@@ -36,6 +36,25 @@ NEAR_END_MAX_OVERLAP_MS = 40_000
 # acceptable P0 default-candidate band is 0.95-1.00.
 DEFAULT_PRESERVATION_FLOOR = 0.95
 CATASTROPHIC_PRESERVATION_CEILING = 0.90  # strictly below this => catastrophic
+# R8 (PM REVIEW #3): the boundary between the ACCEPTABLE and PREFERRED
+# preservation safety bands used by policy/ranking.py. Same 0.97 value the
+# docs already describe as "preferred band 0.97-1.00" -- not a new policy.
+PREFERRED_PRESERVATION_THRESHOLD = 0.97
+
+
+def preservation_band(ratio: float, floor: float) -> str:
+    """
+    PREFERRED (>=0.97) / ACCEPTABLE (>=floor and <0.97) / UNSAFE (<floor).
+    UNSAFE candidates are already excluded before ranking by the hard
+    preservation-floor eligibility guard -- this function exists so the
+    boundary is computed once, consistently, wherever it's needed (it is
+    not itself a new gate).
+    """
+    if ratio < floor:
+        return "UNSAFE"
+    if ratio >= PREFERRED_PRESERVATION_THRESHOLD:
+        return "PREFERRED"
+    return "ACCEPTABLE"
 
 
 @dataclass

@@ -9,12 +9,20 @@ reproducible rule -- never merely the first one encountered in whatever
 order the candidate array happens to be in.
 
 Ranking key (descending priority, all evidence already exposed elsewhere
-in the trace -- this is a lexicographic tuple, not an opaque score):
+in the trace -- this is a lexicographic tuple, not an opaque score).
 
-  1. outgoing_content_preservation_ratio, rounded to 2 decimals
-     (near-end song preservation is the load-bearing SAFETY signal --
-     pair/compatibility evidence below can never outrank this, so it can
-     never authorize leaving the outgoing song early; PM REVIEW #2 R1)
+R8 (PM REVIEW #3) repair: preservation now ranks by SAFETY BAND first
+(PREFERRED/ACCEPTABLE/UNSAFE -- policy/metrics.preservation_band), not the
+raw rounded ratio. UNSAFE candidates are already excluded before ranking
+by the hard eligibility floor guard, so this is not a weakening of the
+preservation safety gate -- it only changes how candidates that are ALREADY
+safe get ordered against each other. Within the same band, pair
+compatibility now outranks a marginal (<1-band-width) preservation
+difference, which is the actual point of ranking a COMPLETE boundary
+rather than the single best outgoing-only preservation number:
+
+  1. preservation_band (PREFERRED > ACCEPTABLE > UNSAFE) -- the hard safety
+     signal, still first, still dominant across bands.
   2. eligible_for_dynamic_mix (pair compatibility AT this specific
      boundary, when known -- PM REVIEW #2 R1 repair: this now participates
      in ranking itself, not merely applied to the already-selected winner
@@ -25,22 +33,27 @@ in the trace -- this is a lexicographic tuple, not an opaque score):
   4. energy_continuity_priority (only meaningful once timing/compatibility
      safety gates already passed -- spec "Energy / Excitement Target")
   5. confidence rank (HIGH > MEDIUM > LOW > NONE)
-  6. candidate_id (lexicographic) -- final deterministic tie-break; this
+  6. exact outgoing_content_preservation_ratio -- a fine-grained tie-break
+     WITHIN an already-equal band/compatibility/structure/energy/confidence
+     tuple, never the primary signal.
+  7. candidate_id (lexicographic) -- final deterministic tie-break; this
      key never depends on t_ms/array position, which is exactly what makes
      the result order-invariant.
 """
 
 CONFIDENCE_RANK = {"HIGH": 3, "MEDIUM": 2, "LOW": 1, "NONE": 0}
 ENERGY_PRIORITY = {"STRONG": 2, "WEAK": 1, "UNKNOWN": 0}
+PRESERVATION_BAND_RANK = {"PREFERRED": 2, "ACCEPTABLE": 1, "UNSAFE": 0}
 
 
 def _sort_key(entry: dict):
     return (
-        round(entry["outgoing_content_preservation_ratio"], 2),
+        PRESERVATION_BAND_RANK.get(entry.get("preservation_band", "UNSAFE"), 0),
         1 if entry.get("eligible_for_dynamic_mix") else 0,
         entry.get("musical_structure_score", 0.0),
         ENERGY_PRIORITY.get(entry.get("energy_continuity_priority", "UNKNOWN"), 0),
         CONFIDENCE_RANK.get(entry.get("confidence", "NONE"), 0),
+        round(entry.get("outgoing_content_preservation_ratio", 0.0), 4),
     )
 
 

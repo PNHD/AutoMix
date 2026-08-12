@@ -226,7 +226,7 @@
     "pair_id": "PAIR-09",
     "title": "unknown_harmonic_narrow_exception_applied",
     "task_letter": "R4",
-    "purpose": "harmonic_relationship UNKNOWN WITH an explicit, narrow, style-specific exception reason may still be FULL_DJ_BLEND eligible.",
+    "purpose": "harmonic_relationship UNKNOWN, WITH a STRUCTURED machine-verifiable exception (harmonic_exception_kind + tonal_content_class=NON_TONAL + tonal_analysis_confidence=HIGH) -- eligible. R7 (PM REVIEW #3): a bare free-text reason string is no longer sufficient.",
     "outgoing": {
       "genre_tags": [
         "house"
@@ -247,8 +247,10 @@
     "bass_percussion_collision_risk": "LOW",
     "intro_outro_texture_compatible": true,
     "analysis_confidence": "HIGH",
-    "harmonic_not_load_bearing_reason": "pure rhythmic four-on-the-floor genre pair with no tonal/melodic content; harmonic mixing is not a meaningful concept for this style",
-    "expected_overall_eligible": true
+    "expected_overall_eligible": true,
+    "harmonic_exception_kind": "NON_TONAL_RHYTHMIC",
+    "tonal_content_class": "NON_TONAL",
+    "tonal_analysis_confidence": "HIGH"
   },
   {
     "pair_id": "PAIR-10",
@@ -277,6 +279,94 @@
     "intro_outro_texture_compatible": true,
     "analysis_confidence": "HIGH",
     "harmonic_not_load_bearing_reason": "should not matter",
+    "expected_overall_eligible": false
+  },
+  {
+    "outgoing": {
+      "genre_tags": [
+        "house"
+      ],
+      "bpm": 128
+    },
+    "incoming": {
+      "genre_tags": [
+        "electronic"
+      ],
+      "bpm": 129
+    },
+    "beat_confidence": "HIGH",
+    "downbeat_confidence": "HIGH",
+    "energy_continuity": "STRONG",
+    "structure_compatibility": "COMPATIBLE",
+    "vocal_collision_risk": "LOW",
+    "bass_percussion_collision_risk": "LOW",
+    "intro_outro_texture_compatible": true,
+    "analysis_confidence": "HIGH",
+    "pair_id": "PAIR-11",
+    "title": "arbitrary_free_text_no_longer_unlocks_harmonic_unknown",
+    "task_letter": "R7",
+    "purpose": "R7 (PM REVIEW #3) required mutation: harmonic UNKNOWN with an arbitrary, non-empty, non-structured 'reason' string (the OLD bypass field name, now inert) must NOT unlock FULL_DJ_BLEND.",
+    "harmonic_not_load_bearing_reason": "x",
+    "expected_overall_eligible": false
+  },
+  {
+    "outgoing": {
+      "genre_tags": [
+        "house"
+      ],
+      "bpm": 128
+    },
+    "incoming": {
+      "genre_tags": [
+        "electronic"
+      ],
+      "bpm": 129
+    },
+    "beat_confidence": "HIGH",
+    "downbeat_confidence": "HIGH",
+    "energy_continuity": "STRONG",
+    "structure_compatibility": "COMPATIBLE",
+    "vocal_collision_risk": "LOW",
+    "bass_percussion_collision_risk": "LOW",
+    "intro_outro_texture_compatible": true,
+    "analysis_confidence": "HIGH",
+    "pair_id": "PAIR-12",
+    "title": "structured_exception_rejected_low_tonal_confidence",
+    "task_letter": "R7",
+    "purpose": "R7: a structurally well-formed exception (valid kind + NON_TONAL class) is still rejected when tonal_analysis_confidence is below HIGH -- confidence matters, not just field presence.",
+    "harmonic_exception_kind": "NON_TONAL_RHYTHMIC",
+    "tonal_content_class": "NON_TONAL",
+    "tonal_analysis_confidence": "LOW",
+    "expected_overall_eligible": false
+  },
+  {
+    "outgoing": {
+      "genre_tags": [
+        "house"
+      ],
+      "bpm": 128
+    },
+    "incoming": {
+      "genre_tags": [
+        "electronic"
+      ],
+      "bpm": 129
+    },
+    "beat_confidence": "HIGH",
+    "downbeat_confidence": "HIGH",
+    "energy_continuity": "STRONG",
+    "structure_compatibility": "COMPATIBLE",
+    "vocal_collision_risk": "LOW",
+    "bass_percussion_collision_risk": "LOW",
+    "intro_outro_texture_compatible": true,
+    "analysis_confidence": "HIGH",
+    "pair_id": "PAIR-13",
+    "title": "structured_exception_rejected_invalid_kind",
+    "task_letter": "R7",
+    "purpose": "R7: an unrecognized harmonic_exception_kind (not in the enum) is rejected even with high tonal confidence and the correct NON_TONAL class -- the enum is enforced, not merely 'any kind present'.",
+    "harmonic_exception_kind": "MADE_UP_KIND",
+    "tonal_content_class": "NON_TONAL",
+    "tonal_analysis_confidence": "HIGH",
     "expected_overall_eligible": false
   }
 ]

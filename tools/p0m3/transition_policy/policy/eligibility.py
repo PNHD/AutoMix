@@ -84,6 +84,11 @@ class EligibilityResult:
     outgoing_last_audible_ms: int = 0
     outgoing_content_preservation_ratio: float = 0.0
     outgoing_content_lost_ms: int = 0
+    # R8 (PM REVIEW #3): PREFERRED (>=0.97) / ACCEPTABLE (>=floor, <0.97) /
+    # UNSAFE (<floor). Computed against whichever floor was ACTUALLY applied
+    # for this evaluation (intent + any sensitivity override), so ranking
+    # can prioritize the safety band without re-deriving the floor itself.
+    preservation_band: str = "UNSAFE"
 
     musical_structure_score: float = 0.0
     confidence: str = "NONE"
@@ -182,12 +187,16 @@ def evaluate_candidate(fixture: dict, candidate: dict, intent: str, preservation
     # HIGHLIGHT_EXPLICIT (explicit user intent permits shortened playback).
     if intent == HIGHLIGHT_EXPLICIT:
         acceptance_reasons.append("HIGHLIGHT_INTENT_BYPASSES_PRESERVATION_FLOOR")
+        banding_floor = 0.0  # no real floor under the bypass; nothing bands as UNSAFE here
     else:
         floor = preservation_floor_override if preservation_floor_override is not None else PRESERVATION_FLOOR[intent]
+        banding_floor = floor
         if pm.outgoing_content_preservation_ratio < floor:
             rejection_reasons.append("BELOW_PRESERVATION_FLOOR")
             if pm.is_catastrophic_loss:
                 rejection_reasons.append("CATASTROPHIC_PRESERVATION_LOSS")
+
+    band = metrics_mod.preservation_band(pm.outgoing_content_preservation_ratio, banding_floor)
 
     if fixture.get("trailing_dead_air_is_authored_non_musical", False):
         acceptance_reasons.append("TRAILING_DEAD_AIR_TRIMMED_NOT_TRUNCATED")
@@ -216,6 +225,7 @@ def evaluate_candidate(fixture: dict, candidate: dict, intent: str, preservation
         outgoing_last_audible_ms=pm.outgoing_last_audible_ms,
         outgoing_content_preservation_ratio=pm.outgoing_content_preservation_ratio,
         outgoing_content_lost_ms=pm.outgoing_content_lost_ms,
+        preservation_band=band,
         musical_structure_score=structure_score,
         confidence=confidence,
         confidence_reason=REASON.get(

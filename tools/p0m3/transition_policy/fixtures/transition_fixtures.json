@@ -416,5 +416,188 @@
       "outgoing": "TX05-OUT-1",
       "incoming": "TX05-IN-B"
     }
+  },
+  {
+    "transition_id": "TX-06",
+    "title": "incoming_entry_zero_ms_explicit_beat_downbeat_anchor",
+    "purpose": "R5 (PM REVIEW #3) case B: 0ms is a valid incoming entry AND is explicitly authored as a beat/downbeat anchor -- FULL_DJ_BLEND MAY remain eligible when every other hard gate passes (contrast with TX-02, case A, where 0ms has no anchor and FULL_DJ_BLEND must be withheld).",
+    "outgoing_track": {
+      "duration_ms": 200000,
+      "genre_tags": [
+        "pop"
+      ],
+      "bpm": 120,
+      "candidates": [
+        {
+          "candidate_id": "TX06-OUT-1",
+          "t_ms": 180000,
+          "source": "authored_outro",
+          "beat_downbeat_aligned": true,
+          "in_acceptable_exit_region": true,
+          "musical_unit_complete": true,
+          "is_outro_tail_opportunity": true,
+          "vocal_collision_risk": "LOW",
+          "structure_confidence": "HIGH",
+          "is_end_of_track": false
+        },
+        {
+          "candidate_id": "TX06-OUT-END",
+          "t_ms": 200000,
+          "source": "authored_outro",
+          "beat_downbeat_aligned": true,
+          "in_acceptable_exit_region": true,
+          "musical_unit_complete": true,
+          "is_outro_tail_opportunity": true,
+          "vocal_collision_risk": "NONE",
+          "structure_confidence": "HIGH",
+          "is_end_of_track": true
+        }
+      ]
+    },
+    "incoming_track": {
+      "genre_tags": [
+        "pop"
+      ],
+      "bpm": 120,
+      "candidates": [
+        {
+          "candidate_id": "TX06-IN-ZERO-ANCHORED",
+          "t_ms": 0,
+          "phrase_section_evidence": false,
+          "beat_downbeat_aligned": true,
+          "is_authored_silence_skip": false
+        }
+      ]
+    },
+    "pair_base": {
+      "beat_confidence": "HIGH",
+      "downbeat_confidence": "HIGH",
+      "harmonic_relationship": "COMPATIBLE",
+      "energy_continuity": "STRONG",
+      "structure_compatibility": "COMPATIBLE",
+      "vocal_collision_risk": "LOW",
+      "bass_percussion_collision_risk": "LOW",
+      "intro_outro_texture_compatible": true,
+      "analysis_confidence": "HIGH"
+    },
+    "boundary_overrides": {},
+    "expected_winner": {
+      "outgoing": "TX06-OUT-1",
+      "incoming": "TX06-IN-ZERO-ANCHORED"
+    },
+    "expect_full_dj_blend": true
+  },
+  {
+    "transition_id": "TX-07",
+    "title": "preservation_safety_band_ranking_1p00_incompatible_vs_0p99_compatible",
+    "purpose": "R8 (PM REVIEW #3) required mutation: OUT-A (preservation exactly 1.00, pair-incompatible) vs OUT-B (preservation exactly 0.99, pair-compatible) -- both in the PREFERRED band (>=0.97). Canonical planner must select B, the better COMPLETE boundary, not A merely because of the +0.01 raw preservation edge. OUT-C (0.94, compatible) and OUT-D (0.85, compatible) are both BELOW the 0.95 default floor and must never even reach the eligible set, regardless of compatibility -- proving the hard floor cannot be crossed by compatibility.",
+    "outgoing_track": {
+      "duration_ms": 300000,
+      "genre_tags": [
+        "house"
+      ],
+      "bpm": 126,
+      "candidates": [
+        {
+          "candidate_id": "TX07-OUT-A",
+          "t_ms": 270000,
+          "source": "authored_outro",
+          "beat_downbeat_aligned": true,
+          "in_acceptable_exit_region": true,
+          "musical_unit_complete": true,
+          "is_outro_tail_opportunity": true,
+          "vocal_collision_risk": "LOW",
+          "structure_confidence": "HIGH",
+          "is_end_of_track": false
+        },
+        {
+          "candidate_id": "TX07-OUT-B",
+          "t_ms": 257000,
+          "source": "authored_outro",
+          "beat_downbeat_aligned": true,
+          "in_acceptable_exit_region": true,
+          "musical_unit_complete": true,
+          "is_outro_tail_opportunity": true,
+          "vocal_collision_risk": "LOW",
+          "structure_confidence": "HIGH",
+          "is_end_of_track": false
+        },
+        {
+          "candidate_id": "TX07-OUT-C",
+          "t_ms": 242000,
+          "source": "authored_outro",
+          "beat_downbeat_aligned": true,
+          "in_acceptable_exit_region": true,
+          "musical_unit_complete": true,
+          "is_outro_tail_opportunity": true,
+          "vocal_collision_risk": "LOW",
+          "structure_confidence": "HIGH",
+          "is_end_of_track": false
+        },
+        {
+          "candidate_id": "TX07-OUT-D",
+          "t_ms": 215000,
+          "source": "authored_outro",
+          "beat_downbeat_aligned": true,
+          "in_acceptable_exit_region": true,
+          "musical_unit_complete": true,
+          "is_outro_tail_opportunity": true,
+          "vocal_collision_risk": "LOW",
+          "structure_confidence": "HIGH",
+          "is_end_of_track": false
+        },
+        {
+          "candidate_id": "TX07-OUT-END",
+          "t_ms": 300000,
+          "source": "authored_outro",
+          "beat_downbeat_aligned": true,
+          "in_acceptable_exit_region": true,
+          "musical_unit_complete": true,
+          "is_outro_tail_opportunity": true,
+          "vocal_collision_risk": "NONE",
+          "structure_confidence": "HIGH",
+          "is_end_of_track": true
+        }
+      ]
+    },
+    "incoming_track": {
+      "genre_tags": [
+        "house"
+      ],
+      "bpm": 126,
+      "candidates": [
+        {
+          "candidate_id": "TX07-IN-1",
+          "t_ms": 0,
+          "phrase_section_evidence": false,
+          "beat_downbeat_aligned": true,
+          "is_authored_silence_skip": false
+        }
+      ]
+    },
+    "pair_base": {
+      "beat_confidence": "HIGH",
+      "downbeat_confidence": "HIGH",
+      "harmonic_relationship": "COMPATIBLE",
+      "energy_continuity": "STRONG",
+      "structure_compatibility": "COMPATIBLE",
+      "vocal_collision_risk": "LOW",
+      "bass_percussion_collision_risk": "LOW",
+      "intro_outro_texture_compatible": true,
+      "analysis_confidence": "HIGH"
+    },
+    "boundary_overrides": {
+      "TX07-OUT-A|TX07-IN-1": {
+        "vocal_collision_risk": "HIGH"
+      }
+    },
+    "expected_winner": {
+      "outgoing": "TX07-OUT-B",
+      "incoming": "TX07-IN-1"
+    },
+    "expected_excluded_from_eligible_set": [
+      "TX07-OUT-C",
+      "TX07-OUT-D"
+    ]
   }
 ]

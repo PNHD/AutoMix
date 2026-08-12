@@ -459,3 +459,80 @@ and `results/SUMMARY.md` now cover all 10 pair fixtures.
 
 Do not start Signalsmith, Rubber Band, audio rendering, P0-M3-R3, or P1 --
 none were started in this repair pass.
+
+---
+
+# PM REVIEW #3 -- TRUE FINAL DSP-SAFETY REPAIR (2026-08-12)
+
+PM REVIEW #3 independently mutation-tested HEAD `06eab3d342b2e0ac85a57eb65e11331ef817ed6d` and found four load-bearing DSP-handoff defects the prior 111 assertions did not cover: (R5) `FULL_DJ_BLEND` could be offered when the selected boundary's incoming candidate had NO beat/downbeat evidence at all (pair-level *confidence* was checked, not the actual selected candidates); (R6) the tempo-compatibility gate and the emitted `required_tempo_ratio` used two different denominators and could disagree (100/88 BPM: gate said DIRECT-eligible, ratio's own deviation exceeded the stated ceiling); (R7) `harmonic_not_load_bearing_reason` accepted any non-empty string, making the harmonic-UNKNOWN exception an arbitrary free-text bypass; (R8) boundary ranking used the raw rounded preservation ratio as its primary key even after the hard safety floor had already filtered candidates, so a 1.00-but-incompatible boundary could beat a 0.99-but-compatible one purely on a marginal preservation edge; (R9) `beat_phase_relation`/`bar_phase_relation` were fabricated as `"ALIGNED"` from `eligible_for_dynamic_mix`, not derived from any real measurement. Sections 22-26 document the repair. The accepted preservation model, catastrophic-reject guard, near-end selection, dead-air handling, incoming-entry planning, complete boundary traces, order invariance, and highlight-never-default behavior are all unchanged.
+
+## 22. R5 -- boundary-specific beat/downbeat alignability
+
+`policy/compatibility.py`'s `beat_compatibility`/`downbeat_compatibility` gate is analyzer-*confidence*-based and pair-level -- it says nothing about whether the SPECIFIC exit/entry candidates a boundary actually selects carry renderable alignment targets. `policy/boundary.py` now adds a second, boundary-local check: `boundary_beat_downbeat_alignable = exit_candidate.beat_downbeat_aligned AND entry_candidate.beat_downbeat_aligned`. When false, `FULL_DJ_BLEND` is stripped from `allowed_transition_class_set` regardless of what pair-level compatibility says (reason code `FULL_DJ_BLEND_WITHHELD_NO_BOUNDARY_ALIGNMENT_EVIDENCE`); `0ms`/any other candidate remains fully valid for `SIMPLE_CROSSFADE`/`SHORT_EQ_BLEND`/other non-DJ classes.
+
+Two required fixtures prove both directions:
+
+- **TX-02 (case A)**: incoming entry at `0ms` with no beat/downbeat evidence. `allowed_transition_class_set = ['SHORT_EQ_BLEND', 'SIMPLE_CROSSFADE']` -- `FULL_DJ_BLEND` withheld, `incoming_beat_alignment_target_ms = null`.
+- **TX-06 (case B)**: incoming entry at `0ms`, but explicitly authored `beat_downbeat_aligned: true` (a genuine beat/downbeat anchor at the very start of the track). `allowed_transition_class_set = ['FULL_DJ_BLEND', 'SHORT_EQ_BLEND', 'SIMPLE_CROSSFADE']`, `incoming_beat_alignment_target_ms = 0`.
+
+A single `beat_downbeat_aligned` boolean per candidate is used as the explicit machine-readable evidence for BOTH the beat and downbeat/bar target on that side (contract.py sets both target fields from it) -- this project judged a full split into four independent boolean fields unnecessary scope for this repair (the closeout boundary explicitly asks for a narrow fix), since the combined boolean already gives distinct, real per-candidate evidence on both the exit and entry side, which is what was actually missing.
+
+## 23. R6 -- one canonical tempo-ratio definition
+
+`policy/compatibility._tempo_relation` now computes, for each candidate octave multiplier `m` in `{1.0 (direct), 2.0, 0.5}`: `ratio = bpm_out / (bpm_in * m)`, `deviation = abs(ratio - 1.0)`. The SAME `ratio`/`deviation` pair is used for BOTH the classification gate (`deviation <= MAX_JUSTIFIED_TEMPO_STRETCH_PCT` for DIRECT, `<= HALF_DOUBLE_TIME_TOLERANCE_PCT` for the best-fitting octave) and the emitted `required_tempo_ratio`/`required_tempo_stretch_pct` -- they can no longer mathematically disagree.
+
+PM's required mutation, before/after:
+
+| BPM pair | Field | Before | After |
+|---|---|---|---|
+| out=100, in=88 | `tempo_compatibility` | `DIRECT` | `EXCESSIVE_STRETCH` |
+| | `required_tempo_ratio` | `1.1364` | `1.1364` |
+| | `abs(ratio-1)` vs `0.12` ceiling | `0.1364 > 0.12` **while marked eligible** | `0.1364 > 0.12`, correctly **not** DIRECT |
+| | `overall_dynamic_mix_eligible` | `True` (bug) | `False` |
+
+Symmetric check: out=88, in=100 -> `ratio = 88/100 = 0.88`, `deviation = 0.12` (at the ceiling) -> `DIRECT`, eligible. Both directions use the identical `bpm_out/bpm_in` formula -- there is no directional special case.
+
+Non-exact HALF_DOUBLE residual, PM's required mutation:
+
+| BPM pair | Field | Before | After |
+|---|---|---|---|
+| out=120, in=61.8 | `tempo_compatibility` | `HALF_DOUBLE` | `HALF_DOUBLE` (unchanged -- classification was already correct) |
+| | `required_tempo_ratio` | `1.0` (bug: claimed no correction) | `0.9709` (real residual) |
+| | `tempo_requires_playback_rate_change` | `False` (bug) | `True` |
+
+An exact half/double pair (out=120, in=60) still correctly reports `required_tempo_ratio=1.0`, `tempo_requires_playback_rate_change=False` -- the fix only removes the FALSE claim for non-exact relations, it doesn't add unnecessary correction to genuinely exact ones.
+
+## 24. R7 -- structured, machine-verifiable harmonic exception
+
+The harmonic-UNKNOWN exception no longer reads `harmonic_not_load_bearing_reason` at all. It requires, simultaneously:
+
+- `harmonic_exception_kind` in `{NON_TONAL_RHYTHMIC, PERCUSSION_ONLY, NOISE_TEXTURE}` (an enum, not free text)
+- `tonal_content_class == "NON_TONAL"`
+- `tonal_analysis_confidence == "HIGH"`
+
+PM's required mutation (`harmonic_not_load_bearing_reason = "x"` on an otherwise fully-compatible pair) now yields `overall_dynamic_mix_eligible = False`, `harmonic_exception_applied = False` -- the field is inert. Four pair fixtures cover the full decision surface: `PAIR-09` (all three structured fields valid -> eligible), `PAIR-11` (old free-text field, now inert -> rejected), `PAIR-12` (valid kind+class but `tonal_analysis_confidence=LOW` -> rejected), `PAIR-13` (unrecognized `harmonic_exception_kind` -> rejected).
+
+Pitch determinism: when the exception applies, `required_pitch_shift_semitones = 0` and `permitted_pitch_shift_semitones_min/max = 0/0` (a zero-width envelope -- there is no tonal basis to justify any correction range). When harmonic is genuinely `COMPATIBLE`, the normal `required=0`, range `-3..3` envelope applies. `FULL_DJ_BLEND` is withheld entirely (and pitch is simply unused/null) for every other harmonic state -- there is never a case where `required_pitch_shift_semitones` is `null` alongside a nonzero permitted range.
+
+## 25. R8 -- ranking within preservation safety bands
+
+`policy/metrics.preservation_band(ratio, floor)` returns `PREFERRED` (`>=0.97`), `ACCEPTABLE` (`>=floor, <0.97`), or `UNSAFE` (`<floor`) -- computed once, at eligibility time, against whichever floor was actually applied. `policy/ranking.py`'s sort key now leads with this band, THEN pair compatibility, THEN structure/energy/confidence, THEN the exact preservation ratio as a fine-grained tie-break, THEN the deterministic ID tie-break -- exactly the 7-level order PM specified. `UNSAFE` candidates never reach the ranker at all (they're excluded by the existing hard eligibility-floor guard before ranking begins), so this is a re-ordering of already-safe candidates, not a weakening of the floor.
+
+`TX-07` is the required regression fixture: `OUT-A` (preservation exactly `1.00`, pair-incompatible via a `HIGH` vocal-collision override) vs `OUT-B` (preservation exactly `0.99`, pair-compatible), both in the `PREFERRED` band. Winner: **`OUT-B`** -- `outgoing_content_preservation_target = 0.99`, `allowed_transition_class_set` includes `FULL_DJ_BLEND`. `OUT-A` remains fully present in `candidate_rank_trace` (evaluated, not silently dropped), just outranked. The same fixture also carries `OUT-C` (preservation `0.94`, pair-compatible) and `OUT-D` (preservation `0.85`, pair-compatible): both are proven to never appear in `candidate_rank_trace` at all -- `OUT-C` is rejected via `BELOW_PRESERVATION_FLOOR`, `OUT-D` additionally via `CATASTROPHIC_PRESERVATION_LOSS` -- direct evidence that compatibility can never rescue a candidate across the hard floor, regardless of how compatible the pair is. Order invariance re-verified under reversed and independently-shuffled outgoing-candidate arrays.
+
+## 26. R9 -- honest phase semantics, explicit render-plan actions
+
+`beat_phase_relation`/`bar_phase_relation` are OBSERVED-relation fields. This P0 prototype has no beat-index/bar-position metadata anywhere to derive a real measured phase relation from, so as of this repair they can only ever report `NOT_MEASURED` (both-side targets are known, but no real phase computation exists) or `NOT_APPLICABLE` (a target is missing on one/both sides) -- **never `ALIGNED`**, which the prior pass fabricated directly from `eligible_for_dynamic_mix`.
+
+Two new fields carry the actual DSP-renderer instruction, structurally separate from the (never-fabricated) observed fields: `beat_alignment_action = "ALIGN_OUTGOING_BEAT_TARGET_TO_INCOMING_BEAT_TARGET"` and `bar_alignment_action = "ALIGN_OUTGOING_DOWNBEAT_TARGET_TO_INCOMING_DOWNBEAT_TARGET"` whenever both respective targets are known, else `"NOT_APPLICABLE"`. Example (TX-01 winner): `beat_phase_relation="NOT_MEASURED"`, `beat_alignment_action="ALIGN_OUTGOING_BEAT_TARGET_TO_INCOMING_BEAT_TARGET"` -- the contract now honestly says "I know both targets and here is the action to take" without ever claiming a phase relationship that was never measured.
+
+## 27. Updated verification + PM REVIEW #3 closeout
+
+```
+python tools/p0m3/transition_policy/run_benchmark.py
+python tools/p0m3/transition_policy/verify.py
+```
+
+**151 of 151 assertions PASS** (up from PM REVIEW #2's 111 -- all 111 retained and re-verified, with 2 assertions updated for legitimate schema/behavior changes: the pair/transition fixture-count checks now reflect 13/7 fixtures, and TX-01's `beat_phase_relation` check now expects the honest `NOT_MEASURED` value instead of the retired `ALIGNED`/`OFFSET` enum. 40 new checks cover R5-R9 plus PM REVIEW #3's 18 explicit stop-conditions). New/updated fixtures: `TX-06`, `TX-07` (transition_fixtures.json, now 7 total), `PAIR-11`, `PAIR-12`, `PAIR-13` (pair_fixtures.json, now 13 total; `PAIR-09` updated to the structured exception schema).
+
+Do not start Signalsmith, Rubber Band, audio rendering, P0-M3-R3, or P1 -- none were started in this repair pass.
