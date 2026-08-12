@@ -65,13 +65,19 @@ YES_NO_FIELDS = [
     "TIMING_OR_BEAT_FEELS_WRONG",
 ]
 
-INSTRUCTIONS = """# P0-M3-R3 Real-Music Owner Listening -- Instructions
+INSTRUCTIONS_TEMPLATE = """# P0-M3-R3 Real-Music Owner Listening -- Instructions
 
-Three transition SETS (V1, V2, V3), each with 2-3 candidate clips (A, B,
-and sometimes C). Clips within one set share the exact same transition
-point in the same two songs -- only the mixing METHOD differs between A/B/C.
-You do not need to know what each letter technically does; just compare
-how they sound.
+{n_sets} transition SET(S) ({set_labels}), each with 2-3 candidate clips
+(A, B, and sometimes C). Clips within one set share the exact same
+transition point in the same two songs -- only the mixing METHOD differs
+between A/B/C. You do not need to know what each letter technically does;
+just compare how they sound.
+
+NOTE: this pack may intentionally contain FEWER than the three originally
+planned categories (V1/V2/V3) -- a category is included only when an
+honest, non-fabricated evidence-based pair passed every required
+compatibility/quality gate. A missing category means no such pair was
+found in the supplied corpus, not an oversight.
 
 Blinding is about DSP/method identity only, NOT song identity -- you may
 recognize the songs by ear, that's fine and expected.
@@ -111,7 +117,10 @@ def require_blind_seed() -> int:
 
 def discover_pair_candidates(pair_id: str) -> dict:
     pair_dir = RENDERS_DIR / pair_id
-    result = json.loads((pair_dir / "result.json").read_text(encoding="utf-8"))
+    result_path = pair_dir / "result.json"
+    if not result_path.exists():
+        return {}, None
+    result = json.loads(result_path.read_text(encoding="utf-8"))
     available = {}
     for letter, fname in PAIR_CANDIDATE_FILES.items():
         path = pair_dir / fname
@@ -203,9 +212,13 @@ def main():
         "sets": ratings_sets,
     }
 
+    instructions = INSTRUCTIONS_TEMPLATE.format(
+        n_sets=len(ratings_sets), set_labels=", ".join(sorted(ratings_sets.keys())) or "NONE",
+    )
+
     src_dir = ROOT / "real_music" / "work_local" / "owner_pack_src"
     src_dir.mkdir(parents=True, exist_ok=True)
-    (src_dir / "LISTENING_INSTRUCTIONS.md").write_text(INSTRUCTIONS, encoding="utf-8")
+    (src_dir / "LISTENING_INSTRUCTIONS.md").write_text(instructions, encoding="utf-8")
     (src_dir / "OWNER_RATINGS_TEMPLATE.json").write_text(json.dumps(ratings_template, indent=2), encoding="utf-8")
 
     if ZIP_PATH.exists():

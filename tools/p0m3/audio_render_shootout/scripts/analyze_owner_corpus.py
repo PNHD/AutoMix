@@ -54,11 +54,17 @@ ROOT = HERE.parent
 sys.path.insert(0, str(ROOT))
 
 FFMPEG_BIN = shutil.which("ffmpeg")
-if not FFMPEG_BIN:
+FFPROBE_BIN = shutil.which("ffprobe")
+if not FFMPEG_BIN or not FFPROBE_BIN:
     import os
     for root, _dirs, files in os.walk(Path.home() / "AppData/Local/Microsoft/WinGet/Packages"):
-        if "ffmpeg.exe" in files and "Gyan.FFmpeg" in root:
+        if "Gyan.FFmpeg" not in root:
+            continue
+        if not FFMPEG_BIN and "ffmpeg.exe" in files:
             FFMPEG_BIN = str(Path(root) / "ffmpeg.exe")
+        if not FFPROBE_BIN and "ffprobe.exe" in files:
+            FFPROBE_BIN = str(Path(root) / "ffprobe.exe")
+        if FFMPEG_BIN and FFPROBE_BIN:
             break
 
 ANALYSIS_SR = 22050
@@ -80,6 +86,73 @@ def bucket(value, high_t, med_t, low_t):
     if value >= low_t:
         return "LOW"
     return "NONE"
+
+
+# PM STAGE B REVIEW R1 repair: real owner-local embedded-tag genre/style
+# evidence, never a fabricated universal default. Deliberately excludes the
+# "title" tag field -- a song title's incidental wording (e.g. a track
+# literally titled "...Rock Paper Scissors...") must never be misread as a
+# genre signal. A generic YouTube video-category tag (e.g. "Music",
+# "Entertainment") is NOT genre evidence and is deliberately NOT in this
+# map -- it does not distinguish any of compatibility.py's recognized
+# genre families. Only recognized, documented keywords are mapped through
+# to compatibility.py's own COMPATIBLE_GENRE_FAMILIES vocabulary; anything
+# else stays UNKNOWN (empty list), which the existing R2 genre_ok gate
+# already treats as GENRE_INCOMPATIBLE (empty-set intersection) -- no
+# change to compatibility.py was needed or made.
+GENRE_TAG_FIELDS = ("genre", "comment", "description", "synopsis")
+GENRE_KEYWORD_MAP = {
+    "k-pop": "pop", "kpop": "pop", "k pop": "pop", "dance pop": "pop", "pop": "pop",
+    "hip hop": "hip-hop", "hip-hop": "hip-hop", "hiphop": "hip-hop",
+    "r&b": "r&b", "r n b": "r&b", "rnb": "r&b", "soul": "soul",
+    "rock": "rock", "indie": "indie",
+    "house": "house", "edm": "edm", "electronic": "electronic", "techno": "techno",
+    "dance": "dance", "disco": "disco",
+    "ambient": "ambient", "downtempo": "downtempo", "chillout": "chillout",
+}
+
+
+def probe_format_tags(path: Path) -> dict:
+    cmd = [FFPROBE_BIN, "-v", "quiet", "-print_format", "json", "-show_entries", "format_tags", str(path)]
+    result = subprocess.run(cmd, capture_output=True, encoding="utf-8", errors="replace")
+    try:
+        d = json.loads(result.stdout)
+        return {k.lower(): v for k, v in d.get("format", {}).get("tags", {}).items()}
+    except Exception:  # noqa: BLE001
+        return {}
+
+
+def match_genre_keywords(tags: dict):
+    """Pure, file-I/O-free matcher (unit-testable without ffprobe/a real
+    file -- see scripts/mutation_test_real_music_stage_b.py mutation #1).
+    `tags` is a lowercase-keyed dict as returned by probe_format_tags().
+    Returns (genre_tags: list[str], provenance: str). Never returns the raw
+    tag text -- only the small set of RECOGNIZED, documented keyword
+    tokens that were matched (or an empty list when none were)."""
+    seen_values = set()
+    matched = set()
+    for field in GENRE_TAG_FIELDS:
+        val = (tags.get(field) or "").strip()
+        if not val or val in seen_values:
+            continue  # dedupe identical field values (e.g. description == synopsis)
+        seen_values.add(val)
+        low = val.lower()
+        for kw, mapped in GENRE_KEYWORD_MAP.items():
+            if kw in low:
+                matched.add(mapped)
+    if matched:
+        return sorted(matched), (
+            "OWNER_LOCAL_EMBEDDED_TAG_KEYWORD_MATCH: matched against a documented sanitizer "
+            "vocabulary from genre/comment/description/synopsis tag fields (never 'title', to "
+            "avoid incidental wordplay false positives); raw tag text never written to committed "
+            "evidence; no web enrichment performed"
+        )
+    return [], "UNKNOWN: no recognized genre/style keyword found in owner-local embedded tag fields; not web-enriched, not fabricated"
+
+
+def extract_local_genre_tags(path: Path):
+    """Returns (genre_tags: list[str], provenance: str) for a real local file."""
+    return match_genre_keywords(probe_format_tags(path))
 
 
 def decode_mono_pcm(path: Path, sr: int = ANALYSIS_SR) -> np.ndarray:
@@ -282,8 +355,8 @@ def vocal_density_curve(mag: np.ndarray, freqs: np.ndarray) -> np.ndarray:
     total = mag.sum(axis=1) + 1e-9
     band_ratio = band.sum(axis=1) / total
     geo_mean = np.exp(np.mean(np.log(band + 1e-6), axis=1))
-    arith_mean = band.mean(axis=1) + 1e-9
-    flatness = geo_mean / arith_mean
+    arith_mean = band.mean(axis=1) + 1e-6  # same epsilon floor as geo_mean -- see spectral_flatness_curve's note
+    flatness = np.clip(geo_mean / arith_mean, 0.0, 1.0)
     tonal_salience = np.clip(1.0 - flatness, 0.0, 1.0)
     density = band_ratio * tonal_salience
     # smooth ~1s (FRAME_RATE frames/sec)
@@ -343,6 +416,127 @@ def find_instrumental_lead(vocal_density: np.ndarray, rms_db: np.ndarray, frame_
     return None
 
 
+def spectral_centroid_curve(mag: np.ndarray, freqs: np.ndarray, mask: np.ndarray) -> np.ndarray:
+    m = mag[:, mask]
+    f = freqs[mask]
+    total = m.sum(axis=1) + 1e-9
+    return (m @ f) / total
+
+
+def spectral_flatness_curve(mag: np.ndarray, mask: np.ndarray) -> np.ndarray:
+    """Bounded in [0,1] by the AM-GM inequality for any actual signal; a
+    mismatched epsilon floor between the geometric- and arithmetic-mean
+    terms can blow this up past 1.0 on near-digital-silence frames (the
+    geo-mean epsilon dominates while the arith-mean can underflow closer to
+    its own, smaller floor) -- both terms use the SAME epsilon here, plus
+    an explicit clip as a safety net, so a near-silent frame reads as
+    "flat" (flatness ~1.0), not a nonsensical >1 ratio."""
+    m = mag[:, mask]
+    geo = np.exp(np.mean(np.log(m + 1e-6), axis=1))
+    arith = m.mean(axis=1) + 1e-6
+    return np.clip(geo / arith, 0.0, 1.0)
+
+
+def band_rms_db_curve(mag: np.ndarray, freqs: np.ndarray, lo: float, hi: float) -> np.ndarray:
+    mask = band_mask(freqs, lo, hi)
+    m = mag[:, mask]
+    energy = np.sqrt(np.mean(m.astype(np.float64) ** 2, axis=1)) if m.shape[1] > 0 else np.zeros(mag.shape[0])
+    with np.errstate(divide="ignore"):
+        db = 20.0 * np.log10(np.maximum(energy, 1e-9))
+    return db
+
+
+def onset_density_per_s(onset_env: np.ndarray, frame_rate: float, start_frame: int, end_frame: int, z_thresh: float = 1.0) -> float:
+    """Percussive/rhythmic-texture proxy: local-peak rate in the onset envelope over [start,end)."""
+    start_frame = max(0, start_frame)
+    end_frame = min(len(onset_env), end_frame)
+    seg = onset_env[start_frame:end_frame]
+    if len(seg) < 3:
+        return 0.0
+    z = (seg - seg.mean()) / (seg.std() + 1e-9)
+    peaks = 0
+    for i in range(1, len(z) - 1):
+        if z[i] > z_thresh and z[i] >= z[i - 1] and z[i] >= z[i + 1]:
+            peaks += 1
+    duration_s = len(seg) / frame_rate
+    return peaks / duration_s if duration_s > 0 else 0.0
+
+
+def bar_synchronous_novelty(mag: np.ndarray, freqs: np.ndarray, rms_db: np.ndarray,
+                             centroid_curve: np.ndarray, flatness_curve: np.ndarray,
+                             beat_phase: int, period_frames: int, n_frames: int):
+    """
+    PM STAGE B REVIEW R2 repair: independent bar-synchronous structural-
+    change ("novelty") curve, computed from RMS/chroma/spectral-centroid/
+    spectral-flatness -- deliberately NEVER from beat/downbeat CONFIDENCE
+    itself (only from the bar_period the beat/downbeat estimate defines, to
+    know where bar boundaries fall; a wrong bar phase degrades this like
+    any real segmentation algorithm, it does not fabricate structure).
+    A standard, textbook self-similarity/novelty technique (adjacent-bar
+    feature distance; Foote-style, simplified) -- not beat-grid-derived
+    certainty.
+
+    Returns None if there are too few bars to attempt segmentation
+    meaningfully (caller must then treat structure as UNKNOWN).
+    """
+    bar_period = period_frames * 4
+    bar_starts = list(range(beat_phase, n_frames - bar_period, bar_period))
+    if len(bar_starts) < 6:
+        return None
+
+    feats_rms, feats_cen, feats_fla, feats_chroma = [], [], [], []
+    for s in bar_starts:
+        e = s + bar_period
+        feats_rms.append(float(np.mean(rms_db[s:e])))
+        feats_cen.append(float(np.mean(centroid_curve[s:e])))
+        feats_fla.append(float(np.mean(flatness_curve[s:e])))
+        c = chroma_vector(mag[s:e], freqs)
+        feats_chroma.append(c / (c.sum() + 1e-9))
+
+    rms_z = _zscore(np.array(feats_rms))
+    cen_z = _zscore(np.array(feats_cen))
+    fla_z = _zscore(np.array(feats_fla))
+    chromas = np.array(feats_chroma)
+
+    novelty = np.zeros(len(bar_starts))
+    for i in range(1, len(bar_starts)):
+        d_rms = abs(rms_z[i] - rms_z[i - 1])
+        d_cen = abs(cen_z[i] - cen_z[i - 1])
+        d_fla = abs(fla_z[i] - fla_z[i - 1])
+        a, b = chromas[i], chromas[i - 1]
+        denom = np.linalg.norm(a) * np.linalg.norm(b) + 1e-9
+        d_chroma = 1.0 - float(np.dot(a, b) / denom)
+        # Harmonic/chroma change is weighted higher -- a chord/section
+        # change is the strongest, least-ambiguous structural-boundary
+        # signal among these four; RMS/centroid/flatness corroborate.
+        novelty[i] = d_rms + d_cen + d_fla + 4.0 * d_chroma
+
+    return {"bar_start_frames": bar_starts, "bar_period_frames": bar_period, "novelty": novelty}
+
+
+def find_nearest_novelty_peak(novelty_result: dict, target_frame: int, frame_rate: float, min_prominence_z: float = 1.0):
+    """Returns (prominence_z, distance_bars) for the strongest novelty peak within +-1 bar
+    of target_frame, or None if none qualifies."""
+    if novelty_result is None:
+        return None
+    novelty = novelty_result["novelty"]
+    bar_starts = novelty_result["bar_start_frames"]
+    bar_period = novelty_result["bar_period_frames"]
+    mean_n, std_n = float(novelty.mean()), float(novelty.std() + 1e-9)
+    best = None
+    for i in range(1, len(novelty) - 1):
+        is_local_peak = novelty[i] > novelty[i - 1] and novelty[i] >= novelty[i + 1]
+        if not is_local_peak:
+            continue
+        z = (novelty[i] - mean_n) / std_n
+        if z < min_prominence_z:
+            continue
+        distance_bars = abs(bar_starts[i] - target_frame) / bar_period
+        if distance_bars <= 1.0 and (best is None or z > best[0]):
+            best = (z, distance_bars)
+    return best
+
+
 def nearest_downbeat_ms(target_frame: int, downbeat_phase: int, beat_phase: int, period_frames: int, frame_rate: float):
     bar_period = period_frames * 4
     base = beat_phase + downbeat_phase * period_frames
@@ -374,6 +568,33 @@ def analyze_one(path: Path) -> dict:
 
     chroma = chroma_vector(mag, freqs)
     key = estimate_key(chroma)
+
+    # PM STAGE B REVIEW R2/R3 repair: independent (non-beat/downbeat-
+    # derived) structural, timbral, and low-frequency-activity curves.
+    centroid_curve = spectral_centroid_curve(mag, freqs, broadband_mask)
+    flatness_curve = spectral_flatness_curve(mag, broadband_mask)
+    bass_energy_curve = band_rms_db_curve(mag, freqs, 30.0, 150.0)
+    bass_p25 = float(np.percentile(bass_energy_curve, 25))
+    bass_p60 = float(np.percentile(bass_energy_curve, 60))
+
+    def _bass_bucket(value: float) -> str:
+        if value <= bass_p25:
+            return "LOW"
+        if value <= bass_p60:
+            return "MEDIUM"
+        return "HIGH"
+
+    # Bar-synchronous novelty curve for INDEPENDENT structure evidence (R2).
+    # Only attempted when the downbeat estimate has at least some measured
+    # confidence (NONE means the bar phase itself is untrustworthy, so
+    # target-vs-peak bar alignment would be meaningless) -- otherwise
+    # structure stays honestly UNKNOWN via the fallback path below.
+    novelty_result = None
+    if downbeat_conf != "NONE":
+        novelty_result = bar_synchronous_novelty(
+            mag, freqs, rms_db, centroid_curve, flatness_curve,
+            beat_phase, tempo["period_frames"], n_frames,
+        )
 
     vocal_density = vocal_density_curve(mag, freqs)
     median_vd = float(np.median(vocal_density)) if len(vocal_density) else 0.0
@@ -424,12 +645,14 @@ def analyze_one(path: Path) -> dict:
         is_outro_tail_opportunity = True
         exit_vocal_density = float(np.mean(vocal_density[tail_start_frame:tail_end_frame]))
         exit_energy_db = float(np.mean(rms_db[tail_start_frame:tail_end_frame]))
-        # exit_structure_confidence reflects confidence in the STRUCTURAL
-        # boundary placement (beat/downbeat lock + a genuine near-end
-        # opportunity) -- deliberately independent of vocal density, which
-        # is scored separately via exit_vocal_collision_risk below. An
-        # instrumental tail is the strongest structural evidence available.
+        # PM STAGE B REVIEW R2 repair: structural evidence for the exit
+        # candidate must be INDEPENDENT of beat/downbeat confidence. A
+        # detected sustained instrumental tail (vocal-density-based, not
+        # beat-based) IS independent structural evidence -- the strongest
+        # available -- so this branch alone may claim HIGH.
         exit_structure_confidence = "HIGH"
+        exit_novelty_peak_detected = True
+        exit_novelty_z = None
     else:
         fallback_frame = int(max(0, (duration_ms - min_tail_margin_s * 1000.0) / 1000.0 * FRAME_RATE))
         exit_t_ms = nearest_downbeat_ms(fallback_frame, downbeat_phase, beat_phase, tempo["period_frames"], FRAME_RATE)
@@ -440,18 +663,34 @@ def analyze_one(path: Path) -> dict:
         f0 = max(0, min(n_frames - win, int(exit_t_ms / 1000.0 * FRAME_RATE)))
         exit_vocal_density = float(np.mean(vocal_density[f0:f0 + win])) if win > 0 else median_vd
         exit_energy_db = float(np.mean(rms_db[f0:f0 + win])) if win > 0 else float(np.mean(rms_db))
-        # No formally-detected instrumental tail -- fall back to the
-        # beat/downbeat grid's own measured confidence as the structural
-        # evidence for this near-end candidate (still independent of vocal
-        # density, which is scored separately).
-        if beat_conf == "HIGH" and downbeat_conf == "HIGH":
-            exit_structure_confidence = "HIGH"
-        elif beat_conf in ("HIGH", "MEDIUM") or downbeat_conf in ("HIGH", "MEDIUM"):
-            exit_structure_confidence = "MEDIUM"
+        # PM STAGE B REVIEW R2 repair: NO formally-detected instrumental
+        # tail -- the ONLY remaining path to independent structural
+        # evidence is a genuine bar-synchronous novelty (RMS/chroma/
+        # centroid/flatness change-point) peak near this exact candidate
+        # position. Beat/downbeat confidence is deliberately NEVER used
+        # here anymore (it only supplied the bar_period/phase novelty
+        # detection needs to know where bars fall -- not the evidence
+        # itself). No qualifying peak -> honestly LOW, never fabricated.
+        exit_frame_for_novelty = int(round(exit_t_ms / 1000.0 * FRAME_RATE))
+        peak = find_nearest_novelty_peak(novelty_result, exit_frame_for_novelty, FRAME_RATE, min_prominence_z=1.0)
+        if peak is not None:
+            exit_novelty_z, _distance_bars = peak
+            exit_novelty_peak_detected = True
+            exit_structure_confidence = "HIGH" if exit_novelty_z >= 2.0 else "MEDIUM"
         else:
+            exit_novelty_z = None
+            exit_novelty_peak_detected = False
             exit_structure_confidence = "LOW"
 
     exit_vocal_risk = _vocal_risk_bucket(exit_vocal_density)
+    exit_win = min(n_frames, int(round(FRAME_RATE * 6.0)))
+    exit_f0 = max(0, min(n_frames - exit_win, int(exit_t_ms / 1000.0 * FRAME_RATE))) if exit_win > 0 else 0
+    exit_bass_energy_db = float(np.mean(bass_energy_curve[exit_f0:exit_f0 + exit_win])) if exit_win > 0 else float(np.mean(bass_energy_curve))
+    exit_bass_activity = _bass_bucket(exit_bass_energy_db)
+    exit_bass_onset_density = onset_density_per_s(low_onset_env, FRAME_RATE, exit_f0, exit_f0 + exit_win)
+    exit_spectral_centroid_hz = float(np.mean(centroid_curve[exit_f0:exit_f0 + exit_win])) if exit_win > 0 else float(np.mean(centroid_curve))
+    exit_spectral_flatness = float(np.mean(flatness_curve[exit_f0:exit_f0 + exit_win])) if exit_win > 0 else float(np.mean(flatness_curve))
+    exit_onset_density = onset_density_per_s(onset_env, FRAME_RATE, exit_f0, exit_f0 + exit_win)
 
     if lead is not None:
         lead_start_frame, lead_end_frame = lead
@@ -480,8 +719,43 @@ def analyze_one(path: Path) -> dict:
         if entry_energy_win > 0 else None
     )
 
+    # PM STAGE B REVIEW R3 repair: MEASURED (not hardcoded) bass/percussion
+    # activity and timbral/rhythmic texture at the incoming entry region --
+    # same methodology as the exit-side measurements above.
+    entry_win = entry_energy_win
+    entry_bass_energy_db = (
+        float(np.mean(bass_energy_curve[entry_start_frame_for_energy:entry_start_frame_for_energy + entry_win]))
+        if entry_win > 0 else float(np.mean(bass_energy_curve))
+    )
+    entry_bass_activity = _bass_bucket(entry_bass_energy_db)
+    entry_bass_onset_density = onset_density_per_s(low_onset_env, FRAME_RATE, entry_start_frame_for_energy, entry_start_frame_for_energy + entry_win)
+    entry_spectral_centroid_hz = (
+        float(np.mean(centroid_curve[entry_start_frame_for_energy:entry_start_frame_for_energy + entry_win]))
+        if entry_win > 0 else float(np.mean(centroid_curve))
+    )
+    entry_spectral_flatness = (
+        float(np.mean(flatness_curve[entry_start_frame_for_energy:entry_start_frame_for_energy + entry_win]))
+        if entry_win > 0 else float(np.mean(flatness_curve))
+    )
+    entry_onset_density = onset_density_per_s(onset_env, FRAME_RATE, entry_start_frame_for_energy, entry_start_frame_for_energy + entry_win)
+
     track_median_energy_db = float(np.median(rms_db))
     energy_continuity_hint = "STRONG" if abs(exit_energy_db - track_median_energy_db) <= 4.0 else "MODERATE"
+
+    # PM STAGE B REVIEW R5 repair: PRE-RENDER source-level loudness/energy
+    # diagnostics -- a stable "reference" window well before the exit
+    # point (mirrors dsp/loudness_diagnostics.py's own
+    # pre_transition_reference_db methodology, but computed here on SOURCE
+    # audio before any rendering/pairing decision) and the short-term
+    # trend (rising/falling) going into the boundary.
+    ref_lookback_frames = int(round(3.0 * FRAME_RATE))
+    ref_window_frames = int(round(2.0 * FRAME_RATE))
+    ref_end = max(0, exit_f0 - ref_lookback_frames)
+    ref_start = max(0, ref_end - ref_window_frames)
+    exit_reference_rms_db = float(np.mean(rms_db[ref_start:ref_end])) if ref_end > ref_start else exit_energy_db
+    exit_trend_db = exit_energy_db - exit_reference_rms_db  # negative = fading into the exit (real, not a defect)
+
+    genre_tags, genre_provenance = extract_local_genre_tags(path)
 
     # BOUNDARY-LOCALIZED key estimates: harmonic compatibility for a DJ
     # transition depends on what is actually playing AT the exit/entry
@@ -512,6 +786,8 @@ def analyze_one(path: Path) -> dict:
             "track_median_rms_db": round(track_median_energy_db, 2),
             "exit_region_rms_db": round(exit_energy_db, 2),
             "entry_region_rms_db": round(entry_region_rms_db, 2) if entry_region_rms_db is not None else None,
+            "exit_reference_rms_db": round(exit_reference_rms_db, 2),
+            "exit_trend_db": round(exit_trend_db, 2),
         },
         "vocal_density_proxy": {
             "track_median": round(median_vd, 4),
@@ -519,10 +795,35 @@ def analyze_one(path: Path) -> dict:
             "entry_region": round(entry_vocal_density, 4),
             "method": "HEURISTIC_PROXY: 300-3400Hz band-energy-ratio * tonal-salience(1-spectral_flatness), no source separation available",
         },
+        "bass_percussion": {
+            "exit_bass_energy_db": round(exit_bass_energy_db, 2),
+            "exit_bass_activity": exit_bass_activity,
+            "exit_bass_onset_density_per_s": round(exit_bass_onset_density, 3),
+            "entry_bass_energy_db": round(entry_bass_energy_db, 2),
+            "entry_bass_activity": entry_bass_activity,
+            "entry_bass_onset_density_per_s": round(entry_bass_onset_density, 3),
+            "method": "MEASURED: 30-150Hz band RMS-dBFS percentile-bucketed per-track, plus low-band onset-peak density -- never a hardcoded constant",
+        },
+        "texture": {
+            "exit_spectral_centroid_hz": round(exit_spectral_centroid_hz, 1),
+            "exit_spectral_flatness": round(exit_spectral_flatness, 4),
+            "exit_onset_density_per_s": round(exit_onset_density, 3),
+            "entry_spectral_centroid_hz": round(entry_spectral_centroid_hz, 1),
+            "entry_spectral_flatness": round(entry_spectral_flatness, 4),
+            "entry_onset_density_per_s": round(entry_onset_density, 3),
+            "method": "MEASURED: broadband (30-8000Hz) spectral centroid + spectral flatness + onset-peak density at each boundary region",
+        },
         "candidates": {
             "exit_candidate_t_ms": round(exit_t_ms, 1),
             "exit_is_outro_tail_opportunity": is_outro_tail_opportunity,
+            "exit_novelty_peak_detected": exit_novelty_peak_detected,
+            "exit_novelty_peak_z": round(exit_novelty_z, 3) if exit_novelty_z is not None else None,
             "exit_structure_confidence": exit_structure_confidence,
+            "exit_structure_evidence_method": (
+                "INSTRUMENTAL_TAIL_DETECTED" if is_outro_tail_opportunity else
+                ("BAR_SYNCHRONOUS_NOVELTY_PEAK" if exit_novelty_peak_detected else
+                 "NO_INDEPENDENT_STRUCTURE_EVIDENCE_FOUND")
+            ),
             "exit_vocal_collision_risk": exit_vocal_risk,
             "entry_candidate_t_ms": round(entry_t_ms, 1),
             "entry_has_detected_intro": entry_has_intro,
@@ -530,8 +831,8 @@ def analyze_one(path: Path) -> dict:
             "entry_vocal_collision_risk": entry_vocal_risk,
         },
         "energy_continuity_hint": energy_continuity_hint,
-        "genre_tags": ["pop"],
-        "genre_tag_provenance": "INFERENCE: no owner-local genre metadata/tags were present; entire corpus is treated uniformly as commercial dance/pop for compatibility-family purposes (no web enrichment performed, per PM privacy boundary)",
+        "genre_tags": genre_tags,
+        "genre_tag_provenance": genre_provenance,
     }
 
 
@@ -582,11 +883,16 @@ def main():
     (out_dir / "corpus_analysis.local.json").write_text(json.dumps(analyses, indent=2), encoding="utf-8")
 
     tempos = [a["tempo"]["bpm"] for a in analyses.values() if a["tempo"]["confidence"] != "NONE"]
-    beat_conf_counts = {}
-    key_conf_counts = {}
+    beat_conf_counts, downbeat_conf_counts, key_conf_counts = {}, {}, {}
+    structure_evidence_counts, genre_known_count = {}, 0
     for a in analyses.values():
         beat_conf_counts[a["beat"]["confidence"]] = beat_conf_counts.get(a["beat"]["confidence"], 0) + 1
+        downbeat_conf_counts[a["downbeat"]["confidence"]] = downbeat_conf_counts.get(a["downbeat"]["confidence"], 0) + 1
         key_conf_counts[a["key"]["confidence"]] = key_conf_counts.get(a["key"]["confidence"], 0) + 1
+        method = a["candidates"]["exit_structure_evidence_method"]
+        structure_evidence_counts[method] = structure_evidence_counts.get(method, 0) + 1
+        if a["genre_tags"]:
+            genre_known_count += 1
 
     summary = {
         "result": "ANALYSIS_COMPLETE" if analyses else "OWNER_REAL_MUSIC_INPUT_REQUIRED",
@@ -601,9 +907,13 @@ def main():
             "count_with_usable_confidence": len(tempos),
         },
         "beat_confidence_distribution": beat_conf_counts,
+        "downbeat_confidence_distribution": downbeat_conf_counts,
         "key_confidence_distribution": key_conf_counts,
+        "exit_structure_evidence_method_distribution": structure_evidence_counts,
+        "tracks_with_known_genre_evidence": genre_known_count,
+        "tracks_with_unknown_genre": len(analyses) - genre_known_count,
         "analysis_wall_time_s": round(time.perf_counter() - t_start, 1),
-        "note": "Aggregate/statistical only -- no filenames, paths, IDs-to-paths mapping, or per-track identity in this file by construction.",
+        "note": "Aggregate/statistical only -- no filenames, paths, IDs-to-paths mapping, raw embedded tag text, or per-track identity in this file by construction.",
     }
     Path(args.summary_out).write_text(json.dumps(summary, indent=2), encoding="utf-8")
     print(f"\nANALYZED={len(analyses)} FAILED={len(failures)} TOTAL={len(files)}")

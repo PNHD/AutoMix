@@ -1,174 +1,178 @@
-# P0-M3-R3 STAGE B — Owner Real-Music Validation
+# P0-M3-R3 STAGE B — Owner Real-Music Validation (REAL-EVIDENCE REPAIR)
 
-Executes the newest Issue #7 PM comment, "PM STAGE B — OWNER REAL-MUSIC
-VALIDATION AUTHORIZED", against the owner-authorized local-only corpus
-(~100 tracks; root path deliberately withheld from this document per the
-PM comment's own privacy boundary). This document contains **only
-sanitized, aggregate, and opaque-ID evidence** — no filenames, paths,
-hashes, or per-track private identity.
+Executes the newest Issue #7 PM comment, "PM STAGE B REVIEW — CURRENT
+OWNER PACK INVALID / REAL-EVIDENCE REPAIR REQUIRED", against the
+owner-authorized local-only corpus (~100 tracks; root path deliberately
+withheld from this document per the PM comment's own privacy boundary).
+This document contains **only sanitized, aggregate, and opaque-ID
+evidence** — no filenames, paths, hashes, or per-track private identity.
 
-## 1. Corpus inventory
+## 0. Why this revision exists
 
-100 supported audio files were found under the authorized root (recursive,
-no sibling/parent directories touched). Each was assigned a stable opaque
-ID (`RM001`–`RM100`, sorted by filename) and analyzed locally. The
-ID↔real-path mapping is stored LOCAL ONLY and gitignored
-(`tools/p0m3/audio_render_shootout/real_music/work_local/corpus/id_map.local.json`)
-and was never included in any committed file, this document, or the
-model's own responses.
+The prior Stage B owner pack (SHA-256 beginning `84ad398e...`) is
+**permanently invalid** — PM review found the selector's genre, structure,
+bass/percussion, and texture evidence were fabricated or non-independent
+(derived from beat/downbeat confidence alone, or hardcoded constants), the
+incoming entry was force-set to 0ms even when a real nonzero entry was
+detected, and the resulting owner-facing renders carried catastrophic
+projected loudness holes (~32.8dB / ~37.6dB) that were never screened
+pre-render. This document describes the REPAIRED evidence model and its
+honest result — not a re-run with weakened gates.
 
-All 100 tracks decoded and analyzed successfully (0 failures).
+## 1. Repairs applied (`scripts/analyze_owner_corpus.py`, `scripts/select_real_music_pairs.py`)
 
-## 2. Analysis methodology (`scripts/analyze_owner_corpus.py`)
+- **Genre (R1)**: real owner-local embedded-tag evidence only
+  (`genre`/`comment`/`description`/`synopsis` ffprobe tag fields,
+  deliberately excluding `title` to avoid incidental-wordplay false
+  positives — e.g. a track titled "...Rock Paper Scissors..." must never
+  be misread as the "rock" genre). Matched against a small documented
+  keyword→family sanitizer vocabulary; raw tag text is never written to
+  committed evidence. No match → `UNKNOWN` (empty list), which the
+  existing, UNCHANGED R2 `genre_ok` gate already treats as incompatible
+  (empty-set family intersection) — no weakening of `compatibility.py` was
+  needed or made.
+- **Structure (R2)**: `structure_compatibility`/`musical_unit_complete`
+  now require INDEPENDENT structural evidence — either a detected
+  sustained instrumental tail (vocal-density-based), or a genuine
+  bar-synchronous "novelty" (self-similarity change-point) peak within ±1
+  bar of the candidate, computed from RMS + chroma + spectral centroid +
+  spectral flatness (never from beat/downbeat confidence, which only
+  supplies the bar period/phase the novelty detector needs to know where
+  bars fall). No qualifying evidence → honestly `LOW`/`UNKNOWN`.
+- **Bass/percussion + texture (R3)**: `bass_percussion_collision_risk` is
+  now a MEASURED, percentile-bucketed 30–150Hz band-energy + onset-density
+  read at both boundary regions (never a hardcoded `LOW`).
+  `intro_outro_texture_compatible` now requires boundary-local spectral
+  centroid, spectral flatness, AND onset-density gaps all below
+  corpus-calibrated thresholds (not RMS+vocal-risk alone).
+  `analysis_confidence` reflects the MEASURED STRENGTH of the
+  structure/genre/harmonic evidence specifically (not beat/downbeat, which
+  already has its own independent gate — avoiding double-counting the same
+  evidence against the same bar twice).
+- **Incoming entry (R4)**: `real_music_pipeline.py::build_tx_fixture()` now
+  wires `leading_silence_is_authored_non_musical` /
+  `leading_silence_ms` through to
+  `policy.boundary.incoming_effective_content_start_ms`, so a genuinely
+  detected nonzero entry (an authored-silence-skip or instrumental-lead
+  end) is actually ACCEPTED by the real planner instead of being silently
+  forced back to 0ms.
+- **Pre-render loudness/energy (R5)**: every candidate now carries
+  SOURCE-level (pre-render) projected loudness-gap and bass-gap
+  diagnostics, computed directly from the analyzer's boundary-region
+  measurements — used for ranking, never for post-render cherry-picking.
+- **Ranking (R6)**: hard safety gates → near-whole-song preservation →
+  clean entry → structure/texture/vocal/bass safety → source
+  loudness/energy continuity → harmonic → tempo-correction burden →
+  deterministic opaque-ID tie-break **last**. A STRONG-energy candidate
+  now provably outranks an otherwise-equal WEAK-energy one regardless of
+  ID ordering (see the mutation-test evidence, §5).
+- **Verifier (R7)**: the private authorized-root marker is no longer
+  hardcoded anywhere in tracked source (not even as a regression-test
+  comparison literal, which would recreate the same self-invalidation bug)
+  — it is supplied only via `--private-sentinel` / an env var at run time.
+  The tracked-file privacy scan reads content via `git show <ref>:<path>`
+  so it validates the actual committed/pushed blob, not just the working
+  tree.
 
-No trained ML beat/vocal/key model was available in this environment (see
-`docs/research/P0-M3-R1-ANALYZER-SHOOTOUT.md` for the prior ML-analyzer
-feasibility pass). Every estimator below is a from-scratch numpy/scipy
-implementation of a standard, textbook DSP technique, computed at a
-22.05kHz mono analysis rate:
-
-- **Tempo/BPM**: spectral-flux onset envelope → autocorrelation peak in the
-  70–190 BPM range. Confidence = autocorrelation peak prominence (σ above
-  the mean across candidate lags).
-- **Beat phase**: comb-filter search over the onset envelope for the phase
-  offset that maximizes onset energy at that periodicity. Confidence
-  thresholds were calibrated against this corpus's own observed margin
-  distribution (a sample showed margins clustering 1.3–2.0σ for genuinely
-  strong beat locks — not the naive first-guess threshold of 2.2σ, which
-  called every track only "MEDIUM").
-- **Downbeat/bar phase**: initial attempts using low-band (kick-only)
-  onset energy showed near-zero group separation on this corpus (many
-  tracks carry kick on every beat, not only the downbeat — an honest
-  four-on-the-floor property of the material, not an estimator bug). The
-  accepted estimator instead sums z-scored low-band AND broadband onset
-  envelopes (a standard weak-evidence ensemble) before grouping by phase;
-  this measurably improved discrimination on tracks with a real periodic
-  bar-level accent while correctly staying low-confidence where no such
-  accent exists.
-- **Key**: 12-bin chroma (log-frequency-binned FFT magnitude) correlated
-  against Krumhansl–Schmuckler major/minor profiles for all 12 roots.
-  Computed BOTH as a whole-track average AND as boundary-localized windows
-  (~30s around each candidate exit/entry point, since a track's key at its
-  actual transition point can differ from its nominal whole-track key).
-  Whole-track/boundary-local agreement on the identical (root, mode) is
-  treated as corroborating evidence (confidence raised, never invented
-  from nothing).
-- **Loudness**: short-window RMS-dBFS, consistent with the render
-  pipeline's own `dsp/loudness_diagnostics.py` methodology.
-- **Vocal-density proxy (HEURISTIC_PROXY — no source separation
-  available)**: 300–3400Hz band-energy ratio × tonal salience
-  (1 − spectral flatness) in that band, smoothed ~1s, bucketed into
-  LOW/MEDIUM/HIGH per-track by percentile (not a fixed absolute threshold,
-  since dense-vocal tracks must be judged against their own distribution).
-  A genuine vocal "collision" is modeled as requiring concurrent
-  vocal-density on BOTH sides of a boundary — one vocal-light side means no
-  collision is possible regardless of the other side's density.
-- **Intro/outro structure**: instrumental-tail/lead detection (sustained
-  low-vocal-density, above-silence-floor runs) plus explicit
-  leading-authored-silence detection (distinct from an audible instrumental
-  intro) so a candidate boundary is never silently placed inside true
-  digital silence.
-
-## 3. Sanitized aggregate corpus statistics
+## 2. Sanitized aggregate corpus statistics (repaired analyzer, full 100-track run)
 
 ```
-tracks analyzed:            100 / 100 (0 failures)
-tempo (BPM):                min 69.8, median 112.3, max 172.3
-beat confidence:             HIGH 89, MEDIUM 11
-downbeat confidence:         HIGH 28, MEDIUM 36, LOW 19, NONE 17
-key confidence (whole-track): HIGH 35, MEDIUM 16, LOW 21, NONE 28
-detected instrumental outro tail: 5 / 100
-detected leading-silence skip:    24 / 100
+tracks analyzed:              100 / 100 (0 failures)
+tempo (BPM):                  min 69.8, median 112.3, max 172.3
+beat confidence:               HIGH 89, MEDIUM 11
+downbeat confidence:           HIGH 28, MEDIUM 36, LOW 19, NONE 17
+key confidence (whole-track):  HIGH 35, MEDIUM 16, LOW 21, NONE 28
+exit structural evidence:      INSTRUMENTAL_TAIL 5, NOVELTY_PEAK 10, NONE 85
+tracks with known genre evidence: 33 / 100 (67 UNKNOWN — real embedded
+                                   metadata is mostly generic YouTube
+                                   video categories, not music genre)
 ```
 
-## 4. Pair selection (`scripts/select_real_music_pairs.py`)
+## 3. Pair selection outcome (honest, post-repair)
 
-Exhaustive search over all ordered pairs (~9,900) using the SAME
-compatibility model the accepted R2 planner uses
-(`tools/p0m3/transition_policy/policy/compatibility.py`
-`evaluate_pair_compatibility`), never a separately-invented rule. No
-manual/cherry-picked selection — deterministic scoring + lexicographic
-tie-break.
+Exhaustive search over ~9,900 ordered pairs using the SAME
+`evaluate_pair_compatibility` the accepted R2 planner uses, with the
+additional constraint that a candidate's outgoing exit must itself be
+RENDERABLE (structure confidence ≥ MEDIUM — otherwise the real planner's
+own `policy/eligibility.py` Guard 2 rejects it as `NO_SAFE_OUTGOING_EXIT`,
+independent of transition class).
 
-- **V1 (close_tempo_minimal_stretch)**: pool of 620 candidate pairs with
-  ≤2% tempo deviation; selected pair has 0.0% deviation (near-identical
-  BPM), `HARMONIC_COMPATIBLE`, beat confidence HIGH on both sides.
-- **V2 (conditional_tempo_correction)**: pool of exactly 2 candidate pairs
-  clearing every FULL_DJ_BLEND hard gate (genre/tempo/beat/downbeat/
-  structure/texture/vocal-safety/harmonic/analysis-confidence) AND landing
-  in the 3–6% conditional zone. Selected pair: 4.17% required tempo
-  deviation, both sides beat+downbeat confidence HIGH,
-  `HARMONIC_COMPATIBLE` (perfect-fourth key relation, corroborated across
-  independent whole-track/boundary-local windows).
-- **V3 (incompatible_downgrade)**: pool of 6,801 candidate pairs with an
-  `EXCESSIVE_STRETCH` tempo relation (>12% deviation even after
-  half/double-time folding). Selected pair: 15.79% required deviation
-  (genuinely measured BPM mismatch, not fabricated), also
-  `HARMONIC_INCOMPATIBLE` and downbeat-confidence-insufficient on the
-  outgoing side — multiple independent, honestly-measured reasons
-  `FULL_DJ_BLEND` is correctly withheld.
+- **V1 (close_tempo_minimal_stretch): `PARTIAL_NO_VALID_V1`.** Pool size
+  after the honest hard-gate filter: **0**. Dominant independent
+  bottlenecks among the 620 tempo-eligible candidates: genre evidence
+  incompatible/unknown (≈95%), texture gap above the corpus-calibrated
+  threshold (≈95%), downbeat confidence insufficient on at least one side
+  (≈93%) — these compound multiplicatively; zero candidates satisfied all
+  simultaneously in this specific 100-track corpus.
+- **V2 (conditional_tempo_correction): `PARTIAL_NO_VALID_V2`.** Pool size:
+  **0** (same compounding bottlenecks among the 1,025 tempo-eligible
+  candidates).
+- **V3 (incompatible_downgrade): SELECTED.** Pool size 1,057 (after the
+  renderability filter). Selected pair: 20.83% required tempo deviation
+  (genuine `EXCESSIVE_STRETCH`, unrelated to the two BPM values used in
+  the now-invalidated pack), `HARMONIC_INCOMPATIBLE`,
+  `GENRE_INCOMPATIBLE`, downbeat-confidence-insufficient on the incoming
+  side — several independent, honestly-measured reasons `FULL_DJ_BLEND` is
+  correctly withheld. Structure evidence: a genuine detected instrumental
+  tail on the outgoing side. Pre-render projected combined energy gap:
+  ~40dB (flagged `WEAK` by the new ranking — expected and appropriate for
+  a deliberately-mismatched negative control, not a defect).
 
-Full per-pair rationale (opaque IDs, confidence values, reason codes) is in
-`real_music/work_local/selection_rationale_sanitized.json` (PM ZIP).
+**No gate was weakened to manufacture a V1 or V2 pair.** This is the
+project's first fully evidence-honest pair-selection pass on this corpus;
+the previous (invalid) pack's V1/V2 existed only because structure,
+texture, and bass/percussion evidence were fabricated from proxies that
+had no real independent basis.
 
-## 5. Planner + render pipeline
+## 4. Planner + render outcome
 
-Every selected pair was converted to the same TX-fixture shape every
-synthetic scenario in this pass uses and passed to the REAL, unmodified
-`policy.boundary.plan_transition_boundary` — no hand-edited
-`PlannerDecision` JSON. Confirmed outcomes:
+- **V3**: `decision_type=TRANSITION`, `allowed_transition_class_set=
+  [SIMPLE_CROSSFADE]` (FULL_DJ_BLEND correctly withheld),
+  `tempo_mode=NATIVE_TEMPO`. Rendered candidates A (equal-power) and B
+  (late-outgoing-hold) — no C (no tempo correction is ever attempted for a
+  planner-withheld FULL_DJ pair). Post-render `loudness_max_dip_db` ≈
+  16.0dB for both A and B — a substantial improvement over the invalidated
+  pack's ~37.6dB for the same category, attributable to the pre-render
+  energy-gap-aware ranking (R5/R6), even though V3 is not expected to be a
+  "clean" transition by design.
 
-- **V1**: `decision_type=TRANSITION`, `allowed_transition_class_set=
-  [SHORT_EQ_BLEND, SIMPLE_CROSSFADE]`, `tempo_mode=NATIVE_TEMPO` (no
-  stretch, as intended).
-- **V2**: `allowed_transition_class_set=[FULL_DJ_BLEND, SHORT_EQ_BLEND,
-  SIMPLE_CROSSFADE]`, `tempo_mode=MATCH_INCOMING_DURING_OVERLAP` (the
-  planner's own `MATCH_AND_RETURN_TO_NATIVE` preference was correctly
-  downgraded — `ramp_is_safe` measured −70.92 cents drift, outside the
-  ±5-cent tolerance — matching this pass's explicit PM direction never to
-  force the unvalidated return-to-native ramp).
-- **V3**: `allowed_transition_class_set=[SIMPLE_CROSSFADE]` —
-  `FULL_DJ_BLEND` correctly withheld, `tempo_mode=NATIVE_TEMPO` (no forced
-  correction for an incompatible pair).
+## 5. Verifier + mutation-test evidence
 
-A/B/C render policy (same shared boundary per pair, `dsp/mixing.py`):
+`scripts/verify_real_music_stage_b.py` (post-commit, run against the
+pushed HEAD with a locally-supplied `--private-sentinel`) — see
+`HANDOFF_TO_PM.md` for the exact command and pass/fail result.
 
-- **A** — equal-power reference, no tempo correction.
-- **B** — late-outgoing-hold loudness candidate, no tempo correction.
-- **C** (only when FULL_DJ_BLEND is allowed and a real correction is
-  warranted, V2 only) — **owner-facing C is the official pinned
-  Signalsmith Stretch WASM/WebAudio engine** (`web/stretch_worker.html`,
-  manual browser round-trip, same mechanism `dsp/render_m2_signalsmith.py`
-  uses for synthetic scenarios), `MATCH_INCOMING_DURING_OVERLAP`, pitch
-  preserved (0 semitones), never the unsafe return-to-native ramp. A
-  SEPARATE ffmpeg-Rubber-Band C candidate was also rendered but is
-  PM/reference-only and is never included in the owner pack.
+`scripts/mutation_test_real_music_stage_b.py` — **ALL 11 REQUIRED
+MUTATIONS PASS**, each proving the specific repaired guarantee holds
+against a crafted adversarial input (never real owner data):
+genre never fabricated, structure/`musical_unit_complete` never derived
+from beat/downbeat alone, bass/percussion collision is measured (not a
+constant), texture requires real timbral/rhythmic evidence, incoming entry
+is never forced to 0ms when a real nonzero entry was detected, FULL_DJ is
+withheld when ANY one independent gate is UNKNOWN/unsafe, ranking prefers
+STRONG energy over WEAK regardless of opaque-ID order, a catastrophic
+projected loudness hole ranks below a safer alternative, the verifier
+itself never hardcodes/defaults its private sentinel, and all prior
+fail-closed/beat-grid/cross-method regressions still pass.
 
 ## 6. Privacy + blinding
 
 - No source audio, derived listening WAV, filename, path, hash, tag, or
   fingerprint from the private corpus was committed.
-- Owner listening clips (`real_music/work_local/owner_listening_clips/`,
-  local only) are 30s excerpts, PCM16, 44.1kHz stereo, RIFF/fmt /data only
-  (no metadata chunk for anything to hide in), opaque filenames
-  (`V1-A.wav`, `V2-C.wav`, …).
-- A NEW blind seed (`AUTOMIX_R3_REAL_MUSIC_BLIND_SEED`, distinct
-  mechanism/env-var from the synthetic pack's `AUTOMIX_R3_BLIND_SEED`) maps
-  blind letters to internal candidates; the seed and full mapping are
-  LOCAL ONLY and gitignored, never in the owner ZIP, never printed in the
-  final handoff.
-- `scripts/verify_real_music_stage_b.py` — **ALL CHECKS PASS** (privacy,
-  format parity, V2 zone/engine/pitch-preservation, V3 no-forced-FULL_DJ,
-  shared-boundary, new-seed-not-reused).
-
-## 7. Regression status
-
-`selftest_fail_closed.py` (8/8), `verify_beat_grid_membership.py`,
-`verify_cross_method_consistency.py`, and
-`selftest_pre_real_music_repair.py` all still **PASS** — no prior
-sample-rate/beat-grid/fail-closed/loudness/privacy repair regressed.
+- Owner listening clips (local only) are 30s excerpts, PCM16, 44.1kHz
+  stereo, RIFF `fmt `/`data`-only (no metadata chunk), opaque filenames
+  (`V3-A.wav`, `V3-B.wav`). Only 2 clips this pass (V1/V2 absent for the
+  honest reasons in §3).
+- A NEW blind seed (`AUTOMIX_R3_REAL_MUSIC_BLIND_SEED`) maps blind letters
+  to internal candidates; the seed and full mapping are LOCAL ONLY and
+  gitignored, never in the owner ZIP, never printed in the final handoff.
+  Unrelated to both the synthetic pack's seed AND the previously-generated
+  (now-invalid) real-music seed.
+- The invalidated owner ZIP hash (`84ad398e...`) is asserted absent from
+  the current build by the verifier (Check 12) and remains invalid
+  forever regardless of future rebuilds.
 
 ## Result
 
-`OWNER_REAL_MUSIC_LISTENING_REQUIRED`. No quality PASS is claimed. P1 has
-not started.
+`PARTIAL` (`PARTIAL_NO_VALID_V1` + `PARTIAL_NO_VALID_V2`, `V3` selected and
+rendered). No quality PASS is claimed. P1 has not started.

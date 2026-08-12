@@ -43,6 +43,7 @@ CODE_FILES = [
     "scripts/build_real_music_owner_pack.py",
     "scripts/build_real_music_pm_pack.py",
     "scripts/verify_real_music_stage_b.py",
+    "scripts/mutation_test_real_music_stage_b.py",
     "scripts/real_music_pipeline.py",
     "real_music/MANIFEST_SCHEMA.md",
 ]
@@ -61,6 +62,7 @@ EVIDENCE_FILES = [
     "real_music/work_local/renders/REAL-V3/planner_decision.json",
     "real_music/work_local/renders/REAL-V3/result.json",
     "real_music/work_local/validation_report.json",
+    "real_music/work_local/mutation_test_output.txt",
 ]
 
 DOC_FILES = [

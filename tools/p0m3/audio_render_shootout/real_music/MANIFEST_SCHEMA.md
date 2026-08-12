@@ -68,7 +68,9 @@ Provide **at least 3 pairs**, covering:
     "entry_candidate_t_ms": 0,
     "beat_downbeat_aligned": true,
     "phrase_section_evidence": false,
-    "is_authored_silence_skip": false
+    "is_authored_silence_skip": false,
+    "leading_silence_is_authored_non_musical": false,
+    "leading_silence_ms": 0
   },
   "pair_compatibility": {
     "beat_confidence": "HIGH",
@@ -90,6 +92,23 @@ TX-fixture shape (`outgoing_track.candidates[]`, `incoming_track.candidates[]`,
 onto that shape before calling the real planner. See
 `docs/research/P0-M3-R2-TRANSITION-POLICY-PLANNER.md` for exactly what
 each field means and how the planner uses it.
+
+`incoming.leading_silence_is_authored_non_musical` / `incoming.leading_silence_ms`
+(PM STAGE B REVIEW R4 repair): when `incoming.entry_candidate_t_ms` is
+GENUINELY nonzero because real detected non-musical leading silence was
+skipped (not a meaningful intro), set
+`leading_silence_is_authored_non_musical: true` and
+`leading_silence_ms` equal to that same `entry_candidate_t_ms` value.
+`scripts/real_music_pipeline.py::build_tx_fixture()` wires these through to
+`policy.boundary.incoming_effective_content_start_ms`, which is what
+`policy.boundary._entry_eligibility` actually checks before accepting a
+nonzero entry via `AUTHORED_LEADING_SILENCE_SKIPPED` -- omitting these
+fields silently forces the entry back to being rejected (and previously
+caused every real-music manifest to fall back to `entry_candidate_t_ms=0`
+regardless of what was actually detected, corrupting the loudness/vocal-
+density readings for that entry region). If no trustworthy clean entry
+exists for a pair (neither `0`, nor authored-silence-skip, nor
+phrase/cue-evidenced), do not fabricate one -- reject the pair instead.
 
 ### Choosing `exit_candidate_t_ms` / `entry_candidate_t_ms`
 

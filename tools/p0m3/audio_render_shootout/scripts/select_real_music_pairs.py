@@ -1,34 +1,42 @@
 """
-P0-M3-R3 STAGE B -- transparent V1/V2/V3 real-music pair selection.
+P0-M3-R3 STAGE B REAL-EVIDENCE REPAIR -- transparent V1/V2/V3 real-music
+pair selection.
 
-Consumes the LOCAL-ONLY corpus analysis produced by
-`analyze_owner_corpus.py` and selects the three required real-vocal
-validation pairs (Issue #7 PM STAGE B comment "PAIR SELECTION -- NO
-CHERRY-PICKING") using the SAME compatibility model the accepted R2 planner
-uses (`tools/p0m3/transition_policy/policy/compatibility.py`), never a
-separately-invented ad hoc rule:
+Repairs applied per the newest Issue #7 PM comment ("PM STAGE B REVIEW --
+CURRENT OWNER PACK INVALID / REAL-EVIDENCE REPAIR REQUIRED"), replacing the
+prior pass's fabricated/non-independent evidence:
 
-  V1 -- close tempo (<=2% deviation), strong compatibility, minimal/no
-        stretch expected.
-  V2 -- 3-6% conditional tempo correction, must clear every FULL_DJ_BLEND
-        hard gate (`compat.overall_dynamic_mix_eligible`).
-  V3 -- plausible queue adjacency (same corpus, real vocals) that fails at
-        least one load-bearing gate -- selected here via an HONEST,
-        machine-verified EXCESSIVE_STRETCH tempo mismatch (the cleanest,
-        least ambiguous gate failure available from real, unmodified BPM
-        measurements), never a fabricated incompatibility.
+  R1 -- genre_tags come from real owner-local embedded-tag evidence
+        (analyze_owner_corpus.py::extract_local_genre_tags), never a
+        universal ["pop"] default. UNKNOWN (empty list) fails the existing
+        R2 genre_ok gate exactly like any other real genre mismatch --
+        compatibility.py itself was never weakened.
+  R2 -- structure_compatibility comes from INDEPENDENT evidence
+        (a detected instrumental tail, or a bar-synchronous novelty peak
+        -- see analyze_owner_corpus.py) -- never from beat/downbeat
+        confidence alone. musical_unit_complete on the manifest's outgoing
+        candidate is set from that SAME independent evidence.
+  R3 -- bass_percussion_collision_risk and intro_outro_texture_compatible
+        are computed from MEASURED boundary-local low-frequency energy/
+        onset-density (bass) and spectral-centroid/flatness/onset-density
+        (texture) evidence -- never a hardcoded constant, never RMS+vocal
+        alone. analysis_confidence reflects genuine independent-evidence
+        completeness (beat+downbeat+structure+genre+harmonic), not just
+        the outgoing candidate's own structure label.
+  R4 -- entry_candidate_t_ms uses the REAL analyzer-detected value
+        (silence-skip or instrumental-lead end), with
+        leading_silence_is_authored_non_musical/leading_silence_ms wired
+        into the manifest so real_music_pipeline.py's build_tx_fixture()
+        bridge (also repaired this pass) can actually get it accepted by
+        the real R2 planner instead of being forced back to 0ms.
+  R5/R6 -- PRE-RENDER source-level loudness/bass energy-gap diagnostics
+        participate directly in ranking (never post-render listening
+        cherry-picking); ranking order is hard gates -> preservation ->
+        clean entry -> structure/texture/vocal/bass safety -> source
+        energy continuity -> harmonic -> tempo burden -> opaque-ID
+        tie-break LAST (deliberately last, not first).
 
-Selection precedes and is independent of any rendering/listening --
-candidates are ranked purely from the analyzer's own confidence/heuristic
-fields, with a deterministic (opaque-ID-lexicographic) tie-break so the
-choice is reproducible from the same corpus analysis.
-
-Writes:
-  - LOCAL-ONLY `real_music/manifest.local.json` (real paths) for
-    `real_music_pipeline.py`.
-  - LOCAL-ONLY full shortlist/ranking trace (real paths) for audit.
-  - Sanitized selection-rationale doc using ONLY opaque IDs (safe to
-    commit as PM evidence).
+Selection happens BEFORE any rendering, exactly as before.
 
 Usage:
     python scripts/select_real_music_pairs.py \
@@ -54,30 +62,35 @@ from policy.compatibility import evaluate_pair_compatibility, _tempo_relation  #
 CONF_ORDER = {"NONE": 0, "LOW": 1, "MEDIUM": 2, "HIGH": 3}
 PITCH_CLASSES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
 
+# PM STAGE B REVIEW R3 repair: thresholds calibrated against this corpus's
+# own observed gap-distribution statistics (same calibration methodology
+# used for the beat/downbeat/key confidence thresholds) -- NOT arbitrary,
+# NOT tuned per-pair after the fact. See docs/research for the calibration
+# sample. Selecting "compatible" texture/energy means genuinely BETTER than
+# a typical (median) random pairing from this corpus, not merely "not the
+# worst".
+TEXTURE_CENTROID_GAP_RATIO_MAX = 0.20
+TEXTURE_FLATNESS_GAP_MAX = 0.10
+TEXTURE_ONSET_DENSITY_GAP_RATIO_MAX = 0.20
+ENERGY_STRONG_MAX_DB = 13.0
+ENERGY_MODERATE_MAX_DB = 26.0
+
 
 def min_conf(*vals):
-    order = {"NONE": 0, "LOW": 1, "MEDIUM": 2, "HIGH": 3}
-    worst = min(vals, key=lambda v: order.get(v, 0))
-    return worst
+    return min(vals, key=lambda v: CONF_ORDER.get(v, 0))
 
 
 def corroborated_key(local_key: dict, whole_track_key: dict) -> dict:
-    """
-    Two INDEPENDENT measurement windows (the whole-track average and the
-    boundary-localized ~30s window, computed over disjoint/mostly-disjoint
-    audio) agreeing on the exact same (root, mode) is real corroborating
-    evidence, distinct from either estimate's own single-window
-    correlation margin -- a standard ensemble-agreement technique, not
-    invented certainty. Used only to raise confidence when both windows
-    agree; never lowers it, never changes the reported (root, mode).
-    """
+    """Two INDEPENDENT measurement windows (whole-track average vs.
+    boundary-localized) agreeing on the exact same (root, mode) is real
+    corroborating evidence -- never lowers confidence, never changes the
+    reported (root, mode)."""
     if local_key["root"] is None or whole_track_key["root"] is None:
         return local_key
     if local_key["root"] != whole_track_key["root"] or local_key["mode"] != whole_track_key["mode"]:
         return local_key
-    order = {"NONE": 0, "LOW": 1, "MEDIUM": 2, "HIGH": 3}
-    best = max(local_key["confidence"], whole_track_key["confidence"], key=lambda c: order.get(c, 0))
-    if order.get(best, 0) < order["MEDIUM"]:
+    best = max(local_key["confidence"], whole_track_key["confidence"], key=lambda c: CONF_ORDER.get(c, 0))
+    if CONF_ORDER.get(best, 0) < CONF_ORDER["MEDIUM"]:
         best = "MEDIUM"
     return {**local_key, "confidence": best, "corroborated_by_whole_track_agreement": True}
 
@@ -103,115 +116,175 @@ def harmonic_relationship(key_a: dict, key_b: dict):
     return "INCOMPATIBLE"
 
 
+def _entry_structural_evidence(in_a: dict) -> bool:
+    """The incoming side always has SOME independent structural evidence in
+    this analyzer's construction -- track start (0ms) is inherently a
+    section start by definition, and a detected instrumental-lead-end or
+    authored-silence-skip point is likewise a genuine section-start (the
+    point where the authored intro ends), never fabricated from beat/
+    downbeat. Written out explicitly (not just assumed always-True) so a
+    future analyzer change that produces an entry NOT backed by one of
+    these three cases is honestly caught here, not silently passed."""
+    c = in_a["candidates"]
+    at_track_start = abs(c["entry_candidate_t_ms"]) < 1.0
+    return bool(at_track_start or c["entry_has_detected_intro"] or c["entry_is_authored_silence_skip"])
+
+
+def _combine_risk_min_side(risk_a: str, risk_b: str) -> str:
+    """A collision/activity risk requires BOTH sides to be concurrently
+    active -- bounded by whichever side is SAFER (lower), since a
+    vocal-light or bass-light side means there is nothing to collide with
+    regardless of the other side's level."""
+    order = {"LOW": 0, "MEDIUM": 1, "HIGH": 2}
+    combined = min(order.get(risk_a, 0), order.get(risk_b, 0))
+    return {0: "LOW", 1: "MEDIUM", 2: "HIGH"}[combined]
+
+
 def build_pair_compat_input(out_a: dict, in_a: dict) -> dict:
-    # Harmonic compatibility is judged on the BOUNDARY-LOCALIZED key
-    # estimate (what is actually playing at the exit/entry point), not the
-    # whole-track nominal key -- see analyze_owner_corpus.py's
-    # key_at_exit/key_at_entry (a track's overall key can differ from a
-    # specific section, e.g. after a modulation).
+    # R1: real genre evidence, never fabricated.
+    genre_out = out_a.get("genre_tags", [])
+    genre_in = in_a.get("genre_tags", [])
+
+    # Harmonic: boundary-localized + whole-track corroboration (unchanged
+    # methodology from the prior pass -- this was already independent of
+    # beat/downbeat, not part of the PM's R2/R3 findings).
     out_key_eff = corroborated_key(out_a.get("key_at_exit", out_a["key"]), out_a["key"])
     in_key_eff = corroborated_key(in_a.get("key_at_entry", in_a["key"]), in_a["key"])
     harmonic = harmonic_relationship(out_key_eff, in_key_eff)
+
     beat_conf = min_conf(out_a["beat"]["confidence"], in_a["beat"]["confidence"])
     downbeat_conf = min_conf(out_a["downbeat"]["confidence"], in_a["downbeat"]["confidence"])
-    both_grid_strong = out_a["beat"]["confidence"] == "HIGH" and out_a["downbeat"]["confidence"] == "HIGH" \
-        and in_a["beat"]["confidence"] == "HIGH" and in_a["downbeat"]["confidence"] == "HIGH"
-    structure_compatibility = "COMPATIBLE" if both_grid_strong else "UNKNOWN"
 
-    # A real vocal COLLISION requires vocal activity CONCURRENTLY on both
-    # sides -- if either side is vocal-light (LOW), there is nothing to
-    # collide with regardless of how vocal-dense the other side is (a
-    # vocal entrance over an instrumental outro is normal, safe DJ
-    # practice). Risk is therefore bounded by the LESS risky (safer) side,
-    # not the more risky one -- the pair-level risk is exactly as bad as
-    # whichever side has the LEAST concurrent vocal activity, since that
-    # side is what determines whether a collision can occur at all.
-    risk_order = {"LOW": 0, "MEDIUM": 1, "HIGH": 2}
+    # R2: structure_compatibility from INDEPENDENT evidence only.
+    out_structure_evidence = bool(out_a["candidates"]["exit_is_outro_tail_opportunity"] or out_a["candidates"]["exit_novelty_peak_detected"])
+    in_structure_evidence = _entry_structural_evidence(in_a)
+    structure_compatibility = "COMPATIBLE" if (out_structure_evidence and in_structure_evidence) else "UNKNOWN"
+
     exit_vr = out_a["candidates"]["exit_vocal_collision_risk"]
     entry_vr = in_a["candidates"]["entry_vocal_collision_risk"]
-    combined_order = min(risk_order.get(exit_vr, 0), risk_order.get(entry_vr, 0))
-    vocal_collision_risk = {0: "LOW", 1: "MEDIUM", 2: "HIGH"}[combined_order]
+    vocal_collision_risk = _combine_risk_min_side(exit_vr, entry_vr)
 
-    # Texture compatibility is judged on ENERGY/production-character match
-    # at the boundary (a standard DJ-mixing notion, independent of whether
-    # vocals happen to be present) -- vocal SAFETY is a separate, already-
-    # independently-gated field (vocal_collision_risk above). Requiring an
-    # additionally-detected sustained instrumental tail here would conflate
-    # the two and made every non-outro-tail track structurally ineligible
-    # regardless of how well-matched its actual energy/loudness character
-    # was -- not supported by what "texture" is defined to mean.
-    energy_gap_db = abs(out_a["loudness"]["exit_region_rms_db"] - in_a["loudness"]["entry_region_rms_db"])
-    texture_compatible = bool(energy_gap_db <= 6.0 and vocal_collision_risk != "HIGH")
+    # R3: MEASURED bass/percussion collision risk (never hardcoded LOW).
+    bass_percussion_collision_risk = _combine_risk_min_side(
+        out_a["bass_percussion"]["exit_bass_activity"], in_a["bass_percussion"]["entry_bass_activity"],
+    )
 
-    # NOTE: beat_confidence/downbeat_confidence/harmonic_relationship are
-    # each ALREADY independently hard-gated by evaluate_pair_compatibility
-    # (BEAT_CONFIDENCE_INSUFFICIENT / DOWNBEAT_CONFIDENCE_INSUFFICIENT /
-    # HARMONIC_*) -- folding them AGAIN into analysis_confidence via min()
-    # would make passing require the same evidence to independently clear
-    # the same bar twice (redundant, not additional information).
-    # analysis_confidence instead reflects overall trust in THIS candidate's
-    # structural read, which is not independently gated elsewhere.
-    analysis_confidence = out_a["candidates"]["exit_structure_confidence"]
+    # R3: MEASURED texture compatibility from timbral (centroid/flatness)
+    # + rhythmic (onset density) boundary-local evidence, not RMS/vocal
+    # alone.
+    out_tex, in_tex = out_a["texture"], in_a["texture"]
+    centroid_gap_ratio = abs(out_tex["exit_spectral_centroid_hz"] - in_tex["entry_spectral_centroid_hz"]) / max(
+        out_tex["exit_spectral_centroid_hz"], in_tex["entry_spectral_centroid_hz"], 1.0)
+    flatness_gap = abs(out_tex["exit_spectral_flatness"] - in_tex["entry_spectral_flatness"])
+    onset_density_gap_ratio = abs(out_tex["exit_onset_density_per_s"] - in_tex["entry_onset_density_per_s"]) / max(
+        out_tex["exit_onset_density_per_s"], in_tex["entry_onset_density_per_s"], 0.1)
+    texture_compatible = bool(
+        centroid_gap_ratio <= TEXTURE_CENTROID_GAP_RATIO_MAX
+        and flatness_gap <= TEXTURE_FLATNESS_GAP_MAX
+        and onset_density_gap_ratio <= TEXTURE_ONSET_DENSITY_GAP_RATIO_MAX
+        and vocal_collision_risk != "HIGH"
+    )
+
+    # R5: PRE-RENDER source-level loudness/energy-continuity diagnostics.
+    projected_loudness_gap_db = abs(out_a["loudness"]["exit_region_rms_db"] - in_a["loudness"]["entry_region_rms_db"])
+    projected_bass_gap_db = abs(out_a["bass_percussion"]["exit_bass_energy_db"] - in_a["bass_percussion"]["entry_bass_energy_db"])
+    combined_energy_gap_db = projected_loudness_gap_db + 0.5 * projected_bass_gap_db
+    if combined_energy_gap_db <= ENERGY_STRONG_MAX_DB:
+        energy_continuity_bucket = "STRONG"
+    elif combined_energy_gap_db <= ENERGY_MODERATE_MAX_DB:
+        energy_continuity_bucket = "MODERATE"
+    else:
+        energy_continuity_bucket = "WEAK"
+    # compatibility.py's own field only distinguishes STRONG vs not-STRONG
+    # (energy_ok = energy_continuity == "STRONG"); MODERATE/WEAK both
+    # correctly fail that specific gate the same way real acoustic evidence
+    # would.
+    energy_continuity_field = "STRONG" if energy_continuity_bucket == "STRONG" else "WEAK"
+
+    # R3 repair item 5: analysis_confidence reflects the STRENGTH of the
+    # measurements underlying structure/genre/harmonic evidence for THIS
+    # pair/boundary -- not the outgoing candidate's own structure label
+    # repeated. Deliberately does NOT re-test beat/downbeat/vocal/bass/
+    # texture pass-fail here: those already have their OWN dedicated gates
+    # in compatibility.py (BEAT_CONFIDENCE_INSUFFICIENT etc.) -- re-folding
+    # them into analysis_confidence would require the SAME evidence to
+    # independently clear the SAME bar twice (the exact double-jeopardy
+    # bug already identified and removed from this pass's earlier
+    # design), not genuinely new information. Structure/genre/harmonic are
+    # the three dimensions this PM repair specifically found fabricated or
+    # under-evidenced, so their MEASURED strength (not just boolean pass/
+    # fail) is what belongs here.
+    structure_strength = out_a["candidates"]["exit_structure_confidence"] if structure_compatibility == "COMPATIBLE" else "LOW"
+    genre_strength = "HIGH" if (genre_out and genre_in) else "LOW"
+    harmonic_strength = min_conf(out_key_eff["confidence"], in_key_eff["confidence"]) if harmonic is not None else "LOW"
+    analysis_confidence = min_conf(structure_strength, genre_strength, harmonic_strength)
 
     return {
-        "outgoing": {"genre_tags": out_a["genre_tags"], "bpm": out_a["tempo"]["bpm"]},
-        "incoming": {"genre_tags": in_a["genre_tags"], "bpm": in_a["tempo"]["bpm"]},
+        "outgoing": {"genre_tags": genre_out, "bpm": out_a["tempo"]["bpm"]},
+        "incoming": {"genre_tags": genre_in, "bpm": in_a["tempo"]["bpm"]},
         "beat_confidence": beat_conf,
         "downbeat_confidence": downbeat_conf,
         "harmonic_relationship": harmonic,
-        "energy_continuity": "STRONG" if out_a["energy_continuity_hint"] == "STRONG" else "WEAK",
+        "energy_continuity": energy_continuity_field,
         "structure_compatibility": structure_compatibility,
         "vocal_collision_risk": vocal_collision_risk,
-        "bass_percussion_collision_risk": "LOW",
+        "bass_percussion_collision_risk": bass_percussion_collision_risk,
         "intro_outro_texture_compatible": texture_compatible,
         "analysis_confidence": analysis_confidence,
-        "_energy_gap_db": energy_gap_db,
+        "_out_structure_evidence": out_structure_evidence,
+        "_in_structure_evidence": in_structure_evidence,
+        "_projected_loudness_gap_db": round(projected_loudness_gap_db, 2),
+        "_projected_bass_gap_db": round(projected_bass_gap_db, 2),
+        "_combined_energy_gap_db": round(combined_energy_gap_db, 2),
+        "_energy_continuity_bucket": energy_continuity_bucket,
+        "_centroid_gap_ratio": round(centroid_gap_ratio, 3),
+        "_flatness_gap": round(flatness_gap, 3),
+        "_onset_density_gap_ratio": round(onset_density_gap_ratio, 3),
     }
-
-
-def score_key(*confs) -> int:
-    return sum(CONF_ORDER.get(c, 0) for c in confs)
 
 
 def build_manifest_pair(pair_id: str, category: str, out_id: str, in_id: str, out_a: dict, in_a: dict, compat_input: dict):
     exit_conf = out_a["candidates"]["exit_structure_confidence"]
-    both_grid_strong_out = out_a["beat"]["confidence"] == "HIGH" and out_a["downbeat"]["confidence"] == "HIGH"
     both_grid_strong_in = in_a["beat"]["confidence"] == "HIGH" and in_a["downbeat"]["confidence"] == "HIGH"
 
+    # R2 repair: musical_unit_complete comes from the SAME independent
+    # structural evidence used for structure_compatibility above -- never
+    # from beat/downbeat confidence alone.
+    musical_unit_complete = bool(compat_input["_out_structure_evidence"] and exit_conf != "LOW")
+
     outgoing = {
-        "path": None,  # filled by caller with real path (LOCAL ONLY)
+        "path": None,
         "duration_ms": out_a["duration_ms"],
         "bpm": out_a["tempo"]["bpm"],
-        "genre_tags": out_a["genre_tags"],
+        "genre_tags": out_a.get("genre_tags", []),
         "exit_candidate_t_ms": int(round(out_a["candidates"]["exit_candidate_t_ms"])),
-        "beat_downbeat_aligned": bool(both_grid_strong_out),
+        "beat_downbeat_aligned": bool(out_a["beat"]["confidence"] == "HIGH" and out_a["downbeat"]["confidence"] == "HIGH"),
         "in_acceptable_exit_region": bool(out_a["candidates"]["exit_candidate_t_ms"] / max(out_a["duration_ms"], 1.0) >= 0.5),
-        "musical_unit_complete": exit_conf in ("HIGH", "MEDIUM"),
+        "musical_unit_complete": musical_unit_complete,
         "is_outro_tail_opportunity": bool(out_a["candidates"]["exit_is_outro_tail_opportunity"]),
         "vocal_collision_risk": out_a["candidates"]["exit_vocal_collision_risk"],
         "structure_confidence": exit_conf,
         "energy_continuity_hint": out_a["energy_continuity_hint"],
     }
-    # NOTE: real_music_pipeline.py's build_tx_fixture() (existing, accepted
-    # pipeline code, out of this pass's scope to modify) does not wire an
-    # incoming_track.leading_silence_ms field through to the planner, so a
-    # nonzero entry_candidate_t_ms with is_authored_silence_skip=True would
-    # be REJECTED by policy/boundary.py's _entry_eligibility (which checks
-    # t_ms against incoming_effective_content_start_ms, defaulting to 0
-    # when that field is absent) -- not a planner bug, a real fixture-
-    # building gap this manifest must not trigger. All detected leading
-    # silence in this corpus was small (<=2.5s); using entry_candidate_t_ms
-    # =0 (the schema's own documented default/common case) is honest and
-    # keeps the ENTIRE incoming track, never skipping real content.
     incoming = {
         "path": None,
         "bpm": in_a["tempo"]["bpm"],
-        "genre_tags": in_a["genre_tags"],
-        "entry_candidate_t_ms": 0,
+        "genre_tags": in_a.get("genre_tags", []),
+        "entry_candidate_t_ms": int(round(in_a["candidates"]["entry_candidate_t_ms"])),
         "beat_downbeat_aligned": bool(both_grid_strong_in),
         "phrase_section_evidence": bool(in_a["candidates"]["entry_has_detected_intro"]),
-        "is_authored_silence_skip": False,
+        "is_authored_silence_skip": bool(in_a["candidates"]["entry_is_authored_silence_skip"]),
     }
+    # R4 repair: wire the real detected leading-silence evidence through so
+    # real_music_pipeline.py::build_tx_fixture() can actually get a nonzero
+    # entry accepted by the real R2 planner instead of forcing 0ms.
+    if incoming["is_authored_silence_skip"]:
+        incoming["leading_silence_is_authored_non_musical"] = True
+        incoming["leading_silence_ms"] = incoming["entry_candidate_t_ms"]
+    else:
+        incoming["leading_silence_is_authored_non_musical"] = False
+        incoming["leading_silence_ms"] = 0
+
     pair_compatibility = {k: v for k, v in compat_input.items() if not k.startswith("_")}
     return {
         "pair_id": pair_id,
@@ -220,6 +293,52 @@ def build_manifest_pair(pair_id: str, category: str, out_id: str, in_id: str, ou
         "incoming": incoming,
         "pair_compatibility": pair_compatibility,
     }
+
+
+def exit_candidate_renderable(out_a: dict) -> bool:
+    """
+    The REAL accepted R2 eligibility guard (policy/eligibility.py Guard 2,
+    `LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY`) rejects ANY exit candidate
+    whose structure_confidence is below MEDIUM, independent of transition
+    CLASS (this applies even to a downgraded SIMPLE_CROSSFADE/V3 pair, not
+    only FULL_DJ_BLEND) -- a pair whose outgoing exit candidate is LOW
+    confidence produces `NO_SPECIAL_TRANSITION` (no renderable transition
+    at all), not merely a downgraded one. This was previously invisible
+    because the old (beat/downbeat-derived) structure_confidence was
+    fabricated HIGH/MEDIUM far more often than the real evidence supports.
+    Filtering on this HERE (before ranking) avoids selecting a pair that
+    the real planner would then refuse to render.
+    """
+    return out_a["candidates"]["exit_structure_confidence"] in ("MEDIUM", "HIGH")
+
+
+def build_candidate(out_id: str, in_id: str, out_a: dict, in_a: dict, relation: str, stretch_pct: float, ratio: float, require_full_dj: bool):
+    compat_input = build_pair_compat_input(out_a, in_a)
+    compat = evaluate_pair_compatibility({**compat_input})
+    hard_gate_pass = (compat.overall_dynamic_mix_eligible if require_full_dj else True) and exit_candidate_renderable(out_a)
+    return {
+        "out_id": out_id, "in_id": in_id, "relation": relation, "stretch_pct": stretch_pct, "ratio": ratio,
+        "compat_input": compat_input, "compat": compat, "hard_gate_pass": hard_gate_pass,
+    }
+
+
+def rank_key(cand: dict, tempo_target_center: float, out_a_lookup, in_a_lookup):
+    out_a = out_a_lookup(cand["out_id"])
+    preservation_ratio = out_a["candidates"]["exit_candidate_t_ms"] / max(out_a["duration_ms"], 1.0)
+    ci = cand["compat_input"]
+    return (
+        0 if cand["hard_gate_pass"] else 1,                                    # 1. hard safety gates
+        -preservation_ratio,                                                    # 2. near-whole-song preservation
+        0,                                                                      # 3. clean entry (structurally guaranteed by construction)
+        0 if ci["structure_compatibility"] == "COMPATIBLE" else 1,              # 4a. structure
+        0 if ci["intro_outro_texture_compatible"] else 1,                       # 4b. texture
+        0 if ci["vocal_collision_risk"] not in ("HIGH", "MEDIUM") else 1,       # 4c. vocal safety
+        0 if ci["bass_percussion_collision_risk"] != "HIGH" else 1,             # 4d. bass safety
+        ci["_combined_energy_gap_db"],                                         # 5. source loudness/energy continuity (smaller = better)
+        0 if ci["harmonic_relationship"] == "COMPATIBLE" else 1,                # 6. harmonic
+        abs(cand["stretch_pct"] - tempo_target_center),                        # 7. tempo-correction burden
+        cand["out_id"], cand["in_id"],                                         # 8. deterministic opaque-ID tie-break LAST
+    )
 
 
 def main():
@@ -246,54 +365,53 @@ def main():
             relation, stretch_pct, ratio, requires_change = _tempo_relation(out_a["tempo"]["bpm"], in_a["tempo"]["bpm"])
 
             if relation in ("DIRECT", "HALF_DOUBLE") and stretch_pct <= 0.02:
-                compat_input = build_pair_compat_input(out_a, in_a)
-                compat = evaluate_pair_compatibility({**compat_input, "outgoing": compat_input["outgoing"], "incoming": compat_input["incoming"]})
-                score = score_key(out_a["beat"]["confidence"], in_a["beat"]["confidence"],
-                                   out_a["candidates"]["exit_structure_confidence"]) - compat_input["_energy_gap_db"] / 10.0
-                v1_pool.append((score, out_id, in_id, stretch_pct, ratio, compat_input, compat))
+                cand = build_candidate(out_id, in_id, out_a, in_a, relation, stretch_pct, ratio, require_full_dj=True)
+                if cand["hard_gate_pass"]:
+                    v1_pool.append(cand)
 
             if relation in ("DIRECT", "HALF_DOUBLE") and 0.03 <= stretch_pct <= 0.06:
-                compat_input = build_pair_compat_input(out_a, in_a)
-                compat = evaluate_pair_compatibility({**compat_input, "outgoing": compat_input["outgoing"], "incoming": compat_input["incoming"]})
-                if compat.overall_dynamic_mix_eligible:
-                    score = score_key(out_a["beat"]["confidence"], out_a["downbeat"]["confidence"],
-                                       in_a["beat"]["confidence"], in_a["downbeat"]["confidence"])
-                    v2_pool.append((score, out_id, in_id, stretch_pct, ratio, compat_input, compat))
+                cand = build_candidate(out_id, in_id, out_a, in_a, relation, stretch_pct, ratio, require_full_dj=True)
+                if cand["hard_gate_pass"]:
+                    v2_pool.append(cand)
 
             if relation == "EXCESSIVE_STRETCH":
-                compat_input = build_pair_compat_input(out_a, in_a)
-                compat = evaluate_pair_compatibility({**compat_input, "outgoing": compat_input["outgoing"], "incoming": compat_input["incoming"]})
-                if not compat.overall_dynamic_mix_eligible:
-                    # Prefer a "clean" demonstration: every OTHER gate would
-                    # have passed, so tempo is unambiguously the sole reason
-                    # FULL_DJ_BLEND is withheld.
+                cand = build_candidate(out_id, in_id, out_a, in_a, relation, stretch_pct, ratio, require_full_dj=True)
+                # V3 must still produce a RENDERABLE transition (downgraded
+                # to whatever class the real planner allows) -- it is a
+                # negative CLASS control (FULL_DJ withheld), never "no
+                # transition at all".
+                if not cand["compat"].overall_dynamic_mix_eligible and exit_candidate_renderable(out_a):
                     clean = (out_a["beat"]["confidence"] == "HIGH" and in_a["beat"]["confidence"] == "HIGH")
-                    score = (10 if clean else 0) + score_key(out_a["beat"]["confidence"], in_a["beat"]["confidence"])
-                    v3_pool.append((score, out_id, in_id, stretch_pct, ratio, compat_input, compat, clean))
+                    cand["_v3_clean"] = clean
+                    v3_pool.append(cand)
 
-    def pick_best(pool, key_len=7):
+    def pick_best(pool, tempo_target_center, v3=False):
         if not pool:
             return None
-        return sorted(pool, key=lambda t: (-t[0], t[1], t[2]))[0]
+        if v3:
+            ranked = sorted(pool, key=lambda c: (0 if c.get("_v3_clean") else 1, c["out_id"], c["in_id"]))
+        else:
+            ranked = sorted(pool, key=lambda c: rank_key(c, tempo_target_center, lambda i: analysis[i], lambda i: analysis[i]))
+        return ranked[0]
 
-    best_v1 = pick_best(v1_pool)
-    best_v2 = pick_best(v2_pool)
-    best_v3 = pick_best(v3_pool)
+    best_v1 = pick_best(v1_pool, tempo_target_center=0.0)
+    best_v2 = pick_best(v2_pool, tempo_target_center=0.045)
+    best_v3 = pick_best(v3_pool, tempo_target_center=None, v3=True)
 
     manifest_pairs = []
     rationale = {}
-    trace = {"v1_pool_size": len(v1_pool), "v2_pool_size": len(v2_pool), "v3_pool_size": len(v3_pool)}
 
     def emit(tag, category, best):
         if best is None:
             rationale[tag] = {"status": "NO_VALID_PAIR_FOUND", "category": category}
-            return None
-        score, out_id, in_id, stretch_pct, ratio, compat_input, compat = best[:7]
+            return
+        out_id, in_id = best["out_id"], best["in_id"]
         out_a, in_a = analysis[out_id], analysis[in_id]
-        pair = build_manifest_pair(f"REAL-{tag}", category, out_id, in_id, out_a, in_a, compat_input)
+        pair = build_manifest_pair(f"REAL-{tag}", category, out_id, in_id, out_a, in_a, best["compat_input"])
         pair["outgoing"]["path"] = id_map[out_id]
         pair["incoming"]["path"] = id_map[in_id]
         manifest_pairs.append(pair)
+        ci = best["compat_input"]
         rationale[tag] = {
             "status": "SELECTED",
             "category": category,
@@ -301,21 +419,28 @@ def main():
             "incoming_opaque_id": in_id,
             "outgoing_bpm": out_a["tempo"]["bpm"],
             "incoming_bpm": in_a["tempo"]["bpm"],
-            "tempo_deviation_pct": round(stretch_pct * 100, 2),
-            "required_tempo_ratio": ratio,
+            "tempo_deviation_pct": round(best["stretch_pct"] * 100, 2),
+            "required_tempo_ratio": best["ratio"],
             "outgoing_beat_confidence": out_a["beat"]["confidence"],
             "outgoing_downbeat_confidence": out_a["downbeat"]["confidence"],
             "incoming_beat_confidence": in_a["beat"]["confidence"],
             "incoming_downbeat_confidence": in_a["downbeat"]["confidence"],
-            "outgoing_key": f"{out_a['key']['root']} {out_a['key']['mode']}" if out_a["key"]["root"] else "UNKNOWN",
-            "incoming_key": f"{in_a['key']['root']} {in_a['key']['mode']}" if in_a["key"]["root"] else "UNKNOWN",
-            "harmonic_relationship": compat_input["harmonic_relationship"],
-            "overall_dynamic_mix_eligible": compat.overall_dynamic_mix_eligible,
-            "reason_codes": compat.reason_codes,
-            "exit_is_outro_tail_opportunity": out_a["candidates"]["exit_is_outro_tail_opportunity"],
+            "outgoing_genre_tags": out_a.get("genre_tags", []),
+            "incoming_genre_tags": in_a.get("genre_tags", []),
+            "structure_compatibility": ci["structure_compatibility"],
+            "structure_evidence_method": out_a["candidates"]["exit_structure_evidence_method"],
+            "bass_percussion_collision_risk": ci["bass_percussion_collision_risk"],
+            "intro_outro_texture_compatible": ci["intro_outro_texture_compatible"],
+            "analysis_confidence": ci["analysis_confidence"],
+            "harmonic_relationship": ci["harmonic_relationship"],
+            "projected_loudness_gap_db": ci["_projected_loudness_gap_db"],
+            "projected_bass_gap_db": ci["_projected_bass_gap_db"],
+            "combined_energy_gap_db": ci["_combined_energy_gap_db"],
+            "energy_continuity_bucket": ci["_energy_continuity_bucket"],
+            "overall_dynamic_mix_eligible": best["compat"].overall_dynamic_mix_eligible,
+            "reason_codes": best["compat"].reason_codes,
             "selection_pool_size": len(v1_pool if tag == "V1" else v2_pool if tag == "V2" else v3_pool),
         }
-        return pair
 
     emit("V1", "close_tempo_minimal_stretch", best_v1)
     emit("V2", "conditional_tempo_correction", best_v2)
@@ -326,10 +451,10 @@ def main():
 
     Path(args.trace_out).parent.mkdir(parents=True, exist_ok=True)
     full_trace = {
-        "pool_sizes": trace,
-        "v1_top5": [(t[0], t[1], t[2], round(t[3] * 100, 2)) for t in sorted(v1_pool, key=lambda t: -t[0])[:5]],
-        "v2_top5": [(t[0], t[1], t[2], round(t[3] * 100, 2)) for t in sorted(v2_pool, key=lambda t: -t[0])[:5]],
-        "v3_top5": [(t[0], t[1], t[2], round(t[3] * 100, 2)) for t in sorted(v3_pool, key=lambda t: -t[0])[:5]],
+        "pool_sizes": {"v1": len(v1_pool), "v2": len(v2_pool), "v3": len(v3_pool)},
+        "v1_top5": [(c["out_id"], c["in_id"], round(c["stretch_pct"] * 100, 2), c["compat_input"]["_combined_energy_gap_db"]) for c in sorted(v1_pool, key=lambda c: rank_key(c, 0.0, lambda i: analysis[i], lambda i: analysis[i]))[:5]],
+        "v2_top5": [(c["out_id"], c["in_id"], round(c["stretch_pct"] * 100, 2), c["compat_input"]["_combined_energy_gap_db"]) for c in sorted(v2_pool, key=lambda c: rank_key(c, 0.045, lambda i: analysis[i], lambda i: analysis[i]))[:5]],
+        "v3_top5": [(c["out_id"], c["in_id"], round(c["stretch_pct"] * 100, 2)) for c in sorted(v3_pool, key=lambda c: (0 if c.get("_v3_clean") else 1, c["out_id"], c["in_id"]))[:5]],
     }
     Path(args.trace_out).write_text(json.dumps(full_trace, indent=2), encoding="utf-8")
 

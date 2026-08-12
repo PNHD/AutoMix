@@ -195,6 +195,18 @@ def build_tx_fixture(pair: dict) -> dict:
             "incoming_track": {
                 "genre_tags": inc.get("genre_tags", []),
                 "bpm": inc["bpm"],
+                # PM STAGE B REVIEW R4 repair: wire the manifest's real
+                # detected leading-silence evidence through to
+                # policy.boundary.incoming_effective_content_start_ms so a
+                # genuinely-detected nonzero entry candidate with
+                # is_authored_silence_skip=True is actually ACCEPTED by
+                # policy.boundary._entry_eligibility instead of being
+                # rejected as "skips meaningful intro without evidence" --
+                # this field was previously never populated, which forced
+                # every real-music manifest to use entry_candidate_t_ms=0
+                # regardless of what the analyzer actually detected.
+                "leading_silence_is_authored_non_musical": inc.get("leading_silence_is_authored_non_musical", False),
+                "leading_silence_ms": inc.get("leading_silence_ms", 0),
                 "candidates": [
                     {
                         "candidate_id": f"{pair['pair_id']}-IN-ANCHOR",
@@ -399,11 +411,21 @@ def main():
         sys.exit(0)
 
     pairs = manifest.get("pairs", [])
-    if len(pairs) < 3:
+    if len(pairs) < 1:
         print(f"RESULT: OWNER_REAL_MUSIC_INPUT_REQUIRED")
         print(f"RESULT_REASON_CODE: {ERR_INVALID_MANIFEST}")
-        print(f"Manifest has only {len(pairs)} pairs, need >= 3.")
+        print("Manifest has no pairs.")
         sys.exit(0)
+    # PM STAGE B REVIEW REPAIR: previously required len(pairs) >= 3 up
+    # front, which made the missing_categories/PARTIAL accounting logic
+    # below (already correctly designed for "some but not all required
+    # categories succeeded") unreachable whenever honest pair selection
+    # legitimately found fewer than 3 valid categories (see
+    # select_real_music_pairs.py -- selection must reject rather than
+    # fabricate a category with no valid pair). A manifest may now contain
+    # 1 or 2 pairs; the per-category success accounting further below
+    # still reports the truthful PARTIAL/OWNER_REAL_MUSIC_LISTENING_REQUIRED
+    # result, never claiming a category succeeded that was never attempted.
 
     if not FFMPEG_BIN or not Path(FFMPEG_BIN).exists():
         print("RESULT: BLOCKED")
