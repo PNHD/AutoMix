@@ -20,10 +20,12 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 from policy.policies import decide, decide_at_time, POLICY_NAMES
 from policy.compatibility import evaluate_pair_compatibility, downgrade_transition_class_set
+from policy.boundary import plan_transition_boundary
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 FIXTURES_PATH = os.path.join(HERE, "fixtures", "fixtures.json")
 PAIR_FIXTURES_PATH = os.path.join(HERE, "fixtures", "pair_fixtures.json")
+TRANSITION_FIXTURES_PATH = os.path.join(HERE, "fixtures", "transition_fixtures.json")
 RESULTS_DIR = os.path.join(HERE, "results")
 
 GROUND_TRUTH_ONLY_FIELDS = {
@@ -42,6 +44,7 @@ POLICY_MODULE_FILES = (
     "policy/metrics.py",
     "policy/compatibility.py",
     "policy/ranking.py",
+    "policy/boundary.py",
 )
 
 failures = []
@@ -128,12 +131,15 @@ def no_audio_bytes_check():
 def main():
     fixtures = load_json(FIXTURES_PATH)
     pair_fixtures = load_json(PAIR_FIXTURES_PATH)
+    tx_fixtures = load_json(TRANSITION_FIXTURES_PATH)
     by_id = {fx["fixture_id"]: fx for fx in fixtures}
     pair_by_id = {p["pair_id"]: p for p in pair_fixtures}
+    tx_by_id = {tx["transition_id"]: tx for tx in tx_fixtures}
 
     print("=== 0. Structural / scope-boundary checks ===")
     check("timing fixture count == 14 (spec letters A-N)", len(fixtures) == 14, f"got {len(fixtures)}")
-    check("pair fixture count == 5 (spec letters G-K)", len(pair_fixtures) == 5, f"got {len(pair_fixtures)}")
+    check("pair fixture count == 10 (spec letters G-K + R4 mutation pairs PAIR-06..10)", len(pair_fixtures) == 10, f"got {len(pair_fixtures)}")
+    check("transition boundary fixture count == 5 (TX-01..05)", len(tx_fixtures) == 5, f"got {len(tx_fixtures)}")
     ac_isolation_check()
     no_dsp_dependency_check()
     no_audio_bytes_check()
@@ -247,6 +253,134 @@ def main():
     d05 = decide(tp05, "SEAMLESS_FULL_TRACK_DEFAULT", "SEAMLESS_FULL_TRACK_DEFAULT")
     check("TP-05 (unannotated tail) uses the FULL raw duration as effective_content_end_ms (195000) -- never silently trims an unannotated tail", d05.current_track_effective_content_end_ms == 195000)
 
+    print("\n=== PM REVIEW #2 R1: pair compatibility CAN change which near-end boundary wins ===")
+    tx01 = tx_by_id["TX-01"]
+    dtx01 = plan_transition_boundary(tx01, "SEAMLESS_FULL_TRACK_DEFAULT")
+    check(
+        "1. TX-01 winner is the pair-COMPATIBLE boundary (OUT-B), not the raw-structure favorite (OUT-A)",
+        dtx01.selected_outgoing_exit_candidate_id == "TX01-OUT-B",
+    )
+    check(
+        "2. TX-01 timing-only winner (OUT-A, higher raw outgoing structure score) does NOT win despite being structurally superior in isolation",
+        dtx01.selected_outgoing_exit_candidate_id != "TX01-OUT-A",
+    )
+    a_boundaries = [t for t in dtx01.candidate_rank_trace if t["outgoing_candidate_id"] == "TX01-OUT-A"]
+    b_boundaries = [t for t in dtx01.candidate_rank_trace if t["outgoing_candidate_id"] == "TX01-OUT-B"]
+    check(
+        "TX-01 every OUT-A boundary is pair-incompatible (eligible_for_dynamic_mix False) while OUT-B boundaries are compatible -- the actual reason B wins",
+        all(not t["eligible_for_dynamic_mix"] for t in a_boundaries) and any(t["eligible_for_dynamic_mix"] for t in b_boundaries),
+    )
+    check(
+        "TX-01 OUT-A has the higher raw outgoing_structure_score (proves the winner is NOT simply 'more structurally sound', it's the compatible one)",
+        max(t["outgoing_structure_score"] for t in a_boundaries) > max(t["outgoing_structure_score"] for t in b_boundaries),
+    )
+
+    print("\n=== PM REVIEW #2 R1/R2: order invariance across BOTH outgoing and incoming candidate arrays ===")
+    def variant(tx, exit_order, entry_order):
+        v = json.loads(json.dumps(tx))
+        v["outgoing_track"]["candidates"] = exit_order(v["outgoing_track"]["candidates"])
+        v["incoming_track"]["candidates"] = entry_order(v["incoming_track"]["candidates"])
+        return v
+
+    def boundary_winner(d):
+        return (d.selected_outgoing_exit_candidate_id, d.selected_incoming_entry_candidate_id)
+
+    base_winner = boundary_winner(dtx01)
+    exit_reversed = variant(tx01, lambda c: list(reversed(c)), lambda c: c)
+    entry_reversed = variant(tx01, lambda c: c, lambda c: list(reversed(c)))
+    both_reversed = variant(tx01, lambda c: list(reversed(c)), lambda c: list(reversed(c)))
+    exit_shuffled = variant(tx01, lambda c: random.Random(41).sample(c, len(c)), lambda c: c)
+    entry_shuffled = variant(tx01, lambda c: c, lambda c: random.Random(53).sample(c, len(c)))
+    check("3. reversing the OUTGOING exit candidate array does not change the selected boundary", boundary_winner(plan_transition_boundary(exit_reversed, "SEAMLESS_FULL_TRACK_DEFAULT")) == base_winner)
+    check("4. reversing the INCOMING entry candidate array does not change the selected boundary", boundary_winner(plan_transition_boundary(entry_reversed, "SEAMLESS_FULL_TRACK_DEFAULT")) == base_winner)
+    check("reversing BOTH arrays simultaneously does not change the selected boundary", boundary_winner(plan_transition_boundary(both_reversed, "SEAMLESS_FULL_TRACK_DEFAULT")) == base_winner)
+    check("independently-shuffled OUTGOING array (seed 41) does not change the selected boundary", boundary_winner(plan_transition_boundary(exit_shuffled, "SEAMLESS_FULL_TRACK_DEFAULT")) == base_winner)
+    check("independently-shuffled INCOMING array (seed 53) does not change the selected boundary", boundary_winner(plan_transition_boundary(entry_shuffled, "SEAMLESS_FULL_TRACK_DEFAULT")) == base_winner)
+
+    print("\n=== PM REVIEW #2 R2: incoming entry planning is real, not a universal 0..0 placeholder ===")
+    tx_decisions = {tid: plan_transition_boundary(tx, "SEAMLESS_FULL_TRACK_DEFAULT") for tid, tx in tx_by_id.items()}
+    all_windows = [d.next_track_entry_window_ms for d in tx_decisions.values()]
+    check(
+        "5. next_track_entry_window_ms is NOT a universal {0,0} placeholder across TX-01..05 (at least one real nonzero entry window exists)",
+        any(w is not None and w["t_start_ms"] != 0 for w in all_windows),
+    )
+    check("TX-03 selects the silence-skip entry (5000ms), not 0ms or the too-far candidate", tx_decisions["TX-03"].selected_incoming_entry_candidate_id == "TX03-IN-SKIP")
+    check("TX-03 next_track_entry_window_ms reflects the actual selected entry timestamp (5000), not a placeholder", tx_decisions["TX-03"].next_track_entry_window_ms == {"t_start_ms": 5000, "t_end_ms": 5000})
+    check("TX-04 selects the later phrase/cue entry (8000ms) over 0ms", tx_decisions["TX-04"].selected_incoming_entry_candidate_id == "TX04-IN-CUE")
+    check("TX-05 entry choice changes compatibility: winner is the compatible entry, not the vocal-collision one", tx_decisions["TX-05"].selected_incoming_entry_candidate_id == "TX05-IN-B")
+    for tid, d in tx_decisions.items():
+        check(f"{tid} incoming_effective_content_start_ms is populated (not silently omitted)", d.incoming_effective_content_start_ms is not None)
+
+    print("\n=== PM REVIEW #2: transition_onset_window_ms is a REAL narrow window, never onset..content_end ===")
+    check(
+        "6. every TX-01..05 winning transition_onset_window_ms has t_start_ms == t_end_ms (an exact cue, never a span to effective_content_end_ms)",
+        all(d.transition_onset_window_ms["t_start_ms"] == d.transition_onset_window_ms["t_end_ms"] for d in tx_decisions.values()),
+    )
+    check(
+        "same narrow-window contract holds for the legacy single-track builder too (TP-11's winning onset window)",
+        d11.transition_onset_window_ms["t_start_ms"] == d11.transition_onset_window_ms["t_end_ms"],
+    )
+
+    print("\n=== PM REVIEW #2: alignment contract identifies BOTH sides, never one timestamp reused ===")
+    check(
+        "7. TX-01 winner identifies both outgoing_beat_alignment_target_ms and incoming_beat_alignment_target_ms (neither is None)",
+        dtx01.outgoing_beat_alignment_target_ms is not None and dtx01.incoming_beat_alignment_target_ms is not None,
+    )
+    check(
+        "outgoing and incoming beat alignment targets are genuinely distinct values, not the same outgoing timestamp exposed twice",
+        dtx01.outgoing_beat_alignment_target_ms != dtx01.incoming_beat_alignment_target_ms,
+    )
+    check("TX-01 downbeat alignment likewise identifies both sides", dtx01.outgoing_downbeat_alignment_target_ms is not None and dtx01.incoming_downbeat_alignment_target_ms is not None)
+    check("TX-01 beat_phase_relation is a real, non-UNKNOWN-by-omission value given both sides are beat-aligned", dtx01.beat_phase_relation in ("ALIGNED", "OFFSET"))
+
+    print("\n=== PM REVIEW #2 R3: tempo deviation is never emitted as if it were a literal ratio ===")
+    sample_keys = set(dtx01.to_dict().keys())
+    check(
+        "8. the old ambiguous field name 'permitted_tempo_ratio' no longer exists on PlannerDecision at all (structural rename, not an alias)",
+        "permitted_tempo_ratio" not in sample_keys,
+    )
+    check("permitted_tempo_ratio_max_deviation is present and explicitly named as a deviation", "permitted_tempo_ratio_max_deviation" in sample_keys)
+    check("required_tempo_ratio is present as a separate, real ratio field", "required_tempo_ratio" in sample_keys)
+    check("TX-01 winner: permitted_tempo_ratio_max_deviation == 0.12 (a deviation ceiling)", dtx01.permitted_tempo_ratio_max_deviation == 0.12)
+    check("TX-01 winner: required_tempo_ratio is a real numeric ratio, not equal to the deviation constant", dtx01.required_tempo_ratio is not None and dtx01.required_tempo_ratio != 0.12)
+
+    print("\n=== PM REVIEW #2 R3: pitch units/ranges are unambiguous ===")
+    check(
+        "9. old ambiguous field name 'permitted_pitch_shift' no longer exists on PlannerDecision at all",
+        "permitted_pitch_shift" not in sample_keys,
+    )
+    check("required_pitch_shift_semitones is present (explicit unit in the name)", "required_pitch_shift_semitones" in sample_keys)
+    check(
+        "permitted_pitch_shift_semitones_min/max are present as an explicit range, not a single unitless integer",
+        "permitted_pitch_shift_semitones_min" in sample_keys and "permitted_pitch_shift_semitones_max" in sample_keys,
+    )
+    check(
+        "TX-01 winner: permitted pitch-shift range is symmetric and non-null when FULL_DJ_BLEND is offered",
+        dtx01.permitted_pitch_shift_semitones_min == -3 and dtx01.permitted_pitch_shift_semitones_max == 3,
+    )
+
+    print("\n=== PM REVIEW #2 R4: UNKNOWN structure/texture/harmonic never silently equals known-COMPATIBLE ===")
+    pair06 = evaluate_pair_compatibility(pair_by_id["PAIR-06"])  # UNKNOWN structure_compatibility
+    check("10. PAIR-06 (UNKNOWN structure_compatibility) is NOT overall_dynamic_mix_eligible -- UNKNOWN structure never equals known COMPATIBLE", pair06.overall_dynamic_mix_eligible is False)
+    pair07 = evaluate_pair_compatibility(pair_by_id["PAIR-07"])  # UNKNOWN/false intro_outro_texture_compatible
+    check("11. PAIR-07 (UNKNOWN intro/outro texture) is NOT overall_dynamic_mix_eligible -- UNKNOWN texture never equals known COMPATIBLE", pair07.overall_dynamic_mix_eligible is False)
+    pair10 = evaluate_pair_compatibility(pair_by_id["PAIR-10"])  # harmonic INCOMPATIBLE + exception reason present (must not matter)
+    check("12. PAIR-10 (harmonic INCOMPATIBLE) never gets FULL_DJ_BLEND, even with an exception reason attached", pair10.overall_dynamic_mix_eligible is False)
+    pair08 = evaluate_pair_compatibility(pair_by_id["PAIR-08"])  # harmonic UNKNOWN, no exception
+    pair09 = evaluate_pair_compatibility(pair_by_id["PAIR-09"])  # harmonic UNKNOWN, WITH narrow exception
+    check("13. PAIR-08 (harmonic UNKNOWN, no exception) is NOT eligible -- UNKNOWN does not silently behave like COMPATIBLE", pair08.overall_dynamic_mix_eligible is False)
+    check("PAIR-09 (harmonic UNKNOWN, WITH an explicit narrow style-specific exception) IS eligible -- the exception path is real and testable", pair09.overall_dynamic_mix_eligible is True)
+    check("PAIR-08 and PAIR-09 differ ONLY by the exception reason, proving UNKNOWN-without-exception is a genuine, non-silent downgrade", pair08.overall_dynamic_mix_eligible != pair09.overall_dynamic_mix_eligible)
+
+    print("\n=== PM REVIEW #2: full boundary trace is preserved for every combination, not just the winner ===")
+    check(
+        "TX-01 candidate_rank_trace contains all 4 (exit x entry) boundary combinations, not merely the winner",
+        len(dtx01.candidate_rank_trace) == 4,
+    )
+    n_selected = sum(1 for t in dtx01.candidate_rank_trace if t.get("selected"))
+    check("exactly one boundary in the TX-01 trace is marked selected=True", n_selected == 1)
+    check("every TX-01 trace entry carries pair_compatibility_components (not only the winner)", all(t.get("pair_compatibility_components") is not None for t in dtx01.candidate_rank_trace))
+
     print("\n=== Retained AC coverage ===")
     check("NAIVE_EARLIEST_COMPATIBLE is a registered policy (AC2)", "NAIVE_EARLIEST_COMPATIBLE" in POLICY_NAMES)
     check("BPM_KEY_ONLY_EARLY is a registered policy (AC2)", "BPM_KEY_ONLY_EARLY" in POLICY_NAMES)
@@ -308,18 +442,25 @@ def main():
     )
     check("every non-PLAY_THROUGH decision carries reason_codes", all_have_reasons)
 
-    print("\n=== AC18: a concrete P0-M3-R3 planner-output contract is produced ===")
-    sample_keys = set(d01.to_dict().keys())
+    print("\n=== AC18 (PM REVIEW #2 schema): a concrete P0-M3-R3 planner-output contract is produced ===")
+    ac18_keys = set(dtx01.to_dict().keys())
     required_keys = {
-        "decision_type", "current_track_effective_content_end_ms", "transition_onset_window_ms",
-        "outgoing_last_audible_target_ms", "outgoing_content_preservation_target", "next_track_entry_window_ms",
-        "allowed_transition_class_set", "pair_compatibility_components", "beat_alignment_target",
-        "downbeat_alignment_target", "permitted_tempo_ratio", "permitted_pitch_shift",
+        "decision_type", "current_track_effective_content_end_ms",
+        "selected_outgoing_exit_candidate_id", "transition_onset_window_ms",
+        "outgoing_last_audible_target_ms", "outgoing_content_preservation_target",
+        "selected_incoming_entry_candidate_id", "incoming_effective_content_start_ms", "next_track_entry_window_ms",
+        "allowed_transition_class_set", "pair_compatibility_components",
+        "outgoing_beat_alignment_target_ms", "incoming_beat_alignment_target_ms",
+        "outgoing_downbeat_alignment_target_ms", "incoming_downbeat_alignment_target_ms",
+        "beat_phase_relation", "bar_phase_relation",
+        "required_tempo_ratio", "permitted_tempo_ratio_max_deviation",
+        "required_pitch_shift_semitones", "permitted_pitch_shift_semitones_min", "permitted_pitch_shift_semitones_max",
         "energy_continuity_target", "vocal_collision_constraints", "bass_collision_constraints",
         "analysis_confidence", "reason_codes", "candidate_rank_trace",
         "queue_order_independent_of_exit_timing",
     }
-    check("PlannerDecision contract exposes every P0-M3-R3 required field", required_keys.issubset(sample_keys), f"missing={required_keys - sample_keys}")
+    check("PlannerDecision contract exposes every P0-M3-R3 required field (PM REVIEW #2 schema)", required_keys.issubset(ac18_keys), f"missing={required_keys - ac18_keys}")
+    check("AC18: PLAY_THROUGH / NO_SPECIAL_TRANSITION decisions use the SAME schema (no separate ad-hoc shape)", required_keys.issubset(set(d09.to_dict().keys())))
 
     print(f"\n=== RESULT: {'ALL ASSERTIONS PASS' if not failures else f'{len(failures)} FAILURE(S)'} ===")
     if failures:

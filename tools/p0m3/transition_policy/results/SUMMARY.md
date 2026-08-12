@@ -30,7 +30,7 @@ normal=TP-12-Y reversed=TP-12-Y shuffled=TP-12-Y -> order_invariant=True
 
 ## Pair compatibility gate
 
-incompatible_pair_downgrade_rate=0.6 (3/5)
+incompatible_pair_downgrade_rate=0.7 (7/10)
 
 | Pair | Letter | Expected eligible | Computed eligible | Matches | TP-11+pair: FULL_DJ_BLEND offered |
 |---|---|---|---|---|---|
@@ -39,3 +39,30 @@ incompatible_pair_downgrade_rate=0.6 (3/5)
 | PAIR-03 | I | False | False | True | False |
 | PAIR-04 | J | False | False | True | False |
 | PAIR-05 | K | True | True | True | True |
+| PAIR-06 | R4 | False | False | True | False |
+| PAIR-07 | R4 | False | False | True | False |
+| PAIR-08 | R4 | False | False | True | False |
+| PAIR-09 | R4 | True | True | True | True |
+| PAIR-10 | R4 | False | False | True | False |
+
+## PM REVIEW #2 -- complete boundary-plan results (TX-01..05)
+
+| Transition | Expected winner | Selected winner | Matches |
+|---|---|---|---|
+| TX-01 | TX01-OUT-B + TX01-IN-2 | TX01-OUT-B + TX01-IN-2 | True |
+| TX-02 | TX02-OUT-1 + TX02-IN-ZERO | TX02-OUT-1 + TX02-IN-ZERO | True |
+| TX-03 | TX03-OUT-1 + TX03-IN-SKIP | TX03-OUT-1 + TX03-IN-SKIP | True |
+| TX-04 | TX04-OUT-1 + TX04-IN-CUE | TX04-OUT-1 + TX04-IN-CUE | True |
+| TX-05 | TX05-OUT-1 + TX05-IN-B | TX05-OUT-1 + TX05-IN-B | True |
+
+TX-01 order invariance (exit array x entry array, 5 orderings): order_invariant=True
+
+## R4 -- UNKNOWN structure/texture/harmonic mutation tests
+
+| Pair | Expected eligible | Computed eligible | Matches |
+|---|---|---|---|
+| PAIR-06 | False | False | True |
+| PAIR-07 | False | False | True |
+| PAIR-08 | False | False | True |
+| PAIR-09 | True | True | True |
+| PAIR-10 | False | False | True |

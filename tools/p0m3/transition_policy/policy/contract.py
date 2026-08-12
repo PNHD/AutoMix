@@ -1,24 +1,33 @@
 """
-P0-M3-R2 (Apple-like redesign) -- planner output contract.
+P0-M3-R2 (Apple-like redesign, PM REVIEW #2 repair) -- planner output
+contract.
 
 The smallest provider-independent handoff the P0-M3-R3 DSP-execution pass
 needs. This module defines only the SHAPE of that handoff; it never
 implements Signalsmith Stretch / Rubber Band / any DSP execution (AC16).
 
-Field set follows Issue #6 "PLANNER OUTPUT CONTRACT FOR P0-M3-R3" exactly.
+PM REVIEW #2 repairs applied here:
+- R2: transition_onset_window_ms is now a REAL narrow window (an exact cue
+  timestamp, or an explicit authored onset region) -- never
+  chosen_onset..effective_content_end.
+- R2: next_track_entry_window_ms is populated from a real incoming-entry
+  candidate when one was planned (policy/boundary.py); it is explicitly
+  None (never a fabricated 0..0) when no incoming track was modeled for a
+  given fixture.
+- R3: permitted_tempo_ratio / permitted_pitch_shift (ambiguous, unitless)
+  are replaced by required_tempo_ratio + permitted_tempo_ratio_max_deviation
+  and required_pitch_shift_semitones + permitted_pitch_shift_semitones_min/max.
+- Alignment contract: beat_alignment_target/downbeat_alignment_target
+  (which exposed a single outgoing timestamp as if it specified both sides)
+  are replaced by outgoing_*/incoming_* pairs plus beat_phase_relation /
+  bar_phase_relation.
 """
 
 from dataclasses import dataclass, field, asdict
 from typing import Optional
 
-from .compatibility import evaluate_pair_compatibility, downgrade_transition_class_set
-
-# P0 placeholder tempo/pitch envelope offered only when FULL_DJ_BLEND is
-# actually in the allowed class set. Matches P0-M2's tempo_ratio_max_deviation
-# ceiling (docs/research/P0-M2-AUTOMIX-QUALITY-BENCHMARK-CONTRACT.md). Not an
-# Apple-documented number.
-PERMITTED_TEMPO_RATIO_MAX_DEVIATION = 0.12
-PERMITTED_MAX_PITCH_SHIFT_SEMITONES = 3
+from .compatibility import evaluate_pair_compatibility, downgrade_transition_class_set, PERMITTED_MAX_PITCH_SHIFT_SEMITONES
+from .compatibility import MAX_JUSTIFIED_TEMPO_STRETCH_PCT as PERMITTED_TEMPO_RATIO_MAX_DEVIATION
 
 
 @dataclass
@@ -32,20 +41,45 @@ class PlannerDecision:
     #   "TRANSITION" | "PLAY_THROUGH" | "NO_SPECIAL_TRANSITION"
     decision_type: str
 
-    # --- Song-preservation / timing (spec section B) ---
+    # --- Outgoing side: song-preservation / timing (spec section B) ---
     current_track_effective_content_end_ms: Optional[int] = None
-    transition_onset_window_ms: Optional[dict] = None      # {"t_start_ms":..,"t_end_ms":..}
+    selected_outgoing_exit_candidate_id: Optional[str] = None
+    # A REAL narrow onset window: {t_start_ms, t_end_ms} where t_start==t_end
+    # for an exact cue timestamp, or an explicit authored narrow region --
+    # NEVER onset..effective_content_end (R2 repair).
+    transition_onset_window_ms: Optional[dict] = None
     outgoing_last_audible_target_ms: Optional[int] = None
     outgoing_content_preservation_target: Optional[float] = None
-    next_track_entry_window_ms: Optional[dict] = None      # provider-independent placeholder; no next-track audio referenced
+
+    # --- Incoming side: entry planning (R2 repair -- no more universal 0,0) ---
+    selected_incoming_entry_candidate_id: Optional[str] = None
+    incoming_effective_content_start_ms: Optional[int] = None
+    # {t_start_ms, t_end_ms}. None (not {0,0}) when no incoming track was
+    # modeled for this fixture -- see incoming_entry_reason_codes.
+    next_track_entry_window_ms: Optional[dict] = None
+    incoming_entry_reason_codes: list = field(default_factory=list)
+    incoming_phrase_section_evidence: Optional[bool] = None
 
     # --- Transition class / pair compatibility (spec sections D/E) ---
     allowed_transition_class_set: list = field(default_factory=list)
-    pair_compatibility_components: Optional[dict] = None    # None when no pair was supplied (compatibility unproven)
-    beat_alignment_target: Optional[int] = None
-    downbeat_alignment_target: Optional[int] = None
-    permitted_tempo_ratio: Optional[float] = None
-    permitted_pitch_shift: Optional[int] = None
+    pair_compatibility_components: Optional[dict] = None    # None when no pair was supplied/computed (compatibility unproven)
+
+    # --- Alignment contract: BOTH sides identified explicitly, never one
+    # outgoing timestamp reused as if it specified the incoming side too. ---
+    outgoing_beat_alignment_target_ms: Optional[int] = None
+    incoming_beat_alignment_target_ms: Optional[int] = None
+    outgoing_downbeat_alignment_target_ms: Optional[int] = None
+    incoming_downbeat_alignment_target_ms: Optional[int] = None
+    beat_phase_relation: str = "UNKNOWN"   # "ALIGNED" | "OFFSET" | "UNKNOWN" | "NOT_APPLICABLE"
+    bar_phase_relation: str = "UNKNOWN"    # "ALIGNED" | "OFFSET" | "UNKNOWN" | "NOT_APPLICABLE"
+
+    # --- Tempo/pitch contract (R3 repair -- unambiguous units/semantics) ---
+    required_tempo_ratio: Optional[float] = None                    # literal playback-rate ratio needed to beat-match
+    permitted_tempo_ratio_max_deviation: Optional[float] = None      # max |ratio - 1.0| tolerated for FULL_DJ_BLEND; a DEVIATION, never a ratio itself
+    required_pitch_shift_semitones: Optional[int] = None
+    permitted_pitch_shift_semitones_min: Optional[int] = None
+    permitted_pitch_shift_semitones_max: Optional[int] = None
+
     energy_continuity_target: Optional[str] = None
     vocal_collision_constraints: Optional[str] = None
     bass_collision_constraints: Optional[str] = None
@@ -59,8 +93,10 @@ class PlannerDecision:
     # quality"/queue field for TIMING purposes.
     queue_order_independent_of_exit_timing: bool = True
 
-    # Full per-candidate evaluation trace, including eligible_rank for
-    # every RANKED_POLICY run (AC12 + multi-candidate ranking evidence).
+    # Full per-(outgoing,incoming) boundary evaluation trace, including
+    # boundary_rank/selected/selection_reason_codes for every candidate
+    # combination considered -- not merely the winner (PM REVIEW #2: "Do
+    # not stop trace generation at the winner").
     candidate_rank_trace: list = field(default_factory=list)
 
     # Retained for backward-compatible field name; identical to
@@ -78,19 +114,44 @@ def _compatibility_payload(pair: Optional[dict]):
     return result, result.to_dict()
 
 
+def _onset_window(candidate: dict, t_ms: int) -> dict:
+    """
+    R2 repair: a REAL narrow onset window. If the candidate carries an
+    explicit authored `onset_window_ms: [start, end]` region, use it
+    verbatim. Otherwise the candidate represents an exact cue timestamp --
+    t_start_ms == t_end_ms. Never onset..effective_content_end.
+    """
+    region = candidate.get("onset_window_ms")
+    if region:
+        return {"t_start_ms": region[0], "t_end_ms": region[1]}
+    return {"t_start_ms": t_ms, "t_end_ms": t_ms}
+
+
 def build_transition_decision(fixture_id, intent, policy_name, chosen_eligibility, candidate, candidate_trace, pair=None):
+    """
+    Legacy single-track (outgoing-exit-only) builder, used by fixtures that
+    do not model an incoming track at all (the original 14 timing
+    fixtures, letters A-N). Pair compatibility, if supplied, is a single
+    GLOBAL value applied uniformly -- it cannot differentiate between
+    candidates (that requires policy/boundary.py's per-boundary planner,
+    used by fixtures that DO model incoming entries).
+    """
     compat_result, compat_payload = _compatibility_payload(pair)
     allowed_class_set = downgrade_transition_class_set(chosen_eligibility.preferred_transition_class_set, compat_result)
 
-    permitted_tempo_ratio = None
-    permitted_pitch_shift = None
-    if "FULL_DJ_BLEND" in allowed_class_set:
-        permitted_tempo_ratio = PERMITTED_TEMPO_RATIO_MAX_DEVIATION
-        permitted_pitch_shift = PERMITTED_MAX_PITCH_SHIFT_SEMITONES
+    required_tempo_ratio = None
+    required_pitch_shift = None
+    permitted_tempo_dev = None
+    permitted_pitch_min = None
+    permitted_pitch_max = None
+    if "FULL_DJ_BLEND" in allowed_class_set and compat_result is not None:
+        required_tempo_ratio = compat_result.required_tempo_ratio
+        permitted_tempo_dev = PERMITTED_TEMPO_RATIO_MAX_DEVIATION
+        required_pitch_shift = 0 if compat_result.harmonic_compatibility == "COMPATIBLE" else None
+        permitted_pitch_min = -PERMITTED_MAX_PITCH_SHIFT_SEMITONES
+        permitted_pitch_max = PERMITTED_MAX_PITCH_SHIFT_SEMITONES
 
-    onset = chosen_eligibility.transition_onset_ms
-    remaining_headroom = max(0, chosen_eligibility.effective_content_end_ms - onset)
-    onset_window = {"t_start_ms": onset, "t_end_ms": min(chosen_eligibility.effective_content_end_ms, onset + remaining_headroom)}
+    onset_window = _onset_window(candidate, chosen_eligibility.transition_onset_ms)
 
     vocal_constraint = "NO_HIGH_RISK_OVERLAP_PERMITTED"
     bass_constraint = "NO_HIGH_RISK_OVERLAP_PERMITTED"
@@ -100,22 +161,36 @@ def build_transition_decision(fixture_id, intent, policy_name, chosen_eligibilit
         bass_constraint = f"PAIR_BASS_PERCUSSION_COLLISION_RISK={compat_result.bass_percussion_collision_risk}"
         energy_target = f"PAIR_ENERGY_CONTINUITY={compat_result.energy_continuity}"
 
+    outgoing_beat_target = chosen_eligibility.t_ms if candidate.get("beat_downbeat_aligned") else None
+
     return PlannerDecision(
         fixture_id=fixture_id,
         listener_intent=intent,
         policy_name=policy_name,
         decision_type="TRANSITION",
         current_track_effective_content_end_ms=chosen_eligibility.effective_content_end_ms,
+        selected_outgoing_exit_candidate_id=candidate.get("candidate_id"),
         transition_onset_window_ms=onset_window,
         outgoing_last_audible_target_ms=chosen_eligibility.outgoing_last_audible_ms,
         outgoing_content_preservation_target=chosen_eligibility.outgoing_content_preservation_ratio,
-        next_track_entry_window_ms={"t_start_ms": 0, "t_end_ms": 0},
+        selected_incoming_entry_candidate_id=None,
+        incoming_effective_content_start_ms=None,
+        next_track_entry_window_ms=None,
+        incoming_entry_reason_codes=["INCOMING_ENTRY_NOT_MODELED_FOR_THIS_FIXTURE"],
+        incoming_phrase_section_evidence=None,
         allowed_transition_class_set=allowed_class_set,
         pair_compatibility_components=compat_payload,
-        beat_alignment_target=chosen_eligibility.t_ms if candidate.get("beat_downbeat_aligned") else None,
-        downbeat_alignment_target=chosen_eligibility.t_ms if candidate.get("beat_downbeat_aligned") else None,
-        permitted_tempo_ratio=permitted_tempo_ratio,
-        permitted_pitch_shift=permitted_pitch_shift,
+        outgoing_beat_alignment_target_ms=outgoing_beat_target,
+        incoming_beat_alignment_target_ms=None,
+        outgoing_downbeat_alignment_target_ms=outgoing_beat_target,
+        incoming_downbeat_alignment_target_ms=None,
+        beat_phase_relation="NOT_APPLICABLE",
+        bar_phase_relation="NOT_APPLICABLE",
+        required_tempo_ratio=required_tempo_ratio,
+        permitted_tempo_ratio_max_deviation=permitted_tempo_dev,
+        required_pitch_shift_semitones=required_pitch_shift,
+        permitted_pitch_shift_semitones_min=permitted_pitch_min,
+        permitted_pitch_shift_semitones_max=permitted_pitch_max,
         energy_continuity_target=energy_target,
         vocal_collision_constraints=vocal_constraint,
         bass_collision_constraints=bass_constraint,
@@ -126,17 +201,114 @@ def build_transition_decision(fixture_id, intent, policy_name, chosen_eligibilit
     )
 
 
+def build_boundary_transition_decision(
+    fixture_id, intent, policy_name,
+    exit_candidate, exit_result, entry_candidate,
+    incoming_effective_content_start_ms, incoming_entry_reason_codes,
+    winner_entry, boundary_trace,
+):
+    """
+    New boundary-plan builder (R1/R2 repair): the winner is a complete
+    (outgoing exit, incoming entry, pair compatibility AT that boundary)
+    plan, not an outgoing exit selected in isolation.
+    """
+    compat_payload = winner_entry["pair_compatibility_components"]
+    allowed_class_set = winner_entry["allowed_transition_class_set"]
+
+    outgoing_beat_target = exit_result.t_ms if exit_candidate.get("beat_downbeat_aligned") else None
+    outgoing_downbeat_target = outgoing_beat_target
+    incoming_beat_target = entry_candidate["t_ms"] if entry_candidate.get("beat_downbeat_aligned") else None
+    incoming_downbeat_target = incoming_beat_target
+
+    if outgoing_beat_target is not None and incoming_beat_target is not None:
+        beat_phase_relation = "ALIGNED" if winner_entry["eligible_for_dynamic_mix"] else "OFFSET"
+        bar_phase_relation = beat_phase_relation
+    elif outgoing_beat_target is None and incoming_beat_target is None:
+        beat_phase_relation = "NOT_APPLICABLE"
+        bar_phase_relation = "NOT_APPLICABLE"
+    else:
+        beat_phase_relation = "UNKNOWN"
+        bar_phase_relation = "UNKNOWN"
+
+    required_tempo_ratio = None
+    required_pitch_shift = None
+    permitted_tempo_dev = None
+    permitted_pitch_min = None
+    permitted_pitch_max = None
+    if "FULL_DJ_BLEND" in allowed_class_set:
+        required_tempo_ratio = winner_entry["required_tempo_ratio"]
+        permitted_tempo_dev = PERMITTED_TEMPO_RATIO_MAX_DEVIATION
+        required_pitch_shift = winner_entry["required_pitch_shift_semitones"]
+        permitted_pitch_min = -PERMITTED_MAX_PITCH_SHIFT_SEMITONES
+        permitted_pitch_max = PERMITTED_MAX_PITCH_SHIFT_SEMITONES
+
+    compat_dict = compat_payload or {}
+    vocal_constraint = f"PAIR_VOCAL_COLLISION_RISK={compat_dict.get('vocal_collision_risk', 'UNKNOWN')}"
+    bass_constraint = f"PAIR_BASS_PERCUSSION_COLLISION_RISK={compat_dict.get('bass_percussion_collision_risk', 'UNKNOWN')}"
+    energy_target = f"PAIR_ENERGY_CONTINUITY={compat_dict.get('energy_continuity', 'UNKNOWN')}"
+
+    onset_window = _onset_window(exit_candidate, exit_result.transition_onset_ms)
+    entry_region = entry_candidate.get("onset_window_ms")
+    if entry_region:
+        entry_window = {"t_start_ms": entry_region[0], "t_end_ms": entry_region[1]}
+    else:
+        entry_window = {"t_start_ms": entry_candidate["t_ms"], "t_end_ms": entry_candidate["t_ms"]}
+
+    return PlannerDecision(
+        fixture_id=fixture_id,
+        listener_intent=intent,
+        policy_name=policy_name,
+        decision_type="TRANSITION",
+        current_track_effective_content_end_ms=exit_result.effective_content_end_ms,
+        selected_outgoing_exit_candidate_id=exit_candidate["candidate_id"],
+        transition_onset_window_ms=onset_window,
+        outgoing_last_audible_target_ms=exit_result.outgoing_last_audible_ms,
+        outgoing_content_preservation_target=exit_result.outgoing_content_preservation_ratio,
+        selected_incoming_entry_candidate_id=entry_candidate["candidate_id"],
+        incoming_effective_content_start_ms=incoming_effective_content_start_ms,
+        next_track_entry_window_ms=entry_window,
+        incoming_entry_reason_codes=incoming_entry_reason_codes,
+        incoming_phrase_section_evidence=bool(entry_candidate.get("phrase_section_evidence", False)),
+        allowed_transition_class_set=allowed_class_set,
+        pair_compatibility_components=compat_payload,
+        outgoing_beat_alignment_target_ms=outgoing_beat_target,
+        incoming_beat_alignment_target_ms=incoming_beat_target,
+        outgoing_downbeat_alignment_target_ms=outgoing_downbeat_target,
+        incoming_downbeat_alignment_target_ms=incoming_downbeat_target,
+        beat_phase_relation=beat_phase_relation,
+        bar_phase_relation=bar_phase_relation,
+        required_tempo_ratio=required_tempo_ratio,
+        permitted_tempo_ratio_max_deviation=permitted_tempo_dev,
+        required_pitch_shift_semitones=required_pitch_shift,
+        permitted_pitch_shift_semitones_min=permitted_pitch_min,
+        permitted_pitch_shift_semitones_max=permitted_pitch_max,
+        energy_continuity_target=energy_target,
+        vocal_collision_constraints=vocal_constraint,
+        bass_collision_constraints=bass_constraint,
+        analysis_confidence=exit_result.confidence,
+        reason_codes=exit_result.acceptance_reason_codes + winner_entry["selection_reason_codes"],
+        candidate_rank_trace=boundary_trace,
+        candidate_trace=boundary_trace,
+    )
+
+
 def build_fallback_decision(fixture_id, intent, policy_name, decision_type, reason_codes, candidate_trace, confidence="LOW"):
     assert decision_type in ("PLAY_THROUGH", "NO_SPECIAL_TRANSITION")
     effective_end = None
     if candidate_trace:
-        effective_end = candidate_trace[-1].get("effective_content_end_ms")
+        last = candidate_trace[-1]
+        effective_end = last.get("effective_content_end_ms")
+        if effective_end is None:
+            components = last.get("outgoing_preservation_components")
+            if components:
+                effective_end = components.get("effective_content_end_ms")
     return PlannerDecision(
         fixture_id=fixture_id,
         listener_intent=intent,
         policy_name=policy_name,
         decision_type=decision_type,
         current_track_effective_content_end_ms=effective_end,
+        incoming_entry_reason_codes=["NOT_APPLICABLE_NO_TRANSITION_SELECTED"],
         allowed_transition_class_set=["NO_SPECIAL_TRANSITION"] if decision_type == "NO_SPECIAL_TRANSITION" else [],
         analysis_confidence=confidence,
         reason_codes=reason_codes,

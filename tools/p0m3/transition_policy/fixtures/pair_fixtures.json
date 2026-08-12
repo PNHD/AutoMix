@@ -139,5 +139,144 @@
     "intro_outro_texture_compatible": true,
     "analysis_confidence": "HIGH",
     "expected_overall_eligible": true
+  },
+  {
+    "pair_id": "PAIR-06",
+    "title": "unknown_structure_must_not_equal_known_compatible",
+    "task_letter": "R4",
+    "purpose": "structure_compatibility UNKNOWN (omitted) must NOT receive the same FULL_DJ_BLEND eligibility as KNOWN COMPATIBLE.",
+    "outgoing": {
+      "genre_tags": [
+        "house"
+      ],
+      "bpm": 128
+    },
+    "incoming": {
+      "genre_tags": [
+        "electronic"
+      ],
+      "bpm": 129
+    },
+    "beat_confidence": "HIGH",
+    "downbeat_confidence": "HIGH",
+    "harmonic_relationship": "COMPATIBLE",
+    "energy_continuity": "STRONG",
+    "vocal_collision_risk": "LOW",
+    "bass_percussion_collision_risk": "LOW",
+    "intro_outro_texture_compatible": true,
+    "analysis_confidence": "HIGH",
+    "expected_overall_eligible": false
+  },
+  {
+    "pair_id": "PAIR-07",
+    "title": "unknown_texture_must_not_equal_known_compatible",
+    "task_letter": "R4",
+    "purpose": "intro_outro_texture_compatible UNKNOWN/false must NOT receive the same FULL_DJ_BLEND eligibility as KNOWN COMPATIBLE.",
+    "outgoing": {
+      "genre_tags": [
+        "house"
+      ],
+      "bpm": 128
+    },
+    "incoming": {
+      "genre_tags": [
+        "electronic"
+      ],
+      "bpm": 129
+    },
+    "beat_confidence": "HIGH",
+    "downbeat_confidence": "HIGH",
+    "harmonic_relationship": "COMPATIBLE",
+    "energy_continuity": "STRONG",
+    "structure_compatibility": "COMPATIBLE",
+    "vocal_collision_risk": "LOW",
+    "bass_percussion_collision_risk": "LOW",
+    "intro_outro_texture_compatible": false,
+    "analysis_confidence": "HIGH",
+    "expected_overall_eligible": false
+  },
+  {
+    "pair_id": "PAIR-08",
+    "title": "unknown_harmonic_no_exception_downgraded",
+    "task_letter": "R4",
+    "purpose": "harmonic_relationship UNKNOWN with no explicit harmonic_not_load_bearing_reason must downgrade FULL_DJ_BLEND, not silently behave like COMPATIBLE.",
+    "outgoing": {
+      "genre_tags": [
+        "house"
+      ],
+      "bpm": 128
+    },
+    "incoming": {
+      "genre_tags": [
+        "electronic"
+      ],
+      "bpm": 129
+    },
+    "beat_confidence": "HIGH",
+    "downbeat_confidence": "HIGH",
+    "energy_continuity": "STRONG",
+    "structure_compatibility": "COMPATIBLE",
+    "vocal_collision_risk": "LOW",
+    "bass_percussion_collision_risk": "LOW",
+    "intro_outro_texture_compatible": true,
+    "analysis_confidence": "HIGH",
+    "expected_overall_eligible": false
+  },
+  {
+    "pair_id": "PAIR-09",
+    "title": "unknown_harmonic_narrow_exception_applied",
+    "task_letter": "R4",
+    "purpose": "harmonic_relationship UNKNOWN WITH an explicit, narrow, style-specific exception reason may still be FULL_DJ_BLEND eligible.",
+    "outgoing": {
+      "genre_tags": [
+        "house"
+      ],
+      "bpm": 128
+    },
+    "incoming": {
+      "genre_tags": [
+        "electronic"
+      ],
+      "bpm": 129
+    },
+    "beat_confidence": "HIGH",
+    "downbeat_confidence": "HIGH",
+    "energy_continuity": "STRONG",
+    "structure_compatibility": "COMPATIBLE",
+    "vocal_collision_risk": "LOW",
+    "bass_percussion_collision_risk": "LOW",
+    "intro_outro_texture_compatible": true,
+    "analysis_confidence": "HIGH",
+    "harmonic_not_load_bearing_reason": "pure rhythmic four-on-the-floor genre pair with no tonal/melodic content; harmonic mixing is not a meaningful concept for this style",
+    "expected_overall_eligible": true
+  },
+  {
+    "pair_id": "PAIR-10",
+    "title": "harmonic_incompatible_always_rejects_full_dj",
+    "task_letter": "R4",
+    "purpose": "harmonic_relationship INCOMPATIBLE must reject FULL_DJ_BLEND even with an exception reason present (exception only ever applies to UNKNOWN, never overrides a known INCOMPATIBLE).",
+    "outgoing": {
+      "genre_tags": [
+        "house"
+      ],
+      "bpm": 128
+    },
+    "incoming": {
+      "genre_tags": [
+        "electronic"
+      ],
+      "bpm": 129
+    },
+    "beat_confidence": "HIGH",
+    "downbeat_confidence": "HIGH",
+    "harmonic_relationship": "INCOMPATIBLE",
+    "energy_continuity": "STRONG",
+    "structure_compatibility": "COMPATIBLE",
+    "vocal_collision_risk": "LOW",
+    "bass_percussion_collision_risk": "LOW",
+    "intro_outro_texture_compatible": true,
+    "analysis_confidence": "HIGH",
+    "harmonic_not_load_bearing_reason": "should not matter",
+    "expected_overall_eligible": false
   }
 ]

@@ -9,7 +9,8 @@ Produces:
   results/sensitivity_matrix.json -- preservation-floor sensitivity sweep (0.90/0.93/0.95/0.97/0.98)
   results/playthrough_demo.json   -- explicit PLAY_THROUGH vs NO_SPECIAL_TRANSITION proof (AC10)
   results/order_invariance.json   -- TP-12 normal/reverse/shuffled candidate order -> identical winner
-  results/pair_compatibility.json -- PAIR-01..05 component report + TP-11 integration proof
+  results/pair_compatibility.json -- PAIR-01..10 component report + TP-11 integration proof
+  results/boundary_planning.json  -- PM REVIEW #2 R1/R2: TX-01..05 complete boundary-plan results
   results/SUMMARY.md              -- human-readable summary
 
 Run: python run_benchmark.py
@@ -23,10 +24,12 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 from policy.policies import decide, decide_at_time, POLICY_NAMES
 from policy.compatibility import evaluate_pair_compatibility, downgrade_transition_class_set
+from policy.boundary import plan_transition_boundary
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 FIXTURES_PATH = os.path.join(HERE, "fixtures", "fixtures.json")
 PAIR_FIXTURES_PATH = os.path.join(HERE, "fixtures", "pair_fixtures.json")
+TRANSITION_FIXTURES_PATH = os.path.join(HERE, "fixtures", "transition_fixtures.json")
 RESULTS_DIR = os.path.join(HERE, "results")
 
 # (policy_name, intent, is_baseline) -- the benchmarked rows.
@@ -295,7 +298,78 @@ def run_pair_compatibility_report(pair_fixtures, fixtures):
     }
 
 
-def write_summary(metrics, sensitivity, order_invariance, pair_report, denominators):
+def run_boundary_report(tx_fixtures):
+    """
+    PM REVIEW #2 R1/R2: runs the complete-boundary-plan planner on every
+    TX-* fixture and proves order invariance across BOTH the outgoing exit
+    array and the incoming entry array for TX-01 (the R1 adversarial
+    fixture where pair compatibility must change which boundary wins).
+    """
+    results = {}
+    for tx in tx_fixtures:
+        d = plan_transition_boundary(tx, "SEAMLESS_FULL_TRACK_DEFAULT")
+        results[tx["transition_id"]] = {
+            "title": tx["title"],
+            "purpose": tx["purpose"],
+            "decision": d.to_dict(),
+            "expected_winner": tx.get("expected_winner"),
+            "matches_expectation": (
+                d.selected_outgoing_exit_candidate_id == tx["expected_winner"]["outgoing"]
+                and d.selected_incoming_entry_candidate_id == tx["expected_winner"]["incoming"]
+            ) if tx.get("expected_winner") else None,
+        }
+
+    tx01 = next(tx for tx in tx_fixtures if tx["transition_id"] == "TX-01")
+
+    def variant(exit_order, entry_order):
+        v = json.loads(json.dumps(tx01))
+        v["outgoing_track"]["candidates"] = exit_order(v["outgoing_track"]["candidates"])
+        v["incoming_track"]["candidates"] = entry_order(v["incoming_track"]["candidates"])
+        return v
+
+    def winner_key(d):
+        return [d.selected_outgoing_exit_candidate_id, d.selected_incoming_entry_candidate_id]
+
+    order_checks = {
+        "exit_normal_entry_normal": variant(lambda c: c, lambda c: c),
+        "exit_reversed_entry_normal": variant(lambda c: list(reversed(c)), lambda c: c),
+        "exit_normal_entry_reversed": variant(lambda c: c, lambda c: list(reversed(c))),
+        "exit_reversed_entry_reversed": variant(lambda c: list(reversed(c)), lambda c: list(reversed(c))),
+        "exit_shuffled_seed3_entry_shuffled_seed11": variant(lambda c: random.Random(3).sample(c, len(c)), lambda c: random.Random(11).sample(c, len(c))),
+    }
+    order_winners = {label: winner_key(plan_transition_boundary(v, "SEAMLESS_FULL_TRACK_DEFAULT")) for label, v in order_checks.items()}
+    all_same = len({tuple(w) for w in order_winners.values()}) == 1
+
+    return {
+        "purpose": "PM REVIEW #2 R1/R2: canonical planning ranks COMPLETE (outgoing exit, incoming entry, pair compatibility AT that boundary) plans, never an outgoing exit selected in isolation with pair compatibility applied only afterward.",
+        "transitions": results,
+        "tx01_order_invariance": {
+            "note": "TX-01: OUT-A has the higher raw outgoing-only structure score but every boundary touching it is pair-incompatible (HIGH vocal collision); OUT-B is pair-compatible. The winner must be OUT-B+IN-2 (best compatible + best combined structure) under every outgoing-array and incoming-array ordering.",
+            "winners_by_order": order_winners,
+            "order_invariant": all_same,
+        },
+    }
+
+
+def run_mutation_pair_report(pair_fixtures):
+    """R4: UNKNOWN structure/texture/harmonic must not silently equal known-COMPATIBLE."""
+    mutation_ids = {"PAIR-06", "PAIR-07", "PAIR-08", "PAIR-09", "PAIR-10"}
+    rows = {}
+    for p in pair_fixtures:
+        if p["pair_id"] not in mutation_ids:
+            continue
+        result = evaluate_pair_compatibility(p)
+        rows[p["pair_id"]] = {
+            "title": p["title"],
+            "expected_overall_eligible": p["expected_overall_eligible"],
+            "computed_overall_eligible": result.overall_dynamic_mix_eligible,
+            "matches_expectation": result.overall_dynamic_mix_eligible == p["expected_overall_eligible"],
+            "reason_codes": result.reason_codes,
+        }
+    return rows
+
+
+def write_summary(metrics, sensitivity, order_invariance, pair_report, denominators, boundary_report=None, mutation_report=None):
     lines = ["# P0-M3-R2 Apple-like Benchmark Run -- SUMMARY", ""]
     lines.append(f"Denominators: trap_fixtures={len(denominators['trap_fixture_ids'])} ({denominators['trap_fixture_ids']}), "
                   f"valid_fixtures={len(denominators['valid_fixture_ids'])}, "
@@ -332,6 +406,30 @@ def write_summary(metrics, sensitivity, order_invariance, pair_report, denominat
     lines.append("|---|---|---|---|---|---|")
     for pid, c in pair_report["components_by_pair"].items():
         lines.append(f"| {pid} | {c['task_letter']} | {c['expected_overall_eligible']} | {c['computed']['overall_dynamic_mix_eligible']} | {c['matches_expectation']} | {pair_report['tp11_integration_by_pair'][pid]['full_dj_blend_offered']} |")
+
+    if boundary_report is not None:
+        lines.append("")
+        lines.append("## PM REVIEW #2 -- complete boundary-plan results (TX-01..05)")
+        lines.append("")
+        lines.append("| Transition | Expected winner | Selected winner | Matches |")
+        lines.append("|---|---|---|---|")
+        for tid, r in boundary_report["transitions"].items():
+            d = r["decision"]
+            selected = f"{d['selected_outgoing_exit_candidate_id']} + {d['selected_incoming_entry_candidate_id']}"
+            expected = f"{r['expected_winner']['outgoing']} + {r['expected_winner']['incoming']}" if r["expected_winner"] else "n/a"
+            lines.append(f"| {tid} | {expected} | {selected} | {r['matches_expectation']} |")
+        lines.append("")
+        lines.append(f"TX-01 order invariance (exit array x entry array, 5 orderings): order_invariant={boundary_report['tx01_order_invariance']['order_invariant']}")
+
+    if mutation_report is not None:
+        lines.append("")
+        lines.append("## R4 -- UNKNOWN structure/texture/harmonic mutation tests")
+        lines.append("")
+        lines.append("| Pair | Expected eligible | Computed eligible | Matches |")
+        lines.append("|---|---|---|---|")
+        for pid, r in mutation_report.items():
+            lines.append(f"| {pid} | {r['expected_overall_eligible']} | {r['computed_overall_eligible']} | {r['matches_expectation']} |")
+
     with open(os.path.join(RESULTS_DIR, "SUMMARY.md"), "w", encoding="utf-8") as f:
         f.write("\n".join(lines) + "\n")
 
@@ -340,6 +438,7 @@ def main():
     os.makedirs(RESULTS_DIR, exist_ok=True)
     fixtures = load_json(FIXTURES_PATH)
     pair_fixtures = load_json(PAIR_FIXTURES_PATH)
+    tx_fixtures = load_json(TRANSITION_FIXTURES_PATH)
 
     traces, per_run_decisions = run_matrix(fixtures)
     metrics, denominators = compute_metrics(fixtures, per_run_decisions)
@@ -347,6 +446,8 @@ def main():
     order_invariance = run_order_invariance(fixtures)
     playthrough_demo = run_playthrough_demo(fixtures)
     pair_report = run_pair_compatibility_report(pair_fixtures, fixtures)
+    boundary_report = run_boundary_report(tx_fixtures)
+    mutation_report = run_mutation_pair_report(pair_fixtures)
 
     with open(os.path.join(RESULTS_DIR, "decision_traces.json"), "w", encoding="utf-8") as f:
         json.dump(traces, f, indent=2)
@@ -360,16 +461,25 @@ def main():
         json.dump(playthrough_demo, f, indent=2)
     with open(os.path.join(RESULTS_DIR, "pair_compatibility.json"), "w", encoding="utf-8") as f:
         json.dump(pair_report, f, indent=2)
-    write_summary(metrics, sensitivity, order_invariance, pair_report, denominators)
+    with open(os.path.join(RESULTS_DIR, "boundary_planning.json"), "w", encoding="utf-8") as f:
+        json.dump(boundary_report, f, indent=2)
+    with open(os.path.join(RESULTS_DIR, "mutation_pair_report.json"), "w", encoding="utf-8") as f:
+        json.dump(mutation_report, f, indent=2)
+    write_summary(metrics, sensitivity, order_invariance, pair_report, denominators, boundary_report, mutation_report)
 
     print("=== METRICS ===")
     print(json.dumps(metrics, indent=2))
     print("=== SENSITIVITY ===")
     print(json.dumps(sensitivity, indent=2))
-    print("=== ORDER INVARIANCE ===")
+    print("=== ORDER INVARIANCE (TP-12) ===")
     print(json.dumps(order_invariance, indent=2))
     print("=== PAIR COMPATIBILITY ===")
     print(json.dumps({k: v["matches_expectation"] for k, v in pair_report["components_by_pair"].items()}, indent=2))
+    print("=== BOUNDARY PLANNING (TX-01..05) ===")
+    print(json.dumps({k: v["matches_expectation"] for k, v in boundary_report["transitions"].items()}, indent=2))
+    print("TX-01 order invariance:", boundary_report["tx01_order_invariance"]["order_invariant"])
+    print("=== R4 MUTATION PAIR REPORT ===")
+    print(json.dumps({k: v["matches_expectation"] for k, v in mutation_report.items()}, indent=2))
     print("=== PLAYTHROUGH DEMO (decision_type only) ===")
     print("mid-track:", playthrough_demo["query_at_60000ms_before_outro_region"]["decision_type"])
     print("end-track:", playthrough_demo["query_at_210000ms_natural_end"]["decision_type"])

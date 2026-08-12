@@ -9,6 +9,8 @@
         "genre_compatibility": "COMPATIBLE",
         "tempo_compatibility": "DIRECT",
         "required_tempo_stretch_pct": 0.0078,
+        "required_tempo_ratio": 0.9922,
+        "tempo_requires_playback_rate_change": true,
         "beat_compatibility": "SUFFICIENT",
         "downbeat_compatibility": "SUFFICIENT",
         "harmonic_compatibility": "COMPATIBLE",
@@ -44,6 +46,8 @@
         "genre_compatibility": "INCOMPATIBLE",
         "tempo_compatibility": "DIRECT",
         "required_tempo_stretch_pct": 0.0,
+        "required_tempo_ratio": 1.0,
+        "tempo_requires_playback_rate_change": true,
         "beat_compatibility": "SUFFICIENT",
         "downbeat_compatibility": "SUFFICIENT",
         "harmonic_compatibility": "COMPATIBLE",
@@ -78,6 +82,8 @@
         "genre_compatibility": "COMPATIBLE",
         "tempo_compatibility": "EXCESSIVE_STRETCH",
         "required_tempo_stretch_pct": 0.5556,
+        "required_tempo_ratio": 0.6429,
+        "tempo_requires_playback_rate_change": true,
         "beat_compatibility": "SUFFICIENT",
         "downbeat_compatibility": "SUFFICIENT",
         "harmonic_compatibility": "COMPATIBLE",
@@ -112,6 +118,8 @@
         "genre_compatibility": "COMPATIBLE",
         "tempo_compatibility": "DIRECT",
         "required_tempo_stretch_pct": 0.0081,
+        "required_tempo_ratio": 0.992,
+        "tempo_requires_playback_rate_change": true,
         "beat_compatibility": "SUFFICIENT",
         "downbeat_compatibility": "SUFFICIENT",
         "harmonic_compatibility": "COMPATIBLE",
@@ -146,6 +154,8 @@
         "genre_compatibility": "COMPATIBLE",
         "tempo_compatibility": "DIRECT",
         "required_tempo_stretch_pct": 0.0,
+        "required_tempo_ratio": 1.0,
+        "tempo_requires_playback_rate_change": true,
         "beat_compatibility": "SUFFICIENT",
         "downbeat_compatibility": "SUFFICIENT",
         "harmonic_compatibility": "COMPATIBLE",
@@ -169,6 +179,191 @@
           "INTRO_OUTRO_TEXTURE_COMPATIBLE",
           "ANALYSIS_CONFIDENCE_SUFFICIENT",
           "PAIR_FULLY_COMPATIBLE_COMPLEX_MIX_ELIGIBLE"
+        ]
+      },
+      "matches_expectation": true
+    },
+    "PAIR-06": {
+      "title": "unknown_structure_must_not_equal_known_compatible",
+      "task_letter": "R4",
+      "expected_overall_eligible": false,
+      "computed": {
+        "genre_compatibility": "COMPATIBLE",
+        "tempo_compatibility": "DIRECT",
+        "required_tempo_stretch_pct": 0.0078,
+        "required_tempo_ratio": 0.9922,
+        "tempo_requires_playback_rate_change": true,
+        "beat_compatibility": "SUFFICIENT",
+        "downbeat_compatibility": "SUFFICIENT",
+        "harmonic_compatibility": "COMPATIBLE",
+        "energy_continuity": "STRONG",
+        "structure_compatibility": "UNKNOWN",
+        "vocal_collision_risk": "LOW",
+        "bass_percussion_collision_risk": "LOW",
+        "intro_outro_texture_compatibility": "COMPATIBLE",
+        "analysis_confidence": "HIGH",
+        "overall_dynamic_mix_eligible": false,
+        "reason_codes": [
+          "GENRE_COMPATIBLE_SAME_FAMILY",
+          "TEMPO_DIRECT_COMPATIBLE",
+          "BEAT_CONFIDENCE_SUFFICIENT",
+          "DOWNBEAT_CONFIDENCE_SUFFICIENT",
+          "HARMONIC_COMPATIBLE",
+          "ENERGY_CONTINUITY_STRONG",
+          "STRUCTURE_UNKNOWN",
+          "STRUCTURE_COMPATIBILITY_REQUIRED_FOR_FULL_DJ",
+          "VOCAL_COLLISION_RISK_ACCEPTABLE",
+          "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+          "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+          "ANALYSIS_CONFIDENCE_SUFFICIENT"
+        ]
+      },
+      "matches_expectation": true
+    },
+    "PAIR-07": {
+      "title": "unknown_texture_must_not_equal_known_compatible",
+      "task_letter": "R4",
+      "expected_overall_eligible": false,
+      "computed": {
+        "genre_compatibility": "COMPATIBLE",
+        "tempo_compatibility": "DIRECT",
+        "required_tempo_stretch_pct": 0.0078,
+        "required_tempo_ratio": 0.9922,
+        "tempo_requires_playback_rate_change": true,
+        "beat_compatibility": "SUFFICIENT",
+        "downbeat_compatibility": "SUFFICIENT",
+        "harmonic_compatibility": "COMPATIBLE",
+        "energy_continuity": "STRONG",
+        "structure_compatibility": "COMPATIBLE",
+        "vocal_collision_risk": "LOW",
+        "bass_percussion_collision_risk": "LOW",
+        "intro_outro_texture_compatibility": "UNKNOWN",
+        "analysis_confidence": "HIGH",
+        "overall_dynamic_mix_eligible": false,
+        "reason_codes": [
+          "GENRE_COMPATIBLE_SAME_FAMILY",
+          "TEMPO_DIRECT_COMPATIBLE",
+          "BEAT_CONFIDENCE_SUFFICIENT",
+          "DOWNBEAT_CONFIDENCE_SUFFICIENT",
+          "HARMONIC_COMPATIBLE",
+          "ENERGY_CONTINUITY_STRONG",
+          "STRUCTURE_COMPATIBLE",
+          "VOCAL_COLLISION_RISK_ACCEPTABLE",
+          "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+          "INTRO_OUTRO_TEXTURE_UNKNOWN",
+          "TEXTURE_COMPATIBILITY_REQUIRED_FOR_FULL_DJ",
+          "ANALYSIS_CONFIDENCE_SUFFICIENT"
+        ]
+      },
+      "matches_expectation": true
+    },
+    "PAIR-08": {
+      "title": "unknown_harmonic_no_exception_downgraded",
+      "task_letter": "R4",
+      "expected_overall_eligible": false,
+      "computed": {
+        "genre_compatibility": "COMPATIBLE",
+        "tempo_compatibility": "DIRECT",
+        "required_tempo_stretch_pct": 0.0078,
+        "required_tempo_ratio": 0.9922,
+        "tempo_requires_playback_rate_change": true,
+        "beat_compatibility": "SUFFICIENT",
+        "downbeat_compatibility": "SUFFICIENT",
+        "harmonic_compatibility": "UNKNOWN",
+        "energy_continuity": "STRONG",
+        "structure_compatibility": "COMPATIBLE",
+        "vocal_collision_risk": "LOW",
+        "bass_percussion_collision_risk": "LOW",
+        "intro_outro_texture_compatibility": "COMPATIBLE",
+        "analysis_confidence": "HIGH",
+        "overall_dynamic_mix_eligible": false,
+        "reason_codes": [
+          "GENRE_COMPATIBLE_SAME_FAMILY",
+          "TEMPO_DIRECT_COMPATIBLE",
+          "BEAT_CONFIDENCE_SUFFICIENT",
+          "DOWNBEAT_CONFIDENCE_SUFFICIENT",
+          "HARMONIC_UNKNOWN",
+          "HARMONIC_UNKNOWN_DOWNGRADED",
+          "ENERGY_CONTINUITY_STRONG",
+          "STRUCTURE_COMPATIBLE",
+          "VOCAL_COLLISION_RISK_ACCEPTABLE",
+          "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+          "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+          "ANALYSIS_CONFIDENCE_SUFFICIENT"
+        ]
+      },
+      "matches_expectation": true
+    },
+    "PAIR-09": {
+      "title": "unknown_harmonic_narrow_exception_applied",
+      "task_letter": "R4",
+      "expected_overall_eligible": true,
+      "computed": {
+        "genre_compatibility": "COMPATIBLE",
+        "tempo_compatibility": "DIRECT",
+        "required_tempo_stretch_pct": 0.0078,
+        "required_tempo_ratio": 0.9922,
+        "tempo_requires_playback_rate_change": true,
+        "beat_compatibility": "SUFFICIENT",
+        "downbeat_compatibility": "SUFFICIENT",
+        "harmonic_compatibility": "UNKNOWN",
+        "energy_continuity": "STRONG",
+        "structure_compatibility": "COMPATIBLE",
+        "vocal_collision_risk": "LOW",
+        "bass_percussion_collision_risk": "LOW",
+        "intro_outro_texture_compatibility": "COMPATIBLE",
+        "analysis_confidence": "HIGH",
+        "overall_dynamic_mix_eligible": true,
+        "reason_codes": [
+          "GENRE_COMPATIBLE_SAME_FAMILY",
+          "TEMPO_DIRECT_COMPATIBLE",
+          "BEAT_CONFIDENCE_SUFFICIENT",
+          "DOWNBEAT_CONFIDENCE_SUFFICIENT",
+          "HARMONIC_UNKNOWN",
+          "HARMONIC_NOT_LOAD_BEARING_EXCEPTION_APPLIED",
+          "ENERGY_CONTINUITY_STRONG",
+          "STRUCTURE_COMPATIBLE",
+          "VOCAL_COLLISION_RISK_ACCEPTABLE",
+          "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+          "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+          "ANALYSIS_CONFIDENCE_SUFFICIENT",
+          "PAIR_FULLY_COMPATIBLE_COMPLEX_MIX_ELIGIBLE"
+        ]
+      },
+      "matches_expectation": true
+    },
+    "PAIR-10": {
+      "title": "harmonic_incompatible_always_rejects_full_dj",
+      "task_letter": "R4",
+      "expected_overall_eligible": false,
+      "computed": {
+        "genre_compatibility": "COMPATIBLE",
+        "tempo_compatibility": "DIRECT",
+        "required_tempo_stretch_pct": 0.0078,
+        "required_tempo_ratio": 0.9922,
+        "tempo_requires_playback_rate_change": true,
+        "beat_compatibility": "SUFFICIENT",
+        "downbeat_compatibility": "SUFFICIENT",
+        "harmonic_compatibility": "INCOMPATIBLE",
+        "energy_continuity": "STRONG",
+        "structure_compatibility": "COMPATIBLE",
+        "vocal_collision_risk": "LOW",
+        "bass_percussion_collision_risk": "LOW",
+        "intro_outro_texture_compatibility": "COMPATIBLE",
+        "analysis_confidence": "HIGH",
+        "overall_dynamic_mix_eligible": false,
+        "reason_codes": [
+          "GENRE_COMPATIBLE_SAME_FAMILY",
+          "TEMPO_DIRECT_COMPATIBLE",
+          "BEAT_CONFIDENCE_SUFFICIENT",
+          "DOWNBEAT_CONFIDENCE_SUFFICIENT",
+          "HARMONIC_INCOMPATIBLE",
+          "ENERGY_CONTINUITY_STRONG",
+          "STRUCTURE_COMPATIBLE",
+          "VOCAL_COLLISION_RISK_ACCEPTABLE",
+          "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+          "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+          "ANALYSIS_CONFIDENCE_SUFFICIENT"
         ]
       },
       "matches_expectation": true
@@ -213,8 +408,49 @@
         "SIMPLE_CROSSFADE"
       ],
       "full_dj_blend_offered": true
+    },
+    "PAIR-06": {
+      "timing_fixture": "TP-11 (near-end candidate, timing already excellent)",
+      "allowed_transition_class_set": [
+        "SHORT_EQ_BLEND",
+        "SIMPLE_CROSSFADE"
+      ],
+      "full_dj_blend_offered": false
+    },
+    "PAIR-07": {
+      "timing_fixture": "TP-11 (near-end candidate, timing already excellent)",
+      "allowed_transition_class_set": [
+        "SHORT_EQ_BLEND",
+        "SIMPLE_CROSSFADE"
+      ],
+      "full_dj_blend_offered": false
+    },
+    "PAIR-08": {
+      "timing_fixture": "TP-11 (near-end candidate, timing already excellent)",
+      "allowed_transition_class_set": [
+        "SHORT_EQ_BLEND",
+        "SIMPLE_CROSSFADE"
+      ],
+      "full_dj_blend_offered": false
+    },
+    "PAIR-09": {
+      "timing_fixture": "TP-11 (near-end candidate, timing already excellent)",
+      "allowed_transition_class_set": [
+        "FULL_DJ_BLEND",
+        "SHORT_EQ_BLEND",
+        "SIMPLE_CROSSFADE"
+      ],
+      "full_dj_blend_offered": true
+    },
+    "PAIR-10": {
+      "timing_fixture": "TP-11 (near-end candidate, timing already excellent)",
+      "allowed_transition_class_set": [
+        "SHORT_EQ_BLEND",
+        "SIMPLE_CROSSFADE"
+      ],
+      "full_dj_blend_offered": false
     }
   },
-  "incompatible_pair_downgrade_rate": 0.6,
-  "incompatible_pair_downgrade_count_over_denominator": "3/5"
+  "incompatible_pair_downgrade_rate": 0.7,
+  "incompatible_pair_downgrade_count_over_denominator": "7/10"
 }

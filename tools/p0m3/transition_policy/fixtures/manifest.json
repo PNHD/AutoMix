@@ -1,10 +1,25 @@
 {
-  "schema_version": "2.0.0",
-  "purpose": "P0-M3-R2 Apple-like redesign adversarial fixture index (Issue #6 PM PRODUCT DIRECTION UPDATE). Metadata-only (no audio bytes, no copyrighted material). fixtures.json holds timing/preservation fixtures (candidate current-track exit points); pair_fixtures.json holds pair-level mixability/compatibility fixtures. The planner decides WHEN to leave the current track and, separately, WHICH transition class is appropriate given pair compatibility -- never conflating the two (P3/P4).",
+  "schema_version": "3.0.0",
+  "purpose": "P0-M3-R2 Apple-like redesign adversarial fixture index (Issue #6). Metadata-only (no audio bytes, no copyrighted material). fixtures.json holds timing/preservation fixtures (candidate current-track exit points, single-track/legacy planner). pair_fixtures.json holds pair-level mixability/compatibility fixtures (G-K plus R4 mutation pairs PAIR-06..10). transition_fixtures.json (new, PM REVIEW #2) holds COMPLETE boundary-planning fixtures: an outgoing track's exit candidates x an incoming track's entry candidates x pair compatibility evaluated AT each specific (exit, entry) boundary. The planner decides WHEN to leave the current track, WHERE to enter the next track, and WHICH transition class is appropriate given pair compatibility AT that boundary -- never conflating these (P3/P4, PM REVIEW #2 R1/R2).",
   "fixtures_file": "fixtures.json",
   "pair_fixtures_file": "pair_fixtures.json",
+  "transition_fixtures_file": "transition_fixtures.json",
   "fixture_count": 14,
-  "pair_fixture_count": 5,
+  "pair_fixture_count": 10,
+  "transition_fixture_count": 5,
+  "pm_review_2_repairs": {
+    "R1": "boundary.py ranks complete (outgoing exit, incoming entry, pair compatibility AT that boundary) plans -- see TX-01",
+    "R2": "boundary.py plans real incoming-entry candidates -- see TX-02 (0ms correct), TX-03 (leading-silence skip), TX-04 (later phrase/cue better), TX-05 (entry changes compatibility)",
+    "R3": "compatibility.py/contract.py expose required_tempo_ratio + permitted_tempo_ratio_max_deviation and required/permitted_pitch_shift_semitones_* with unambiguous semantics",
+    "R4": "compatibility.py's hard gate now requires structure_compatibility and intro_outro_texture_compatible to be KNOWN+COMPATIBLE, and harmonic UNKNOWN downgrades unless an explicit harmonic_not_load_bearing_reason exception is supplied -- see PAIR-06..10"
+  },
+  "transition_fixture_letter_coverage": [
+    { "fixture_id": "TX-01", "description": "R1 adversarial: 2 safe near-end exits x 2 entries; every boundary touching the structurally-better exit is pair-incompatible, the other is fully compatible -- planner must select the compatible boundary, order-invariant across both arrays" },
+    { "fixture_id": "TX-02", "description": "incoming entry case A: 0ms is genuinely correct; a later no-evidence candidate is rejected" },
+    { "fixture_id": "TX-03", "description": "incoming entry case B: authored leading silence may be skipped; skipping real content without evidence is rejected" },
+    { "fixture_id": "TX-04", "description": "incoming entry case C: a later phrase/cue entry is clearly better than 0ms" },
+    { "fixture_id": "TX-05", "description": "incoming entry case D: entry choice alone changes vocal/pair compatibility at the boundary" }
+  ],
   "spec_letter_coverage": [
     { "letter": "A", "fixture_id": "TP-01", "description": "normal 3-4 min track, technical mix point ~30s, no legitimate exit -> reject" },
     { "letter": "B", "fixture_id": "TP-11", "description": "7-minute song, technically attractive candidate ~2 minutes -> catastrophic reject" },
@@ -44,14 +59,22 @@
   "pair_fixture_fields": {
     "outgoing / incoming": "genre_tags + bpm for each side of the pair",
     "beat_confidence / downbeat_confidence": "HIGH|MEDIUM|LOW|NONE",
-    "harmonic_relationship": "COMPATIBLE|INCOMPATIBLE|omitted(=UNKNOWN, neutral)",
+    "harmonic_relationship": "COMPATIBLE|INCOMPATIBLE|omitted(=UNKNOWN, neutral only WITH an exception -- see below)",
+    "harmonic_not_load_bearing_reason": "Optional, PM REVIEW #2 R4. Only consulted when harmonic_relationship is omitted/UNKNOWN. A narrow, style-specific free-text justification that harmonic mixing is not load-bearing for this pair (e.g. purely rhythmic/atonal genres). Its PRESENCE (any non-empty string), not its content, is what the code checks -- see PAIR-08 (absent, downgraded) vs PAIR-09 (present, eligible).",
     "energy_continuity": "STRONG|omitted(=WEAK)",
-    "structure_compatibility": "COMPATIBLE|omitted(=UNKNOWN)",
+    "structure_compatibility": "COMPATIBLE|omitted(=UNKNOWN -- now a HARD-GATE failure for FULL_DJ_BLEND as of R4, see PAIR-06)",
     "vocal_collision_risk / bass_percussion_collision_risk": "HIGH|MEDIUM|LOW|NONE",
-    "intro_outro_texture_compatible": "bool",
+    "intro_outro_texture_compatible": "bool (false/omitted is now a HARD-GATE failure for FULL_DJ_BLEND as of R4, see PAIR-07)",
     "analysis_confidence": "HIGH|MEDIUM|LOW|NONE",
-    "expected_overall_eligible": "SYNTHETIC_EXACT test-design label consumed only by build_fixtures.py-style validation / run_benchmark.py reporting, never by policy/compatibility.py itself"
+    "expected_overall_eligible": "SYNTHETIC_EXACT test-design label consumed only by build script validation / run_benchmark.py reporting, never by policy/compatibility.py itself"
   },
+  "pair_fixtures_pm_review_2_additions": [
+    { "pair_id": "PAIR-06", "description": "structure_compatibility UNKNOWN (omitted) -- must NOT get the same FULL_DJ_BLEND eligibility as known COMPATIBLE" },
+    { "pair_id": "PAIR-07", "description": "intro_outro_texture_compatible UNKNOWN/false -- must NOT get the same FULL_DJ_BLEND eligibility as known COMPATIBLE" },
+    { "pair_id": "PAIR-08", "description": "harmonic_relationship UNKNOWN, no exception -- downgraded, not silently COMPATIBLE" },
+    { "pair_id": "PAIR-09", "description": "harmonic_relationship UNKNOWN, WITH an explicit narrow harmonic_not_load_bearing_reason -- eligible" },
+    { "pair_id": "PAIR-10", "description": "harmonic_relationship INCOMPATIBLE -- always rejects FULL_DJ_BLEND, even with an exception reason present (exception only ever applies to UNKNOWN)" }
+  ],
   "note_on_ground_truth_isolation": "Ground-truth-only fields (is_premature_trap, is_vocal_collision_trap, is_valid_natural_exit, is_preferred_earliest_valid_exit, highlight_eligible, expected_overall_eligible) are consumed ONLY by run_benchmark.py's scoring/metrics code and verify.py's assertions, never by policy/eligibility.py, policy/policies.py, policy/compatibility.py, or policy/ranking.py's decision logic. This separation is statically asserted by verify.py (AST-based, immune to prose mentions) so no policy can 'see the answer key'.",
   "no_copyrighted_audio": true,
   "no_provider_credentials_or_tokens": true

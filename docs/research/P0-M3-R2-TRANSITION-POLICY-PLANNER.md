@@ -179,42 +179,19 @@ Denominators: `trap_fixtures=10`, `valid_fixtures=14`, `missed_opportunity_fixtu
 
 `NAIVE_EARLIEST_COMPATIBLE` and `BPM_KEY_ONLY_EARLY` are the only rows with nonzero `premature_exit_rate` and by far the worst `catastrophic/transitions` ratios (13/14 -- i.e. almost every transition either baseline makes is catastrophic under the new preservation metric). The recommended row is the only one with **zero** catastrophic transitions and the highest mean preservation ratio among all rows that actually capture opportunities. `BALANCED_MIX_RESEARCH_CONTROL` and `EXPLICIT_HIGHLIGHT_RESEARCH_CONTROL` both show nonzero catastrophic rates -- expected and acceptable, since neither carries the default-mode catastrophic-ceiling acceptance criterion; they exist to demonstrate why they are not the default, not to meet it.
 
-## 12. Planner output contract (for P0-M3-R3)
+## 12. Planner output contract (for P0-M3-R3) -- superseded, see §17-21
 
-`tools/p0m3/transition_policy/policy/contract.py`'s `PlannerDecision`:
-
-```json
-{
-  "fixture_id": "string",
-  "listener_intent": "SEAMLESS_FULL_TRACK_DEFAULT | BALANCED_MIX | HIGHLIGHT_EXPLICIT",
-  "policy_name": "string",
-  "decision_type": "TRANSITION | PLAY_THROUGH | NO_SPECIAL_TRANSITION",
-  "current_track_effective_content_end_ms": "int | null",
-  "transition_onset_window_ms": {"t_start_ms": "int", "t_end_ms": "int"},
-  "outgoing_last_audible_target_ms": "int | null",
-  "outgoing_content_preservation_target": "float | null",
-  "next_track_entry_window_ms": {"t_start_ms": "int", "t_end_ms": "int"},
-  "allowed_transition_class_set": ["FULL_DJ_BLEND | SHORT_EQ_BLEND | SIMPLE_CROSSFADE | GAPLESS | CUT | NO_SPECIAL_TRANSITION", "..."],
-  "pair_compatibility_components": "object | null (null only when no pair was supplied)",
-  "beat_alignment_target": "int | null",
-  "downbeat_alignment_target": "int | null",
-  "permitted_tempo_ratio": "float | null",
-  "permitted_pitch_shift": "int | null",
-  "energy_continuity_target": "string",
-  "vocal_collision_constraints": "string",
-  "bass_collision_constraints": "string",
-  "analysis_confidence": "NONE | LOW | MEDIUM | HIGH",
-  "reason_codes": ["string", "..."],
-  "queue_order_independent_of_exit_timing": true,
-  "candidate_rank_trace": ["... full per-candidate trace incl. eligible_rank, see results/decision_traces.json ..."]
-}
-```
-
-`allowed_transition_class_set` reuses `docs/research/P0-M2-AUTOMIX-QUALITY-BENCHMARK-CONTRACT.md` §5.1's taxonomy exactly. `permitted_tempo_ratio`/`permitted_pitch_shift` reuse the `0.12`/`3-semitone` envelope from the prior pass and are only ever populated when `FULL_DJ_BLEND` is actually in the allowed set (never unconditionally).
+The schema originally documented here (`beat_alignment_target`,
+`downbeat_alignment_target`, `permitted_tempo_ratio`, `permitted_pitch_shift`,
+a universal `next_track_entry_window_ms`) was found by PM REVIEW #2 to be
+ambiguous and incomplete before any DSP pass could safely consume it. It has
+been replaced; **§20 below is the current, authoritative schema.** This
+section is kept only so the supersession is visible in-place; do not
+implement against it.
 
 ## 13. Recommendation for P0-M3-R3
 
-`SEAMLESS_FULL_TRACK_DEFAULT` should enter the next pass as the sole product-default policy. `BALANCED_MIX_RESEARCH_CONTROL` and `EXPLICIT_HIGHLIGHT_RESEARCH_CONTROL` must remain research-only and are not authorized for any default or user-visible code path without a separate, explicit PM decision. `NAIVE_EARLIEST_COMPATIBLE`, `BPM_KEY_ONLY_EARLY`, `TAIL_ONLY_NATURAL_EXIT_BIASED`, and `FIXED_SECONDS_BEFORE_END_ONLY` are retained permanently as negative baselines/regression fixtures, never shipped. Pair compatibility (`policy/compatibility.py`) must gate `FULL_DJ_BLEND`/`SHORT_EQ_BLEND` in the DSP-execution pass exactly as it does here -- timing eligibility and pair compatibility remain two independently-required gates, never merged into one score.
+`SEAMLESS_FULL_TRACK_DEFAULT` should enter the next pass as the sole product-default policy. `BALANCED_MIX_RESEARCH_CONTROL` and `EXPLICIT_HIGHLIGHT_RESEARCH_CONTROL` must remain research-only and are not authorized for any default or user-visible code path without a separate, explicit PM decision. `NAIVE_EARLIEST_COMPATIBLE`, `BPM_KEY_ONLY_EARLY`, `TAIL_ONLY_NATURAL_EXIT_BIASED`, and `FIXED_SECONDS_BEFORE_END_ONLY` are retained permanently as negative baselines/regression fixtures, never shipped. Pair compatibility (`policy/compatibility.py`) must gate `FULL_DJ_BLEND`/`SHORT_EQ_BLEND` in the DSP-execution pass exactly as it does here -- timing eligibility and pair compatibility remain two independently-required gates, never merged into one score. As of PM REVIEW #2, `policy/boundary.py`'s complete-boundary planner (§17) is the canonical planner whenever an incoming track is modeled; `policy/policies.py`'s single-track `decide()` remains for fixtures where it is not.
 
 This recommendation is a **research conclusion about policy/timing/compatibility**, not an authorization to begin DSP execution -- Signalsmith Stretch, Rubber Band, and the P1 engine remain out of scope and were not started (verified, §9 structural checks).
 
@@ -256,3 +233,229 @@ Please independently verify:
 4. Open `results/pair_compatibility.json` and confirm PAIR-02 (matching BPM, incompatible genre) shows `overall_dynamic_mix_eligible: false` and that the TP-11 integration row for PAIR-02 withholds `FULL_DJ_BLEND`.
 5. Confirm no file under `tools/p0m3/transition_policy/` has a `.wav`/`.mp3`/other audio extension, and that `policy/*.py` contains no `rubberband`/`signalsmith` import.
 6. Confirm `docs/research/P0-M3-R2-OWNER-LISTENING-REFERENCE.md` still labels the owner observation `OWNER_SUBJECTIVE_REFERENCE` and that this document's §2 does not attribute any exact percentage/timing number to Apple.
+
+---
+
+# PM REVIEW #2 -- FINAL PRE-DSP CONTRACT REPAIR (2026-08-12)
+
+PM REVIEW #2 identified three load-bearing gaps between the pass above (HEAD
+`c440fd63a7d157cf34048e030f4eb382009e0800`) and a contract P0-M3-R3 could
+safely render against without guessing: (R1) pair compatibility was applied
+only AFTER an outgoing-exit-only ranking had already picked a winner; (R2)
+incoming-entry planning was a hardcoded `next_track_entry_window_ms = {0,0}`
+placeholder and `transition_onset_window_ms` spanned `onset..content_end`
+rather than a real narrow window; (R3) `permitted_tempo_ratio` was populated
+with a *deviation* value, not a literal ratio, and pitch had no explicit
+unit/range contract; (R4) `overall_dynamic_mix_eligible` did not require
+`structure_compatibility`/`intro_outro_texture_compatible` to be KNOWN, and
+harmonic `UNKNOWN` passed the same hard gate as `COMPATIBLE`. Sections 17-21
+document the repair. Everything in §1-16 above that PM REVIEW #2 did not
+flag (near-end preservation model, catastrophic-reject guard, sensitivity
+sweep, dead-air handling, highlight-intent gating) is unchanged.
+
+## 17. R1 -- boundary-plan ranking (`policy/boundary.py`)
+
+The prior pass's `decide()` ranked outgoing exit candidates using
+`policy/eligibility.py` + `policy/ranking.rank_eligible_candidates`, then
+called `build_transition_decision(..., pair=pair)` on the already-selected
+winner. Pair compatibility could downgrade the winner's allowed transition
+classes, but could never change *which* candidate won -- exactly the gap PM
+REVIEW #2 R1 identified.
+
+`policy/boundary.py`'s `plan_transition_boundary()` fixes this structurally,
+in two phases:
+
+1. **Safe-exit filter.** Every outgoing candidate is evaluated by the SAME
+   `policy/eligibility.py` guards as before (structural evidence, confidence,
+   vocal safety, preservation floor). Pair compatibility is never consulted
+   in this phase -- this is what makes it structurally impossible for pair
+   compatibility to authorize an early exit, not merely unlikely.
+2. **Boundary cross-product + ranking.** For every (safe exit x incoming
+   entry) combination, pair compatibility is evaluated AT that specific
+   boundary (`_boundary_pair_compat`, using an optional per-boundary
+   `boundary_overrides` map keyed by `"{exit_id}|{entry_id}"`, falling back
+   to a track-level `pair_base`). All eligible boundaries are ranked by
+   `policy/ranking.rank_boundary_plans`, whose key is: preservation ratio
+   (2dp, safety-dominant) -> `eligible_for_dynamic_mix` (the pair-compatibility
+   tier -- this is the new, load-bearing addition) -> combined structure
+   score -> energy priority -> confidence -> a content-keyed tie-break. Pair
+   compatibility now sits in tier 2, strictly above raw structure score
+   (tier 3) -- so a pair-compatible boundary always outranks a pair-incompatible
+   one at equal preservation, regardless of which outgoing candidate has the
+   better raw structure score in isolation.
+
+`TX-01` (`tools/p0m3/transition_policy/fixtures/transition_fixtures.json`)
+is the required adversarial fixture: two safe near-end outgoing exits
+(`TX01-OUT-A`, raw structure score 1.0; `TX01-OUT-B`, raw structure score
+0.8) x two incoming entries. Every boundary touching `OUT-A` carries a
+`HIGH` vocal-collision override (pair-incompatible); every boundary
+touching `OUT-B` is fully compatible. The canonical planner selects
+`OUT-B` + the stronger entry (`IN-2`) -- never `OUT-A`, despite `OUT-A`
+having the higher raw outgoing-only structure score. Order invariance is
+proven across BOTH the outgoing-exit array and the incoming-entry array
+independently and jointly (normal, each-reversed, both-reversed, and two
+independently-seeded shuffles) -- see `results/boundary_planning.json`'s
+`tx01_order_invariance` (`order_invariant: true`) and `verify.py`'s R1/R2
+section (checks 1-4).
+
+The full cross-product is preserved in `candidate_rank_trace` for every
+combination, not only the winner (`boundary_rank`, `selected`,
+`selection_reason_codes` on every entry) -- TX-01 has exactly 2 exits x 2
+entries = 4 trace entries, one marked `selected: true`.
+
+## 18. R2 -- incoming entry planning + real onset windows
+
+`policy/boundary.py` plans a genuine incoming-entry candidate instead of a
+hardcoded `{0, 0}`. An entry candidate is eligible only if:
+
+- `t_ms == 0` (always valid -- starting at the top of the track never
+  removes anything), OR
+- it is flagged `is_authored_silence_skip` AND falls within the track's
+  `leading_silence_ms` (only consulted when `leading_silence_is_authored_non_musical: true`), OR
+- it carries explicit `phrase_section_evidence` or `cue_evidence`.
+
+Any other later-than-zero candidate is rejected
+(`ENTRY_SKIPS_MEANINGFUL_INTRO_WITHOUT_EVIDENCE`) -- it would silently
+remove real intro content. `incoming_effective_content_start_ms` mirrors
+the outgoing side's `effective_content_end_ms` dead-air handling exactly
+(only trims when explicitly authored as non-musical).
+
+Four fixtures cover the required cases:
+
+| Fixture | Case | Result |
+|---|---|---|
+| TX-02 | 0ms is genuinely correct | Selects `t=0`; a later no-evidence candidate is rejected |
+| TX-03 | authored leading silence (5000ms) | Selects the silence-skip entry at exactly 5000ms (not 0ms, not the too-far 15000ms candidate, which is rejected) |
+| TX-04 | later phrase/cue clearly better | Selects the phrase-evidenced entry at 8000ms over 0ms |
+| TX-05 | entry choice changes compatibility | Selects the entry whose boundary is pair-compatible, rejecting the otherwise-identical entry that triggers a vocal-collision override |
+
+`transition_onset_window_ms` (outgoing side) and the incoming entry window
+are both now real narrow windows: `t_start_ms == t_end_ms` for an exact cue
+timestamp, or an explicit authored `onset_window_ms: [start, end]` region
+when a candidate carries one -- never `onset..effective_content_end_ms`.
+This applies to both the new boundary builder and the legacy single-track
+builder (`build_transition_decision`) alike.
+
+## 19. R3 -- unambiguous tempo/pitch contract
+
+`policy/compatibility.py`'s `PairCompatibilityResult` now separates:
+
+- `required_tempo_stretch_pct` (retained, unchanged meaning: how far the
+  matched relation's deviation is from a clean match)
+- `required_tempo_ratio` (**new**): the literal playback-rate ratio
+  (`bpm_out / bpm_in`) needed to align the incoming track's tempo grid to
+  the outgoing track's. For a legitimate `HALF_DOUBLE` relation this is
+  reported as `1.0` with `tempo_requires_playback_rate_change: False`,
+  because a half/double-time pair needs only a downbeat/bar-grid
+  reinterpretation, not an actual speed change.
+- `tempo_requires_playback_rate_change` (**new**): `True` for `DIRECT`/
+  `EXCESSIVE_STRETCH`, `False` for `HALF_DOUBLE`.
+
+`policy/contract.py`'s `PlannerDecision` no longer has a field named
+`permitted_tempo_ratio` populated with a deviation value. It has:
+
+- `required_tempo_ratio` (copied from the pair-compatibility result)
+- `permitted_tempo_ratio_max_deviation` (the `0.12` ceiling -- explicitly
+  named as a deviation, sourced from a single constant,
+  `policy/compatibility.MAX_JUSTIFIED_TEMPO_STRETCH_PCT`, shared by both
+  the gating logic and the contract so they can never drift apart)
+- `required_pitch_shift_semitones` (0 when harmonic is COMPATIBLE, else
+  `None` -- this project does not compute a real semitone value without
+  actual key detection, and does not fabricate one)
+- `permitted_pitch_shift_semitones_min` / `_max` (`-3`/`3`, an explicit
+  symmetric range, replacing the old bare `permitted_pitch_shift = 3`)
+
+All four are populated only when `FULL_DJ_BLEND` is actually in the
+allowed class set (never unconditionally).
+
+## 20. R4 -- strict FULL_DJ_BLEND hard-gate contract (current, authoritative)
+
+`policy/compatibility.py`'s `overall_dynamic_mix_eligible` hard gate now
+requires ALL of: genre compatible, tempo within the permitted relation,
+beat confidence HIGH, downbeat confidence HIGH, **structure_compatibility
+KNOWN and COMPATIBLE** (not merely non-blocking/UNKNOWN -- new), **intro/
+outro texture KNOWN and COMPATIBLE** (new), vocal-safety, bass/percussion-
+safety, analysis confidence HIGH, and harmonic COMPATIBLE **or** UNKNOWN
+with an explicit `harmonic_not_load_bearing_reason` exception (new).
+Energy continuity remains a ranking/preference signal that participates
+only after these hard gates (`policy/ranking.py` tier 3+), never a hard
+rejection by itself -- a `WEAK`-energy but otherwise fully compatible pair
+(`PAIR-01`) is still `FULL_DJ_BLEND`-eligible.
+
+Five mutation pair fixtures (`PAIR-06..10`) prove the tightened gate is
+real, not merely documented:
+
+| Pair | Mutation | Result |
+|---|---|---|
+| PAIR-06 | `structure_compatibility` omitted (UNKNOWN) | NOT eligible -- UNKNOWN never equals known COMPATIBLE |
+| PAIR-07 | `intro_outro_texture_compatible: false` (UNKNOWN) | NOT eligible -- same principle |
+| PAIR-08 | `harmonic_relationship` omitted, no exception | NOT eligible -- downgraded, not silently COMPATIBLE |
+| PAIR-09 | `harmonic_relationship` omitted, WITH an explicit narrow `harmonic_not_load_bearing_reason` | Eligible -- the exception path is real, narrow, and testable |
+| PAIR-10 | `harmonic_relationship: "INCOMPATIBLE"` plus an exception reason present | NOT eligible -- the exception only ever applies to UNKNOWN, never overrides a known INCOMPATIBLE |
+
+### 20.1 Current, authoritative `PlannerDecision` schema (supersedes §12)
+
+```json
+{
+  "fixture_id": "string",
+  "listener_intent": "SEAMLESS_FULL_TRACK_DEFAULT | BALANCED_MIX | HIGHLIGHT_EXPLICIT",
+  "policy_name": "string",
+  "decision_type": "TRANSITION | PLAY_THROUGH | NO_SPECIAL_TRANSITION",
+
+  "current_track_effective_content_end_ms": "int | null",
+  "selected_outgoing_exit_candidate_id": "string | null",
+  "transition_onset_window_ms": {"t_start_ms": "int", "t_end_ms": "int"},
+  "outgoing_last_audible_target_ms": "int | null",
+  "outgoing_content_preservation_target": "float | null",
+
+  "selected_incoming_entry_candidate_id": "string | null",
+  "incoming_effective_content_start_ms": "int | null",
+  "next_track_entry_window_ms": "{t_start_ms, t_end_ms} | null (null ONLY when no incoming track was modeled for this fixture)",
+  "incoming_entry_reason_codes": ["string", "..."],
+  "incoming_phrase_section_evidence": "bool | null",
+
+  "allowed_transition_class_set": ["FULL_DJ_BLEND | SHORT_EQ_BLEND | SIMPLE_CROSSFADE | GAPLESS | CUT | NO_SPECIAL_TRANSITION", "..."],
+  "pair_compatibility_components": "object | null (null only when no pair was supplied/computed)",
+
+  "outgoing_beat_alignment_target_ms": "int | null",
+  "incoming_beat_alignment_target_ms": "int | null",
+  "outgoing_downbeat_alignment_target_ms": "int | null",
+  "incoming_downbeat_alignment_target_ms": "int | null",
+  "beat_phase_relation": "ALIGNED | OFFSET | UNKNOWN | NOT_APPLICABLE",
+  "bar_phase_relation": "ALIGNED | OFFSET | UNKNOWN | NOT_APPLICABLE",
+
+  "required_tempo_ratio": "float | null",
+  "permitted_tempo_ratio_max_deviation": "float | null (a DEVIATION ceiling, e.g. 0.12 -- never a literal ratio)",
+  "required_pitch_shift_semitones": "int | null",
+  "permitted_pitch_shift_semitones_min": "int | null",
+  "permitted_pitch_shift_semitones_max": "int | null",
+
+  "energy_continuity_target": "string",
+  "vocal_collision_constraints": "string",
+  "bass_collision_constraints": "string",
+  "analysis_confidence": "NONE | LOW | MEDIUM | HIGH",
+  "reason_codes": ["string", "..."],
+  "queue_order_independent_of_exit_timing": true,
+  "candidate_rank_trace": ["... every evaluated (exit,entry) boundary or candidate, with boundary_rank/eligible_rank + selected + selection_reason_codes, see results/decision_traces.json and results/boundary_planning.json ..."]
+}
+```
+
+Legacy single-track decisions (fixtures with no incoming track modeled, letters A-N) use the SAME schema; `selected_incoming_entry_candidate_id`, `incoming_effective_content_start_ms`, and `next_track_entry_window_ms` are honestly `None` (never a fabricated `{0,0}`) with `incoming_entry_reason_codes: ["INCOMING_ENTRY_NOT_MODELED_FOR_THIS_FIXTURE"]`.
+
+## 21. Updated verification + PM REVIEW #2 closeout
+
+```
+python tools/p0m3/transition_policy/run_benchmark.py
+python tools/p0m3/transition_policy/verify.py
+```
+
+**111 of 111 assertions PASS** (up from the prior pass's 66 -- all 66 are
+retained and re-verified under the corrected schema; 45 new checks cover
+PM REVIEW #2's R1-R4 plus the 17 explicit stop-conditions from that
+comment). New result files: `results/boundary_planning.json` (TX-01..05
+full decisions + TX-01 order-invariance proof) and
+`results/mutation_pair_report.json` (PAIR-06..10). `results/pair_compatibility.json`
+and `results/SUMMARY.md` now cover all 10 pair fixtures.
+
+Do not start Signalsmith, Rubber Band, audio rendering, P0-M3-R3, or P1 --
+none were started in this repair pass.

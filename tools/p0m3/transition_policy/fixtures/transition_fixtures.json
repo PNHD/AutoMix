@@ -1,0 +1,420 @@
+[
+  {
+    "transition_id": "TX-01",
+    "title": "boundary_ranking_pair_compat_overrides_raw_structure",
+    "purpose": "R1: pair compatibility must participate in boundary ranking, not be applied only after the timing/structure winner is already fixed.",
+    "outgoing_track": {
+      "duration_ms": 300000,
+      "genre_tags": [
+        "house"
+      ],
+      "bpm": 126,
+      "candidates": [
+        {
+          "candidate_id": "TX01-OUT-A",
+          "t_ms": 270000,
+          "source": "authored_outro",
+          "beat_downbeat_aligned": true,
+          "in_acceptable_exit_region": true,
+          "musical_unit_complete": true,
+          "is_outro_tail_opportunity": true,
+          "vocal_collision_risk": "LOW",
+          "structure_confidence": "HIGH",
+          "is_end_of_track": false
+        },
+        {
+          "candidate_id": "TX01-OUT-B",
+          "t_ms": 260000,
+          "source": "section_end",
+          "beat_downbeat_aligned": true,
+          "in_acceptable_exit_region": true,
+          "musical_unit_complete": true,
+          "is_outro_tail_opportunity": false,
+          "vocal_collision_risk": "LOW",
+          "structure_confidence": "HIGH",
+          "is_end_of_track": false
+        },
+        {
+          "candidate_id": "TX01-OUT-END",
+          "t_ms": 300000,
+          "source": "authored_outro",
+          "beat_downbeat_aligned": true,
+          "in_acceptable_exit_region": true,
+          "musical_unit_complete": true,
+          "is_outro_tail_opportunity": true,
+          "vocal_collision_risk": "NONE",
+          "structure_confidence": "HIGH",
+          "is_end_of_track": true
+        }
+      ]
+    },
+    "incoming_track": {
+      "genre_tags": [
+        "house"
+      ],
+      "bpm": 126,
+      "candidates": [
+        {
+          "candidate_id": "TX01-IN-1",
+          "t_ms": 0,
+          "phrase_section_evidence": false,
+          "beat_downbeat_aligned": false,
+          "is_authored_silence_skip": false
+        },
+        {
+          "candidate_id": "TX01-IN-2",
+          "t_ms": 6000,
+          "phrase_section_evidence": true,
+          "beat_downbeat_aligned": true,
+          "is_authored_silence_skip": false
+        }
+      ]
+    },
+    "pair_base": {
+      "beat_confidence": "HIGH",
+      "downbeat_confidence": "HIGH",
+      "harmonic_relationship": "COMPATIBLE",
+      "energy_continuity": "STRONG",
+      "structure_compatibility": "COMPATIBLE",
+      "vocal_collision_risk": "LOW",
+      "bass_percussion_collision_risk": "LOW",
+      "intro_outro_texture_compatible": true,
+      "analysis_confidence": "HIGH"
+    },
+    "boundary_overrides": {
+      "TX01-OUT-A|TX01-IN-1": {
+        "vocal_collision_risk": "HIGH"
+      },
+      "TX01-OUT-A|TX01-IN-2": {
+        "vocal_collision_risk": "HIGH"
+      }
+    },
+    "expected_winner": {
+      "outgoing": "TX01-OUT-B",
+      "incoming": "TX01-IN-2"
+    }
+  },
+  {
+    "transition_id": "TX-02",
+    "title": "incoming_entry_zero_ms_correct",
+    "purpose": "Incoming entry case A: starting at 0ms is genuinely correct; a later point with no evidence must be rejected.",
+    "outgoing_track": {
+      "duration_ms": 200000,
+      "genre_tags": [
+        "pop"
+      ],
+      "bpm": 120,
+      "candidates": [
+        {
+          "candidate_id": "TX02-OUT-1",
+          "t_ms": 180000,
+          "source": "authored_outro",
+          "beat_downbeat_aligned": true,
+          "in_acceptable_exit_region": true,
+          "musical_unit_complete": true,
+          "is_outro_tail_opportunity": true,
+          "vocal_collision_risk": "LOW",
+          "structure_confidence": "HIGH",
+          "is_end_of_track": false
+        },
+        {
+          "candidate_id": "TX02-OUT-END",
+          "t_ms": 200000,
+          "source": "authored_outro",
+          "beat_downbeat_aligned": true,
+          "in_acceptable_exit_region": true,
+          "musical_unit_complete": true,
+          "is_outro_tail_opportunity": true,
+          "vocal_collision_risk": "NONE",
+          "structure_confidence": "HIGH",
+          "is_end_of_track": true
+        }
+      ]
+    },
+    "incoming_track": {
+      "genre_tags": [
+        "pop"
+      ],
+      "bpm": 120,
+      "candidates": [
+        {
+          "candidate_id": "TX02-IN-ZERO",
+          "t_ms": 0,
+          "phrase_section_evidence": false,
+          "beat_downbeat_aligned": false,
+          "is_authored_silence_skip": false
+        },
+        {
+          "candidate_id": "TX02-IN-BAD",
+          "t_ms": 8000,
+          "phrase_section_evidence": false,
+          "beat_downbeat_aligned": false,
+          "is_authored_silence_skip": false
+        }
+      ]
+    },
+    "pair_base": {
+      "beat_confidence": "HIGH",
+      "downbeat_confidence": "HIGH",
+      "harmonic_relationship": "COMPATIBLE",
+      "energy_continuity": "STRONG",
+      "structure_compatibility": "COMPATIBLE",
+      "vocal_collision_risk": "LOW",
+      "bass_percussion_collision_risk": "LOW",
+      "intro_outro_texture_compatible": true,
+      "analysis_confidence": "HIGH"
+    },
+    "boundary_overrides": {},
+    "expected_winner": {
+      "outgoing": "TX02-OUT-1",
+      "incoming": "TX02-IN-ZERO"
+    },
+    "expected_rejected_entries": [
+      "TX02-IN-BAD"
+    ]
+  },
+  {
+    "transition_id": "TX-03",
+    "title": "incoming_entry_leading_silence_skip",
+    "purpose": "Incoming entry case B: authored non-musical leading silence may be skipped; meaningful intro must not be silently removed.",
+    "outgoing_track": {
+      "duration_ms": 200000,
+      "genre_tags": [
+        "pop"
+      ],
+      "bpm": 120,
+      "candidates": [
+        {
+          "candidate_id": "TX03-OUT-1",
+          "t_ms": 180000,
+          "source": "authored_outro",
+          "beat_downbeat_aligned": true,
+          "in_acceptable_exit_region": true,
+          "musical_unit_complete": true,
+          "is_outro_tail_opportunity": true,
+          "vocal_collision_risk": "LOW",
+          "structure_confidence": "HIGH",
+          "is_end_of_track": false
+        },
+        {
+          "candidate_id": "TX03-OUT-END",
+          "t_ms": 200000,
+          "source": "authored_outro",
+          "beat_downbeat_aligned": true,
+          "in_acceptable_exit_region": true,
+          "musical_unit_complete": true,
+          "is_outro_tail_opportunity": true,
+          "vocal_collision_risk": "NONE",
+          "structure_confidence": "HIGH",
+          "is_end_of_track": true
+        }
+      ]
+    },
+    "incoming_track": {
+      "genre_tags": [
+        "pop"
+      ],
+      "bpm": 120,
+      "leading_silence_ms": 5000,
+      "leading_silence_is_authored_non_musical": true,
+      "candidates": [
+        {
+          "candidate_id": "TX03-IN-ZERO",
+          "t_ms": 0,
+          "phrase_section_evidence": false,
+          "beat_downbeat_aligned": false,
+          "is_authored_silence_skip": false
+        },
+        {
+          "candidate_id": "TX03-IN-SKIP",
+          "t_ms": 5000,
+          "phrase_section_evidence": false,
+          "beat_downbeat_aligned": true,
+          "is_authored_silence_skip": true
+        },
+        {
+          "candidate_id": "TX03-IN-TOOFAR",
+          "t_ms": 15000,
+          "phrase_section_evidence": false,
+          "beat_downbeat_aligned": false,
+          "is_authored_silence_skip": false
+        }
+      ]
+    },
+    "pair_base": {
+      "beat_confidence": "HIGH",
+      "downbeat_confidence": "HIGH",
+      "harmonic_relationship": "COMPATIBLE",
+      "energy_continuity": "STRONG",
+      "structure_compatibility": "COMPATIBLE",
+      "vocal_collision_risk": "LOW",
+      "bass_percussion_collision_risk": "LOW",
+      "intro_outro_texture_compatible": true,
+      "analysis_confidence": "HIGH"
+    },
+    "boundary_overrides": {},
+    "expected_winner": {
+      "outgoing": "TX03-OUT-1",
+      "incoming": "TX03-IN-SKIP"
+    },
+    "expected_rejected_entries": [
+      "TX03-IN-TOOFAR"
+    ]
+  },
+  {
+    "transition_id": "TX-04",
+    "title": "incoming_entry_later_phrase_better_than_zero",
+    "purpose": "Incoming entry case C: a later phrase/downbeat/cue entry is clearly a better transition entry than 0ms.",
+    "outgoing_track": {
+      "duration_ms": 200000,
+      "genre_tags": [
+        "pop"
+      ],
+      "bpm": 120,
+      "candidates": [
+        {
+          "candidate_id": "TX04-OUT-1",
+          "t_ms": 180000,
+          "source": "authored_outro",
+          "beat_downbeat_aligned": true,
+          "in_acceptable_exit_region": true,
+          "musical_unit_complete": true,
+          "is_outro_tail_opportunity": true,
+          "vocal_collision_risk": "LOW",
+          "structure_confidence": "HIGH",
+          "is_end_of_track": false
+        },
+        {
+          "candidate_id": "TX04-OUT-END",
+          "t_ms": 200000,
+          "source": "authored_outro",
+          "beat_downbeat_aligned": true,
+          "in_acceptable_exit_region": true,
+          "musical_unit_complete": true,
+          "is_outro_tail_opportunity": true,
+          "vocal_collision_risk": "NONE",
+          "structure_confidence": "HIGH",
+          "is_end_of_track": true
+        }
+      ]
+    },
+    "incoming_track": {
+      "genre_tags": [
+        "pop"
+      ],
+      "bpm": 120,
+      "candidates": [
+        {
+          "candidate_id": "TX04-IN-ZERO",
+          "t_ms": 0,
+          "phrase_section_evidence": false,
+          "beat_downbeat_aligned": false,
+          "is_authored_silence_skip": false
+        },
+        {
+          "candidate_id": "TX04-IN-CUE",
+          "t_ms": 8000,
+          "phrase_section_evidence": true,
+          "beat_downbeat_aligned": true,
+          "is_authored_silence_skip": false
+        }
+      ]
+    },
+    "pair_base": {
+      "beat_confidence": "HIGH",
+      "downbeat_confidence": "HIGH",
+      "harmonic_relationship": "COMPATIBLE",
+      "energy_continuity": "STRONG",
+      "structure_compatibility": "COMPATIBLE",
+      "vocal_collision_risk": "LOW",
+      "bass_percussion_collision_risk": "LOW",
+      "intro_outro_texture_compatible": true,
+      "analysis_confidence": "HIGH"
+    },
+    "boundary_overrides": {},
+    "expected_winner": {
+      "outgoing": "TX04-OUT-1",
+      "incoming": "TX04-IN-CUE"
+    }
+  },
+  {
+    "transition_id": "TX-05",
+    "title": "incoming_entry_choice_changes_compatibility",
+    "purpose": "Incoming entry case D: which entry candidate is chosen changes vocal/structure compatibility at that specific boundary.",
+    "outgoing_track": {
+      "duration_ms": 200000,
+      "genre_tags": [
+        "pop"
+      ],
+      "bpm": 120,
+      "candidates": [
+        {
+          "candidate_id": "TX05-OUT-1",
+          "t_ms": 180000,
+          "source": "authored_outro",
+          "beat_downbeat_aligned": true,
+          "in_acceptable_exit_region": true,
+          "musical_unit_complete": true,
+          "is_outro_tail_opportunity": true,
+          "vocal_collision_risk": "LOW",
+          "structure_confidence": "HIGH",
+          "is_end_of_track": false
+        },
+        {
+          "candidate_id": "TX05-OUT-END",
+          "t_ms": 200000,
+          "source": "authored_outro",
+          "beat_downbeat_aligned": true,
+          "in_acceptable_exit_region": true,
+          "musical_unit_complete": true,
+          "is_outro_tail_opportunity": true,
+          "vocal_collision_risk": "NONE",
+          "structure_confidence": "HIGH",
+          "is_end_of_track": true
+        }
+      ]
+    },
+    "incoming_track": {
+      "genre_tags": [
+        "pop"
+      ],
+      "bpm": 120,
+      "candidates": [
+        {
+          "candidate_id": "TX05-IN-A",
+          "t_ms": 0,
+          "phrase_section_evidence": false,
+          "beat_downbeat_aligned": false,
+          "is_authored_silence_skip": false
+        },
+        {
+          "candidate_id": "TX05-IN-B",
+          "t_ms": 6000,
+          "phrase_section_evidence": true,
+          "beat_downbeat_aligned": true,
+          "is_authored_silence_skip": false
+        }
+      ]
+    },
+    "pair_base": {
+      "beat_confidence": "HIGH",
+      "downbeat_confidence": "HIGH",
+      "harmonic_relationship": "COMPATIBLE",
+      "energy_continuity": "STRONG",
+      "structure_compatibility": "COMPATIBLE",
+      "vocal_collision_risk": "LOW",
+      "bass_percussion_collision_risk": "LOW",
+      "intro_outro_texture_compatible": true,
+      "analysis_confidence": "HIGH"
+    },
+    "boundary_overrides": {
+      "TX05-OUT-1|TX05-IN-A": {
+        "vocal_collision_risk": "HIGH"
+      }
+    },
+    "expected_winner": {
+      "outgoing": "TX05-OUT-1",
+      "incoming": "TX05-IN-B"
+    }
+  }
+]

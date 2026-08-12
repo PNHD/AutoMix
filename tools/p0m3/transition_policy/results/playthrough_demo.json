@@ -7,16 +7,30 @@
     "policy_name": "SEAMLESS_FULL_TRACK_DEFAULT",
     "decision_type": "PLAY_THROUGH",
     "current_track_effective_content_end_ms": 210000,
+    "selected_outgoing_exit_candidate_id": null,
     "transition_onset_window_ms": null,
     "outgoing_last_audible_target_ms": null,
     "outgoing_content_preservation_target": null,
+    "selected_incoming_entry_candidate_id": null,
+    "incoming_effective_content_start_ms": null,
     "next_track_entry_window_ms": null,
+    "incoming_entry_reason_codes": [
+      "NOT_APPLICABLE_NO_TRANSITION_SELECTED"
+    ],
+    "incoming_phrase_section_evidence": null,
     "allowed_transition_class_set": [],
     "pair_compatibility_components": null,
-    "beat_alignment_target": null,
-    "downbeat_alignment_target": null,
-    "permitted_tempo_ratio": null,
-    "permitted_pitch_shift": null,
+    "outgoing_beat_alignment_target_ms": null,
+    "incoming_beat_alignment_target_ms": null,
+    "outgoing_downbeat_alignment_target_ms": null,
+    "incoming_downbeat_alignment_target_ms": null,
+    "beat_phase_relation": "UNKNOWN",
+    "bar_phase_relation": "UNKNOWN",
+    "required_tempo_ratio": null,
+    "permitted_tempo_ratio_max_deviation": null,
+    "required_pitch_shift_semitones": null,
+    "permitted_pitch_shift_semitones_min": null,
+    "permitted_pitch_shift_semitones_max": null,
     "energy_continuity_target": null,
     "vocal_collision_constraints": null,
     "bass_collision_constraints": null,
@@ -50,6 +64,7 @@
           "SIMPLE_CROSSFADE"
         ],
         "energy_continuity_priority": "UNKNOWN",
+        "eligible_for_dynamic_mix": false,
         "eligible_rank": null
       }
     ],
@@ -78,6 +93,7 @@
           "SIMPLE_CROSSFADE"
         ],
         "energy_continuity_priority": "UNKNOWN",
+        "eligible_for_dynamic_mix": false,
         "eligible_rank": null
       }
     ]
@@ -88,18 +104,32 @@
     "policy_name": "SEAMLESS_FULL_TRACK_DEFAULT",
     "decision_type": "NO_SPECIAL_TRANSITION",
     "current_track_effective_content_end_ms": 210000,
+    "selected_outgoing_exit_candidate_id": null,
     "transition_onset_window_ms": null,
     "outgoing_last_audible_target_ms": null,
     "outgoing_content_preservation_target": null,
+    "selected_incoming_entry_candidate_id": null,
+    "incoming_effective_content_start_ms": null,
     "next_track_entry_window_ms": null,
+    "incoming_entry_reason_codes": [
+      "NOT_APPLICABLE_NO_TRANSITION_SELECTED"
+    ],
+    "incoming_phrase_section_evidence": null,
     "allowed_transition_class_set": [
       "NO_SPECIAL_TRANSITION"
     ],
     "pair_compatibility_components": null,
-    "beat_alignment_target": null,
-    "downbeat_alignment_target": null,
-    "permitted_tempo_ratio": null,
-    "permitted_pitch_shift": null,
+    "outgoing_beat_alignment_target_ms": null,
+    "incoming_beat_alignment_target_ms": null,
+    "outgoing_downbeat_alignment_target_ms": null,
+    "incoming_downbeat_alignment_target_ms": null,
+    "beat_phase_relation": "UNKNOWN",
+    "bar_phase_relation": "UNKNOWN",
+    "required_tempo_ratio": null,
+    "permitted_tempo_ratio_max_deviation": null,
+    "required_pitch_shift_semitones": null,
+    "permitted_pitch_shift_semitones_min": null,
+    "permitted_pitch_shift_semitones_max": null,
     "energy_continuity_target": null,
     "vocal_collision_constraints": null,
     "bass_collision_constraints": null,
@@ -134,6 +164,7 @@
           "SIMPLE_CROSSFADE"
         ],
         "energy_continuity_priority": "UNKNOWN",
+        "eligible_for_dynamic_mix": false,
         "eligible_rank": null
       },
       {
@@ -160,6 +191,7 @@
           "SIMPLE_CROSSFADE"
         ],
         "energy_continuity_priority": "UNKNOWN",
+        "eligible_for_dynamic_mix": false,
         "eligible_rank": null
       }
     ],
@@ -188,6 +220,7 @@
           "SIMPLE_CROSSFADE"
         ],
         "energy_continuity_priority": "UNKNOWN",
+        "eligible_for_dynamic_mix": false,
         "eligible_rank": null
       },
       {
@@ -214,6 +247,7 @@
           "SIMPLE_CROSSFADE"
         ],
         "energy_continuity_priority": "UNKNOWN",
+        "eligible_for_dynamic_mix": false,
         "eligible_rank": null
       }
     ]

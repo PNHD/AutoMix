@@ -12,12 +12,20 @@ Ranking key (descending priority, all evidence already exposed elsewhere
 in the trace -- this is a lexicographic tuple, not an opaque score):
 
   1. outgoing_content_preservation_ratio, rounded to 2 decimals
-     (near-end song preservation is the load-bearing default signal)
-  2. musical_structure_score (outro/phrase/section completion evidence)
-  3. energy_continuity_priority (only meaningful once timing/compatibility
+     (near-end song preservation is the load-bearing SAFETY signal --
+     pair/compatibility evidence below can never outrank this, so it can
+     never authorize leaving the outgoing song early; PM REVIEW #2 R1)
+  2. eligible_for_dynamic_mix (pair compatibility AT this specific
+     boundary, when known -- PM REVIEW #2 R1 repair: this now participates
+     in ranking itself, not merely applied to the already-selected winner
+     afterward. A candidate with unproven/absent pair data ranks in the
+     same lower tier as a known-incompatible one, consistent with
+     FULL_DJ_BLEND being withheld by default.)
+  3. musical_structure_score (outro/phrase/section completion evidence)
+  4. energy_continuity_priority (only meaningful once timing/compatibility
      safety gates already passed -- spec "Energy / Excitement Target")
-  4. confidence rank (HIGH > MEDIUM > LOW > NONE)
-  5. candidate_id (lexicographic) -- final deterministic tie-break; this
+  5. confidence rank (HIGH > MEDIUM > LOW > NONE)
+  6. candidate_id (lexicographic) -- final deterministic tie-break; this
      key never depends on t_ms/array position, which is exactly what makes
      the result order-invariant.
 """
@@ -29,6 +37,7 @@ ENERGY_PRIORITY = {"STRONG": 2, "WEAK": 1, "UNKNOWN": 0}
 def _sort_key(entry: dict):
     return (
         round(entry["outgoing_content_preservation_ratio"], 2),
+        1 if entry.get("eligible_for_dynamic_mix") else 0,
         entry.get("musical_structure_score", 0.0),
         ENERGY_PRIORITY.get(entry.get("energy_continuity_priority", "UNKNOWN"), 0),
         CONFIDENCE_RANK.get(entry.get("confidence", "NONE"), 0),
@@ -53,3 +62,27 @@ def rank_eligible_candidates(eligible_entries: list) -> list:
         new_entry["eligible_rank"] = idx
         ranked.append(new_entry)
     return ranked
+
+
+def rank_boundary_plans(eligible_boundaries: list) -> list:
+    """
+    Same ranking key as rank_eligible_candidates, but for COMPLETE boundary
+    plans (outgoing exit x incoming entry x pair compatibility at that
+    boundary -- PM REVIEW #2 R1). Tie-break key is the combined
+    "outgoing_candidate_id|incoming_candidate_id" string, so the result is
+    invariant to both outgoing-array and incoming-array ordering. Mutates
+    and returns the SAME dict objects (not copies) so callers that also
+    hold these objects in a full trace list see boundary_rank/selected
+    reflected there too.
+    """
+    def boundary_id(e):
+        return f"{e['outgoing_candidate_id']}|{e['incoming_candidate_id']}"
+
+    ordered = sorted(
+        eligible_boundaries,
+        key=lambda e: (_sort_key(e), tuple(-ord(c) for c in boundary_id(e))),
+        reverse=True,
+    )
+    for idx, entry in enumerate(ordered, start=1):
+        entry["boundary_rank"] = idx
+    return ordered

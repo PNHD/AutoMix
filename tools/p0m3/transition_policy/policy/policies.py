@@ -39,7 +39,7 @@ Policies:
 
 from .eligibility import evaluate_candidate, EligibilityResult, VALID_INTENTS, DEFAULT_INTENT
 from .ranking import rank_eligible_candidates
-from .compatibility import downgrade_transition_class_set
+from .compatibility import downgrade_transition_class_set, evaluate_pair_compatibility
 from .contract import build_transition_decision, build_fallback_decision
 from .metrics import effective_content_end_ms as _effective_content_end_ms
 
@@ -237,7 +237,7 @@ POLICY_EVAL = {
 RANKED_POLICIES = {"SEAMLESS_FULL_TRACK_DEFAULT", "BALANCED_MIX_RESEARCH_CONTROL"}
 
 
-def _trace_entry(candidate, result: EligibilityResult) -> dict:
+def _trace_entry(candidate, result: EligibilityResult, pair_compat=None) -> dict:
     return {
         "candidate_id": result.candidate_id,
         "t_ms": result.t_ms,
@@ -256,6 +256,16 @@ def _trace_entry(candidate, result: EligibilityResult) -> dict:
         "confidence": result.confidence,
         "preferred_transition_class_set": result.preferred_transition_class_set,
         "energy_continuity_priority": result.energy_continuity_priority,
+        # PM REVIEW #2 R1: pair compatibility now participates in ranking
+        # itself (policy/ranking.py's sort key), not merely applied to the
+        # already-selected winner afterward. A single-track fixture's `pair`
+        # (if supplied) is one global value applied uniformly to every
+        # candidate -- it can inform ranking but, being uniform, cannot by
+        # itself differentiate between candidates on the SAME fixture; true
+        # per-boundary differentiation requires policy/boundary.py's
+        # per-(exit,entry) compatibility, used by fixtures that model an
+        # incoming track.
+        "eligible_for_dynamic_mix": bool(pair_compat.overall_dynamic_mix_eligible) if pair_compat is not None else False,
         "eligible_rank": None,  # filled in by ranking for RANKED_POLICIES
     }
 
@@ -274,18 +284,19 @@ def decide_at_time(fixture: dict, policy_name: str, intent: str, evaluation_time
     eval_fn = POLICY_EVAL[policy_name]
     duration_ms = fixture["duration_ms"]
     candidates = fixture["candidates"]
+    pair_compat = evaluate_pair_compatibility(pair) if pair is not None else None
     seen_non_end = [c for c in candidates if not c.get("is_end_of_track") and c["t_ms"] <= evaluation_time_ms]
     trace = []
     for c in seen_non_end:
         result = eval_fn(fixture, c, intent, floor_override)
-        trace.append(_trace_entry(c, result))
+        trace.append(_trace_entry(c, result, pair_compat))
         if result.eligible:
             return build_transition_decision(fixture["fixture_id"], intent, policy_name, result, c, trace, pair)
 
     if evaluation_time_ms >= duration_ms:
         end_candidate = next(c for c in candidates if c.get("is_end_of_track"))
         result = eval_fn(fixture, end_candidate, intent, floor_override)
-        trace.append(_trace_entry(end_candidate, result))
+        trace.append(_trace_entry(end_candidate, result, pair_compat))
         reason_codes = ["END_OF_TRACK_NATURAL_HANDOFF"] + result.rejection_reason_codes + result.acceptance_reason_codes
         if fixture.get("trailing_dead_air_is_authored_non_musical", False):
             reason_codes.append("TRAILING_DEAD_AIR_TRIMMED_NOT_TRUNCATED")
@@ -317,13 +328,14 @@ def decide(fixture: dict, policy_name: str, intent: str, floor_override=None, pa
     if policy_name not in RANKED_POLICIES:
         return decide_at_time(fixture, policy_name, intent, duration_ms, floor_override, pair)
 
+    pair_compat = evaluate_pair_compatibility(pair) if pair is not None else None
     trace = []
     eligible_entries = []
     result_by_candidate_id = {}
     candidate_by_id = {c["candidate_id"]: c for c in non_end}
     for c in non_end:
         result = eval_fn(fixture, c, intent, floor_override)
-        entry = _trace_entry(c, result)
+        entry = _trace_entry(c, result, pair_compat)
         trace.append(entry)
         result_by_candidate_id[c["candidate_id"]] = result
         if result.eligible:
@@ -342,7 +354,7 @@ def decide(fixture: dict, policy_name: str, intent: str, floor_override=None, pa
 
     end_candidate = next(c for c in candidates if c.get("is_end_of_track"))
     end_result = eval_fn(fixture, end_candidate, intent, floor_override)
-    trace.append(_trace_entry(end_candidate, end_result))
+    trace.append(_trace_entry(end_candidate, end_result, pair_compat))
     reason_codes = ["END_OF_TRACK_NATURAL_HANDOFF"] + end_result.rejection_reason_codes + end_result.acceptance_reason_codes
     if fixture.get("trailing_dead_air_is_authored_non_musical", False):
         reason_codes.append("TRAILING_DEAD_AIR_TRIMMED_NOT_TRUNCATED")

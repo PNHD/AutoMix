@@ -20,9 +20,13 @@ docs/research/P0-M3-R2-TRANSITION-POLICY-PLANNER.md
 from dataclasses import dataclass, field, asdict
 
 # P0 placeholder thresholds -- PROJECT_INFERENCE, sensitivity-testable in a
-# later pass, never attributed to Apple.
-MAX_JUSTIFIED_TEMPO_STRETCH_PCT = 0.12  # matches contract.py's tempo envelope ceiling
+# later pass, never attributed to Apple. Single source of truth for
+# contract.py's DSP-envelope fields (R3, PM REVIEW #2): these ARE deviation/
+# range ceilings, never literal ratios -- see contract.py's
+# permitted_tempo_ratio_max_deviation / permitted_pitch_shift_semitones_*.
+MAX_JUSTIFIED_TEMPO_STRETCH_PCT = 0.12
 HALF_DOUBLE_TIME_TOLERANCE_PCT = 0.03
+PERMITTED_MAX_PITCH_SHIFT_SEMITONES = 3
 
 COMPATIBLE_GENRE_FAMILIES = {
     "four_on_the_floor_electronic": {"house", "electronic", "edm", "techno", "dance", "disco"},
@@ -58,6 +62,10 @@ REASON = {
     "INTRO_OUTRO_TEXTURE_UNKNOWN": "no intro/outro texture annotation supplied",
     "ANALYSIS_CONFIDENCE_LOW_PAIR": "overall pair analysis confidence is below HIGH; conservative downgrade applied rather than fabricated certainty",
     "ANALYSIS_CONFIDENCE_SUFFICIENT": "overall pair analysis confidence is HIGH",
+    "STRUCTURE_COMPATIBILITY_REQUIRED_FOR_FULL_DJ": "FULL_DJ_BLEND requires structure_compatibility to be KNOWN and COMPATIBLE, not merely absent/UNKNOWN (R4 -- PM REVIEW #2)",
+    "TEXTURE_COMPATIBILITY_REQUIRED_FOR_FULL_DJ": "FULL_DJ_BLEND requires intro_outro_texture_compatibility to be KNOWN and COMPATIBLE, not merely absent/UNKNOWN (R4 -- PM REVIEW #2)",
+    "HARMONIC_UNKNOWN_DOWNGRADED": "harmonic relationship is UNKNOWN and no explicit harmonic_not_load_bearing_reason exception was supplied; FULL_DJ_BLEND is withheld rather than silently treated as COMPATIBLE (R4 -- PM REVIEW #2)",
+    "HARMONIC_NOT_LOAD_BEARING_EXCEPTION_APPLIED": "harmonic relationship is UNKNOWN but an explicit, narrow, style-specific harmonic_not_load_bearing_reason exception was supplied and accepted",
     "PAIR_FULLY_COMPATIBLE_COMPLEX_MIX_ELIGIBLE": "every hard-gating component passed; FULL_DJ_BLEND may be offered (not forced)",
 }
 
@@ -67,6 +75,17 @@ class PairCompatibilityResult:
     genre_compatibility: str  # "COMPATIBLE" | "INCOMPATIBLE"
     tempo_compatibility: str  # "DIRECT" | "HALF_DOUBLE" | "EXCESSIVE_STRETCH"
     required_tempo_stretch_pct: float
+    # R3 (PM REVIEW #2): unambiguous tempo fields, distinct from the
+    # deviation-percent above. required_tempo_ratio is the LITERAL
+    # playback-rate ratio (bpm_out / bpm_in) needed to align the incoming
+    # track's tempo grid to the outgoing track's, regardless of which
+    # relation matched. tempo_requires_playback_rate_change is False for a
+    # HALF_DOUBLE relation (grid/downbeat REINTERPRETATION only -- no actual
+    # speed change is needed to beat-match a legitimate half/double-time
+    # pair) and True for DIRECT (a real, if small, rate correction) or
+    # EXCESSIVE_STRETCH (rejected before use, but still reported honestly).
+    required_tempo_ratio: float
+    tempo_requires_playback_rate_change: bool
     beat_compatibility: str  # "SUFFICIENT" | "INSUFFICIENT"
     downbeat_compatibility: str  # "SUFFICIENT" | "INSUFFICIENT"
     harmonic_compatibility: str  # "COMPATIBLE" | "INCOMPATIBLE" | "UNKNOWN"
@@ -93,17 +112,25 @@ def _genre_families(genre_tags):
 
 
 def _tempo_relation(bpm_out: float, bpm_in: float):
+    """
+    Returns (relation, required_tempo_stretch_pct, required_tempo_ratio,
+    requires_playback_rate_change).
+    """
     if bpm_out <= 0 or bpm_in <= 0:
-        return "EXCESSIVE_STRETCH", 1.0
-    direct_ratio = abs(bpm_in - bpm_out) / bpm_out
-    if direct_ratio <= MAX_JUSTIFIED_TEMPO_STRETCH_PCT:
-        return "DIRECT", round(direct_ratio, 4)
-    half_ratio = abs(bpm_in - bpm_out / 2) / (bpm_out / 2)
-    double_ratio = abs(bpm_in - bpm_out * 2) / (bpm_out * 2)
-    best_hd_ratio = min(half_ratio, double_ratio)
-    if best_hd_ratio <= HALF_DOUBLE_TIME_TOLERANCE_PCT:
-        return "HALF_DOUBLE", round(best_hd_ratio, 4)
-    return "EXCESSIVE_STRETCH", round(direct_ratio, 4)
+        return "EXCESSIVE_STRETCH", 1.0, 1.0, True
+    literal_ratio = round(bpm_out / bpm_in, 4)
+    direct_deviation = abs(bpm_in - bpm_out) / bpm_out
+    if direct_deviation <= MAX_JUSTIFIED_TEMPO_STRETCH_PCT:
+        return "DIRECT", round(direct_deviation, 4), literal_ratio, True
+    half_deviation = abs(bpm_in - bpm_out / 2) / (bpm_out / 2)
+    double_deviation = abs(bpm_in - bpm_out * 2) / (bpm_out * 2)
+    best_hd_deviation = min(half_deviation, double_deviation)
+    if best_hd_deviation <= HALF_DOUBLE_TIME_TOLERANCE_PCT:
+        # Legitimate half/double-time relation: no real playback-speed
+        # correction is needed, only a downbeat/bar-grid reinterpretation
+        # (e.g. treating every other beat as a downbeat).
+        return "HALF_DOUBLE", round(best_hd_deviation, 4), 1.0, False
+    return "EXCESSIVE_STRETCH", round(direct_deviation, 4), literal_ratio, True
 
 
 def evaluate_pair_compatibility(pair: dict) -> PairCompatibilityResult:
@@ -116,7 +143,7 @@ def evaluate_pair_compatibility(pair: dict) -> PairCompatibilityResult:
     genre_ok = bool(out_families & in_families)
     reasons.append("GENRE_COMPATIBLE_SAME_FAMILY" if genre_ok else "GENRE_INCOMPATIBLE")
 
-    tempo_relation, stretch_pct = _tempo_relation(outgoing.get("bpm", 0), incoming.get("bpm", 0))
+    tempo_relation, stretch_pct, required_ratio, requires_rate_change = _tempo_relation(outgoing.get("bpm", 0), incoming.get("bpm", 0))
     tempo_ok = tempo_relation in ("DIRECT", "HALF_DOUBLE")
     reasons.append({
         "DIRECT": "TEMPO_DIRECT_COMPATIBLE",
@@ -133,14 +160,23 @@ def evaluate_pair_compatibility(pair: dict) -> PairCompatibilityResult:
     reasons.append("DOWNBEAT_CONFIDENCE_SUFFICIENT" if downbeat_ok else "DOWNBEAT_CONFIDENCE_INSUFFICIENT")
 
     harmonic = pair.get("harmonic_relationship")  # "COMPATIBLE" | "INCOMPATIBLE" | None
+    harmonic_not_load_bearing_reason = pair.get("harmonic_not_load_bearing_reason")
     if harmonic is None:
         harmonic_label = "UNKNOWN"
         reasons.append("HARMONIC_UNKNOWN")
+        if harmonic_not_load_bearing_reason:
+            harmonic_ok = True
+            reasons.append("HARMONIC_NOT_LOAD_BEARING_EXCEPTION_APPLIED")
+        else:
+            harmonic_ok = False
+            reasons.append("HARMONIC_UNKNOWN_DOWNGRADED")
     elif harmonic == "COMPATIBLE":
         harmonic_label = "COMPATIBLE"
+        harmonic_ok = True
         reasons.append("HARMONIC_COMPATIBLE")
     else:
         harmonic_label = "INCOMPATIBLE"
+        harmonic_ok = False
         reasons.append("HARMONIC_INCOMPATIBLE")
 
     energy_ok = pair.get("energy_continuity") == "STRONG"
@@ -148,6 +184,8 @@ def evaluate_pair_compatibility(pair: dict) -> PairCompatibilityResult:
 
     structure_ok = pair.get("structure_compatibility") == "COMPATIBLE"
     reasons.append("STRUCTURE_COMPATIBLE" if structure_ok else "STRUCTURE_UNKNOWN")
+    if not structure_ok:
+        reasons.append("STRUCTURE_COMPATIBILITY_REQUIRED_FOR_FULL_DJ")
 
     vocal_risk = pair.get("vocal_collision_risk", "NONE")
     vocal_ok = vocal_risk not in ("HIGH", "MEDIUM")
@@ -159,19 +197,26 @@ def evaluate_pair_compatibility(pair: dict) -> PairCompatibilityResult:
 
     texture_ok = pair.get("intro_outro_texture_compatible", False)
     reasons.append("INTRO_OUTRO_TEXTURE_COMPATIBLE" if texture_ok else "INTRO_OUTRO_TEXTURE_UNKNOWN")
+    if not texture_ok:
+        reasons.append("TEXTURE_COMPATIBILITY_REQUIRED_FOR_FULL_DJ")
 
     analysis_conf = pair.get("analysis_confidence", "NONE")
     analysis_ok = CONFIDENCE_ORDER.get(analysis_conf, 0) >= CONFIDENCE_ORDER["HIGH"]
     reasons.append("ANALYSIS_CONFIDENCE_SUFFICIENT" if analysis_ok else "ANALYSIS_CONFIDENCE_LOW_PAIR")
 
-    # Hard gate: every one of these must pass before FULL_DJ_BLEND is ever
-    # offered. BPM/tempo compatibility alone is explicitly NOT sufficient
-    # (P5) -- genre, beat, downbeat, vocal-safety, bass/percussion-safety,
-    # and analysis confidence are independently required.
+    # Hard gate (R4, PM REVIEW #2 -- tightened): every one of these must
+    # pass before FULL_DJ_BLEND is ever offered. BPM/tempo compatibility
+    # alone is explicitly NOT sufficient (P5) -- genre, tempo, beat,
+    # downbeat, structure (KNOWN + COMPATIBLE, not merely UNKNOWN),
+    # intro/outro texture (KNOWN + COMPATIBLE, not merely UNKNOWN),
+    # vocal-safety, bass/percussion-safety, analysis confidence, and
+    # harmonic (COMPATIBLE, or UNKNOWN only under an explicit narrow
+    # exception) are all independently required.
     overall_eligible = (
         genre_ok and tempo_ok and beat_ok and downbeat_ok
+        and structure_ok and texture_ok
         and vocal_ok and bass_ok and analysis_ok
-        and harmonic_label != "INCOMPATIBLE"
+        and harmonic_ok
     )
     if overall_eligible:
         reasons.append("PAIR_FULLY_COMPATIBLE_COMPLEX_MIX_ELIGIBLE")
@@ -180,6 +225,8 @@ def evaluate_pair_compatibility(pair: dict) -> PairCompatibilityResult:
         genre_compatibility="COMPATIBLE" if genre_ok else "INCOMPATIBLE",
         tempo_compatibility=tempo_relation,
         required_tempo_stretch_pct=stretch_pct,
+        required_tempo_ratio=required_ratio,
+        tempo_requires_playback_rate_change=requires_rate_change,
         beat_compatibility="SUFFICIENT" if beat_ok else "INSUFFICIENT",
         downbeat_compatibility="SUFFICIENT" if downbeat_ok else "INSUFFICIENT",
         harmonic_compatibility=harmonic_label,

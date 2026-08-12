@@ -1,0 +1,2318 @@
+{
+  "purpose": "PM REVIEW #2 R1/R2: canonical planning ranks COMPLETE (outgoing exit, incoming entry, pair compatibility AT that boundary) plans, never an outgoing exit selected in isolation with pair compatibility applied only afterward.",
+  "transitions": {
+    "TX-01": {
+      "title": "boundary_ranking_pair_compat_overrides_raw_structure",
+      "purpose": "R1: pair compatibility must participate in boundary ranking, not be applied only after the timing/structure winner is already fixed.",
+      "decision": {
+        "fixture_id": "TX-01",
+        "listener_intent": "SEAMLESS_FULL_TRACK_DEFAULT",
+        "policy_name": "SEAMLESS_FULL_TRACK_DEFAULT_BOUNDARY",
+        "decision_type": "TRANSITION",
+        "current_track_effective_content_end_ms": 300000,
+        "selected_outgoing_exit_candidate_id": "TX01-OUT-B",
+        "transition_onset_window_ms": {
+          "t_start_ms": 260000,
+          "t_end_ms": 260000
+        },
+        "outgoing_last_audible_target_ms": 300000,
+        "outgoing_content_preservation_target": 1.0,
+        "selected_incoming_entry_candidate_id": "TX01-IN-2",
+        "incoming_effective_content_start_ms": 0,
+        "next_track_entry_window_ms": {
+          "t_start_ms": 6000,
+          "t_end_ms": 6000
+        },
+        "incoming_entry_reason_codes": [
+          "PHRASE_CUE_EVIDENCE_PRESENT"
+        ],
+        "incoming_phrase_section_evidence": true,
+        "allowed_transition_class_set": [
+          "FULL_DJ_BLEND",
+          "SHORT_EQ_BLEND",
+          "SIMPLE_CROSSFADE"
+        ],
+        "pair_compatibility_components": {
+          "genre_compatibility": "COMPATIBLE",
+          "tempo_compatibility": "DIRECT",
+          "required_tempo_stretch_pct": 0.0,
+          "required_tempo_ratio": 1.0,
+          "tempo_requires_playback_rate_change": true,
+          "beat_compatibility": "SUFFICIENT",
+          "downbeat_compatibility": "SUFFICIENT",
+          "harmonic_compatibility": "COMPATIBLE",
+          "energy_continuity": "STRONG",
+          "structure_compatibility": "COMPATIBLE",
+          "vocal_collision_risk": "LOW",
+          "bass_percussion_collision_risk": "LOW",
+          "intro_outro_texture_compatibility": "COMPATIBLE",
+          "analysis_confidence": "HIGH",
+          "overall_dynamic_mix_eligible": true,
+          "reason_codes": [
+            "GENRE_COMPATIBLE_SAME_FAMILY",
+            "TEMPO_DIRECT_COMPATIBLE",
+            "BEAT_CONFIDENCE_SUFFICIENT",
+            "DOWNBEAT_CONFIDENCE_SUFFICIENT",
+            "HARMONIC_COMPATIBLE",
+            "ENERGY_CONTINUITY_STRONG",
+            "STRUCTURE_COMPATIBLE",
+            "VOCAL_COLLISION_RISK_ACCEPTABLE",
+            "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+            "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+            "ANALYSIS_CONFIDENCE_SUFFICIENT",
+            "PAIR_FULLY_COMPATIBLE_COMPLEX_MIX_ELIGIBLE"
+          ]
+        },
+        "outgoing_beat_alignment_target_ms": 260000,
+        "incoming_beat_alignment_target_ms": 6000,
+        "outgoing_downbeat_alignment_target_ms": 260000,
+        "incoming_downbeat_alignment_target_ms": 6000,
+        "beat_phase_relation": "ALIGNED",
+        "bar_phase_relation": "ALIGNED",
+        "required_tempo_ratio": 1.0,
+        "permitted_tempo_ratio_max_deviation": 0.12,
+        "required_pitch_shift_semitones": 0,
+        "permitted_pitch_shift_semitones_min": -3,
+        "permitted_pitch_shift_semitones_max": 3,
+        "energy_continuity_target": "PAIR_ENERGY_CONTINUITY=STRONG",
+        "vocal_collision_constraints": "PAIR_VOCAL_COLLISION_RISK=LOW",
+        "bass_collision_constraints": "PAIR_BASS_PERCUSSION_COLLISION_RISK=LOW",
+        "analysis_confidence": "HIGH",
+        "reason_codes": [
+          "STRUCTURAL_EVIDENCE_PRESENT",
+          "BEST_RANKED_COMPLETE_BOUNDARY_PLAN"
+        ],
+        "queue_order_independent_of_exit_timing": true,
+        "candidate_rank_trace": [
+          {
+            "outgoing_candidate_id": "TX01-OUT-A",
+            "incoming_candidate_id": "TX01-IN-1",
+            "eligible": true,
+            "entry_reason_codes": [
+              "ENTRY_AT_TRACK_START"
+            ],
+            "outgoing_content_preservation_ratio": 1.0,
+            "musical_structure_score": 0.5,
+            "outgoing_structure_score": 1.0,
+            "incoming_structure_score": 0.0,
+            "outgoing_preservation_components": {
+              "effective_content_end_ms": 300000,
+              "transition_onset_ms": 270000,
+              "outgoing_last_audible_ms": 300000,
+              "overlap_duration_ms": 30000,
+              "outgoing_content_lost_ms": 0
+            },
+            "outgoing_structure_components": {
+              "in_acceptable_exit_region": true,
+              "is_outro_tail_opportunity": true,
+              "musical_unit_complete": true,
+              "beat_downbeat_aligned": true
+            },
+            "pair_compatibility_components": {
+              "genre_compatibility": "COMPATIBLE",
+              "tempo_compatibility": "DIRECT",
+              "required_tempo_stretch_pct": 0.0,
+              "required_tempo_ratio": 1.0,
+              "tempo_requires_playback_rate_change": true,
+              "beat_compatibility": "SUFFICIENT",
+              "downbeat_compatibility": "SUFFICIENT",
+              "harmonic_compatibility": "COMPATIBLE",
+              "energy_continuity": "STRONG",
+              "structure_compatibility": "COMPATIBLE",
+              "vocal_collision_risk": "HIGH",
+              "bass_percussion_collision_risk": "LOW",
+              "intro_outro_texture_compatibility": "COMPATIBLE",
+              "analysis_confidence": "HIGH",
+              "overall_dynamic_mix_eligible": false,
+              "reason_codes": [
+                "GENRE_COMPATIBLE_SAME_FAMILY",
+                "TEMPO_DIRECT_COMPATIBLE",
+                "BEAT_CONFIDENCE_SUFFICIENT",
+                "DOWNBEAT_CONFIDENCE_SUFFICIENT",
+                "HARMONIC_COMPATIBLE",
+                "ENERGY_CONTINUITY_STRONG",
+                "STRUCTURE_COMPATIBLE",
+                "VOCAL_COLLISION_RISK_HIGH_PAIR",
+                "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+                "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+                "ANALYSIS_CONFIDENCE_SUFFICIENT"
+              ]
+            },
+            "energy_continuity_priority": "STRONG",
+            "required_tempo_ratio": 1.0,
+            "required_pitch_shift_semitones": 0,
+            "eligible_for_dynamic_mix": false,
+            "allowed_transition_class_set": [
+              "SIMPLE_CROSSFADE"
+            ],
+            "confidence": "HIGH",
+            "effective_content_end_ms": 300000,
+            "boundary_rank": 4,
+            "selected": false,
+            "selection_reason_codes": []
+          },
+          {
+            "outgoing_candidate_id": "TX01-OUT-A",
+            "incoming_candidate_id": "TX01-IN-2",
+            "eligible": true,
+            "entry_reason_codes": [
+              "PHRASE_CUE_EVIDENCE_PRESENT"
+            ],
+            "outgoing_content_preservation_ratio": 1.0,
+            "musical_structure_score": 1.0,
+            "outgoing_structure_score": 1.0,
+            "incoming_structure_score": 1.0,
+            "outgoing_preservation_components": {
+              "effective_content_end_ms": 300000,
+              "transition_onset_ms": 270000,
+              "outgoing_last_audible_ms": 300000,
+              "overlap_duration_ms": 30000,
+              "outgoing_content_lost_ms": 0
+            },
+            "outgoing_structure_components": {
+              "in_acceptable_exit_region": true,
+              "is_outro_tail_opportunity": true,
+              "musical_unit_complete": true,
+              "beat_downbeat_aligned": true
+            },
+            "pair_compatibility_components": {
+              "genre_compatibility": "COMPATIBLE",
+              "tempo_compatibility": "DIRECT",
+              "required_tempo_stretch_pct": 0.0,
+              "required_tempo_ratio": 1.0,
+              "tempo_requires_playback_rate_change": true,
+              "beat_compatibility": "SUFFICIENT",
+              "downbeat_compatibility": "SUFFICIENT",
+              "harmonic_compatibility": "COMPATIBLE",
+              "energy_continuity": "STRONG",
+              "structure_compatibility": "COMPATIBLE",
+              "vocal_collision_risk": "HIGH",
+              "bass_percussion_collision_risk": "LOW",
+              "intro_outro_texture_compatibility": "COMPATIBLE",
+              "analysis_confidence": "HIGH",
+              "overall_dynamic_mix_eligible": false,
+              "reason_codes": [
+                "GENRE_COMPATIBLE_SAME_FAMILY",
+                "TEMPO_DIRECT_COMPATIBLE",
+                "BEAT_CONFIDENCE_SUFFICIENT",
+                "DOWNBEAT_CONFIDENCE_SUFFICIENT",
+                "HARMONIC_COMPATIBLE",
+                "ENERGY_CONTINUITY_STRONG",
+                "STRUCTURE_COMPATIBLE",
+                "VOCAL_COLLISION_RISK_HIGH_PAIR",
+                "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+                "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+                "ANALYSIS_CONFIDENCE_SUFFICIENT"
+              ]
+            },
+            "energy_continuity_priority": "STRONG",
+            "required_tempo_ratio": 1.0,
+            "required_pitch_shift_semitones": 0,
+            "eligible_for_dynamic_mix": false,
+            "allowed_transition_class_set": [
+              "SIMPLE_CROSSFADE"
+            ],
+            "confidence": "HIGH",
+            "effective_content_end_ms": 300000,
+            "boundary_rank": 3,
+            "selected": false,
+            "selection_reason_codes": []
+          },
+          {
+            "outgoing_candidate_id": "TX01-OUT-B",
+            "incoming_candidate_id": "TX01-IN-1",
+            "eligible": true,
+            "entry_reason_codes": [
+              "ENTRY_AT_TRACK_START"
+            ],
+            "outgoing_content_preservation_ratio": 1.0,
+            "musical_structure_score": 0.4,
+            "outgoing_structure_score": 0.8,
+            "incoming_structure_score": 0.0,
+            "outgoing_preservation_components": {
+              "effective_content_end_ms": 300000,
+              "transition_onset_ms": 260000,
+              "outgoing_last_audible_ms": 300000,
+              "overlap_duration_ms": 40000,
+              "outgoing_content_lost_ms": 0
+            },
+            "outgoing_structure_components": {
+              "in_acceptable_exit_region": true,
+              "is_outro_tail_opportunity": false,
+              "musical_unit_complete": true,
+              "beat_downbeat_aligned": true
+            },
+            "pair_compatibility_components": {
+              "genre_compatibility": "COMPATIBLE",
+              "tempo_compatibility": "DIRECT",
+              "required_tempo_stretch_pct": 0.0,
+              "required_tempo_ratio": 1.0,
+              "tempo_requires_playback_rate_change": true,
+              "beat_compatibility": "SUFFICIENT",
+              "downbeat_compatibility": "SUFFICIENT",
+              "harmonic_compatibility": "COMPATIBLE",
+              "energy_continuity": "STRONG",
+              "structure_compatibility": "COMPATIBLE",
+              "vocal_collision_risk": "LOW",
+              "bass_percussion_collision_risk": "LOW",
+              "intro_outro_texture_compatibility": "COMPATIBLE",
+              "analysis_confidence": "HIGH",
+              "overall_dynamic_mix_eligible": true,
+              "reason_codes": [
+                "GENRE_COMPATIBLE_SAME_FAMILY",
+                "TEMPO_DIRECT_COMPATIBLE",
+                "BEAT_CONFIDENCE_SUFFICIENT",
+                "DOWNBEAT_CONFIDENCE_SUFFICIENT",
+                "HARMONIC_COMPATIBLE",
+                "ENERGY_CONTINUITY_STRONG",
+                "STRUCTURE_COMPATIBLE",
+                "VOCAL_COLLISION_RISK_ACCEPTABLE",
+                "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+                "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+                "ANALYSIS_CONFIDENCE_SUFFICIENT",
+                "PAIR_FULLY_COMPATIBLE_COMPLEX_MIX_ELIGIBLE"
+              ]
+            },
+            "energy_continuity_priority": "STRONG",
+            "required_tempo_ratio": 1.0,
+            "required_pitch_shift_semitones": 0,
+            "eligible_for_dynamic_mix": true,
+            "allowed_transition_class_set": [
+              "FULL_DJ_BLEND",
+              "SHORT_EQ_BLEND",
+              "SIMPLE_CROSSFADE"
+            ],
+            "confidence": "HIGH",
+            "effective_content_end_ms": 300000,
+            "boundary_rank": 2,
+            "selected": false,
+            "selection_reason_codes": []
+          },
+          {
+            "outgoing_candidate_id": "TX01-OUT-B",
+            "incoming_candidate_id": "TX01-IN-2",
+            "eligible": true,
+            "entry_reason_codes": [
+              "PHRASE_CUE_EVIDENCE_PRESENT"
+            ],
+            "outgoing_content_preservation_ratio": 1.0,
+            "musical_structure_score": 0.9,
+            "outgoing_structure_score": 0.8,
+            "incoming_structure_score": 1.0,
+            "outgoing_preservation_components": {
+              "effective_content_end_ms": 300000,
+              "transition_onset_ms": 260000,
+              "outgoing_last_audible_ms": 300000,
+              "overlap_duration_ms": 40000,
+              "outgoing_content_lost_ms": 0
+            },
+            "outgoing_structure_components": {
+              "in_acceptable_exit_region": true,
+              "is_outro_tail_opportunity": false,
+              "musical_unit_complete": true,
+              "beat_downbeat_aligned": true
+            },
+            "pair_compatibility_components": {
+              "genre_compatibility": "COMPATIBLE",
+              "tempo_compatibility": "DIRECT",
+              "required_tempo_stretch_pct": 0.0,
+              "required_tempo_ratio": 1.0,
+              "tempo_requires_playback_rate_change": true,
+              "beat_compatibility": "SUFFICIENT",
+              "downbeat_compatibility": "SUFFICIENT",
+              "harmonic_compatibility": "COMPATIBLE",
+              "energy_continuity": "STRONG",
+              "structure_compatibility": "COMPATIBLE",
+              "vocal_collision_risk": "LOW",
+              "bass_percussion_collision_risk": "LOW",
+              "intro_outro_texture_compatibility": "COMPATIBLE",
+              "analysis_confidence": "HIGH",
+              "overall_dynamic_mix_eligible": true,
+              "reason_codes": [
+                "GENRE_COMPATIBLE_SAME_FAMILY",
+                "TEMPO_DIRECT_COMPATIBLE",
+                "BEAT_CONFIDENCE_SUFFICIENT",
+                "DOWNBEAT_CONFIDENCE_SUFFICIENT",
+                "HARMONIC_COMPATIBLE",
+                "ENERGY_CONTINUITY_STRONG",
+                "STRUCTURE_COMPATIBLE",
+                "VOCAL_COLLISION_RISK_ACCEPTABLE",
+                "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+                "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+                "ANALYSIS_CONFIDENCE_SUFFICIENT",
+                "PAIR_FULLY_COMPATIBLE_COMPLEX_MIX_ELIGIBLE"
+              ]
+            },
+            "energy_continuity_priority": "STRONG",
+            "required_tempo_ratio": 1.0,
+            "required_pitch_shift_semitones": 0,
+            "eligible_for_dynamic_mix": true,
+            "allowed_transition_class_set": [
+              "FULL_DJ_BLEND",
+              "SHORT_EQ_BLEND",
+              "SIMPLE_CROSSFADE"
+            ],
+            "confidence": "HIGH",
+            "effective_content_end_ms": 300000,
+            "boundary_rank": 1,
+            "selected": true,
+            "selection_reason_codes": [
+              "BEST_RANKED_COMPLETE_BOUNDARY_PLAN"
+            ]
+          }
+        ],
+        "candidate_trace": [
+          {
+            "outgoing_candidate_id": "TX01-OUT-A",
+            "incoming_candidate_id": "TX01-IN-1",
+            "eligible": true,
+            "entry_reason_codes": [
+              "ENTRY_AT_TRACK_START"
+            ],
+            "outgoing_content_preservation_ratio": 1.0,
+            "musical_structure_score": 0.5,
+            "outgoing_structure_score": 1.0,
+            "incoming_structure_score": 0.0,
+            "outgoing_preservation_components": {
+              "effective_content_end_ms": 300000,
+              "transition_onset_ms": 270000,
+              "outgoing_last_audible_ms": 300000,
+              "overlap_duration_ms": 30000,
+              "outgoing_content_lost_ms": 0
+            },
+            "outgoing_structure_components": {
+              "in_acceptable_exit_region": true,
+              "is_outro_tail_opportunity": true,
+              "musical_unit_complete": true,
+              "beat_downbeat_aligned": true
+            },
+            "pair_compatibility_components": {
+              "genre_compatibility": "COMPATIBLE",
+              "tempo_compatibility": "DIRECT",
+              "required_tempo_stretch_pct": 0.0,
+              "required_tempo_ratio": 1.0,
+              "tempo_requires_playback_rate_change": true,
+              "beat_compatibility": "SUFFICIENT",
+              "downbeat_compatibility": "SUFFICIENT",
+              "harmonic_compatibility": "COMPATIBLE",
+              "energy_continuity": "STRONG",
+              "structure_compatibility": "COMPATIBLE",
+              "vocal_collision_risk": "HIGH",
+              "bass_percussion_collision_risk": "LOW",
+              "intro_outro_texture_compatibility": "COMPATIBLE",
+              "analysis_confidence": "HIGH",
+              "overall_dynamic_mix_eligible": false,
+              "reason_codes": [
+                "GENRE_COMPATIBLE_SAME_FAMILY",
+                "TEMPO_DIRECT_COMPATIBLE",
+                "BEAT_CONFIDENCE_SUFFICIENT",
+                "DOWNBEAT_CONFIDENCE_SUFFICIENT",
+                "HARMONIC_COMPATIBLE",
+                "ENERGY_CONTINUITY_STRONG",
+                "STRUCTURE_COMPATIBLE",
+                "VOCAL_COLLISION_RISK_HIGH_PAIR",
+                "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+                "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+                "ANALYSIS_CONFIDENCE_SUFFICIENT"
+              ]
+            },
+            "energy_continuity_priority": "STRONG",
+            "required_tempo_ratio": 1.0,
+            "required_pitch_shift_semitones": 0,
+            "eligible_for_dynamic_mix": false,
+            "allowed_transition_class_set": [
+              "SIMPLE_CROSSFADE"
+            ],
+            "confidence": "HIGH",
+            "effective_content_end_ms": 300000,
+            "boundary_rank": 4,
+            "selected": false,
+            "selection_reason_codes": []
+          },
+          {
+            "outgoing_candidate_id": "TX01-OUT-A",
+            "incoming_candidate_id": "TX01-IN-2",
+            "eligible": true,
+            "entry_reason_codes": [
+              "PHRASE_CUE_EVIDENCE_PRESENT"
+            ],
+            "outgoing_content_preservation_ratio": 1.0,
+            "musical_structure_score": 1.0,
+            "outgoing_structure_score": 1.0,
+            "incoming_structure_score": 1.0,
+            "outgoing_preservation_components": {
+              "effective_content_end_ms": 300000,
+              "transition_onset_ms": 270000,
+              "outgoing_last_audible_ms": 300000,
+              "overlap_duration_ms": 30000,
+              "outgoing_content_lost_ms": 0
+            },
+            "outgoing_structure_components": {
+              "in_acceptable_exit_region": true,
+              "is_outro_tail_opportunity": true,
+              "musical_unit_complete": true,
+              "beat_downbeat_aligned": true
+            },
+            "pair_compatibility_components": {
+              "genre_compatibility": "COMPATIBLE",
+              "tempo_compatibility": "DIRECT",
+              "required_tempo_stretch_pct": 0.0,
+              "required_tempo_ratio": 1.0,
+              "tempo_requires_playback_rate_change": true,
+              "beat_compatibility": "SUFFICIENT",
+              "downbeat_compatibility": "SUFFICIENT",
+              "harmonic_compatibility": "COMPATIBLE",
+              "energy_continuity": "STRONG",
+              "structure_compatibility": "COMPATIBLE",
+              "vocal_collision_risk": "HIGH",
+              "bass_percussion_collision_risk": "LOW",
+              "intro_outro_texture_compatibility": "COMPATIBLE",
+              "analysis_confidence": "HIGH",
+              "overall_dynamic_mix_eligible": false,
+              "reason_codes": [
+                "GENRE_COMPATIBLE_SAME_FAMILY",
+                "TEMPO_DIRECT_COMPATIBLE",
+                "BEAT_CONFIDENCE_SUFFICIENT",
+                "DOWNBEAT_CONFIDENCE_SUFFICIENT",
+                "HARMONIC_COMPATIBLE",
+                "ENERGY_CONTINUITY_STRONG",
+                "STRUCTURE_COMPATIBLE",
+                "VOCAL_COLLISION_RISK_HIGH_PAIR",
+                "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+                "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+                "ANALYSIS_CONFIDENCE_SUFFICIENT"
+              ]
+            },
+            "energy_continuity_priority": "STRONG",
+            "required_tempo_ratio": 1.0,
+            "required_pitch_shift_semitones": 0,
+            "eligible_for_dynamic_mix": false,
+            "allowed_transition_class_set": [
+              "SIMPLE_CROSSFADE"
+            ],
+            "confidence": "HIGH",
+            "effective_content_end_ms": 300000,
+            "boundary_rank": 3,
+            "selected": false,
+            "selection_reason_codes": []
+          },
+          {
+            "outgoing_candidate_id": "TX01-OUT-B",
+            "incoming_candidate_id": "TX01-IN-1",
+            "eligible": true,
+            "entry_reason_codes": [
+              "ENTRY_AT_TRACK_START"
+            ],
+            "outgoing_content_preservation_ratio": 1.0,
+            "musical_structure_score": 0.4,
+            "outgoing_structure_score": 0.8,
+            "incoming_structure_score": 0.0,
+            "outgoing_preservation_components": {
+              "effective_content_end_ms": 300000,
+              "transition_onset_ms": 260000,
+              "outgoing_last_audible_ms": 300000,
+              "overlap_duration_ms": 40000,
+              "outgoing_content_lost_ms": 0
+            },
+            "outgoing_structure_components": {
+              "in_acceptable_exit_region": true,
+              "is_outro_tail_opportunity": false,
+              "musical_unit_complete": true,
+              "beat_downbeat_aligned": true
+            },
+            "pair_compatibility_components": {
+              "genre_compatibility": "COMPATIBLE",
+              "tempo_compatibility": "DIRECT",
+              "required_tempo_stretch_pct": 0.0,
+              "required_tempo_ratio": 1.0,
+              "tempo_requires_playback_rate_change": true,
+              "beat_compatibility": "SUFFICIENT",
+              "downbeat_compatibility": "SUFFICIENT",
+              "harmonic_compatibility": "COMPATIBLE",
+              "energy_continuity": "STRONG",
+              "structure_compatibility": "COMPATIBLE",
+              "vocal_collision_risk": "LOW",
+              "bass_percussion_collision_risk": "LOW",
+              "intro_outro_texture_compatibility": "COMPATIBLE",
+              "analysis_confidence": "HIGH",
+              "overall_dynamic_mix_eligible": true,
+              "reason_codes": [
+                "GENRE_COMPATIBLE_SAME_FAMILY",
+                "TEMPO_DIRECT_COMPATIBLE",
+                "BEAT_CONFIDENCE_SUFFICIENT",
+                "DOWNBEAT_CONFIDENCE_SUFFICIENT",
+                "HARMONIC_COMPATIBLE",
+                "ENERGY_CONTINUITY_STRONG",
+                "STRUCTURE_COMPATIBLE",
+                "VOCAL_COLLISION_RISK_ACCEPTABLE",
+                "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+                "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+                "ANALYSIS_CONFIDENCE_SUFFICIENT",
+                "PAIR_FULLY_COMPATIBLE_COMPLEX_MIX_ELIGIBLE"
+              ]
+            },
+            "energy_continuity_priority": "STRONG",
+            "required_tempo_ratio": 1.0,
+            "required_pitch_shift_semitones": 0,
+            "eligible_for_dynamic_mix": true,
+            "allowed_transition_class_set": [
+              "FULL_DJ_BLEND",
+              "SHORT_EQ_BLEND",
+              "SIMPLE_CROSSFADE"
+            ],
+            "confidence": "HIGH",
+            "effective_content_end_ms": 300000,
+            "boundary_rank": 2,
+            "selected": false,
+            "selection_reason_codes": []
+          },
+          {
+            "outgoing_candidate_id": "TX01-OUT-B",
+            "incoming_candidate_id": "TX01-IN-2",
+            "eligible": true,
+            "entry_reason_codes": [
+              "PHRASE_CUE_EVIDENCE_PRESENT"
+            ],
+            "outgoing_content_preservation_ratio": 1.0,
+            "musical_structure_score": 0.9,
+            "outgoing_structure_score": 0.8,
+            "incoming_structure_score": 1.0,
+            "outgoing_preservation_components": {
+              "effective_content_end_ms": 300000,
+              "transition_onset_ms": 260000,
+              "outgoing_last_audible_ms": 300000,
+              "overlap_duration_ms": 40000,
+              "outgoing_content_lost_ms": 0
+            },
+            "outgoing_structure_components": {
+              "in_acceptable_exit_region": true,
+              "is_outro_tail_opportunity": false,
+              "musical_unit_complete": true,
+              "beat_downbeat_aligned": true
+            },
+            "pair_compatibility_components": {
+              "genre_compatibility": "COMPATIBLE",
+              "tempo_compatibility": "DIRECT",
+              "required_tempo_stretch_pct": 0.0,
+              "required_tempo_ratio": 1.0,
+              "tempo_requires_playback_rate_change": true,
+              "beat_compatibility": "SUFFICIENT",
+              "downbeat_compatibility": "SUFFICIENT",
+              "harmonic_compatibility": "COMPATIBLE",
+              "energy_continuity": "STRONG",
+              "structure_compatibility": "COMPATIBLE",
+              "vocal_collision_risk": "LOW",
+              "bass_percussion_collision_risk": "LOW",
+              "intro_outro_texture_compatibility": "COMPATIBLE",
+              "analysis_confidence": "HIGH",
+              "overall_dynamic_mix_eligible": true,
+              "reason_codes": [
+                "GENRE_COMPATIBLE_SAME_FAMILY",
+                "TEMPO_DIRECT_COMPATIBLE",
+                "BEAT_CONFIDENCE_SUFFICIENT",
+                "DOWNBEAT_CONFIDENCE_SUFFICIENT",
+                "HARMONIC_COMPATIBLE",
+                "ENERGY_CONTINUITY_STRONG",
+                "STRUCTURE_COMPATIBLE",
+                "VOCAL_COLLISION_RISK_ACCEPTABLE",
+                "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+                "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+                "ANALYSIS_CONFIDENCE_SUFFICIENT",
+                "PAIR_FULLY_COMPATIBLE_COMPLEX_MIX_ELIGIBLE"
+              ]
+            },
+            "energy_continuity_priority": "STRONG",
+            "required_tempo_ratio": 1.0,
+            "required_pitch_shift_semitones": 0,
+            "eligible_for_dynamic_mix": true,
+            "allowed_transition_class_set": [
+              "FULL_DJ_BLEND",
+              "SHORT_EQ_BLEND",
+              "SIMPLE_CROSSFADE"
+            ],
+            "confidence": "HIGH",
+            "effective_content_end_ms": 300000,
+            "boundary_rank": 1,
+            "selected": true,
+            "selection_reason_codes": [
+              "BEST_RANKED_COMPLETE_BOUNDARY_PLAN"
+            ]
+          }
+        ]
+      },
+      "expected_winner": {
+        "outgoing": "TX01-OUT-B",
+        "incoming": "TX01-IN-2"
+      },
+      "matches_expectation": true
+    },
+    "TX-02": {
+      "title": "incoming_entry_zero_ms_correct",
+      "purpose": "Incoming entry case A: starting at 0ms is genuinely correct; a later point with no evidence must be rejected.",
+      "decision": {
+        "fixture_id": "TX-02",
+        "listener_intent": "SEAMLESS_FULL_TRACK_DEFAULT",
+        "policy_name": "SEAMLESS_FULL_TRACK_DEFAULT_BOUNDARY",
+        "decision_type": "TRANSITION",
+        "current_track_effective_content_end_ms": 200000,
+        "selected_outgoing_exit_candidate_id": "TX02-OUT-1",
+        "transition_onset_window_ms": {
+          "t_start_ms": 180000,
+          "t_end_ms": 180000
+        },
+        "outgoing_last_audible_target_ms": 200000,
+        "outgoing_content_preservation_target": 1.0,
+        "selected_incoming_entry_candidate_id": "TX02-IN-ZERO",
+        "incoming_effective_content_start_ms": 0,
+        "next_track_entry_window_ms": {
+          "t_start_ms": 0,
+          "t_end_ms": 0
+        },
+        "incoming_entry_reason_codes": [
+          "ENTRY_AT_TRACK_START"
+        ],
+        "incoming_phrase_section_evidence": false,
+        "allowed_transition_class_set": [
+          "FULL_DJ_BLEND",
+          "SHORT_EQ_BLEND",
+          "SIMPLE_CROSSFADE"
+        ],
+        "pair_compatibility_components": {
+          "genre_compatibility": "COMPATIBLE",
+          "tempo_compatibility": "DIRECT",
+          "required_tempo_stretch_pct": 0.0,
+          "required_tempo_ratio": 1.0,
+          "tempo_requires_playback_rate_change": true,
+          "beat_compatibility": "SUFFICIENT",
+          "downbeat_compatibility": "SUFFICIENT",
+          "harmonic_compatibility": "COMPATIBLE",
+          "energy_continuity": "STRONG",
+          "structure_compatibility": "COMPATIBLE",
+          "vocal_collision_risk": "LOW",
+          "bass_percussion_collision_risk": "LOW",
+          "intro_outro_texture_compatibility": "COMPATIBLE",
+          "analysis_confidence": "HIGH",
+          "overall_dynamic_mix_eligible": true,
+          "reason_codes": [
+            "GENRE_COMPATIBLE_SAME_FAMILY",
+            "TEMPO_DIRECT_COMPATIBLE",
+            "BEAT_CONFIDENCE_SUFFICIENT",
+            "DOWNBEAT_CONFIDENCE_SUFFICIENT",
+            "HARMONIC_COMPATIBLE",
+            "ENERGY_CONTINUITY_STRONG",
+            "STRUCTURE_COMPATIBLE",
+            "VOCAL_COLLISION_RISK_ACCEPTABLE",
+            "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+            "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+            "ANALYSIS_CONFIDENCE_SUFFICIENT",
+            "PAIR_FULLY_COMPATIBLE_COMPLEX_MIX_ELIGIBLE"
+          ]
+        },
+        "outgoing_beat_alignment_target_ms": 180000,
+        "incoming_beat_alignment_target_ms": null,
+        "outgoing_downbeat_alignment_target_ms": 180000,
+        "incoming_downbeat_alignment_target_ms": null,
+        "beat_phase_relation": "UNKNOWN",
+        "bar_phase_relation": "UNKNOWN",
+        "required_tempo_ratio": 1.0,
+        "permitted_tempo_ratio_max_deviation": 0.12,
+        "required_pitch_shift_semitones": 0,
+        "permitted_pitch_shift_semitones_min": -3,
+        "permitted_pitch_shift_semitones_max": 3,
+        "energy_continuity_target": "PAIR_ENERGY_CONTINUITY=STRONG",
+        "vocal_collision_constraints": "PAIR_VOCAL_COLLISION_RISK=LOW",
+        "bass_collision_constraints": "PAIR_BASS_PERCUSSION_COLLISION_RISK=LOW",
+        "analysis_confidence": "HIGH",
+        "reason_codes": [
+          "STRUCTURAL_EVIDENCE_PRESENT",
+          "BEST_RANKED_COMPLETE_BOUNDARY_PLAN"
+        ],
+        "queue_order_independent_of_exit_timing": true,
+        "candidate_rank_trace": [
+          {
+            "outgoing_candidate_id": "TX02-OUT-1",
+            "incoming_candidate_id": "TX02-IN-ZERO",
+            "eligible": true,
+            "entry_reason_codes": [
+              "ENTRY_AT_TRACK_START"
+            ],
+            "outgoing_content_preservation_ratio": 1.0,
+            "musical_structure_score": 0.5,
+            "outgoing_structure_score": 1.0,
+            "incoming_structure_score": 0.0,
+            "outgoing_preservation_components": {
+              "effective_content_end_ms": 200000,
+              "transition_onset_ms": 180000,
+              "outgoing_last_audible_ms": 200000,
+              "overlap_duration_ms": 20000,
+              "outgoing_content_lost_ms": 0
+            },
+            "outgoing_structure_components": {
+              "in_acceptable_exit_region": true,
+              "is_outro_tail_opportunity": true,
+              "musical_unit_complete": true,
+              "beat_downbeat_aligned": true
+            },
+            "pair_compatibility_components": {
+              "genre_compatibility": "COMPATIBLE",
+              "tempo_compatibility": "DIRECT",
+              "required_tempo_stretch_pct": 0.0,
+              "required_tempo_ratio": 1.0,
+              "tempo_requires_playback_rate_change": true,
+              "beat_compatibility": "SUFFICIENT",
+              "downbeat_compatibility": "SUFFICIENT",
+              "harmonic_compatibility": "COMPATIBLE",
+              "energy_continuity": "STRONG",
+              "structure_compatibility": "COMPATIBLE",
+              "vocal_collision_risk": "LOW",
+              "bass_percussion_collision_risk": "LOW",
+              "intro_outro_texture_compatibility": "COMPATIBLE",
+              "analysis_confidence": "HIGH",
+              "overall_dynamic_mix_eligible": true,
+              "reason_codes": [
+                "GENRE_COMPATIBLE_SAME_FAMILY",
+                "TEMPO_DIRECT_COMPATIBLE",
+                "BEAT_CONFIDENCE_SUFFICIENT",
+                "DOWNBEAT_CONFIDENCE_SUFFICIENT",
+                "HARMONIC_COMPATIBLE",
+                "ENERGY_CONTINUITY_STRONG",
+                "STRUCTURE_COMPATIBLE",
+                "VOCAL_COLLISION_RISK_ACCEPTABLE",
+                "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+                "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+                "ANALYSIS_CONFIDENCE_SUFFICIENT",
+                "PAIR_FULLY_COMPATIBLE_COMPLEX_MIX_ELIGIBLE"
+              ]
+            },
+            "energy_continuity_priority": "STRONG",
+            "required_tempo_ratio": 1.0,
+            "required_pitch_shift_semitones": 0,
+            "eligible_for_dynamic_mix": true,
+            "allowed_transition_class_set": [
+              "FULL_DJ_BLEND",
+              "SHORT_EQ_BLEND",
+              "SIMPLE_CROSSFADE"
+            ],
+            "confidence": "HIGH",
+            "effective_content_end_ms": 200000,
+            "boundary_rank": 1,
+            "selected": true,
+            "selection_reason_codes": [
+              "BEST_RANKED_COMPLETE_BOUNDARY_PLAN"
+            ]
+          },
+          {
+            "outgoing_candidate_id": "TX02-OUT-1",
+            "incoming_candidate_id": "TX02-IN-BAD",
+            "eligible": false,
+            "entry_reason_codes": [
+              "ENTRY_SKIPS_MEANINGFUL_INTRO_WITHOUT_EVIDENCE"
+            ],
+            "outgoing_content_preservation_ratio": 1.0,
+            "musical_structure_score": 0.5,
+            "outgoing_structure_score": 1.0,
+            "incoming_structure_score": 0.0,
+            "outgoing_preservation_components": {
+              "effective_content_end_ms": 200000,
+              "transition_onset_ms": 180000,
+              "outgoing_last_audible_ms": 200000,
+              "overlap_duration_ms": 20000,
+              "outgoing_content_lost_ms": 0
+            },
+            "outgoing_structure_components": {
+              "in_acceptable_exit_region": true,
+              "is_outro_tail_opportunity": true,
+              "musical_unit_complete": true,
+              "beat_downbeat_aligned": true
+            },
+            "pair_compatibility_components": {
+              "genre_compatibility": "COMPATIBLE",
+              "tempo_compatibility": "DIRECT",
+              "required_tempo_stretch_pct": 0.0,
+              "required_tempo_ratio": 1.0,
+              "tempo_requires_playback_rate_change": true,
+              "beat_compatibility": "SUFFICIENT",
+              "downbeat_compatibility": "SUFFICIENT",
+              "harmonic_compatibility": "COMPATIBLE",
+              "energy_continuity": "STRONG",
+              "structure_compatibility": "COMPATIBLE",
+              "vocal_collision_risk": "LOW",
+              "bass_percussion_collision_risk": "LOW",
+              "intro_outro_texture_compatibility": "COMPATIBLE",
+              "analysis_confidence": "HIGH",
+              "overall_dynamic_mix_eligible": true,
+              "reason_codes": [
+                "GENRE_COMPATIBLE_SAME_FAMILY",
+                "TEMPO_DIRECT_COMPATIBLE",
+                "BEAT_CONFIDENCE_SUFFICIENT",
+                "DOWNBEAT_CONFIDENCE_SUFFICIENT",
+                "HARMONIC_COMPATIBLE",
+                "ENERGY_CONTINUITY_STRONG",
+                "STRUCTURE_COMPATIBLE",
+                "VOCAL_COLLISION_RISK_ACCEPTABLE",
+                "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+                "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+                "ANALYSIS_CONFIDENCE_SUFFICIENT",
+                "PAIR_FULLY_COMPATIBLE_COMPLEX_MIX_ELIGIBLE"
+              ]
+            },
+            "energy_continuity_priority": "STRONG",
+            "required_tempo_ratio": 1.0,
+            "required_pitch_shift_semitones": 0,
+            "eligible_for_dynamic_mix": true,
+            "allowed_transition_class_set": [
+              "FULL_DJ_BLEND",
+              "SHORT_EQ_BLEND",
+              "SIMPLE_CROSSFADE"
+            ],
+            "confidence": "HIGH",
+            "effective_content_end_ms": 200000,
+            "boundary_rank": null,
+            "selected": false,
+            "selection_reason_codes": []
+          }
+        ],
+        "candidate_trace": [
+          {
+            "outgoing_candidate_id": "TX02-OUT-1",
+            "incoming_candidate_id": "TX02-IN-ZERO",
+            "eligible": true,
+            "entry_reason_codes": [
+              "ENTRY_AT_TRACK_START"
+            ],
+            "outgoing_content_preservation_ratio": 1.0,
+            "musical_structure_score": 0.5,
+            "outgoing_structure_score": 1.0,
+            "incoming_structure_score": 0.0,
+            "outgoing_preservation_components": {
+              "effective_content_end_ms": 200000,
+              "transition_onset_ms": 180000,
+              "outgoing_last_audible_ms": 200000,
+              "overlap_duration_ms": 20000,
+              "outgoing_content_lost_ms": 0
+            },
+            "outgoing_structure_components": {
+              "in_acceptable_exit_region": true,
+              "is_outro_tail_opportunity": true,
+              "musical_unit_complete": true,
+              "beat_downbeat_aligned": true
+            },
+            "pair_compatibility_components": {
+              "genre_compatibility": "COMPATIBLE",
+              "tempo_compatibility": "DIRECT",
+              "required_tempo_stretch_pct": 0.0,
+              "required_tempo_ratio": 1.0,
+              "tempo_requires_playback_rate_change": true,
+              "beat_compatibility": "SUFFICIENT",
+              "downbeat_compatibility": "SUFFICIENT",
+              "harmonic_compatibility": "COMPATIBLE",
+              "energy_continuity": "STRONG",
+              "structure_compatibility": "COMPATIBLE",
+              "vocal_collision_risk": "LOW",
+              "bass_percussion_collision_risk": "LOW",
+              "intro_outro_texture_compatibility": "COMPATIBLE",
+              "analysis_confidence": "HIGH",
+              "overall_dynamic_mix_eligible": true,
+              "reason_codes": [
+                "GENRE_COMPATIBLE_SAME_FAMILY",
+                "TEMPO_DIRECT_COMPATIBLE",
+                "BEAT_CONFIDENCE_SUFFICIENT",
+                "DOWNBEAT_CONFIDENCE_SUFFICIENT",
+                "HARMONIC_COMPATIBLE",
+                "ENERGY_CONTINUITY_STRONG",
+                "STRUCTURE_COMPATIBLE",
+                "VOCAL_COLLISION_RISK_ACCEPTABLE",
+                "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+                "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+                "ANALYSIS_CONFIDENCE_SUFFICIENT",
+                "PAIR_FULLY_COMPATIBLE_COMPLEX_MIX_ELIGIBLE"
+              ]
+            },
+            "energy_continuity_priority": "STRONG",
+            "required_tempo_ratio": 1.0,
+            "required_pitch_shift_semitones": 0,
+            "eligible_for_dynamic_mix": true,
+            "allowed_transition_class_set": [
+              "FULL_DJ_BLEND",
+              "SHORT_EQ_BLEND",
+              "SIMPLE_CROSSFADE"
+            ],
+            "confidence": "HIGH",
+            "effective_content_end_ms": 200000,
+            "boundary_rank": 1,
+            "selected": true,
+            "selection_reason_codes": [
+              "BEST_RANKED_COMPLETE_BOUNDARY_PLAN"
+            ]
+          },
+          {
+            "outgoing_candidate_id": "TX02-OUT-1",
+            "incoming_candidate_id": "TX02-IN-BAD",
+            "eligible": false,
+            "entry_reason_codes": [
+              "ENTRY_SKIPS_MEANINGFUL_INTRO_WITHOUT_EVIDENCE"
+            ],
+            "outgoing_content_preservation_ratio": 1.0,
+            "musical_structure_score": 0.5,
+            "outgoing_structure_score": 1.0,
+            "incoming_structure_score": 0.0,
+            "outgoing_preservation_components": {
+              "effective_content_end_ms": 200000,
+              "transition_onset_ms": 180000,
+              "outgoing_last_audible_ms": 200000,
+              "overlap_duration_ms": 20000,
+              "outgoing_content_lost_ms": 0
+            },
+            "outgoing_structure_components": {
+              "in_acceptable_exit_region": true,
+              "is_outro_tail_opportunity": true,
+              "musical_unit_complete": true,
+              "beat_downbeat_aligned": true
+            },
+            "pair_compatibility_components": {
+              "genre_compatibility": "COMPATIBLE",
+              "tempo_compatibility": "DIRECT",
+              "required_tempo_stretch_pct": 0.0,
+              "required_tempo_ratio": 1.0,
+              "tempo_requires_playback_rate_change": true,
+              "beat_compatibility": "SUFFICIENT",
+              "downbeat_compatibility": "SUFFICIENT",
+              "harmonic_compatibility": "COMPATIBLE",
+              "energy_continuity": "STRONG",
+              "structure_compatibility": "COMPATIBLE",
+              "vocal_collision_risk": "LOW",
+              "bass_percussion_collision_risk": "LOW",
+              "intro_outro_texture_compatibility": "COMPATIBLE",
+              "analysis_confidence": "HIGH",
+              "overall_dynamic_mix_eligible": true,
+              "reason_codes": [
+                "GENRE_COMPATIBLE_SAME_FAMILY",
+                "TEMPO_DIRECT_COMPATIBLE",
+                "BEAT_CONFIDENCE_SUFFICIENT",
+                "DOWNBEAT_CONFIDENCE_SUFFICIENT",
+                "HARMONIC_COMPATIBLE",
+                "ENERGY_CONTINUITY_STRONG",
+                "STRUCTURE_COMPATIBLE",
+                "VOCAL_COLLISION_RISK_ACCEPTABLE",
+                "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+                "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+                "ANALYSIS_CONFIDENCE_SUFFICIENT",
+                "PAIR_FULLY_COMPATIBLE_COMPLEX_MIX_ELIGIBLE"
+              ]
+            },
+            "energy_continuity_priority": "STRONG",
+            "required_tempo_ratio": 1.0,
+            "required_pitch_shift_semitones": 0,
+            "eligible_for_dynamic_mix": true,
+            "allowed_transition_class_set": [
+              "FULL_DJ_BLEND",
+              "SHORT_EQ_BLEND",
+              "SIMPLE_CROSSFADE"
+            ],
+            "confidence": "HIGH",
+            "effective_content_end_ms": 200000,
+            "boundary_rank": null,
+            "selected": false,
+            "selection_reason_codes": []
+          }
+        ]
+      },
+      "expected_winner": {
+        "outgoing": "TX02-OUT-1",
+        "incoming": "TX02-IN-ZERO"
+      },
+      "matches_expectation": true
+    },
+    "TX-03": {
+      "title": "incoming_entry_leading_silence_skip",
+      "purpose": "Incoming entry case B: authored non-musical leading silence may be skipped; meaningful intro must not be silently removed.",
+      "decision": {
+        "fixture_id": "TX-03",
+        "listener_intent": "SEAMLESS_FULL_TRACK_DEFAULT",
+        "policy_name": "SEAMLESS_FULL_TRACK_DEFAULT_BOUNDARY",
+        "decision_type": "TRANSITION",
+        "current_track_effective_content_end_ms": 200000,
+        "selected_outgoing_exit_candidate_id": "TX03-OUT-1",
+        "transition_onset_window_ms": {
+          "t_start_ms": 180000,
+          "t_end_ms": 180000
+        },
+        "outgoing_last_audible_target_ms": 200000,
+        "outgoing_content_preservation_target": 1.0,
+        "selected_incoming_entry_candidate_id": "TX03-IN-SKIP",
+        "incoming_effective_content_start_ms": 5000,
+        "next_track_entry_window_ms": {
+          "t_start_ms": 5000,
+          "t_end_ms": 5000
+        },
+        "incoming_entry_reason_codes": [
+          "AUTHORED_LEADING_SILENCE_SKIPPED"
+        ],
+        "incoming_phrase_section_evidence": false,
+        "allowed_transition_class_set": [
+          "FULL_DJ_BLEND",
+          "SHORT_EQ_BLEND",
+          "SIMPLE_CROSSFADE"
+        ],
+        "pair_compatibility_components": {
+          "genre_compatibility": "COMPATIBLE",
+          "tempo_compatibility": "DIRECT",
+          "required_tempo_stretch_pct": 0.0,
+          "required_tempo_ratio": 1.0,
+          "tempo_requires_playback_rate_change": true,
+          "beat_compatibility": "SUFFICIENT",
+          "downbeat_compatibility": "SUFFICIENT",
+          "harmonic_compatibility": "COMPATIBLE",
+          "energy_continuity": "STRONG",
+          "structure_compatibility": "COMPATIBLE",
+          "vocal_collision_risk": "LOW",
+          "bass_percussion_collision_risk": "LOW",
+          "intro_outro_texture_compatibility": "COMPATIBLE",
+          "analysis_confidence": "HIGH",
+          "overall_dynamic_mix_eligible": true,
+          "reason_codes": [
+            "GENRE_COMPATIBLE_SAME_FAMILY",
+            "TEMPO_DIRECT_COMPATIBLE",
+            "BEAT_CONFIDENCE_SUFFICIENT",
+            "DOWNBEAT_CONFIDENCE_SUFFICIENT",
+            "HARMONIC_COMPATIBLE",
+            "ENERGY_CONTINUITY_STRONG",
+            "STRUCTURE_COMPATIBLE",
+            "VOCAL_COLLISION_RISK_ACCEPTABLE",
+            "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+            "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+            "ANALYSIS_CONFIDENCE_SUFFICIENT",
+            "PAIR_FULLY_COMPATIBLE_COMPLEX_MIX_ELIGIBLE"
+          ]
+        },
+        "outgoing_beat_alignment_target_ms": 180000,
+        "incoming_beat_alignment_target_ms": 5000,
+        "outgoing_downbeat_alignment_target_ms": 180000,
+        "incoming_downbeat_alignment_target_ms": 5000,
+        "beat_phase_relation": "ALIGNED",
+        "bar_phase_relation": "ALIGNED",
+        "required_tempo_ratio": 1.0,
+        "permitted_tempo_ratio_max_deviation": 0.12,
+        "required_pitch_shift_semitones": 0,
+        "permitted_pitch_shift_semitones_min": -3,
+        "permitted_pitch_shift_semitones_max": 3,
+        "energy_continuity_target": "PAIR_ENERGY_CONTINUITY=STRONG",
+        "vocal_collision_constraints": "PAIR_VOCAL_COLLISION_RISK=LOW",
+        "bass_collision_constraints": "PAIR_BASS_PERCUSSION_COLLISION_RISK=LOW",
+        "analysis_confidence": "HIGH",
+        "reason_codes": [
+          "STRUCTURAL_EVIDENCE_PRESENT",
+          "BEST_RANKED_COMPLETE_BOUNDARY_PLAN"
+        ],
+        "queue_order_independent_of_exit_timing": true,
+        "candidate_rank_trace": [
+          {
+            "outgoing_candidate_id": "TX03-OUT-1",
+            "incoming_candidate_id": "TX03-IN-ZERO",
+            "eligible": true,
+            "entry_reason_codes": [
+              "ENTRY_AT_TRACK_START"
+            ],
+            "outgoing_content_preservation_ratio": 1.0,
+            "musical_structure_score": 0.5,
+            "outgoing_structure_score": 1.0,
+            "incoming_structure_score": 0.0,
+            "outgoing_preservation_components": {
+              "effective_content_end_ms": 200000,
+              "transition_onset_ms": 180000,
+              "outgoing_last_audible_ms": 200000,
+              "overlap_duration_ms": 20000,
+              "outgoing_content_lost_ms": 0
+            },
+            "outgoing_structure_components": {
+              "in_acceptable_exit_region": true,
+              "is_outro_tail_opportunity": true,
+              "musical_unit_complete": true,
+              "beat_downbeat_aligned": true
+            },
+            "pair_compatibility_components": {
+              "genre_compatibility": "COMPATIBLE",
+              "tempo_compatibility": "DIRECT",
+              "required_tempo_stretch_pct": 0.0,
+              "required_tempo_ratio": 1.0,
+              "tempo_requires_playback_rate_change": true,
+              "beat_compatibility": "SUFFICIENT",
+              "downbeat_compatibility": "SUFFICIENT",
+              "harmonic_compatibility": "COMPATIBLE",
+              "energy_continuity": "STRONG",
+              "structure_compatibility": "COMPATIBLE",
+              "vocal_collision_risk": "LOW",
+              "bass_percussion_collision_risk": "LOW",
+              "intro_outro_texture_compatibility": "COMPATIBLE",
+              "analysis_confidence": "HIGH",
+              "overall_dynamic_mix_eligible": true,
+              "reason_codes": [
+                "GENRE_COMPATIBLE_SAME_FAMILY",
+                "TEMPO_DIRECT_COMPATIBLE",
+                "BEAT_CONFIDENCE_SUFFICIENT",
+                "DOWNBEAT_CONFIDENCE_SUFFICIENT",
+                "HARMONIC_COMPATIBLE",
+                "ENERGY_CONTINUITY_STRONG",
+                "STRUCTURE_COMPATIBLE",
+                "VOCAL_COLLISION_RISK_ACCEPTABLE",
+                "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+                "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+                "ANALYSIS_CONFIDENCE_SUFFICIENT",
+                "PAIR_FULLY_COMPATIBLE_COMPLEX_MIX_ELIGIBLE"
+              ]
+            },
+            "energy_continuity_priority": "STRONG",
+            "required_tempo_ratio": 1.0,
+            "required_pitch_shift_semitones": 0,
+            "eligible_for_dynamic_mix": true,
+            "allowed_transition_class_set": [
+              "FULL_DJ_BLEND",
+              "SHORT_EQ_BLEND",
+              "SIMPLE_CROSSFADE"
+            ],
+            "confidence": "HIGH",
+            "effective_content_end_ms": 200000,
+            "boundary_rank": 2,
+            "selected": false,
+            "selection_reason_codes": []
+          },
+          {
+            "outgoing_candidate_id": "TX03-OUT-1",
+            "incoming_candidate_id": "TX03-IN-SKIP",
+            "eligible": true,
+            "entry_reason_codes": [
+              "AUTHORED_LEADING_SILENCE_SKIPPED"
+            ],
+            "outgoing_content_preservation_ratio": 1.0,
+            "musical_structure_score": 0.75,
+            "outgoing_structure_score": 1.0,
+            "incoming_structure_score": 0.5,
+            "outgoing_preservation_components": {
+              "effective_content_end_ms": 200000,
+              "transition_onset_ms": 180000,
+              "outgoing_last_audible_ms": 200000,
+              "overlap_duration_ms": 20000,
+              "outgoing_content_lost_ms": 0
+            },
+            "outgoing_structure_components": {
+              "in_acceptable_exit_region": true,
+              "is_outro_tail_opportunity": true,
+              "musical_unit_complete": true,
+              "beat_downbeat_aligned": true
+            },
+            "pair_compatibility_components": {
+              "genre_compatibility": "COMPATIBLE",
+              "tempo_compatibility": "DIRECT",
+              "required_tempo_stretch_pct": 0.0,
+              "required_tempo_ratio": 1.0,
+              "tempo_requires_playback_rate_change": true,
+              "beat_compatibility": "SUFFICIENT",
+              "downbeat_compatibility": "SUFFICIENT",
+              "harmonic_compatibility": "COMPATIBLE",
+              "energy_continuity": "STRONG",
+              "structure_compatibility": "COMPATIBLE",
+              "vocal_collision_risk": "LOW",
+              "bass_percussion_collision_risk": "LOW",
+              "intro_outro_texture_compatibility": "COMPATIBLE",
+              "analysis_confidence": "HIGH",
+              "overall_dynamic_mix_eligible": true,
+              "reason_codes": [
+                "GENRE_COMPATIBLE_SAME_FAMILY",
+                "TEMPO_DIRECT_COMPATIBLE",
+                "BEAT_CONFIDENCE_SUFFICIENT",
+                "DOWNBEAT_CONFIDENCE_SUFFICIENT",
+                "HARMONIC_COMPATIBLE",
+                "ENERGY_CONTINUITY_STRONG",
+                "STRUCTURE_COMPATIBLE",
+                "VOCAL_COLLISION_RISK_ACCEPTABLE",
+                "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+                "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+                "ANALYSIS_CONFIDENCE_SUFFICIENT",
+                "PAIR_FULLY_COMPATIBLE_COMPLEX_MIX_ELIGIBLE"
+              ]
+            },
+            "energy_continuity_priority": "STRONG",
+            "required_tempo_ratio": 1.0,
+            "required_pitch_shift_semitones": 0,
+            "eligible_for_dynamic_mix": true,
+            "allowed_transition_class_set": [
+              "FULL_DJ_BLEND",
+              "SHORT_EQ_BLEND",
+              "SIMPLE_CROSSFADE"
+            ],
+            "confidence": "HIGH",
+            "effective_content_end_ms": 200000,
+            "boundary_rank": 1,
+            "selected": true,
+            "selection_reason_codes": [
+              "BEST_RANKED_COMPLETE_BOUNDARY_PLAN"
+            ]
+          },
+          {
+            "outgoing_candidate_id": "TX03-OUT-1",
+            "incoming_candidate_id": "TX03-IN-TOOFAR",
+            "eligible": false,
+            "entry_reason_codes": [
+              "ENTRY_SKIPS_MEANINGFUL_INTRO_WITHOUT_EVIDENCE"
+            ],
+            "outgoing_content_preservation_ratio": 1.0,
+            "musical_structure_score": 0.5,
+            "outgoing_structure_score": 1.0,
+            "incoming_structure_score": 0.0,
+            "outgoing_preservation_components": {
+              "effective_content_end_ms": 200000,
+              "transition_onset_ms": 180000,
+              "outgoing_last_audible_ms": 200000,
+              "overlap_duration_ms": 20000,
+              "outgoing_content_lost_ms": 0
+            },
+            "outgoing_structure_components": {
+              "in_acceptable_exit_region": true,
+              "is_outro_tail_opportunity": true,
+              "musical_unit_complete": true,
+              "beat_downbeat_aligned": true
+            },
+            "pair_compatibility_components": {
+              "genre_compatibility": "COMPATIBLE",
+              "tempo_compatibility": "DIRECT",
+              "required_tempo_stretch_pct": 0.0,
+              "required_tempo_ratio": 1.0,
+              "tempo_requires_playback_rate_change": true,
+              "beat_compatibility": "SUFFICIENT",
+              "downbeat_compatibility": "SUFFICIENT",
+              "harmonic_compatibility": "COMPATIBLE",
+              "energy_continuity": "STRONG",
+              "structure_compatibility": "COMPATIBLE",
+              "vocal_collision_risk": "LOW",
+              "bass_percussion_collision_risk": "LOW",
+              "intro_outro_texture_compatibility": "COMPATIBLE",
+              "analysis_confidence": "HIGH",
+              "overall_dynamic_mix_eligible": true,
+              "reason_codes": [
+                "GENRE_COMPATIBLE_SAME_FAMILY",
+                "TEMPO_DIRECT_COMPATIBLE",
+                "BEAT_CONFIDENCE_SUFFICIENT",
+                "DOWNBEAT_CONFIDENCE_SUFFICIENT",
+                "HARMONIC_COMPATIBLE",
+                "ENERGY_CONTINUITY_STRONG",
+                "STRUCTURE_COMPATIBLE",
+                "VOCAL_COLLISION_RISK_ACCEPTABLE",
+                "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+                "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+                "ANALYSIS_CONFIDENCE_SUFFICIENT",
+                "PAIR_FULLY_COMPATIBLE_COMPLEX_MIX_ELIGIBLE"
+              ]
+            },
+            "energy_continuity_priority": "STRONG",
+            "required_tempo_ratio": 1.0,
+            "required_pitch_shift_semitones": 0,
+            "eligible_for_dynamic_mix": true,
+            "allowed_transition_class_set": [
+              "FULL_DJ_BLEND",
+              "SHORT_EQ_BLEND",
+              "SIMPLE_CROSSFADE"
+            ],
+            "confidence": "HIGH",
+            "effective_content_end_ms": 200000,
+            "boundary_rank": null,
+            "selected": false,
+            "selection_reason_codes": []
+          }
+        ],
+        "candidate_trace": [
+          {
+            "outgoing_candidate_id": "TX03-OUT-1",
+            "incoming_candidate_id": "TX03-IN-ZERO",
+            "eligible": true,
+            "entry_reason_codes": [
+              "ENTRY_AT_TRACK_START"
+            ],
+            "outgoing_content_preservation_ratio": 1.0,
+            "musical_structure_score": 0.5,
+            "outgoing_structure_score": 1.0,
+            "incoming_structure_score": 0.0,
+            "outgoing_preservation_components": {
+              "effective_content_end_ms": 200000,
+              "transition_onset_ms": 180000,
+              "outgoing_last_audible_ms": 200000,
+              "overlap_duration_ms": 20000,
+              "outgoing_content_lost_ms": 0
+            },
+            "outgoing_structure_components": {
+              "in_acceptable_exit_region": true,
+              "is_outro_tail_opportunity": true,
+              "musical_unit_complete": true,
+              "beat_downbeat_aligned": true
+            },
+            "pair_compatibility_components": {
+              "genre_compatibility": "COMPATIBLE",
+              "tempo_compatibility": "DIRECT",
+              "required_tempo_stretch_pct": 0.0,
+              "required_tempo_ratio": 1.0,
+              "tempo_requires_playback_rate_change": true,
+              "beat_compatibility": "SUFFICIENT",
+              "downbeat_compatibility": "SUFFICIENT",
+              "harmonic_compatibility": "COMPATIBLE",
+              "energy_continuity": "STRONG",
+              "structure_compatibility": "COMPATIBLE",
+              "vocal_collision_risk": "LOW",
+              "bass_percussion_collision_risk": "LOW",
+              "intro_outro_texture_compatibility": "COMPATIBLE",
+              "analysis_confidence": "HIGH",
+              "overall_dynamic_mix_eligible": true,
+              "reason_codes": [
+                "GENRE_COMPATIBLE_SAME_FAMILY",
+                "TEMPO_DIRECT_COMPATIBLE",
+                "BEAT_CONFIDENCE_SUFFICIENT",
+                "DOWNBEAT_CONFIDENCE_SUFFICIENT",
+                "HARMONIC_COMPATIBLE",
+                "ENERGY_CONTINUITY_STRONG",
+                "STRUCTURE_COMPATIBLE",
+                "VOCAL_COLLISION_RISK_ACCEPTABLE",
+                "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+                "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+                "ANALYSIS_CONFIDENCE_SUFFICIENT",
+                "PAIR_FULLY_COMPATIBLE_COMPLEX_MIX_ELIGIBLE"
+              ]
+            },
+            "energy_continuity_priority": "STRONG",
+            "required_tempo_ratio": 1.0,
+            "required_pitch_shift_semitones": 0,
+            "eligible_for_dynamic_mix": true,
+            "allowed_transition_class_set": [
+              "FULL_DJ_BLEND",
+              "SHORT_EQ_BLEND",
+              "SIMPLE_CROSSFADE"
+            ],
+            "confidence": "HIGH",
+            "effective_content_end_ms": 200000,
+            "boundary_rank": 2,
+            "selected": false,
+            "selection_reason_codes": []
+          },
+          {
+            "outgoing_candidate_id": "TX03-OUT-1",
+            "incoming_candidate_id": "TX03-IN-SKIP",
+            "eligible": true,
+            "entry_reason_codes": [
+              "AUTHORED_LEADING_SILENCE_SKIPPED"
+            ],
+            "outgoing_content_preservation_ratio": 1.0,
+            "musical_structure_score": 0.75,
+            "outgoing_structure_score": 1.0,
+            "incoming_structure_score": 0.5,
+            "outgoing_preservation_components": {
+              "effective_content_end_ms": 200000,
+              "transition_onset_ms": 180000,
+              "outgoing_last_audible_ms": 200000,
+              "overlap_duration_ms": 20000,
+              "outgoing_content_lost_ms": 0
+            },
+            "outgoing_structure_components": {
+              "in_acceptable_exit_region": true,
+              "is_outro_tail_opportunity": true,
+              "musical_unit_complete": true,
+              "beat_downbeat_aligned": true
+            },
+            "pair_compatibility_components": {
+              "genre_compatibility": "COMPATIBLE",
+              "tempo_compatibility": "DIRECT",
+              "required_tempo_stretch_pct": 0.0,
+              "required_tempo_ratio": 1.0,
+              "tempo_requires_playback_rate_change": true,
+              "beat_compatibility": "SUFFICIENT",
+              "downbeat_compatibility": "SUFFICIENT",
+              "harmonic_compatibility": "COMPATIBLE",
+              "energy_continuity": "STRONG",
+              "structure_compatibility": "COMPATIBLE",
+              "vocal_collision_risk": "LOW",
+              "bass_percussion_collision_risk": "LOW",
+              "intro_outro_texture_compatibility": "COMPATIBLE",
+              "analysis_confidence": "HIGH",
+              "overall_dynamic_mix_eligible": true,
+              "reason_codes": [
+                "GENRE_COMPATIBLE_SAME_FAMILY",
+                "TEMPO_DIRECT_COMPATIBLE",
+                "BEAT_CONFIDENCE_SUFFICIENT",
+                "DOWNBEAT_CONFIDENCE_SUFFICIENT",
+                "HARMONIC_COMPATIBLE",
+                "ENERGY_CONTINUITY_STRONG",
+                "STRUCTURE_COMPATIBLE",
+                "VOCAL_COLLISION_RISK_ACCEPTABLE",
+                "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+                "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+                "ANALYSIS_CONFIDENCE_SUFFICIENT",
+                "PAIR_FULLY_COMPATIBLE_COMPLEX_MIX_ELIGIBLE"
+              ]
+            },
+            "energy_continuity_priority": "STRONG",
+            "required_tempo_ratio": 1.0,
+            "required_pitch_shift_semitones": 0,
+            "eligible_for_dynamic_mix": true,
+            "allowed_transition_class_set": [
+              "FULL_DJ_BLEND",
+              "SHORT_EQ_BLEND",
+              "SIMPLE_CROSSFADE"
+            ],
+            "confidence": "HIGH",
+            "effective_content_end_ms": 200000,
+            "boundary_rank": 1,
+            "selected": true,
+            "selection_reason_codes": [
+              "BEST_RANKED_COMPLETE_BOUNDARY_PLAN"
+            ]
+          },
+          {
+            "outgoing_candidate_id": "TX03-OUT-1",
+            "incoming_candidate_id": "TX03-IN-TOOFAR",
+            "eligible": false,
+            "entry_reason_codes": [
+              "ENTRY_SKIPS_MEANINGFUL_INTRO_WITHOUT_EVIDENCE"
+            ],
+            "outgoing_content_preservation_ratio": 1.0,
+            "musical_structure_score": 0.5,
+            "outgoing_structure_score": 1.0,
+            "incoming_structure_score": 0.0,
+            "outgoing_preservation_components": {
+              "effective_content_end_ms": 200000,
+              "transition_onset_ms": 180000,
+              "outgoing_last_audible_ms": 200000,
+              "overlap_duration_ms": 20000,
+              "outgoing_content_lost_ms": 0
+            },
+            "outgoing_structure_components": {
+              "in_acceptable_exit_region": true,
+              "is_outro_tail_opportunity": true,
+              "musical_unit_complete": true,
+              "beat_downbeat_aligned": true
+            },
+            "pair_compatibility_components": {
+              "genre_compatibility": "COMPATIBLE",
+              "tempo_compatibility": "DIRECT",
+              "required_tempo_stretch_pct": 0.0,
+              "required_tempo_ratio": 1.0,
+              "tempo_requires_playback_rate_change": true,
+              "beat_compatibility": "SUFFICIENT",
+              "downbeat_compatibility": "SUFFICIENT",
+              "harmonic_compatibility": "COMPATIBLE",
+              "energy_continuity": "STRONG",
+              "structure_compatibility": "COMPATIBLE",
+              "vocal_collision_risk": "LOW",
+              "bass_percussion_collision_risk": "LOW",
+              "intro_outro_texture_compatibility": "COMPATIBLE",
+              "analysis_confidence": "HIGH",
+              "overall_dynamic_mix_eligible": true,
+              "reason_codes": [
+                "GENRE_COMPATIBLE_SAME_FAMILY",
+                "TEMPO_DIRECT_COMPATIBLE",
+                "BEAT_CONFIDENCE_SUFFICIENT",
+                "DOWNBEAT_CONFIDENCE_SUFFICIENT",
+                "HARMONIC_COMPATIBLE",
+                "ENERGY_CONTINUITY_STRONG",
+                "STRUCTURE_COMPATIBLE",
+                "VOCAL_COLLISION_RISK_ACCEPTABLE",
+                "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+                "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+                "ANALYSIS_CONFIDENCE_SUFFICIENT",
+                "PAIR_FULLY_COMPATIBLE_COMPLEX_MIX_ELIGIBLE"
+              ]
+            },
+            "energy_continuity_priority": "STRONG",
+            "required_tempo_ratio": 1.0,
+            "required_pitch_shift_semitones": 0,
+            "eligible_for_dynamic_mix": true,
+            "allowed_transition_class_set": [
+              "FULL_DJ_BLEND",
+              "SHORT_EQ_BLEND",
+              "SIMPLE_CROSSFADE"
+            ],
+            "confidence": "HIGH",
+            "effective_content_end_ms": 200000,
+            "boundary_rank": null,
+            "selected": false,
+            "selection_reason_codes": []
+          }
+        ]
+      },
+      "expected_winner": {
+        "outgoing": "TX03-OUT-1",
+        "incoming": "TX03-IN-SKIP"
+      },
+      "matches_expectation": true
+    },
+    "TX-04": {
+      "title": "incoming_entry_later_phrase_better_than_zero",
+      "purpose": "Incoming entry case C: a later phrase/downbeat/cue entry is clearly a better transition entry than 0ms.",
+      "decision": {
+        "fixture_id": "TX-04",
+        "listener_intent": "SEAMLESS_FULL_TRACK_DEFAULT",
+        "policy_name": "SEAMLESS_FULL_TRACK_DEFAULT_BOUNDARY",
+        "decision_type": "TRANSITION",
+        "current_track_effective_content_end_ms": 200000,
+        "selected_outgoing_exit_candidate_id": "TX04-OUT-1",
+        "transition_onset_window_ms": {
+          "t_start_ms": 180000,
+          "t_end_ms": 180000
+        },
+        "outgoing_last_audible_target_ms": 200000,
+        "outgoing_content_preservation_target": 1.0,
+        "selected_incoming_entry_candidate_id": "TX04-IN-CUE",
+        "incoming_effective_content_start_ms": 0,
+        "next_track_entry_window_ms": {
+          "t_start_ms": 8000,
+          "t_end_ms": 8000
+        },
+        "incoming_entry_reason_codes": [
+          "PHRASE_CUE_EVIDENCE_PRESENT"
+        ],
+        "incoming_phrase_section_evidence": true,
+        "allowed_transition_class_set": [
+          "FULL_DJ_BLEND",
+          "SHORT_EQ_BLEND",
+          "SIMPLE_CROSSFADE"
+        ],
+        "pair_compatibility_components": {
+          "genre_compatibility": "COMPATIBLE",
+          "tempo_compatibility": "DIRECT",
+          "required_tempo_stretch_pct": 0.0,
+          "required_tempo_ratio": 1.0,
+          "tempo_requires_playback_rate_change": true,
+          "beat_compatibility": "SUFFICIENT",
+          "downbeat_compatibility": "SUFFICIENT",
+          "harmonic_compatibility": "COMPATIBLE",
+          "energy_continuity": "STRONG",
+          "structure_compatibility": "COMPATIBLE",
+          "vocal_collision_risk": "LOW",
+          "bass_percussion_collision_risk": "LOW",
+          "intro_outro_texture_compatibility": "COMPATIBLE",
+          "analysis_confidence": "HIGH",
+          "overall_dynamic_mix_eligible": true,
+          "reason_codes": [
+            "GENRE_COMPATIBLE_SAME_FAMILY",
+            "TEMPO_DIRECT_COMPATIBLE",
+            "BEAT_CONFIDENCE_SUFFICIENT",
+            "DOWNBEAT_CONFIDENCE_SUFFICIENT",
+            "HARMONIC_COMPATIBLE",
+            "ENERGY_CONTINUITY_STRONG",
+            "STRUCTURE_COMPATIBLE",
+            "VOCAL_COLLISION_RISK_ACCEPTABLE",
+            "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+            "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+            "ANALYSIS_CONFIDENCE_SUFFICIENT",
+            "PAIR_FULLY_COMPATIBLE_COMPLEX_MIX_ELIGIBLE"
+          ]
+        },
+        "outgoing_beat_alignment_target_ms": 180000,
+        "incoming_beat_alignment_target_ms": 8000,
+        "outgoing_downbeat_alignment_target_ms": 180000,
+        "incoming_downbeat_alignment_target_ms": 8000,
+        "beat_phase_relation": "ALIGNED",
+        "bar_phase_relation": "ALIGNED",
+        "required_tempo_ratio": 1.0,
+        "permitted_tempo_ratio_max_deviation": 0.12,
+        "required_pitch_shift_semitones": 0,
+        "permitted_pitch_shift_semitones_min": -3,
+        "permitted_pitch_shift_semitones_max": 3,
+        "energy_continuity_target": "PAIR_ENERGY_CONTINUITY=STRONG",
+        "vocal_collision_constraints": "PAIR_VOCAL_COLLISION_RISK=LOW",
+        "bass_collision_constraints": "PAIR_BASS_PERCUSSION_COLLISION_RISK=LOW",
+        "analysis_confidence": "HIGH",
+        "reason_codes": [
+          "STRUCTURAL_EVIDENCE_PRESENT",
+          "BEST_RANKED_COMPLETE_BOUNDARY_PLAN"
+        ],
+        "queue_order_independent_of_exit_timing": true,
+        "candidate_rank_trace": [
+          {
+            "outgoing_candidate_id": "TX04-OUT-1",
+            "incoming_candidate_id": "TX04-IN-ZERO",
+            "eligible": true,
+            "entry_reason_codes": [
+              "ENTRY_AT_TRACK_START"
+            ],
+            "outgoing_content_preservation_ratio": 1.0,
+            "musical_structure_score": 0.5,
+            "outgoing_structure_score": 1.0,
+            "incoming_structure_score": 0.0,
+            "outgoing_preservation_components": {
+              "effective_content_end_ms": 200000,
+              "transition_onset_ms": 180000,
+              "outgoing_last_audible_ms": 200000,
+              "overlap_duration_ms": 20000,
+              "outgoing_content_lost_ms": 0
+            },
+            "outgoing_structure_components": {
+              "in_acceptable_exit_region": true,
+              "is_outro_tail_opportunity": true,
+              "musical_unit_complete": true,
+              "beat_downbeat_aligned": true
+            },
+            "pair_compatibility_components": {
+              "genre_compatibility": "COMPATIBLE",
+              "tempo_compatibility": "DIRECT",
+              "required_tempo_stretch_pct": 0.0,
+              "required_tempo_ratio": 1.0,
+              "tempo_requires_playback_rate_change": true,
+              "beat_compatibility": "SUFFICIENT",
+              "downbeat_compatibility": "SUFFICIENT",
+              "harmonic_compatibility": "COMPATIBLE",
+              "energy_continuity": "STRONG",
+              "structure_compatibility": "COMPATIBLE",
+              "vocal_collision_risk": "LOW",
+              "bass_percussion_collision_risk": "LOW",
+              "intro_outro_texture_compatibility": "COMPATIBLE",
+              "analysis_confidence": "HIGH",
+              "overall_dynamic_mix_eligible": true,
+              "reason_codes": [
+                "GENRE_COMPATIBLE_SAME_FAMILY",
+                "TEMPO_DIRECT_COMPATIBLE",
+                "BEAT_CONFIDENCE_SUFFICIENT",
+                "DOWNBEAT_CONFIDENCE_SUFFICIENT",
+                "HARMONIC_COMPATIBLE",
+                "ENERGY_CONTINUITY_STRONG",
+                "STRUCTURE_COMPATIBLE",
+                "VOCAL_COLLISION_RISK_ACCEPTABLE",
+                "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+                "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+                "ANALYSIS_CONFIDENCE_SUFFICIENT",
+                "PAIR_FULLY_COMPATIBLE_COMPLEX_MIX_ELIGIBLE"
+              ]
+            },
+            "energy_continuity_priority": "STRONG",
+            "required_tempo_ratio": 1.0,
+            "required_pitch_shift_semitones": 0,
+            "eligible_for_dynamic_mix": true,
+            "allowed_transition_class_set": [
+              "FULL_DJ_BLEND",
+              "SHORT_EQ_BLEND",
+              "SIMPLE_CROSSFADE"
+            ],
+            "confidence": "HIGH",
+            "effective_content_end_ms": 200000,
+            "boundary_rank": 2,
+            "selected": false,
+            "selection_reason_codes": []
+          },
+          {
+            "outgoing_candidate_id": "TX04-OUT-1",
+            "incoming_candidate_id": "TX04-IN-CUE",
+            "eligible": true,
+            "entry_reason_codes": [
+              "PHRASE_CUE_EVIDENCE_PRESENT"
+            ],
+            "outgoing_content_preservation_ratio": 1.0,
+            "musical_structure_score": 1.0,
+            "outgoing_structure_score": 1.0,
+            "incoming_structure_score": 1.0,
+            "outgoing_preservation_components": {
+              "effective_content_end_ms": 200000,
+              "transition_onset_ms": 180000,
+              "outgoing_last_audible_ms": 200000,
+              "overlap_duration_ms": 20000,
+              "outgoing_content_lost_ms": 0
+            },
+            "outgoing_structure_components": {
+              "in_acceptable_exit_region": true,
+              "is_outro_tail_opportunity": true,
+              "musical_unit_complete": true,
+              "beat_downbeat_aligned": true
+            },
+            "pair_compatibility_components": {
+              "genre_compatibility": "COMPATIBLE",
+              "tempo_compatibility": "DIRECT",
+              "required_tempo_stretch_pct": 0.0,
+              "required_tempo_ratio": 1.0,
+              "tempo_requires_playback_rate_change": true,
+              "beat_compatibility": "SUFFICIENT",
+              "downbeat_compatibility": "SUFFICIENT",
+              "harmonic_compatibility": "COMPATIBLE",
+              "energy_continuity": "STRONG",
+              "structure_compatibility": "COMPATIBLE",
+              "vocal_collision_risk": "LOW",
+              "bass_percussion_collision_risk": "LOW",
+              "intro_outro_texture_compatibility": "COMPATIBLE",
+              "analysis_confidence": "HIGH",
+              "overall_dynamic_mix_eligible": true,
+              "reason_codes": [
+                "GENRE_COMPATIBLE_SAME_FAMILY",
+                "TEMPO_DIRECT_COMPATIBLE",
+                "BEAT_CONFIDENCE_SUFFICIENT",
+                "DOWNBEAT_CONFIDENCE_SUFFICIENT",
+                "HARMONIC_COMPATIBLE",
+                "ENERGY_CONTINUITY_STRONG",
+                "STRUCTURE_COMPATIBLE",
+                "VOCAL_COLLISION_RISK_ACCEPTABLE",
+                "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+                "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+                "ANALYSIS_CONFIDENCE_SUFFICIENT",
+                "PAIR_FULLY_COMPATIBLE_COMPLEX_MIX_ELIGIBLE"
+              ]
+            },
+            "energy_continuity_priority": "STRONG",
+            "required_tempo_ratio": 1.0,
+            "required_pitch_shift_semitones": 0,
+            "eligible_for_dynamic_mix": true,
+            "allowed_transition_class_set": [
+              "FULL_DJ_BLEND",
+              "SHORT_EQ_BLEND",
+              "SIMPLE_CROSSFADE"
+            ],
+            "confidence": "HIGH",
+            "effective_content_end_ms": 200000,
+            "boundary_rank": 1,
+            "selected": true,
+            "selection_reason_codes": [
+              "BEST_RANKED_COMPLETE_BOUNDARY_PLAN"
+            ]
+          }
+        ],
+        "candidate_trace": [
+          {
+            "outgoing_candidate_id": "TX04-OUT-1",
+            "incoming_candidate_id": "TX04-IN-ZERO",
+            "eligible": true,
+            "entry_reason_codes": [
+              "ENTRY_AT_TRACK_START"
+            ],
+            "outgoing_content_preservation_ratio": 1.0,
+            "musical_structure_score": 0.5,
+            "outgoing_structure_score": 1.0,
+            "incoming_structure_score": 0.0,
+            "outgoing_preservation_components": {
+              "effective_content_end_ms": 200000,
+              "transition_onset_ms": 180000,
+              "outgoing_last_audible_ms": 200000,
+              "overlap_duration_ms": 20000,
+              "outgoing_content_lost_ms": 0
+            },
+            "outgoing_structure_components": {
+              "in_acceptable_exit_region": true,
+              "is_outro_tail_opportunity": true,
+              "musical_unit_complete": true,
+              "beat_downbeat_aligned": true
+            },
+            "pair_compatibility_components": {
+              "genre_compatibility": "COMPATIBLE",
+              "tempo_compatibility": "DIRECT",
+              "required_tempo_stretch_pct": 0.0,
+              "required_tempo_ratio": 1.0,
+              "tempo_requires_playback_rate_change": true,
+              "beat_compatibility": "SUFFICIENT",
+              "downbeat_compatibility": "SUFFICIENT",
+              "harmonic_compatibility": "COMPATIBLE",
+              "energy_continuity": "STRONG",
+              "structure_compatibility": "COMPATIBLE",
+              "vocal_collision_risk": "LOW",
+              "bass_percussion_collision_risk": "LOW",
+              "intro_outro_texture_compatibility": "COMPATIBLE",
+              "analysis_confidence": "HIGH",
+              "overall_dynamic_mix_eligible": true,
+              "reason_codes": [
+                "GENRE_COMPATIBLE_SAME_FAMILY",
+                "TEMPO_DIRECT_COMPATIBLE",
+                "BEAT_CONFIDENCE_SUFFICIENT",
+                "DOWNBEAT_CONFIDENCE_SUFFICIENT",
+                "HARMONIC_COMPATIBLE",
+                "ENERGY_CONTINUITY_STRONG",
+                "STRUCTURE_COMPATIBLE",
+                "VOCAL_COLLISION_RISK_ACCEPTABLE",
+                "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+                "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+                "ANALYSIS_CONFIDENCE_SUFFICIENT",
+                "PAIR_FULLY_COMPATIBLE_COMPLEX_MIX_ELIGIBLE"
+              ]
+            },
+            "energy_continuity_priority": "STRONG",
+            "required_tempo_ratio": 1.0,
+            "required_pitch_shift_semitones": 0,
+            "eligible_for_dynamic_mix": true,
+            "allowed_transition_class_set": [
+              "FULL_DJ_BLEND",
+              "SHORT_EQ_BLEND",
+              "SIMPLE_CROSSFADE"
+            ],
+            "confidence": "HIGH",
+            "effective_content_end_ms": 200000,
+            "boundary_rank": 2,
+            "selected": false,
+            "selection_reason_codes": []
+          },
+          {
+            "outgoing_candidate_id": "TX04-OUT-1",
+            "incoming_candidate_id": "TX04-IN-CUE",
+            "eligible": true,
+            "entry_reason_codes": [
+              "PHRASE_CUE_EVIDENCE_PRESENT"
+            ],
+            "outgoing_content_preservation_ratio": 1.0,
+            "musical_structure_score": 1.0,
+            "outgoing_structure_score": 1.0,
+            "incoming_structure_score": 1.0,
+            "outgoing_preservation_components": {
+              "effective_content_end_ms": 200000,
+              "transition_onset_ms": 180000,
+              "outgoing_last_audible_ms": 200000,
+              "overlap_duration_ms": 20000,
+              "outgoing_content_lost_ms": 0
+            },
+            "outgoing_structure_components": {
+              "in_acceptable_exit_region": true,
+              "is_outro_tail_opportunity": true,
+              "musical_unit_complete": true,
+              "beat_downbeat_aligned": true
+            },
+            "pair_compatibility_components": {
+              "genre_compatibility": "COMPATIBLE",
+              "tempo_compatibility": "DIRECT",
+              "required_tempo_stretch_pct": 0.0,
+              "required_tempo_ratio": 1.0,
+              "tempo_requires_playback_rate_change": true,
+              "beat_compatibility": "SUFFICIENT",
+              "downbeat_compatibility": "SUFFICIENT",
+              "harmonic_compatibility": "COMPATIBLE",
+              "energy_continuity": "STRONG",
+              "structure_compatibility": "COMPATIBLE",
+              "vocal_collision_risk": "LOW",
+              "bass_percussion_collision_risk": "LOW",
+              "intro_outro_texture_compatibility": "COMPATIBLE",
+              "analysis_confidence": "HIGH",
+              "overall_dynamic_mix_eligible": true,
+              "reason_codes": [
+                "GENRE_COMPATIBLE_SAME_FAMILY",
+                "TEMPO_DIRECT_COMPATIBLE",
+                "BEAT_CONFIDENCE_SUFFICIENT",
+                "DOWNBEAT_CONFIDENCE_SUFFICIENT",
+                "HARMONIC_COMPATIBLE",
+                "ENERGY_CONTINUITY_STRONG",
+                "STRUCTURE_COMPATIBLE",
+                "VOCAL_COLLISION_RISK_ACCEPTABLE",
+                "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+                "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+                "ANALYSIS_CONFIDENCE_SUFFICIENT",
+                "PAIR_FULLY_COMPATIBLE_COMPLEX_MIX_ELIGIBLE"
+              ]
+            },
+            "energy_continuity_priority": "STRONG",
+            "required_tempo_ratio": 1.0,
+            "required_pitch_shift_semitones": 0,
+            "eligible_for_dynamic_mix": true,
+            "allowed_transition_class_set": [
+              "FULL_DJ_BLEND",
+              "SHORT_EQ_BLEND",
+              "SIMPLE_CROSSFADE"
+            ],
+            "confidence": "HIGH",
+            "effective_content_end_ms": 200000,
+            "boundary_rank": 1,
+            "selected": true,
+            "selection_reason_codes": [
+              "BEST_RANKED_COMPLETE_BOUNDARY_PLAN"
+            ]
+          }
+        ]
+      },
+      "expected_winner": {
+        "outgoing": "TX04-OUT-1",
+        "incoming": "TX04-IN-CUE"
+      },
+      "matches_expectation": true
+    },
+    "TX-05": {
+      "title": "incoming_entry_choice_changes_compatibility",
+      "purpose": "Incoming entry case D: which entry candidate is chosen changes vocal/structure compatibility at that specific boundary.",
+      "decision": {
+        "fixture_id": "TX-05",
+        "listener_intent": "SEAMLESS_FULL_TRACK_DEFAULT",
+        "policy_name": "SEAMLESS_FULL_TRACK_DEFAULT_BOUNDARY",
+        "decision_type": "TRANSITION",
+        "current_track_effective_content_end_ms": 200000,
+        "selected_outgoing_exit_candidate_id": "TX05-OUT-1",
+        "transition_onset_window_ms": {
+          "t_start_ms": 180000,
+          "t_end_ms": 180000
+        },
+        "outgoing_last_audible_target_ms": 200000,
+        "outgoing_content_preservation_target": 1.0,
+        "selected_incoming_entry_candidate_id": "TX05-IN-B",
+        "incoming_effective_content_start_ms": 0,
+        "next_track_entry_window_ms": {
+          "t_start_ms": 6000,
+          "t_end_ms": 6000
+        },
+        "incoming_entry_reason_codes": [
+          "PHRASE_CUE_EVIDENCE_PRESENT"
+        ],
+        "incoming_phrase_section_evidence": true,
+        "allowed_transition_class_set": [
+          "FULL_DJ_BLEND",
+          "SHORT_EQ_BLEND",
+          "SIMPLE_CROSSFADE"
+        ],
+        "pair_compatibility_components": {
+          "genre_compatibility": "COMPATIBLE",
+          "tempo_compatibility": "DIRECT",
+          "required_tempo_stretch_pct": 0.0,
+          "required_tempo_ratio": 1.0,
+          "tempo_requires_playback_rate_change": true,
+          "beat_compatibility": "SUFFICIENT",
+          "downbeat_compatibility": "SUFFICIENT",
+          "harmonic_compatibility": "COMPATIBLE",
+          "energy_continuity": "STRONG",
+          "structure_compatibility": "COMPATIBLE",
+          "vocal_collision_risk": "LOW",
+          "bass_percussion_collision_risk": "LOW",
+          "intro_outro_texture_compatibility": "COMPATIBLE",
+          "analysis_confidence": "HIGH",
+          "overall_dynamic_mix_eligible": true,
+          "reason_codes": [
+            "GENRE_COMPATIBLE_SAME_FAMILY",
+            "TEMPO_DIRECT_COMPATIBLE",
+            "BEAT_CONFIDENCE_SUFFICIENT",
+            "DOWNBEAT_CONFIDENCE_SUFFICIENT",
+            "HARMONIC_COMPATIBLE",
+            "ENERGY_CONTINUITY_STRONG",
+            "STRUCTURE_COMPATIBLE",
+            "VOCAL_COLLISION_RISK_ACCEPTABLE",
+            "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+            "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+            "ANALYSIS_CONFIDENCE_SUFFICIENT",
+            "PAIR_FULLY_COMPATIBLE_COMPLEX_MIX_ELIGIBLE"
+          ]
+        },
+        "outgoing_beat_alignment_target_ms": 180000,
+        "incoming_beat_alignment_target_ms": 6000,
+        "outgoing_downbeat_alignment_target_ms": 180000,
+        "incoming_downbeat_alignment_target_ms": 6000,
+        "beat_phase_relation": "ALIGNED",
+        "bar_phase_relation": "ALIGNED",
+        "required_tempo_ratio": 1.0,
+        "permitted_tempo_ratio_max_deviation": 0.12,
+        "required_pitch_shift_semitones": 0,
+        "permitted_pitch_shift_semitones_min": -3,
+        "permitted_pitch_shift_semitones_max": 3,
+        "energy_continuity_target": "PAIR_ENERGY_CONTINUITY=STRONG",
+        "vocal_collision_constraints": "PAIR_VOCAL_COLLISION_RISK=LOW",
+        "bass_collision_constraints": "PAIR_BASS_PERCUSSION_COLLISION_RISK=LOW",
+        "analysis_confidence": "HIGH",
+        "reason_codes": [
+          "STRUCTURAL_EVIDENCE_PRESENT",
+          "BEST_RANKED_COMPLETE_BOUNDARY_PLAN"
+        ],
+        "queue_order_independent_of_exit_timing": true,
+        "candidate_rank_trace": [
+          {
+            "outgoing_candidate_id": "TX05-OUT-1",
+            "incoming_candidate_id": "TX05-IN-A",
+            "eligible": true,
+            "entry_reason_codes": [
+              "ENTRY_AT_TRACK_START"
+            ],
+            "outgoing_content_preservation_ratio": 1.0,
+            "musical_structure_score": 0.5,
+            "outgoing_structure_score": 1.0,
+            "incoming_structure_score": 0.0,
+            "outgoing_preservation_components": {
+              "effective_content_end_ms": 200000,
+              "transition_onset_ms": 180000,
+              "outgoing_last_audible_ms": 200000,
+              "overlap_duration_ms": 20000,
+              "outgoing_content_lost_ms": 0
+            },
+            "outgoing_structure_components": {
+              "in_acceptable_exit_region": true,
+              "is_outro_tail_opportunity": true,
+              "musical_unit_complete": true,
+              "beat_downbeat_aligned": true
+            },
+            "pair_compatibility_components": {
+              "genre_compatibility": "COMPATIBLE",
+              "tempo_compatibility": "DIRECT",
+              "required_tempo_stretch_pct": 0.0,
+              "required_tempo_ratio": 1.0,
+              "tempo_requires_playback_rate_change": true,
+              "beat_compatibility": "SUFFICIENT",
+              "downbeat_compatibility": "SUFFICIENT",
+              "harmonic_compatibility": "COMPATIBLE",
+              "energy_continuity": "STRONG",
+              "structure_compatibility": "COMPATIBLE",
+              "vocal_collision_risk": "HIGH",
+              "bass_percussion_collision_risk": "LOW",
+              "intro_outro_texture_compatibility": "COMPATIBLE",
+              "analysis_confidence": "HIGH",
+              "overall_dynamic_mix_eligible": false,
+              "reason_codes": [
+                "GENRE_COMPATIBLE_SAME_FAMILY",
+                "TEMPO_DIRECT_COMPATIBLE",
+                "BEAT_CONFIDENCE_SUFFICIENT",
+                "DOWNBEAT_CONFIDENCE_SUFFICIENT",
+                "HARMONIC_COMPATIBLE",
+                "ENERGY_CONTINUITY_STRONG",
+                "STRUCTURE_COMPATIBLE",
+                "VOCAL_COLLISION_RISK_HIGH_PAIR",
+                "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+                "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+                "ANALYSIS_CONFIDENCE_SUFFICIENT"
+              ]
+            },
+            "energy_continuity_priority": "STRONG",
+            "required_tempo_ratio": 1.0,
+            "required_pitch_shift_semitones": 0,
+            "eligible_for_dynamic_mix": false,
+            "allowed_transition_class_set": [
+              "SIMPLE_CROSSFADE"
+            ],
+            "confidence": "HIGH",
+            "effective_content_end_ms": 200000,
+            "boundary_rank": 2,
+            "selected": false,
+            "selection_reason_codes": []
+          },
+          {
+            "outgoing_candidate_id": "TX05-OUT-1",
+            "incoming_candidate_id": "TX05-IN-B",
+            "eligible": true,
+            "entry_reason_codes": [
+              "PHRASE_CUE_EVIDENCE_PRESENT"
+            ],
+            "outgoing_content_preservation_ratio": 1.0,
+            "musical_structure_score": 1.0,
+            "outgoing_structure_score": 1.0,
+            "incoming_structure_score": 1.0,
+            "outgoing_preservation_components": {
+              "effective_content_end_ms": 200000,
+              "transition_onset_ms": 180000,
+              "outgoing_last_audible_ms": 200000,
+              "overlap_duration_ms": 20000,
+              "outgoing_content_lost_ms": 0
+            },
+            "outgoing_structure_components": {
+              "in_acceptable_exit_region": true,
+              "is_outro_tail_opportunity": true,
+              "musical_unit_complete": true,
+              "beat_downbeat_aligned": true
+            },
+            "pair_compatibility_components": {
+              "genre_compatibility": "COMPATIBLE",
+              "tempo_compatibility": "DIRECT",
+              "required_tempo_stretch_pct": 0.0,
+              "required_tempo_ratio": 1.0,
+              "tempo_requires_playback_rate_change": true,
+              "beat_compatibility": "SUFFICIENT",
+              "downbeat_compatibility": "SUFFICIENT",
+              "harmonic_compatibility": "COMPATIBLE",
+              "energy_continuity": "STRONG",
+              "structure_compatibility": "COMPATIBLE",
+              "vocal_collision_risk": "LOW",
+              "bass_percussion_collision_risk": "LOW",
+              "intro_outro_texture_compatibility": "COMPATIBLE",
+              "analysis_confidence": "HIGH",
+              "overall_dynamic_mix_eligible": true,
+              "reason_codes": [
+                "GENRE_COMPATIBLE_SAME_FAMILY",
+                "TEMPO_DIRECT_COMPATIBLE",
+                "BEAT_CONFIDENCE_SUFFICIENT",
+                "DOWNBEAT_CONFIDENCE_SUFFICIENT",
+                "HARMONIC_COMPATIBLE",
+                "ENERGY_CONTINUITY_STRONG",
+                "STRUCTURE_COMPATIBLE",
+                "VOCAL_COLLISION_RISK_ACCEPTABLE",
+                "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+                "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+                "ANALYSIS_CONFIDENCE_SUFFICIENT",
+                "PAIR_FULLY_COMPATIBLE_COMPLEX_MIX_ELIGIBLE"
+              ]
+            },
+            "energy_continuity_priority": "STRONG",
+            "required_tempo_ratio": 1.0,
+            "required_pitch_shift_semitones": 0,
+            "eligible_for_dynamic_mix": true,
+            "allowed_transition_class_set": [
+              "FULL_DJ_BLEND",
+              "SHORT_EQ_BLEND",
+              "SIMPLE_CROSSFADE"
+            ],
+            "confidence": "HIGH",
+            "effective_content_end_ms": 200000,
+            "boundary_rank": 1,
+            "selected": true,
+            "selection_reason_codes": [
+              "BEST_RANKED_COMPLETE_BOUNDARY_PLAN"
+            ]
+          }
+        ],
+        "candidate_trace": [
+          {
+            "outgoing_candidate_id": "TX05-OUT-1",
+            "incoming_candidate_id": "TX05-IN-A",
+            "eligible": true,
+            "entry_reason_codes": [
+              "ENTRY_AT_TRACK_START"
+            ],
+            "outgoing_content_preservation_ratio": 1.0,
+            "musical_structure_score": 0.5,
+            "outgoing_structure_score": 1.0,
+            "incoming_structure_score": 0.0,
+            "outgoing_preservation_components": {
+              "effective_content_end_ms": 200000,
+              "transition_onset_ms": 180000,
+              "outgoing_last_audible_ms": 200000,
+              "overlap_duration_ms": 20000,
+              "outgoing_content_lost_ms": 0
+            },
+            "outgoing_structure_components": {
+              "in_acceptable_exit_region": true,
+              "is_outro_tail_opportunity": true,
+              "musical_unit_complete": true,
+              "beat_downbeat_aligned": true
+            },
+            "pair_compatibility_components": {
+              "genre_compatibility": "COMPATIBLE",
+              "tempo_compatibility": "DIRECT",
+              "required_tempo_stretch_pct": 0.0,
+              "required_tempo_ratio": 1.0,
+              "tempo_requires_playback_rate_change": true,
+              "beat_compatibility": "SUFFICIENT",
+              "downbeat_compatibility": "SUFFICIENT",
+              "harmonic_compatibility": "COMPATIBLE",
+              "energy_continuity": "STRONG",
+              "structure_compatibility": "COMPATIBLE",
+              "vocal_collision_risk": "HIGH",
+              "bass_percussion_collision_risk": "LOW",
+              "intro_outro_texture_compatibility": "COMPATIBLE",
+              "analysis_confidence": "HIGH",
+              "overall_dynamic_mix_eligible": false,
+              "reason_codes": [
+                "GENRE_COMPATIBLE_SAME_FAMILY",
+                "TEMPO_DIRECT_COMPATIBLE",
+                "BEAT_CONFIDENCE_SUFFICIENT",
+                "DOWNBEAT_CONFIDENCE_SUFFICIENT",
+                "HARMONIC_COMPATIBLE",
+                "ENERGY_CONTINUITY_STRONG",
+                "STRUCTURE_COMPATIBLE",
+                "VOCAL_COLLISION_RISK_HIGH_PAIR",
+                "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+                "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+                "ANALYSIS_CONFIDENCE_SUFFICIENT"
+              ]
+            },
+            "energy_continuity_priority": "STRONG",
+            "required_tempo_ratio": 1.0,
+            "required_pitch_shift_semitones": 0,
+            "eligible_for_dynamic_mix": false,
+            "allowed_transition_class_set": [
+              "SIMPLE_CROSSFADE"
+            ],
+            "confidence": "HIGH",
+            "effective_content_end_ms": 200000,
+            "boundary_rank": 2,
+            "selected": false,
+            "selection_reason_codes": []
+          },
+          {
+            "outgoing_candidate_id": "TX05-OUT-1",
+            "incoming_candidate_id": "TX05-IN-B",
+            "eligible": true,
+            "entry_reason_codes": [
+              "PHRASE_CUE_EVIDENCE_PRESENT"
+            ],
+            "outgoing_content_preservation_ratio": 1.0,
+            "musical_structure_score": 1.0,
+            "outgoing_structure_score": 1.0,
+            "incoming_structure_score": 1.0,
+            "outgoing_preservation_components": {
+              "effective_content_end_ms": 200000,
+              "transition_onset_ms": 180000,
+              "outgoing_last_audible_ms": 200000,
+              "overlap_duration_ms": 20000,
+              "outgoing_content_lost_ms": 0
+            },
+            "outgoing_structure_components": {
+              "in_acceptable_exit_region": true,
+              "is_outro_tail_opportunity": true,
+              "musical_unit_complete": true,
+              "beat_downbeat_aligned": true
+            },
+            "pair_compatibility_components": {
+              "genre_compatibility": "COMPATIBLE",
+              "tempo_compatibility": "DIRECT",
+              "required_tempo_stretch_pct": 0.0,
+              "required_tempo_ratio": 1.0,
+              "tempo_requires_playback_rate_change": true,
+              "beat_compatibility": "SUFFICIENT",
+              "downbeat_compatibility": "SUFFICIENT",
+              "harmonic_compatibility": "COMPATIBLE",
+              "energy_continuity": "STRONG",
+              "structure_compatibility": "COMPATIBLE",
+              "vocal_collision_risk": "LOW",
+              "bass_percussion_collision_risk": "LOW",
+              "intro_outro_texture_compatibility": "COMPATIBLE",
+              "analysis_confidence": "HIGH",
+              "overall_dynamic_mix_eligible": true,
+              "reason_codes": [
+                "GENRE_COMPATIBLE_SAME_FAMILY",
+                "TEMPO_DIRECT_COMPATIBLE",
+                "BEAT_CONFIDENCE_SUFFICIENT",
+                "DOWNBEAT_CONFIDENCE_SUFFICIENT",
+                "HARMONIC_COMPATIBLE",
+                "ENERGY_CONTINUITY_STRONG",
+                "STRUCTURE_COMPATIBLE",
+                "VOCAL_COLLISION_RISK_ACCEPTABLE",
+                "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+                "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+                "ANALYSIS_CONFIDENCE_SUFFICIENT",
+                "PAIR_FULLY_COMPATIBLE_COMPLEX_MIX_ELIGIBLE"
+              ]
+            },
+            "energy_continuity_priority": "STRONG",
+            "required_tempo_ratio": 1.0,
+            "required_pitch_shift_semitones": 0,
+            "eligible_for_dynamic_mix": true,
+            "allowed_transition_class_set": [
+              "FULL_DJ_BLEND",
+              "SHORT_EQ_BLEND",
+              "SIMPLE_CROSSFADE"
+            ],
+            "confidence": "HIGH",
+            "effective_content_end_ms": 200000,
+            "boundary_rank": 1,
+            "selected": true,
+            "selection_reason_codes": [
+              "BEST_RANKED_COMPLETE_BOUNDARY_PLAN"
+            ]
+          }
+        ]
+      },
+      "expected_winner": {
+        "outgoing": "TX05-OUT-1",
+        "incoming": "TX05-IN-B"
+      },
+      "matches_expectation": true
+    }
+  },
+  "tx01_order_invariance": {
+    "note": "TX-01: OUT-A has the higher raw outgoing-only structure score but every boundary touching it is pair-incompatible (HIGH vocal collision); OUT-B is pair-compatible. The winner must be OUT-B+IN-2 (best compatible + best combined structure) under every outgoing-array and incoming-array ordering.",
+    "winners_by_order": {
+      "exit_normal_entry_normal": [
+        "TX01-OUT-B",
+        "TX01-IN-2"
+      ],
+      "exit_reversed_entry_normal": [
+        "TX01-OUT-B",
+        "TX01-IN-2"
+      ],
+      "exit_normal_entry_reversed": [
+        "TX01-OUT-B",
+        "TX01-IN-2"
+      ],
+      "exit_reversed_entry_reversed": [
+        "TX01-OUT-B",
+        "TX01-IN-2"
+      ],
+      "exit_shuffled_seed3_entry_shuffled_seed11": [
+        "TX01-OUT-B",
+        "TX01-IN-2"
+      ]
+    },
+    "order_invariant": true
+  }
+}
