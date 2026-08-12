@@ -1,4 +1,16 @@
-# P0-M3-R3 STAGE B — Owner Real-Music Validation (REAL-EVIDENCE REPAIR)
+# P0-M3-R3 STAGE B — Owner Real-Music Validation (REAL-EVIDENCE REPAIR + EVIDENCE AUDIT)
+
+**This is the SECOND repair pass.** The first real-evidence repair (§0-§2
+below) fixed fabricated genre/structure/bass/texture evidence. A
+follow-up PM audit ("PM STAGE-B REAL-EVIDENCE REPAIR REVIEW — NARROW
+REPAIR REQUIRED") then found the V3 selector still bypassed the stated
+ranking contract (sorted by beat-confidence + opaque ID only, ignoring
+preservation/structure/texture/vocal/bass/energy/harmonic), and that the
+handoff's ~95%/~93% bottleneck claims were unsupported prose rather than
+machine-verified counts. §3 below (rewritten) documents that second
+repair's exact machine evidence. This pass is a NARROW selector/evidence/
+audit repair only — it reuses the existing cached 100-track analysis,
+never re-decodes audio, never renders, and never rebuilds the owner pack.
 
 Executes the newest Issue #7 PM comment, "PM STAGE B REVIEW — CURRENT
 OWNER PACK INVALID / REAL-EVIDENCE REPAIR REQUIRED", against the
@@ -88,7 +100,7 @@ tracks with known genre evidence: 33 / 100 (67 UNKNOWN — real embedded
                                    video categories, not music genre)
 ```
 
-## 3. Pair selection outcome (honest, post-repair)
+## 3. Pair selection outcome (honest, post-repair, PM STAGE-B EVIDENCE AUDIT)
 
 Exhaustive search over ~9,900 ordered pairs using the SAME
 `evaluate_pair_compatibility` the accepted R2 planner uses, with the
@@ -97,63 +109,139 @@ RENDERABLE (structure confidence ≥ MEDIUM — otherwise the real planner's
 own `policy/eligibility.py` Guard 2 rejects it as `NO_SAFE_OUTGOING_EXIT`,
 independent of transition class).
 
-- **V1 (close_tempo_minimal_stretch): `PARTIAL_NO_VALID_V1`.** Pool size
-  after the honest hard-gate filter: **0**. Dominant independent
-  bottlenecks among the 620 tempo-eligible candidates: genre evidence
-  incompatible/unknown (≈95%), texture gap above the corpus-calibrated
-  threshold (≈95%), downbeat confidence insufficient on at least one side
-  (≈93%) — these compound multiplicatively; zero candidates satisfied all
-  simultaneously in this specific 100-track corpus.
-- **V2 (conditional_tempo_correction): `PARTIAL_NO_VALID_V2`.** Pool size:
-  **0** (same compounding bottlenecks among the 1,025 tempo-eligible
-  candidates).
-- **V3 (incompatible_downgrade): SELECTED.** Pool size 1,057 (after the
-  renderability filter). Selected pair: 20.83% required tempo deviation
-  (genuine `EXCESSIVE_STRETCH`, unrelated to the two BPM values used in
-  the now-invalidated pack), `HARMONIC_INCOMPATIBLE`,
-  `GENRE_INCOMPATIBLE`, downbeat-confidence-insufficient on the incoming
-  side — several independent, honestly-measured reasons `FULL_DJ_BLEND` is
-  correctly withheld. Structure evidence: a genuine detected instrumental
-  tail on the outgoing side. Pre-render projected combined energy gap:
-  ~40dB (flagged `WEAK` by the new ranking — expected and appropriate for
-  a deliberately-mismatched negative control, not a defect).
+**B1 repair**: V3 selection previously bypassed the ranking contract
+entirely (sorted only by `beat_confidence==HIGH` on both sides, then
+opaque ID) -- it now uses the EXACT SAME `rank_key()` as V1/V2 (pool
+membership alone guarantees the negative-control property; ranking WITHIN
+the pool now follows preservation → entry → structure → texture → vocal →
+bass → energy continuity → harmonic → smallest-excess-tempo-burden →
+opaque ID last). This changed the selected V3 pair.
 
-**No gate was weakened to manufacture a V1 or V2 pair.** This is the
-project's first fully evidence-honest pair-selection pass on this corpus;
-the previous (invalid) pack's V1/V2 existed only because structure,
-texture, and bass/percussion evidence were fabricated from proxies that
-had no real independent basis.
+### Exact gate decomposition (`real_music/work_local/pair_gate_calibration_sanitized.json`, machine-computed from the cached 100-track analysis, no re-decode)
+
+| Gate | V1 PASS | V1 INCOMPATIBLE | V1 UNKNOWN | V1 fail% | V2 PASS | V2 INCOMPATIBLE | V2 UNKNOWN | V2 fail% |
+|---|---|---|---|---|---|---|---|---|
+| genre | 32 | 34 | 554 | 94.8% | 54 | 61 | 910 | 94.7% |
+| tempo | 620 | 0 | 0 | 0.0% | 1025 | 0 | 0 | 0.0% |
+| beat | 472 | 0 | 148 | 23.9% | 819 | 0 | 206 | 20.1% |
+| downbeat | 44 | 0 | 576 | 92.9% | 72 | 0 | 953 | 93.0% |
+| harmonic | 151 | 205 | 264 | 75.6% | 227 | 384 | 414 | 77.9% |
+| structure | 90 | 0 | 530 | 85.5% | 133 | 0 | 892 | 87.0% |
+| texture | 31 | 589 | 0 | 95.0% | 51 | 974 | 0 | 95.0% |
+| vocal | 304 | 316 | 0 | 51.0% | 481 | 544 | 0 | 53.1% |
+| bass | 620 | 0 | 0 | 0.0% | 1023 | 2 | 0 | 0.2% |
+| analysis_confidence | 0 | — | 620 | 100.0% | 1 | — | 1024 | 99.9% |
+| **intersection (FULL_DJ-eligible)** | **0 / 620** | | | | **0 / 1025** | | | |
+
+`INCOMPATIBLE` = a real measurement was taken and genuinely failed.
+`UNKNOWN` = the gate failed for lack of trustworthy evidence, NOT proven
+incompatibility (see §3.2). Structure/downbeat/analysis_confidence are
+**100% UNKNOWN when they fail** (these gates have no "measured
+incompatible" state in this design at all); genre is **94% UNKNOWN** vs
+6% measured-incompatible; texture and vocal, by contrast, are dominated by
+genuine measurement (95% / 51-53% MEASURED_INCOMPATIBLE respectively).
+
+### 3.1 Threshold sensitivity (B3, diagnostic only — production thresholds unchanged)
+
+Texture thresholds evaluated at 0.75×/1×/1.25×/1.5× current, energy at
+comparable variants (see the calibration JSON's `sensitivity_matrix` per
+universe). **Result: 0 surviving candidates at every multiplier tested,
+for both V1 and V2.** The zero-result is **stable, not threshold-sensitive**
+— the dominant failing gate at every variant is `analysis_confidence`
+(itself an aggregate of structure/genre/harmonic evidence strength, never
+texture/energy), meaning loosening the texture/energy calibration alone
+would not unlock V1 or V2 in this corpus.
+
+### 3.2 Threshold calibration provenance (B2)
+
+`THRESHOLD_CALIBRATION_NOT_PREVIOUSLY_PROVEN.` The 5 hardcoded texture/
+energy thresholds were originally set from ad-hoc interactive percentile
+calculations against a small 20-track sample during the prior session --
+never saved as a runnable script, not reproducible from any committed
+artifact, and not computed against the full 100-track corpus or the real
+V1/V2 tempo-eligible universes. They are honestly labeled PROJECT
+HEURISTIC values pending real validation. This pass's calibration JSON
+provides reproducible full-corpus percentile distributions
+(min/p05/p10/p20/p25/p50/p75/p80/p90/p95/max for
+centroid/flatness/onset-density/loudness-gap/bass-gap/combined-energy-gap)
+as a basis for a FUTURE, properly-documented calibration -- the existing
+thresholds were NOT changed by this audit.
+
+### 3.3 Near-miss forensics (B4)
+
+Top-10 nearest-miss pairs per universe (ranked by fewest independently
+failed gates, then preservation/energy quality) are in
+`real_music/work_local/selection_trace.local.json`. The closest V1/V2
+near-misses fail on **3 gates simultaneously** (never fewer) -- e.g.
+`{structure, texture, analysis_confidence}` or
+`{harmonic, texture, analysis_confidence}` -- confirming this is a
+genuine multi-dimensional evidence gap, not a single narrowly-missed
+threshold.
+
+- **V1 (close_tempo_minimal_stretch): `PARTIAL_EVIDENCE_INSUFFICIENT_V1`.**
+  Pool size after the honest hard-gate filter: **0 / 620**.
+- **V2 (conditional_tempo_correction): `PARTIAL_EVIDENCE_INSUFFICIENT_V2`.**
+  Pool size: **0 / 1025**.
+- **V3 (incompatible_downgrade): SELECTED (repaired ranking).** Pool size
+  1,057. Newly-selected pair (opaque IDs) has `structure_compatibility=
+  COMPATIBLE` (genuine bar-synchronous novelty-peak evidence),
+  `intro_outro_texture_compatible=true`, `bass_percussion_collision_risk=
+  LOW`, 16.67% required tempo deviation (smaller excess beyond the 12%
+  ceiling than the pre-repair selection's 20.83%), harmonic `UNKNOWN`
+  (insufficient key confidence, not measured-incompatible this time) --
+  `FULL_DJ_BLEND` is still correctly withheld
+  (`TEMPO_EXCESSIVE_STRETCH_REQUIRED` + `DOWNBEAT_CONFIDENCE_INSUFFICIENT`
+  + `HARMONIC_UNKNOWN_DOWNGRADED` + `ANALYSIS_CONFIDENCE_LOW_PAIR`).
+  Pre-render projected combined energy gap ≈34dB (`WEAK` — down from the
+  pre-repair selection's ≈40dB, reflecting the now-active
+  energy-continuity ranking dimension).
+
+**No gate was weakened to produce a V1 or V2 pair.** See §3.2/§3.3: the
+zero-result is real, but a meaningful share of it (genre, downbeat,
+structure, analysis_confidence) reflects UNKNOWN evidence, not proven
+incompatibility -- this corpus cannot be honestly described as "proven
+incompatible for V1/V2," only as "insufficiently evidenced," alongside
+some genuinely measured blockers (texture, vocal).
 
 ## 4. Planner + render outcome
 
-- **V3**: `decision_type=TRANSITION`, `allowed_transition_class_set=
-  [SIMPLE_CROSSFADE]` (FULL_DJ_BLEND correctly withheld),
-  `tempo_mode=NATIVE_TEMPO`. Rendered candidates A (equal-power) and B
-  (late-outgoing-hold) — no C (no tempo correction is ever attempted for a
-  planner-withheld FULL_DJ pair). Post-render `loudness_max_dip_db` ≈
-  16.0dB for both A and B — a substantial improvement over the invalidated
-  pack's ~37.6dB for the same category, attributable to the pre-render
-  energy-gap-aware ranking (R5/R6), even though V3 is not expected to be a
-  "clean" transition by design.
+**The newly re-ranked V3 pair (§3.3) has NOT been re-rendered this pass**
+(explicitly out of scope for this narrow selector/evidence audit -- no
+audio decode, no Signalsmith, no rendering). The render/loudness figures
+below are from the PRIOR pass's now-superseded V3 selection and are kept
+here only as historical record of that earlier run; they do not describe
+the pair currently in `real_music/manifest.local.json`.
+
+- **Prior selection's V3** (pre-B1-repair): `decision_type=TRANSITION`,
+  `allowed_transition_class_set=[SIMPLE_CROSSFADE]`, `tempo_mode=
+  NATIVE_TEMPO`. Rendered A (equal-power) / B (late-outgoing-hold).
+  Post-render `loudness_max_dip_db` ≈16.0dB for both.
+
+A future pass should render the §3.3 pair once PM accepts this audit, and
+report its own (not the superseded pair's) post-render diagnostics.
 
 ## 5. Verifier + mutation-test evidence
 
 `scripts/verify_real_music_stage_b.py` (post-commit, run against the
-pushed HEAD with a locally-supplied `--private-sentinel`) — see
+pushed HEAD with a locally-supplied `--private-sentinel`) -- see
 `HANDOFF_TO_PM.md` for the exact command and pass/fail result.
 
-`scripts/mutation_test_real_music_stage_b.py` — **ALL 11 REQUIRED
-MUTATIONS PASS**, each proving the specific repaired guarantee holds
-against a crafted adversarial input (never real owner data):
-genre never fabricated, structure/`musical_unit_complete` never derived
-from beat/downbeat alone, bass/percussion collision is measured (not a
-constant), texture requires real timbral/rhythmic evidence, incoming entry
-is never forced to 0ms when a real nonzero entry was detected, FULL_DJ is
-withheld when ANY one independent gate is UNKNOWN/unsafe, ranking prefers
-STRONG energy over WEAK regardless of opaque-ID order, a catastrophic
-projected loudness hole ranks below a safer alternative, the verifier
-itself never hardcodes/defaults its private sentinel, and all prior
-fail-closed/beat-grid/cross-method regressions still pass.
+`scripts/mutation_test_real_music_stage_b.py` -- **ALL REQUIRED MUTATIONS
+PASS** (11 from the prior repair pass + 12 new from this evidence audit --
+see `HANDOFF_TO_PM.md`'s VALIDATION section for the full list), each
+proving a specific guarantee against a crafted adversarial input (never
+real owner data): genre never fabricated; structure/`musical_unit_complete`
+never derived from beat/downbeat alone; bass/percussion collision is
+measured; texture requires real timbral/rhythmic evidence; incoming entry
+is never forced to 0ms; FULL_DJ withheld on any single independent gate
+failure; V3 now uses the real compatibility/energy ranking (not
+beat+ID); V3 remains FULL_DJ-ineligible; V3 ID order cannot beat
+materially safer energy continuity; the calibration artifact is
+deterministic from the cached analysis; gate counts sum correctly;
+UNKNOWN and INCOMPATIBLE are kept distinct; cumulative intersections
+reproduce; sensitivity testing never mutates production thresholds;
+near-miss ranking runs before final hard-gate filtering; no privacy leak;
+and all prior regressions stay green.
 
 ## 6. Privacy + blinding
 
@@ -174,5 +262,7 @@ fail-closed/beat-grid/cross-method regressions still pass.
 
 ## Result
 
-`PARTIAL` (`PARTIAL_NO_VALID_V1` + `PARTIAL_NO_VALID_V2`, `V3` selected and
-rendered). No quality PASS is claimed. P1 has not started.
+`PARTIAL` (`PARTIAL_EVIDENCE_INSUFFICIENT_V1` + `PARTIAL_EVIDENCE_INSUFFICIENT_V2`,
+`V3` re-selected under the repaired ranking but NOT re-rendered this pass).
+No quality PASS is claimed. No owner pack was rebuilt this pass. P1 has
+not started.

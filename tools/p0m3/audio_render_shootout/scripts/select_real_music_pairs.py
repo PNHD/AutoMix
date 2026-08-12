@@ -376,27 +376,34 @@ def main():
 
             if relation == "EXCESSIVE_STRETCH":
                 cand = build_candidate(out_id, in_id, out_a, in_a, relation, stretch_pct, ratio, require_full_dj=True)
-                # V3 must still produce a RENDERABLE transition (downgraded
-                # to whatever class the real planner allows) -- it is a
-                # negative CLASS control (FULL_DJ withheld), never "no
-                # transition at all".
+                # PM STAGE-B EVIDENCE AUDIT REPAIR B1: V3 must still
+                # produce a RENDERABLE transition (downgraded to whatever
+                # class the real planner allows) -- it is a negative CLASS
+                # control (FULL_DJ withheld, a genuine EXCESSIVE_STRETCH
+                # tempo mismatch), never "no transition at all". Pool
+                # MEMBERSHIP is what guarantees the negative-control
+                # property (not FULL_DJ eligible + a real measured tempo
+                # incompatibility); RANKING among pool members uses the
+                # EXACT SAME rank_key() as V1/V2 (previously it used only
+                # beat-confidence + opaque-ID, ignoring preservation/
+                # structure/texture/vocal/bass/energy/harmonic entirely --
+                # see the PM STAGE-B REAL-EVIDENCE REPAIR REVIEW finding).
                 if not cand["compat"].overall_dynamic_mix_eligible and exit_candidate_renderable(out_a):
-                    clean = (out_a["beat"]["confidence"] == "HIGH" and in_a["beat"]["confidence"] == "HIGH")
-                    cand["_v3_clean"] = clean
                     v3_pool.append(cand)
 
-    def pick_best(pool, tempo_target_center, v3=False):
+    def pick_best(pool, tempo_target_center):
         if not pool:
             return None
-        if v3:
-            ranked = sorted(pool, key=lambda c: (0 if c.get("_v3_clean") else 1, c["out_id"], c["in_id"]))
-        else:
-            ranked = sorted(pool, key=lambda c: rank_key(c, tempo_target_center, lambda i: analysis[i], lambda i: analysis[i]))
+        ranked = sorted(pool, key=lambda c: rank_key(c, tempo_target_center, lambda i: analysis[i], lambda i: analysis[i]))
         return ranked[0]
 
     best_v1 = pick_best(v1_pool, tempo_target_center=0.0)
     best_v2 = pick_best(v2_pool, tempo_target_center=0.045)
-    best_v3 = pick_best(v3_pool, tempo_target_center=None, v3=True)
+    # V3's tempo dimension prefers the SMALLEST useful excess beyond the
+    # R2 hard envelope ceiling (0.12) where otherwise equivalent -- "least
+    # gratuitously mismatched still-genuine negative control", not the
+    # largest deviation available.
+    best_v3 = pick_best(v3_pool, tempo_target_center=0.12)
 
     manifest_pairs = []
     rationale = {}
@@ -449,12 +456,24 @@ def main():
     Path(args.manifest_out).parent.mkdir(parents=True, exist_ok=True)
     Path(args.manifest_out).write_text(json.dumps({"pairs": manifest_pairs}, indent=2), encoding="utf-8")
 
+    # PM STAGE-B EVIDENCE AUDIT REPAIR B4: near-miss forensics, computed
+    # from the FULL tempo-eligible universe BEFORE the final hard-gate
+    # rejection (deferred import -- pair_gate_audit imports this module
+    # too, for its build_pair_compat_input; both only reference each
+    # other's attributes at call time, never at import time, so the
+    # circularity resolves cleanly).
+    import pair_gate_audit
+    v1_records = pair_gate_audit.audit_universe(analysis, 0.0, 0.02)
+    v2_records = pair_gate_audit.audit_universe(analysis, 0.03, 0.06)
+
     Path(args.trace_out).parent.mkdir(parents=True, exist_ok=True)
     full_trace = {
         "pool_sizes": {"v1": len(v1_pool), "v2": len(v2_pool), "v3": len(v3_pool)},
         "v1_top5": [(c["out_id"], c["in_id"], round(c["stretch_pct"] * 100, 2), c["compat_input"]["_combined_energy_gap_db"]) for c in sorted(v1_pool, key=lambda c: rank_key(c, 0.0, lambda i: analysis[i], lambda i: analysis[i]))[:5]],
         "v2_top5": [(c["out_id"], c["in_id"], round(c["stretch_pct"] * 100, 2), c["compat_input"]["_combined_energy_gap_db"]) for c in sorted(v2_pool, key=lambda c: rank_key(c, 0.045, lambda i: analysis[i], lambda i: analysis[i]))[:5]],
-        "v3_top5": [(c["out_id"], c["in_id"], round(c["stretch_pct"] * 100, 2)) for c in sorted(v3_pool, key=lambda c: (0 if c.get("_v3_clean") else 1, c["out_id"], c["in_id"]))[:5]],
+        "v3_top5": [(c["out_id"], c["in_id"], round(c["stretch_pct"] * 100, 2), c["compat_input"]["_combined_energy_gap_db"]) for c in sorted(v3_pool, key=lambda c: rank_key(c, 0.12, lambda i: analysis[i], lambda i: analysis[i]))[:5]],
+        "v1_near_misses_top10_ranked_by_fewest_failed_gates": pair_gate_audit.rank_near_misses(v1_records, top_n=10),
+        "v2_near_misses_top10_ranked_by_fewest_failed_gates": pair_gate_audit.rank_near_misses(v2_records, top_n=10),
     }
     Path(args.trace_out).write_text(json.dumps(full_trace, indent=2), encoding="utf-8")
 

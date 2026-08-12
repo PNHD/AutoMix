@@ -104,6 +104,7 @@ def check_1_2_no_private_paths_in_tracked_and_summaries(ref: str, sentinel: str)
         "real_music/work_local/selection_trace.local.json",
         "real_music/work_local/pipeline_summary_sanitized.json",
         "real_music/work_local/real_music_blind_key.local.json",
+        "real_music/work_local/pair_gate_calibration_sanitized.json",
     ]:
         p = ROOT / rel
         if p.exists():
