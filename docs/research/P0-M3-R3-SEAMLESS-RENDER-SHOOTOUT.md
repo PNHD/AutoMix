@@ -881,7 +881,7 @@ sounds sufficiently seamless is exactly the question Stage B (real-music,
 human) listening must answer** -- this section produces DIAGNOSTIC
 evidence and a defensible default, not a subjective PASS.
 
-## 21. Conditional tempo adaptation (`dsp/tempo_modes.py`, `dsp/tempo_ramp.py`)
+## 21. Conditional tempo adaptation (`dsp/tempo_modes.py`, `dsp/tempo_ramp.py`) (SUPERSEDED, see §26 R1)
 
 ### 21.1 NATIVE / MATCH_DURING_OVERLAP / MATCH_AND_RETURN
 
@@ -895,9 +895,22 @@ decisions:
 | Scenario | `required_tempo_ratio` | deviation | benchmark zone | Mode selected |
 |---|---|---|---|---|
 | R3-A | 1.0 | 0.0% | SAFE_ZONE_0_2_PCT | `NATIVE_TEMPO` (already aligned -- never corrected for its own sake) |
-| R3-B | 1.05 | 5.0% | CONDITIONAL_ZONE_2_6_PCT | `MATCH_AND_RETURN_TO_NATIVE` |
-| R3-C | 0.9709 | 2.91% | CONDITIONAL_ZONE_2_6_PCT | `MATCH_AND_RETURN_TO_NATIVE` |
+| R3-B | 1.05 | 5.0% | CONDITIONAL_ZONE_2_6_PCT | `MATCH_AND_RETURN_TO_NATIVE` **(WRONG -- see §26 R1; this table row is FALSIFIED by PM's independent -85 cent pitch-drift measurement and is retained only as repair-history evidence)** |
+| R3-C | 0.9709 | 2.91% | CONDITIONAL_ZONE_2_6_PCT | `MATCH_AND_RETURN_TO_NATIVE` **(WRONG -- see §26 R1, same reason)** |
 | R3-D | `None` | -- | -- | `NATIVE_TEMPO` (FULL_DJ_BLEND withheld -- never force-corrected for an incompatible pair) |
+
+**SUPERSEDED by §26 R1**: at the time this table was written,
+`dsp.tempo_ramp.ramp_is_safe` did not exist, so `select_tempo_mode`
+returned `MATCH_AND_RETURN_TO_NATIVE` unconditionally whenever
+`prefer_return_to_native=True` and the boundary was otherwise eligible --
+the claim two paragraphs below ("§21.2... in favor of the ramp being safe
+to include as this pass's default") was never actually machine-verified
+for pitch preservation and was independently proven FALSE by the PM
+review (measured ~-85 cents drift, i.e. ordinary varispeed, not
+time-stretch). `ramp_is_safe` is now real; re-running the exact same two
+decisions with the repaired code returns `MATCH_INCOMING_DURING_OVERLAP`
+for both R3-B and R3-C. See §26 R1 for the corrected table, the
+measurement, and the gate.
 
 This exactly matches the desired product behavior: no correction where
 tracks already align (A), no correction where the pair is incompatible
@@ -951,7 +964,7 @@ zone ever authorizes, but not a production-grade band-limited resampler.
 No claim is made that the ramp is inaudible -- only that it introduces no
 MEASURABLE discontinuity beyond the source content's own baseline.
 
-## 22. Real-music Tier-B harness (`real_music/`, `scripts/real_music_pipeline.py`)
+## 22. Real-music Tier-B harness (`real_music/`, `scripts/real_music_pipeline.py`) (SUPERSEDED, see §26 R2-R4)
 
 Per Issue #7's original Tier-B anticipation and this update's Task 3:
 accepts an owner-supplied, **LOCAL-ONLY, never-committed** manifest
@@ -987,6 +1000,23 @@ owner's personal media libraries -- `real_music/manifest.local.json` does
 not exist, so per this task's own explicit instruction the harness stops
 here, honestly, rather than fabricating copyrighted examples.
 
+**SUPERSEDED by §26 R2-R4**: independent PM mutation testing found this
+version had three load-bearing defects, all repaired in §26: (1) a
+conversion failure's raw ffmpeg stderr (which embeds the source
+path/filename) was placed directly into `RuntimeError(str(e))` and then
+into `--summary-out` -- a sentinel private path leaked through 3 times in
+one PM mutation run; (2) `m2_manual_instructions` (embedding a local
+work-dir path) was written to `--summary-out` by default (denylist logic
+excluded only `"renders"`); (3) `RESULT: OWNER_REAL_MUSIC_LISTENING_REQUIRED
+({len(summaries)} pairs rendered...)` counted attempted pairs, not
+successful renders -- a mutation where all 3 pairs failed before
+rendering still printed this literal string. §26 also corrects this
+section's rendering description: the harness renders a same-boundary
+A (equal-power reference) / B (late-outgoing-hold candidate) / C
+(conditional tempo-match candidate) comparator instead of unconditionally
+treating `late_hold` as this pass's sole default, and C never uses the
+return-to-native ramp (per §26 R1).
+
 ## 23. Simplified owner listening UX (`real_music/LISTENING_INSTRUCTIONS_SIMPLIFIED.md`, `scripts/build_simplified_rating_template.py`)
 
 Replaces the old 6-dimension-per-clip matrix with, per transition set:
@@ -1007,7 +1037,7 @@ based playlist reordering). All three quoted directly from Spotify's own
 public support/newsroom pages retrieved this session; no reverse
 engineering, no proprietary-internal claim.
 
-## 25. Updated STAGE RESULT
+## 25. Updated STAGE RESULT (SUPERSEDED, see §26)
 
 **`OWNER_REAL_MUSIC_INPUT_REQUIRED`** -- the loudness repair (§20) and
 conditional tempo work (§21) are complete with reproducible evidence, and
@@ -1016,6 +1046,11 @@ owner-supplied real-music manifest was available this session, so no new
 listening pack could be built. This is NOT `OWNER_LISTENING_REQUIRED`
 against the old synthetic pack -- per the owner's own feedback, that pack
 is not being returned to for a quality verdict.
+
+**SUPERSEDED by §26**: the final result value (`OWNER_REAL_MUSIC_INPUT_REQUIRED`)
+is unchanged, but §21/§22's supporting claims behind it were partly false
+(see §26) -- treat §26 as authoritative, this section as repair-history
+context only.
 
 ### Next owner action
 
@@ -1031,3 +1066,190 @@ python scripts/real_music_pipeline.py --manifest real_music/manifest.local.json 
 ```
 
 **Do not start P1. Result: `OWNER_REAL_MUSIC_INPUT_REQUIRED`, not `PASS`.** (This supersedes every earlier "Do not start P1" line in this document -- §12/§19's `OWNER_LISTENING_REQUIRED` results are superseded by this section per the owner's own feedback that the synthetic pack is not being returned to for a quality verdict.)
+
+# PM REVIEW "PRE-REAL-MUSIC REPAIR REQUIRED" (2026-08-12)
+
+Reviewed HEAD `2e49d253c80ea7c239c62503ca9f9d87388605d3`. Independent PM
+mutation testing found four load-bearing defects (R1-R4 below), all
+repaired in this section, before owner real-vocal music may be requested.
+
+## 26. R1-R4 repair
+
+### R1 -- `MATCH_AND_RETURN_TO_NATIVE` changes pitch; `ramp_is_safe` didn't exist
+
+PM independently ran `dsp/tempo_ramp.py::apply_return_to_native_ramp` on a
+440Hz test tone at `matched_rate=1.05` and measured the late-ramp
+dominant frequency at **~419Hz, ~-85 cents** -- ordinary sample-domain
+varispeed, not pitch-preserving time-stretch. §21's documentation claimed
+`MATCH_AND_RETURN_TO_NATIVE` is "only selected... if
+`dsp.tempo_ramp.ramp_is_safe` passes", but that function did not exist;
+`select_tempo_mode(..., prefer_return_to_native=True)` returned
+`MATCH_AND_RETURN_TO_NATIVE` unconditionally for every eligible boundary.
+
+**Repair**: `dsp/tempo_ramp.py` now implements the real gate:
+- `measure_ramp_pitch_drift_cents(matched_rate, ...)` -- deterministic
+  sinusoid probe (440Hz tone through `apply_return_to_native_ramp`,
+  parabolic-interpolated FFT peak frequency estimate on the post-ramp
+  held region, cents drift vs. the known input/expected frequency).
+  Reproduces PM's finding exactly: `matched_rate=1.05` ->
+  `measured_freq_hz=419.036`, `cents_drift=-84.52` (PM: ~419Hz, ~-85
+  cents).
+- `PITCH_DRIFT_TOLERANCE_CENTS = 5.0` -- small, explicit, documented
+  PROJECT diagnostic tolerance (not a JND claim).
+- `ramp_is_safe(matched_rate) -> (bool, evidence_dict)` -- the real gate.
+- `dsp/tempo_modes.py::select_tempo_mode` now calls `ramp_is_safe(ratio)`
+  before ever returning `MATCH_AND_RETURN_TO_NATIVE`; on failure it adds
+  `evidence["return_to_native_status"] = "NOT_YET_VALIDATED_PITCH_PRESERVING"`
+  and returns `MATCH_INCOMING_DURING_OVERLAP` instead (stable matched
+  tempo through the excerpt, per explicit PM direction "Do not force
+  return-to-native yet").
+- The false `ramp_is_safe` documentation claim in `dsp/tempo_modes.py`'s
+  module docstring is corrected (the function now genuinely exists and is
+  genuinely consulted, matching what the docstring always claimed).
+- `scripts/real_music_pipeline.py` adds a second, redundant fail-closed
+  check immediately before it would ever call
+  `apply_return_to_native_ramp` (belt-and-braces against a future
+  regression in the `tempo_modes` gate).
+
+Re-running `select_tempo_mode` on the real R3-B/R3-C `PlannerDecision`
+fixtures with the repaired code:
+
+| Scenario | `required_tempo_ratio` | Mode (BEFORE repair) | Mode (AFTER repair) |
+|---|---|---|---|
+| R3-B | 1.05 | `MATCH_AND_RETURN_TO_NATIVE` (unvalidated) | `MATCH_INCOMING_DURING_OVERLAP` |
+| R3-C | 0.9709 | `MATCH_AND_RETURN_TO_NATIVE` (unvalidated) | `MATCH_INCOMING_DURING_OVERLAP` |
+
+No ordinary resampler was substituted for the ramp (PM: "Do NOT replace
+the current resampler with another ordinary resampler"); the ramp
+implementation itself is untouched, only GATED. A future pitch-preserving
+return-to-native path would need to run the already-approved Signalsmith
+engine over the settling region instead of this resampler, and would need
+to independently pass `ramp_is_safe` -- out of scope for this repair pass.
+
+### R2 -- private path leak in `real_music_pipeline.py`
+
+PM mutation used source path `/TOP_SECRET_MUSIC/Artist - Secret Song.flac`;
+all 3 conversions failed and the exact path appeared 3 times in
+`summary.json` (raw ffmpeg stderr -> `RuntimeError(str(e))` -> written
+into the "content-free" summary).
+
+**Repair**: `RealMusicPipelineError(code, detail)` is now the ONLY
+exception type the script raises for an expected failure, carrying one of
+`INPUT_DECODE_FAILED` / `INVALID_MANIFEST` / `PLANNER_REJECTED` /
+`RENDER_FAILED` / `ENVIRONMENT_BLOCKED`. ffmpeg's raw stderr (which embeds
+the source path) is written ONLY to a per-pair LOCAL-ONLY debug log file
+inside the gitignored `--work-dir` -- never printed, never raised, never
+reaching `--summary-out`. Every catch site that wraps an arbitrary
+underlying exception (planner rejection, unexpected render failure) keeps
+only `type(e).__name__`, never `str(e)`. `--summary-out` is built from an
+explicit field ALLOWLIST (`SUMMARY_SAFE_TOP_LEVEL_KEYS` /
+`SUMMARY_SAFE_RENDER_KEYS`) instead of the old denylist that only
+excluded `"renders"` -- a newly added result field can never leak by
+omission. `m2_manual_instructions` (embeds a local work-dir path) is
+excluded from `--summary-out` by the same allowlist (explicit PM
+instruction).
+
+**Mutation re-run** (`scripts/selftest_pre_real_music_repair.py`, test 3,
+using PM's own sentinel path `C:/VERY_PRIVATE/Artist - Secret Song.flac`):
+full path, basename (`Artist - Secret Song.flac`), and parent folder
+(`VERY_PRIVATE`) do not appear anywhere in console stdout/stderr or in
+`--summary-out` -- PASS.
+
+### R3 -- truthful success/failure accounting
+
+PM mutation: all 3 pairs failed before rendering; script printed
+`RESULT: OWNER_REAL_MUSIC_LISTENING_REQUIRED (3 pairs rendered...)`
+because it counted `len(summaries)` (attempted), not successful renders.
+
+**Repair**: explicit `pair_attempted_count` / `pair_success_count` /
+`pair_failure_count` tracked through the run and printed as
+`PAIR_ATTEMPTED_COUNT=` / `PAIR_SUCCESS_COUNT=` / `PAIR_FAILURE_COUNT=`.
+`OWNER_REAL_MUSIC_LISTENING_REQUIRED` is now returned ONLY when at least
+one pair succeeded AND every category `real_music/MANIFEST_SCHEMA.md`
+requires (`close_tempo_minimal_stretch`, `conditional_tempo_correction`,
+`incompatible_downgrade`) has at least one successful render. Otherwise:
+`PARTIAL` (some succeeded, required categories missing),
+`OWNER_REAL_MUSIC_INPUT_REQUIRED` (zero succeeded), or `BLOCKED`
+(environment precondition failed, e.g. ffmpeg binary missing) --
+each with `FAILURE_REASON_CODES` and, in `--summary-out`, a
+`missing_required_categories` list.
+
+**Mutation re-run** (same sentinel manifest, all 3 pairs fail):
+`PAIR_ATTEMPTED_COUNT=3`, `PAIR_SUCCESS_COUNT=0`, `PAIR_FAILURE_COUNT=3`,
+`RESULT: OWNER_REAL_MUSIC_INPUT_REQUIRED` -- `OWNER_REAL_MUSIC_LISTENING_REQUIRED`
+is never printed -- PASS.
+
+### R4 -- loudness curve is a candidate, not an accepted default; same-boundary tempo comparator
+
+`late_hold` (§20) is evidence-backed as a `REAL_MUSIC_LISTENING_CANDIDATE`,
+not yet an owner-validated product default. §22's harness hard-coded
+`REPAIRED_CURVE = "late_hold"` for its single M1/M3 render pair, which
+both treated `late_hold` as already-accepted AND conflated the
+loudness-curve variable with the tempo-correction variable in one render.
+
+**Repair**: `render_pair()` now renders, per pair, from ONE shared
+`compute_segments()` call (identical `onset_ms`/`content_end_ms`/
+`entry_ms`/overlap window for every candidate -- no per-candidate cue
+drift is possible by construction):
+- **A** -- current equal-power reference, no tempo correction (always).
+- **B** -- late-outgoing-hold candidate, no tempo correction (always,
+  same boundary as A -- isolates the gain-curve variable exactly like
+  §20's `render_loudness_shootout.py` does for the synthetic pass).
+- **C** -- conditional tempo-match candidate (ffmpeg Rubber Band at the
+  planner's own `required_tempo_ratio`, same boundary as A/B), rendered
+  ONLY when `FULL_DJ_BLEND` is allowed AND `select_tempo_mode` says a
+  real correction is warranted. NEVER uses the return-to-native ramp (R1
+  guarantees `tempo_mode != MATCH_AND_RETURN_TO_NATIVE` today; a second,
+  redundant `ramp_is_safe` check guards the call site itself).
+
+`scripts/selftest_pre_real_music_repair.py` tests 5+6 exercise this
+end-to-end against a disposable synthetic stand-in manifest: the
+close-tempo pair renders exactly `{A, B}`; the conditional pair renders
+`{A, B, C}` with `tempo_mode=MATCH_INCOMING_DURING_OVERLAP` and
+`C.applied_tempo_ratio == required_tempo_ratio`; the incompatible pair
+renders exactly `{A, B}` (never `C`, `FULL_DJ_BLEND` withheld) -- all
+sharing one boundary per pair by construction.
+
+## 27. Validation (post-repair)
+
+```
+python scripts/selftest_pre_real_music_repair.py
+```
+`ALL SELF-TESTS PASS` -- covers, in one run:
+1. `ramp_is_safe(1.05)` reports unsafe, `-84.52` cents drift (matches PM's
+   independent ~-85 cent / 419Hz measurement within 1 cent).
+2. `select_tempo_mode` never returns `MATCH_AND_RETURN_TO_NATIVE` for any
+   current fixture (R3-A/B/C) with `prefer_return_to_native=True`.
+3. PM's sentinel path (`C:/VERY_PRIVATE/Artist - Secret Song.flac`) --
+   full path, basename, parent folder -- appears nowhere in console
+   output or `--summary-out`; every failed-pair entry carries only an
+   enumerated `error_code`.
+4. All-3-pairs-failed sentinel run reports `OWNER_REAL_MUSIC_INPUT_REQUIRED`
+   with `PAIR_SUCCESS_COUNT=0`/`PAIR_FAILURE_COUNT=3`, never
+   `OWNER_REAL_MUSIC_LISTENING_REQUIRED`.
+5. Disposable synthetic-stand-in 3-category manifest: A/B (always) + C
+   (conditional pair only) render as designed, `m2_manual_instructions`
+   excluded from `--summary-out`.
+6. Candidate C applies the same `required_tempo_ratio` as the planner
+   decided for that exact boundary; A/B/C's onset/content_end/entry/
+   overlap fields are reported once per pair (shared by construction).
+7. `scripts/verify_beat_grid_membership.py` -- `ALL CHECKS PASS` (no regression).
+8. `scripts/selftest_fail_closed.py` -- `ALL SELF-TESTS PASS` 8/8 (no regression).
+9. `scripts/verify_cross_method_consistency.py` -- `ALL CHECKS PASS` (no regression).
+10. `scripts/render_loudness_shootout.py` max_dip_db values reproduce the
+    prior accepted PM handoff's numbers exactly (R3-A LA=10.63/LB=9.092,
+    R3-B LA=9.424/LB=7.884, R3-C LA=14.075/LB=11.874 -- all within 0.01dB).
+
+## 28. Updated STAGE RESULT
+
+**`OWNER_REAL_MUSIC_INPUT_REQUIRED`** -- unchanged final value (matches
+§25/§12/§19's progression), but now backed by a real, tested
+pitch-preservation gate (R1), a leak-proof private-path boundary (R2),
+truthful success/failure accounting (R3), and a same-boundary A/B/C
+loudness+tempo comparator instead of a premature `late_hold` default
+(R4). No owner-supplied real-music manifest is available this session --
+`real_music/manifest.local.json` does not exist; none was searched for,
+inferred, or fabricated.
+
+**Do not start P1. Do not request owner real-music files until PM accepts
+this closeout.**

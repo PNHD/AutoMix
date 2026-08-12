@@ -37,7 +37,10 @@ premix_diag/
 real_music/manifest.local.json
 real_music/manifest*.local.json
 real_music/work_local/
+real_music/work_local*/
 real_music/*_test_manifest*.json
+real_music/*_test_summary*.json
+real_music/sentinel*.json
 
 # Node modules if any browser-harness tooling is added locally
 node_modules/

@@ -51,6 +51,8 @@ scripts/
   build_pm_pack.py             -- assembles P0-M3-R3-PM-REVIEW.zip (repo root, local only)
   verify_blinding.py           -- Issue #7's "BLINDING VERIFICATION" checks + R5 format-parity/seed-provenance checks
   selftest_fail_closed.py      -- AC7 proof that missing FULL_DJ alignment fields raise, not guess
+  real_music_pipeline.py       -- Tier-B real-music harness (LOCAL-ONLY manifest -> A/B/C same-boundary comparator, see docs/research/P0-M3-R3-SEAMLESS-RENDER-SHOOTOUT.md §26)
+  selftest_pre_real_music_repair.py -- PM REVIEW "PRE-REAL-MUSIC REPAIR REQUIRED" R1-R4 regression proof + prior-result non-regression checks
 results/                       -- gitignored audio + blind_key.json; committed: machine_metrics.json, render_meta*/*.json
 ```
 

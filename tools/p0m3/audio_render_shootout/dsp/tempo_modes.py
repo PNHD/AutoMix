@@ -32,6 +32,25 @@ three modes applies to a given boundary:
       implementation cannot be demonstrated yet, keep the incoming tempo
       stable... and report the gap honestly").
 
+      PM REVIEW "PRE-REAL-MUSIC REPAIR REQUIRED" R1: `dsp.tempo_ramp
+      .ramp_is_safe` now actually exists (it previously did not -- the
+      claim above was false) and runs a deterministic sinusoid
+      pitch-drift measurement. The CURRENT `dsp/tempo_ramp.py` ramp is a
+      sample-domain resampler (ordinary varispeed), so `ramp_is_safe`
+      honestly reports `False` for every non-trivial correction this
+      project's fixtures ever require (PM independently measured ~-85
+      cents drift at `matched_rate=1.05`) -- meaning `select_tempo_mode`
+      below NEVER actually returns `MATCH_AND_RETURN_TO_NATIVE` today,
+      regardless of `prefer_return_to_native`. Its effective status is
+      `NOT_YET_VALIDATED_PITCH_PRESERVING` (see that constant below);
+      eligible corrections resolve to `MATCH_INCOMING_DURING_OVERLAP` and
+      stay at the matched tempo through the rendered excerpt instead, per
+      explicit PM direction ("Do not force return-to-native yet"). A
+      future pitch-preserving return-to-native implementation (e.g.
+      running the already-approved Signalsmith engine over the settling
+      region instead of this resampler) would need to pass the same real
+      `ramp_is_safe` gate before this mode could ever be returned again.
+
 The outgoing track's tempo is NEVER altered by this module (or by any
 renderer in this harness) -- only the incoming side is ever a stretch
 target, matching R2's own contract
@@ -43,9 +62,19 @@ pass explicitly authorizes a nonzero `required_pitch_shift_semitones`
 """
 from __future__ import annotations
 
+from dsp.tempo_ramp import ramp_is_safe
+
 NATIVE_TEMPO = "NATIVE_TEMPO"
 MATCH_INCOMING_DURING_OVERLAP = "MATCH_INCOMING_DURING_OVERLAP"
 MATCH_AND_RETURN_TO_NATIVE = "MATCH_AND_RETURN_TO_NATIVE"
+
+# PM REVIEW "PRE-REAL-MUSIC REPAIR REQUIRED" R1: reported in
+# `evidence["return_to_native_status"]` whenever a boundary is eligible for
+# return-to-native but the ramp's own pitch-preservation gate (above) has
+# not (yet) passed -- distinct from an actually-selected mode, since
+# `select_tempo_mode` never returns `MATCH_AND_RETURN_TO_NATIVE` while this
+# applies.
+NOT_YET_VALIDATED_PITCH_PRESERVING = "NOT_YET_VALIDATED_PITCH_PRESERVING"
 
 # PROJECT_INFERENCE consumer-quality benchmark buckets (PM OWNER LISTENING
 # DIRECTION UPDATE) -- NOT Apple/Spotify-disclosed thresholds. R2's own
@@ -135,5 +164,17 @@ def select_tempo_mode(decision: dict, prefer_return_to_native: bool = True) -> t
         evidence["listening_required"] = True
 
     if prefer_return_to_native:
-        return MATCH_AND_RETURN_TO_NATIVE, evidence
+        safe, ramp_evidence = ramp_is_safe(ratio)
+        evidence["return_to_native_ramp_safety_check"] = ramp_evidence
+        if safe:
+            return MATCH_AND_RETURN_TO_NATIVE, evidence
+        evidence["return_to_native_status"] = NOT_YET_VALIDATED_PITCH_PRESERVING
+        evidence["reason"] += (
+            f" -- MATCH_AND_RETURN_TO_NATIVE was preferred but dsp.tempo_ramp.ramp_is_safe reports "
+            f"unsafe pitch drift ({ramp_evidence.get('cents_drift')} cents vs "
+            f"{ramp_evidence.get('tolerance_cents')} cent tolerance); falling back to "
+            f"MATCH_INCOMING_DURING_OVERLAP (stable matched tempo through the excerpt) per explicit "
+            f"PM direction not to force an unvalidated return-to-native ramp"
+        )
+        return MATCH_INCOMING_DURING_OVERLAP, evidence
     return MATCH_INCOMING_DURING_OVERLAP, evidence
