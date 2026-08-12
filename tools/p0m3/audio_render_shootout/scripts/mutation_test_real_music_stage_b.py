@@ -423,17 +423,30 @@ def mutation_20_near_miss_ranking_before_final_hard_gate_filter():
 
 
 def mutation_21_no_private_leak_in_new_files():
-    """21. no private filename/path/tag leaks (in this pass's new files)."""
+    """21. no private filename/path/tag leaks (in this pass's new files).
+
+    Deliberately does NOT hardcode the literal historical sentinel string
+    here -- doing so would put it in THIS tracked file, recreating the
+    exact self-invalidation bug check_10/mutation_10 already exist to
+    prevent (verify_real_music_stage_b.py's check_1_2 blanket-scans every
+    tracked file for whatever sentinel is supplied at run time). The
+    sentinel is accepted ONLY via the same env var the verifier uses.
+    """
+    import os
+    sentinel = os.environ.get("AUTOMIX_R3_PRIVATE_ROOT_SENTINEL")
+    markers = [".mp3", ".flac", ".m4a"] + ([sentinel] if sentinel else [])
     new_files = ["scripts/pair_gate_audit.py", "scripts/compute_pair_gate_calibration.py"]
     for rel in new_files:
         content = (ROOT / rel).read_text(encoding="utf-8")
-        for marker in (".mp3", ".flac", ".m4a", "owner_music_input"):
+        for marker in markers:
             check(marker not in content, f"{rel} contains no '{marker}' marker")
     calibration_out = ROOT / "real_music" / "work_local" / "pair_gate_calibration_sanitized.json"
     if calibration_out.exists():
         content = calibration_out.read_text(encoding="utf-8")
-        for marker in (".mp3", ".flac", ".m4a", "owner_music_input"):
+        for marker in markers:
             check(marker not in content, f"pair_gate_calibration_sanitized.json contains no '{marker}' marker")
+    if not sentinel:
+        print("NOTE: AUTOMIX_R3_PRIVATE_ROOT_SENTINEL not supplied -- sentinel-specific leak check skipped this run (extension-marker checks above still ran)")
 
 
 def mutation_22_all_prior_eleven_mutations_still_registered_and_passing():
