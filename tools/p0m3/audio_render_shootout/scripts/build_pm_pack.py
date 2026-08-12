@@ -2,15 +2,22 @@
 Assembles P0-M3-R3-PM-REVIEW.zip (LOCAL ONLY -- never committed, Issue #7
 "PM REVIEW PACK").
 
-Includes: research report + provenance docs, entire harness source, all
-fixture/ground-truth/planner-decision metadata, machine result JSON,
-blind_key.json (with clip hashes), the blinded listening WAVs themselves
-(synthetic, project-generated -- explicitly permitted for forensic PM
-review), and HANDOFF_TO_PM.md. Excludes: vendor/ (re-fetchable, pinned
-commit documented separately), .venv/, audio_local/ + results/rendered/
-(the full 16-way non-blinded render set -- regenerable exactly via the
-documented commands; kept out to keep this ZIP a reasonable size), no
-private owner music (none exists in this pass).
+Includes: research reports (render-shootout, DSP provenance, Spotify
+public-reference note) + provenance docs, entire harness source
+(including the loudness-diagnostic/tempo-mode/tempo-ramp/real-music-
+pipeline modules added this pass), the real-music harness's SCHEMA/
+EXAMPLE/instructions docs only (never a real manifest or its outputs --
+see REAL_MUSIC_FILES, an explicit named allowlist, never a directory
+glob), all fixture/ground-truth/planner-decision metadata, machine result
+JSON (incl. the loudness-curve-shootout and tempo-ramp-experiment
+results), blind_key.json (with clip hashes), the blinded listening WAVs
+themselves (synthetic, project-generated -- explicitly permitted for
+forensic PM review), and HANDOFF_TO_PM.md. Excludes: vendor/
+(re-fetchable, pinned commit documented separately), .venv/, audio_local/
++ results/rendered/ (the full 16-way non-blinded render set --
+regenerable exactly via the documented commands; kept out to keep this
+ZIP a reasonable size), no private owner music (none exists in this
+pass).
 
 Usage:
     python scripts/build_pm_pack.py
@@ -28,6 +35,7 @@ ZIP_PATH = REPO_ROOT / "P0-M3-R3-PM-REVIEW.zip"
 DOC_FILES = [
     REPO_ROOT / "docs" / "research" / "P0-M3-R3-SEAMLESS-RENDER-SHOOTOUT.md",
     REPO_ROOT / "docs" / "research" / "P0-M3-R3-DSP-CANDIDATE-PROVENANCE.md",
+    REPO_ROOT / "docs" / "research" / "P0-M3-R3-SPOTIFY-PUBLIC-REFERENCE.md",
     REPO_ROOT / "HANDOFF_TO_PM.md",
 ]
 
@@ -41,6 +49,16 @@ HARNESS_GLOBS = [
     "scripts/*.py",
 ]
 
+# PM OWNER LISTENING DIRECTION UPDATE: real_music/ inclusion is an
+# EXPLICIT, individually-named allowlist -- never a wildcard glob over
+# that directory -- so a future local manifest/work-dir containing
+# private paths can never be swept in by accident.
+REAL_MUSIC_FILES = [
+    "real_music/MANIFEST_SCHEMA.md",
+    "real_music/manifest.example.json",
+    "real_music/LISTENING_INSTRUCTIONS_SIMPLIFIED.md",
+]
+
 RESULT_FILES = [
     "results/machine_metrics.json",
     "results/blind_key.json",
@@ -49,6 +67,8 @@ RESULT_GLOBS = [
     "results/render_meta/*.json",
     "results/render_meta_clean/*.json",
     "results/premix_diag/*.wav",  # synthetic, project-generated alignment-diagnostic evidence (R3 repair) -- forensic review only, not owner listening
+    "results/loudness_shootout_meta/*.json",  # loudness curve shootout (PM OWNER LISTENING DIRECTION UPDATE task 1/2)
+    "results/tempo_ramp_experiment/*.json",  # tempo-ramp results (task 2) -- JSON only, not the demo WAVs (synthetic, non-essential to keep zip lean)
 ]
 
 LISTENING_CLIPS_GLOB = "results/listening_clips/*.wav"
@@ -65,6 +85,11 @@ def main():
             for path in sorted(ROOT.glob(pattern)):
                 if path.is_file():
                     zf.write(path, (Path("tools/p0m3/audio_render_shootout") / path.relative_to(ROOT)).as_posix())
+
+        for rel in REAL_MUSIC_FILES:
+            path = ROOT / rel
+            if path.exists():
+                zf.write(path, (Path("tools/p0m3/audio_render_shootout") / rel).as_posix())
 
         for rel in RESULT_FILES:
             path = ROOT / rel
