@@ -1,7 +1,10 @@
 {
   "method": "M1",
   "method_role": "planner_correct_equal_power_simple_crossfade_reference",
+  "variant": "diagnostic",
   "transition_id": "R3-C",
+  "canonical_sample_rate": 44100,
+  "channels": 2,
   "rendered_transition_class": "SIMPLE_CROSSFADE",
   "planner_allowed_transition_class_set": [
     "FULL_DJ_BLEND",
@@ -32,6 +35,6 @@
     "clipped_sample_count": 0,
     "ceiling_dbfs": -1.0
   },
-  "render_wall_time_s": 0.11600969999926747,
-  "real_time_factor": 0.0029002424999816866
+  "render_wall_time_s": 0.1214778000030492,
+  "real_time_factor": 0.00303694500007623
 }

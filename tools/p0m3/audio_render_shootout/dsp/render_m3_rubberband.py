@@ -29,12 +29,15 @@ ROOT = HERE.parent
 sys.path.insert(0, str(ROOT))
 
 from dsp.wav_io import read_wav_float, write_wav_float32  # noqa: E402
-from dsp.mixing import assemble_transition_render, apply_headroom_and_safety  # noqa: E402
+from dsp.mixing import assemble_transition_render, apply_headroom_and_safety, SampleRateMismatchError  # noqa: E402
 from dsp.render_common import (  # noqa: E402
     load_scenario_context, compute_segments, fit_exact_length, ms_to_samples,
-    compute_alignment_offset_ms, apply_time_offset, require_full_dj_alignment_fields,
+    compute_alignment_offset_ms, apply_time_offset, require_full_dj_alignment_fields, save_premix_diagnostic,
 )
-from dsp.render_m2_signalsmith import full_dj_allowed, POST_ROLL_STRETCH_S, _write_result  # noqa: E402
+from dsp.render_m2_signalsmith import (  # noqa: E402
+    full_dj_allowed, POST_ROLL_STRETCH_S, _write_result,
+    RESULTS_RENDERED, RESULTS_META, RESULTS_RENDERED_CLEAN, RESULTS_META_CLEAN,
+)
 
 FFMPEG_BIN = shutil.which("ffmpeg") or r"C:\Users\phamn\AppData\Local\Microsoft\WinGet\Packages\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\ffmpeg-8.1.1-full_build\bin\ffmpeg.exe"
 SERVE_TMP = ROOT / "serve_tmp"
@@ -60,14 +63,14 @@ def ffmpeg_rubberband_stretch(input_path: Path, output_path: Path, tempo_ratio: 
     return cmd
 
 
-def render(transition_id: str) -> dict:
+def render(transition_id: str, variant: str = "diagnostic") -> dict:
     import time
     t0 = time.perf_counter()
-    ctx = load_scenario_context(transition_id)
+    ctx = load_scenario_context(transition_id, variant=variant)
     decision = ctx["decision"]
 
     if not full_dj_allowed(decision):
-        return _render_fallback(ctx, decision, transition_id)
+        return _render_fallback(ctx, decision, transition_id, variant)
 
     require_full_dj_alignment_fields(decision)
     segs = compute_segments(ctx, post_roll_s=POST_ROLL_STRETCH_S)
@@ -83,12 +86,17 @@ def render(transition_id: str) -> dict:
     stretch_input = fit_exact_length(available, needed_input_smp)
     input_padded_samples = max(0, needed_input_smp - available.shape[0])
 
-    in_path = SERVE_TMP / f"{transition_id}_m3_input.wav"
-    out_path = SERVE_TMP / f"{transition_id}_m3_output.wav"
+    tag = f"{transition_id}_{variant}"
+    in_path = SERVE_TMP / f"{tag}_m3_input.wav"
+    out_path = SERVE_TMP / f"{tag}_m3_output.wav"
     write_wav_float32(in_path, stretch_input, sr)
     cmd = ffmpeg_rubberband_stretch(in_path, out_path, ratio, pitch_scale)
     stretched, sr_out = read_wav_float(out_path)
-    assert sr_out == sr
+    if sr_out != sr:
+        # R1 repair (applied symmetrically to M3, even though the PM review
+        # only flagged M2): fail closed rather than assert, so this raises
+        # a clearly-labeled, catchable error in every execution mode.
+        raise SampleRateMismatchError(f"{transition_id}/{variant}: M3 ffmpeg output sample rate {sr_out} != canonical {sr}")
 
     measured_input_s = stretch_input.shape[0] / sr
     measured_output_s = stretched.shape[0] / sr
@@ -101,6 +109,9 @@ def render(transition_id: str) -> dict:
     incoming_overlap = fit_exact_length(stretched_aligned[:overlap_len], overlap_len)
     incoming_post = stretched_aligned[overlap_len:overlap_len + ms_to_samples(POST_ROLL_STRETCH_S * 1000, sr)]
 
+    if variant == "diagnostic":
+        save_premix_diagnostic(transition_id, "M3", segs["outgoing_overlap"], incoming_overlap, sr)
+
     rendered = assemble_transition_render(
         segs["outgoing_pre"], segs["outgoing_overlap"], incoming_overlap, incoming_post,
         sr, use_equal_power=True, use_bass_handoff=True,
@@ -110,10 +121,13 @@ def render(transition_id: str) -> dict:
     metadata = {
         "method": "M3",
         "method_role": "rubberband_quality_reference_only",
+        "variant": variant,
         "engine": "ffmpeg_librubberband_filter_subprocess",
         "engine_provenance_doc": "docs/research/P0-M3-R3-DSP-CANDIDATE-PROVENANCE.md",
         "ffmpeg_command": cmd,
         "transition_id": transition_id,
+        "canonical_sample_rate": sr,
+        "channels": stretched.shape[1],
         "rendered_transition_class": "FULL_DJ_BLEND",
         "planner_allowed_transition_class_set": decision["allowed_transition_class_set"],
         "gain_law": "equal_power",
@@ -140,16 +154,20 @@ def render(transition_id: str) -> dict:
         "render_wall_time_s": time.perf_counter() - t0,
         "real_time_factor": (time.perf_counter() - t0) / (safe_audio.shape[0] / sr),
     }
-    _write_result(transition_id, "M3", safe_audio, sr, metadata)
+    out_dir = RESULTS_RENDERED if variant == "diagnostic" else RESULTS_RENDERED_CLEAN
+    meta_dir = RESULTS_META if variant == "diagnostic" else RESULTS_META_CLEAN
+    _write_result(transition_id, "M3", safe_audio, sr, metadata, out_dir, meta_dir)
     return metadata
 
 
-def _render_fallback(ctx, decision, transition_id):
+def _render_fallback(ctx, decision, transition_id, variant="diagnostic"):
     segs = compute_segments(ctx)
     sr = segs["sr"]
     overlap_len = segs["overlap_len_smp"]
     incoming_overlap = fit_exact_length(segs["incoming_raw_segment"][:overlap_len], overlap_len)
     incoming_post = segs["incoming_raw_segment"][overlap_len:]
+    if variant == "diagnostic":
+        save_premix_diagnostic(transition_id, "M3", segs["outgoing_overlap"], incoming_overlap, sr)
     rendered = assemble_transition_render(
         segs["outgoing_pre"], segs["outgoing_overlap"], incoming_overlap, incoming_post,
         sr, use_equal_power=True, use_bass_handoff=False,
@@ -158,8 +176,11 @@ def _render_fallback(ctx, decision, transition_id):
     metadata = {
         "method": "M3",
         "method_role": "rubberband_quality_reference_only_documented_fallback",
+        "variant": variant,
         "engine": "none_full_dj_blend_withheld_by_planner",
         "transition_id": transition_id,
+        "canonical_sample_rate": sr,
+        "channels": safe_audio.shape[1],
         "rendered_transition_class": decision["allowed_transition_class_set"][0] if decision["allowed_transition_class_set"] else "NO_SPECIAL_TRANSITION",
         "planner_allowed_transition_class_set": decision["allowed_transition_class_set"],
         "gain_law": "equal_power",
@@ -178,13 +199,16 @@ def _render_fallback(ctx, decision, transition_id):
         "output_duration_s": safe_audio.shape[0] / sr,
         "safety": safety_diag,
     }
-    _write_result(transition_id, "M3", safe_audio, sr, metadata)
+    out_dir = RESULTS_RENDERED if variant == "diagnostic" else RESULTS_RENDERED_CLEAN
+    meta_dir = RESULTS_META if variant == "diagnostic" else RESULTS_META_CLEAN
+    _write_result(transition_id, "M3", safe_audio, sr, metadata, out_dir, meta_dir)
     return metadata
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("usage: python dsp/render_m3_rubberband.py <transition_id>")
+    if len(sys.argv) not in (2, 3):
+        print("usage: python dsp/render_m3_rubberband.py <transition_id> [variant]")
         sys.exit(1)
-    result = render(sys.argv[1])
+    variant_arg = sys.argv[2] if len(sys.argv) == 3 else "diagnostic"
+    result = render(sys.argv[1], variant_arg)
     print(json.dumps(result, indent=2))

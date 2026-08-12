@@ -10,6 +10,15 @@ positions, section boundaries) is committed to fixtures/ground_truth/ since
 it is metadata, not audio, and is required to compute machine alignment
 metrics later.
 
+PM STAGE A REVIEW R4 repair: writes TWO variants per side:
+  - `{id}_{side}.wav` -- DIAGNOSTIC (marker-embedded, distinct outgoing/
+    incoming signatures per dsp/markers.py). Used for the full DSP
+    pipeline, machine alignment metrics, and PM forensic review. NEVER
+    used for owner listening.
+  - `{id}_{side}_clean.wav` -- CLEAN (no diagnostic marker content at
+    all, byte-identical musical content otherwise -- same seed/bpm/
+    structure). Used ONLY for owner-listening renders.
+
 Usage:
     python fixtures/generate_audio.py
 """
@@ -38,13 +47,22 @@ def render_scenario_audio(scenario: dict):
     plan = scenario["audio_plan"]
     for side in ("outgoing", "incoming"):
         spec = plan[side]
-        stereo, gt = make_track(spec)
+        sr = spec.get("sr", 44100)
+
+        # Diagnostic (marker-embedded) -- full pipeline / metrics / PM review.
+        stereo, gt = make_track(spec, sr=sr, marker_role=side, embed_markers=True)
         wav_path = AUDIO_DIR / f"{tid}_{side}.wav"
-        write_wav_float32(wav_path, stereo, spec.get("sr", 44100))
+        write_wav_float32(wav_path, stereo, sr)
         gt_path = GT_DIR / f"{tid}_{side}.ground_truth.json"
         gt_path.write_text(json.dumps(gt, indent=2), encoding="utf-8")
-        print(f"{tid}: wrote {wav_path.name} ({stereo.shape[0]/44100:.2f}s, "
-              f"{len(gt['beats_ms'])} beats, markers@{gt['marker_ms']}ms)")
+        print(f"{tid}: wrote {wav_path.name} ({stereo.shape[0]/sr:.2f}s, "
+              f"{len(gt['beats_ms'])} beats, markers@{gt['marker_ms']}ms, role={side})")
+
+        # Clean (no diagnostic markers) -- owner-listening renders ONLY.
+        clean_stereo, _clean_gt = make_track(spec, sr=sr, marker_role=None, embed_markers=False)
+        clean_wav_path = AUDIO_DIR / f"{tid}_{side}_clean.wav"
+        write_wav_float32(clean_wav_path, clean_stereo, sr)
+        print(f"{tid}: wrote {clean_wav_path.name} ({clean_stereo.shape[0]/sr:.2f}s, no diagnostic markers)")
 
 
 def main():

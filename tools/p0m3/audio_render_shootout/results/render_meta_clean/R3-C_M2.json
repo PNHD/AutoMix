@@ -1,7 +1,7 @@
 {
   "method": "M2",
   "method_role": "signalsmith_stretch_candidate",
-  "variant": "diagnostic",
+  "variant": "clean",
   "engine": "official_pinned_web_release_wasm_webaudio_fallback",
   "engine_provenance_doc": "docs/research/P0-M3-R3-DSP-CANDIDATE-PROVENANCE.md",
   "transition_id": "R3-C",
@@ -67,5 +67,5 @@
     "sample_rate_assertions_passed": true
   },
   "render_wall_time_s_note": "measures only this process's post-stretch mixing/assembly; the WASM stretch itself runs in a separate browser process/tab and its wall time is NOT captured by this harness (documented limitation, not fabricated as 0)",
-  "render_wall_time_s_python_side": 0.2002968000015244
+  "render_wall_time_s_python_side": 0.30822970000008354
 }

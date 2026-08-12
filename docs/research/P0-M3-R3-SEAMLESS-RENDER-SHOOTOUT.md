@@ -85,7 +85,7 @@ decisions: `tools/p0m3/audio_render_shootout/fixtures/planner_decisions/*.json`.
 | Scenario | bpm_out / bpm_in | Tempo relation | `required_tempo_ratio` | `allowed_transition_class_set` | Exit / entry candidate |
 |---|---|---|---|---|---|
 | R3-A (no-stretch control) | 120 / 120 | DIRECT | `1.0` | `[FULL_DJ_BLEND, SHORT_EQ_BLEND, SIMPLE_CROSSFADE]` | `R3A-OUT-EXIT` (t=44000ms) / `R3A-IN-ANCHOR` (t=0ms) |
-| R3-B (moderate stretch, ~5%) | 126 / 120 | DIRECT | `1.05` | `[FULL_DJ_BLEND, SHORT_EQ_BLEND, SIMPLE_CROSSFADE]` | `R3B-OUT-EXIT` (t=45000ms) / `R3B-IN-ANCHOR` (t=0ms) |
+| R3-B (moderate stretch, ~5%) | 126 / 120 | DIRECT | `1.05` | `[FULL_DJ_BLEND, SHORT_EQ_BLEND, SIMPLE_CROSSFADE]` | `R3B-OUT-EXIT` (t=45714ms, PM STAGE A REVIEW R2 repair -- see §16) / `R3B-IN-ANCHOR` (t=0ms) |
 | R3-C (half/double + residual) | 120 / 61.8 | HALF_DOUBLE | `0.9709` | `[FULL_DJ_BLEND, SHORT_EQ_BLEND, SIMPLE_CROSSFADE]` | `R3C-OUT-EXIT` (t=44000ms) / `R3C-IN-ANCHOR` (t=0ms) |
 | R3-D (incompatible pair) | 120 / 120 | DIRECT (irrelevant -- gated) | `None` | `[SIMPLE_CROSSFADE]` | `R3D-OUT-EXIT` (t=44000ms) / `R3D-IN-ANCHOR` (t=0ms) |
 | E (pitch-shift stress) | -- | -- | -- | -- | `NOT_TESTED_NO_VALID_PLANNER_INPUT`, see `fixtures/pitch_shift_stress_conclusion.md` |
@@ -144,7 +144,15 @@ the time-stretch engine and gain/EQ policy differ between methods.
 - **M3** (Rubber Band quality reference): identical boundary/gain/EQ policy
   to M2; only the stretch engine differs (`ffmpeg -af rubberband=tempo=<ratio>:pitch=<scale>`).
 
-## 6. Alignment/tempo/pitch -- applied values + measured errors
+## 6. Alignment/tempo/pitch -- applied values + measured errors (SUPERSEDED, see §16)
+
+**This section's original `beat_alignment_error_ms` methodology and the
+`0.0ms`-for-every-cell claim below were found defective by PM STAGE A
+REVIEW (R3) and are superseded by §16's `outgoing_anchor_absolute_error_ms`
+/ `incoming_anchor_absolute_error_ms` / `relative_alignment_error_ms`
+model. Kept in place, unedited below, only so the supersession is visible
+in-place; do not cite the `0.0ms` figures in this section as current
+evidence.**
 
 Full contract: `tools/p0m3/audio_render_shootout/dsp/render_common.py`'s
 `require_full_dj_alignment_fields` (fail-closed guard, §9) and
@@ -166,22 +174,13 @@ Full contract: `tools/p0m3/audio_render_shootout/dsp/render_common.py`'s
 | R3-C | M3 | 0.9709 | 0.9709 | 0.0 | 0 | 0.0 | 0.0 |
 | R3-D | all 4 | 1.0 | `None` (FULL_DJ withheld) | `None` | 0 | 0.0 | 0.0 |
 
-Full per-cell JSON: `tools/p0m3/audio_render_shootout/results/machine_metrics.json`.
-
-`beat_alignment_error_ms` is measured, not asserted: a synthetic
-high-frequency ("13kHz decaying blip) marker is embedded at each fixture's
-exact authored beat-anchor sample at authoring time
-(`fixtures/synth.py`/`fixtures/ground_truth/*.json`), then detected in the
-FINAL rendered mix via matched-filter cross-correlation
-(`dsp/safety_metrics.detect_marker`) and compared to its expected
-post-render position; `beat_alignment_error_ms = detected_incoming_position
-- detected_outgoing_position`. All 16 cells measure `0.0ms` -- both the
-outgoing and incoming beat anchors in this pass's fixtures were
-deliberately authored to fall exactly at the boundary onset/entry points
-(so the correctly-computed alignment offset is honestly `0.0ms` for every
-cell, not fabricated), and the marker-detection round-trip empirically
-confirms the renderer actually places them there in the output samples,
-not merely that the arithmetic says so.
+PM STAGE A REVIEW independently found this `0.0ms`-everywhere result
+unreliable: `compute_metrics.py` called `detect_marker()` twice with the
+SAME 13kHz template for both outgoing and incoming, against overlapping
+search windows, so both calls could (and sometimes did) lock onto the
+SAME peak and mechanically difference to `0.0` even when the individual
+detections were, independently, ~223-255ms away from the true marker.
+See §16 for the repair and the corrected measurements.
 
 `stretch_ratio_error = abs(planner_required_tempo_ratio - applied_tempo_ratio)`
 directly shows M0/M1's deliberate (documented) tempo-correction skip on
@@ -260,7 +259,15 @@ one at a time, asserting `PlannerContractError` is raised in every case
 `python scripts/selftest_fail_closed.py` -- `ALL SELF-TESTS PASS` (8/8:
 1 positive + 7 negative mutations).
 
-## 10. Blinded owner listening pack
+## 10. Blinded owner listening pack (SUPERSEDED, see §17-18)
+
+**PM STAGE A REVIEW invalidated the pack described in this section (R4:
+its clips were extracted from marker-embedded diagnostic audio, so the
+13kHz diagnostic tick could leak into owner-listening audio; R5: its blind
+seed `20260812` was hardcoded in committed source and its mapping was
+committed to git, both readable by the owner before listening). Do not
+use the ZIP hash originally reported here. §17-18 document the rebuilt
+pack.**
 
 `P0-M3-R3-OWNER-LISTENING.zip` (repo root, **LOCAL ONLY, not committed**).
 11 clips (within the "approximately 9-12" target):
@@ -365,7 +372,10 @@ has not yet occurred. Issue #7 remains OPEN until the owner listens to
 - `tools/p0m3/audio_render_shootout/results/machine_metrics.json`
 - `tools/p0m3/audio_render_shootout/.gitignore`, `requirements.txt`
 
-## 15. PM review request
+## 15. PM review request (SUPERSEDED, see §19)
+
+**Superseded by §19's PM review request, which reflects the repaired
+pipeline. Kept in place only so the supersession is visible in-place.**
 
 Please independently verify:
 
@@ -387,5 +397,361 @@ Please independently verify:
    return `OWNER_RATINGS_TEMPLATE.json` before opening `results/blind_key.json`.
 
 ---
+
+# PM STAGE A REVIEW -- REPAIR (2026-08-12)
+
+PM STAGE A REVIEW independently re-verified pushed HEAD
+`090fa848db8d56d72d794108a576beac8e547df9` and both uploaded deliverables,
+and found four load-bearing defects the original pass's own checks did not
+catch (R1-R4), plus two hardening requirements (R5-R6). Sections 16-19
+document the repair. Everything in §1-15 that PM STAGE A REVIEW did not
+flag (planner-decision consumption discipline, R3-D fallback-never-forced
+behavior, pitch-shift-stress `NOT_TESTED_NO_VALID_PLANNER_INPUT`
+conclusion, Signalsmith/Rubber Band provenance) is unchanged.
+
+## 16. R1-R3 -- sample-rate domain, ground truth, and alignment-diagnostic repairs
+
+### R1 -- M2 sample-rate domain mismatch
+
+**Defect** (independently reproduced by PM): `web/stretch_worker.html`
+decoded the input WAV through a default `new AudioContext()`, which uses
+the browser's hardware output rate (48000Hz on this machine) rather than
+the source file's native rate (44100Hz) -- `decodeAudioData` silently
+resamples to the context's rate. `finish_job()` then took the Signalsmith
+output's own (48000Hz) sample rate and used it to label/write the ENTIRE
+assembled render, while `outgoing_pre`/`outgoing_overlap` remained
+44.1kHz-domain sample arrays -- concatenating two different rate-domain
+buffers under one declared rate. Independent evidence PM cited: R3-A/C
+`overlap_duration_ms` reported `9187.5` instead of the planned `10000`;
+R3-B reported `10106.25` instead of `11000` (using the R2-repair-cycle's
+then-uncorrected 45000ms boundary).
+
+**Repair**:
+1. `web/stretch_worker.html` now requires an explicit `expectedSampleRate`
+   query param, decodes through a dedicated `OfflineAudioContext(1, 1,
+   expectedSampleRate)` (which forces `decodeAudioData` to resample to
+   EXACTLY that rate), and asserts `audioBuffer.sampleRate ===
+   expectedSampleRate` before proceeding, and `rendered.sampleRate`/
+   `rendered.numberOfChannels` again after rendering -- throwing
+   (visible as `ERROR: SAMPLE_RATE_ASSERTION_FAILED`, not a silent
+   fallback) on any mismatch.
+2. `dsp/render_m2_signalsmith.finish_job()` independently re-reads the
+   actual WAV file's own sample rate (never trusts the sidecar alone),
+   and fails closed (`dsp.mixing.SampleRateMismatchError`) unless it
+   matches the canonical fixture rate OR an explicit, logged
+   `dsp.mixing.normalize_sample_rate` (deterministic `scipy.signal.
+   resample_poly` rational resample) has run -- `sample_rate_resample_applied`
+   is recorded honestly per cell (`false` in every current cell, since the
+   browser-side fix makes the mismatch not occur in practice).
+3. `dsp/render_m3_rubberband.py` was symmetrically hardened (`assert` ->
+   `raise SampleRateMismatchError`), even though PM's review did not flag
+   M3 specifically.
+4. `scripts/verify_cross_method_consistency.py` (new) asserts, per
+   scenario: identical `canonical_sample_rate` and `channels` across all
+   4 methods, and `overlap_duration_ms` invariant across methods (within
+   0.05ms, a sub-sample rounding allowance only). **`ALL CHECKS PASS`** --
+   R3-A/C now report `overlap_duration_ms: 10000.0` and R3-B reports
+   `10286.01` (see R2 below for why R3-B's number itself changed) across
+   all 4 methods, every scenario.
+
+### R2 -- R3-B's declared beat/downbeat anchor was not on the beat grid
+
+**Defect** (independently reproduced by PM): R3-B's outgoing exit
+candidate was authored at bpm=126, `t_ms=45000`,
+`beat_downbeat_aligned: true`. `45000 / (60000/126) = 94.5` beats from
+t=0 -- exactly a half-beat offset, neither a beat nor a downbeat. The
+synthetic marker was simply inserted at 45000ms with no check against the
+actual authored beat grid.
+
+**Repair**: `fixtures/scenario_fixtures.py`'s `SCENARIO_B` outgoing exit
+candidate and its `marker_ms` were moved to `t_ms=45714` -- the nearest
+integer ms to the 24th bar boundary (`24 * 4 * (60000/126) =
+45714.285714...ms`, 0.2857ms from the true grid position). The
+`PlannerDecision` was regenerated from this corrected fixture via the REAL
+`policy.boundary.plan_transition_boundary()` (`python
+fixtures/generate_planner_decisions.py`) -- never hand-edited; it still
+returns `required_tempo_ratio: 1.05` (the intended ~5% direct-stretch
+scenario is preserved). `scripts/verify_beat_grid_membership.py` (new)
+asserts, for A/B/C, that every `FULL_DJ_BLEND` outgoing/incoming
+beat/downbeat alignment target is within `5.0ms` (a stated
+`PROJECT_INFERENCE` diagnostic tolerance, not Apple-derived) of an actual
+entry in that side's synthetic `beats_ms`/`downbeats_ms` ground truth.
+**`ALL CHECKS PASS`** -- including R3-B's outgoing target now measuring
+`0.286ms` from the true grid position, well inside tolerance.
+
+### R3 -- alignment diagnostics could report a fabricated `0.0ms`
+
+**Defect** (independently reproduced by PM): the outgoing and incoming
+sides both used the SAME 13kHz decaying-sine marker template. With
+overlapping/near-identical expected search positions, `detect_marker()`
+could (and, per PM's cited evidence, sometimes did) lock onto the SAME
+peak for both calls, mechanically producing `relative_error = 0.0` even
+when the two individual detections were independently ~223-255ms off.
+
+**Repair, part 1 (distinct signatures)**: `dsp/markers.py` (new) defines
+two spectrally- and structurally-distinct marker signatures --
+**outgoing**: a decaying pure sine at 9500Hz; **incoming**: a decaying
+UPWARD CHIRP from 15500Hz to 19500Hz. `fixtures/synth.py` embeds the
+correct signature per `marker_role` and records `marker_spec` (kind +
+exact parameters) in each side's ground-truth JSON, so detection always
+uses the true embedded template, never a hardcoded guess.
+
+**Repair, part 2 (honest confidence, never a fabricated 0.0)**:
+`dsp/safety_metrics.detect_marker()` now reports a `quality` of `HIGH`,
+`LOW`, `UNKNOWN_NO_SEGMENT`, or `UNKNOWN_LOW_CONFIDENCE`, using a
+PROMINENCE-based (z-score of the best-scoring position against the full
+distribution of scores in the search window) confidence measure rather
+than a bare absolute-correlation cutoff -- calibrated empirically after
+discovering that a marker additively mixed into real musical content
+(deliberately placed AT an authored downbeat, which is also exactly where
+a kick hit triggers) rarely exceeds ~0.3-0.4 absolute correlation even at
+the objectively correct position, while the correct position still stands
+out as an overwhelming statistical outlier (z-scores of 10+ observed) --
+see `dsp/safety_metrics.py`'s `MARKER_QUALITY_HIGH_Z`/`MARKER_QUALITY_LOW_Z`
+comments for the full empirical rationale. `error_ms`/`detected_sample`
+are `None` whenever `quality` is `UNKNOWN_*` -- never a fabricated `0.0`.
+`scripts/compute_metrics.py` now reports THREE separate numbers per cell:
+`outgoing_anchor_absolute_error_ms`, `incoming_anchor_absolute_error_ms`,
+`relative_alignment_error_ms` (computed ONLY when both sides are
+confidently detected; otherwise `None` with
+`relative_alignment_quality: "UNKNOWN_INSUFFICIENT_CONFIDENT_DETECTIONS"`).
+
+**Repair, part 3 (measuring the right buffer -- a finding made DURING
+this repair, not in the original PM comment)**: while validating parts
+1-2, this pass discovered that the incoming alignment anchor sits, by
+definition, at the exact FIRST sample of the equal-power crossfade's
+fade-in, where gain is mathematically `sin(0) == 0` -- so a marker placed
+there is ALWAYS silent in the final gain-mixed render regardless of
+whether the renderer positioned it correctly. This is a real, expected
+property of equal-power crossfades, not a placement bug, but it makes the
+final mixed render unreliable for verifying incoming-side alignment
+empirically. Fix: every renderer (M0/M1/M2/M3) now saves the exact
+PRE-GAIN `outgoing_overlap`/`incoming_overlap` buffers (post-stretch,
+post-alignment-shift, before `dsp.mixing.mix_overlap` multiplies by the
+crossfade curve) to `results/premix_diag/*_premix.wav`
+(`dsp.render_common.save_premix_diagnostic`, diagnostic-only, local,
+~0.6s snippets) whenever `variant="diagnostic"`. `compute_metrics.py`
+detects both markers against these premix buffers (`expected_sample=0`
+for both, since each buffer starts at the same output-timeline instant by
+construction) instead of the final mixed render. Signal-safety/loudness/
+discontinuity diagnostics still run against the FINAL mixed render, since
+those legitimately describe the actual deliverable.
+
+**Results** (`results/machine_metrics.json`, all 16 cells):
+
+| Scenario | Method | out abs err (ms) | in abs err (ms) | relative err (ms) | out quality | in quality |
+|---|---|---|---|---|---|---|
+| R3-A | M0/M1 | 0.0 | 0.0 | 0.0 | HIGH | HIGH |
+| R3-A | M2/M3 | 0.0 | `None` | `None` | HIGH | `UNKNOWN_LOW_CONFIDENCE` |
+| R3-B | M0/M1 | 0.0 | 0.0 | 0.0 | HIGH | HIGH |
+| R3-B | M2/M3 | 0.0 | `None` | `None` | HIGH | `UNKNOWN_LOW_CONFIDENCE` |
+| R3-C | M0/M1 | 0.0 | 0.0 | 0.0 | HIGH | HIGH |
+| R3-C | M2/M3 | 0.0 | `None` | `None` | HIGH | `UNKNOWN_LOW_CONFIDENCE` |
+| R3-D | all 4 | 0.0 | 0.0 | 0.0 | HIGH | HIGH |
+
+M0/M1/D are unambiguously confirmed aligned (`0.0ms`, `HIGH` confidence
+both sides -- these never apply real time-stretch, so the marker's
+waveform reaches the premix buffer completely intact). **M2/M3's incoming
+marker is honestly `UNKNOWN_LOW_CONFIDENCE`, not falsely `0.0` and not
+falsely a large error**: absolute correlation peaks measured only
+`0.012-0.039` (below the `0.05` floor) even though several individually
+had high z-scores (up to 7.8) -- the most defensible reading is that
+Signalsmith/Rubber Band's phase-vocoder-style time-stretch measurably
+reshapes/smears a short (10-12ms) broadband transient, which is itself a
+real, informative property of these DSP engines on transient content (and
+arguably relevant to the very question this task is investigating -- how
+these engines handle transients under time-stretch), not a measurement
+artifact. Per PM's explicit instruction ("a failed or ambiguous marker
+detection must be UNKNOWN/FAIL, never synthetic 0.0"), this pass reports
+`UNKNOWN_LOW_CONFIDENCE` rather than forcing a number through further
+threshold tuning.
+
+## 17. R4 -- clean vs. diagnostic render separation
+
+**Defect** (independently reproduced by PM): `fixtures/synth.py` embedded
+the (then-single, 13kHz) diagnostic marker directly into the SAME source
+waveform used for owner-listening renders -- an audible-ish tick that
+could contaminate exactly the subjective dimensions Stage B asks the
+owner to judge.
+
+**Repair**: `fixtures/synth.py`'s `make_track()` now takes an
+`embed_markers` flag; `fixtures/generate_audio.py` writes BOTH a
+diagnostic variant (`{id}_{side}.wav`, marker-embedded, used for the full
+DSP pipeline / machine metrics / PM forensic review) and a clean variant
+(`{id}_{side}_clean.wav`, no diagnostic content at all -- otherwise
+byte-for-byte the same musical content: same seed/bpm/structure) for
+every scenario. `dsp/render_common.load_scenario_context()` takes a
+`variant` parameter threaded through every renderer (M0/M1/M2/M3,
+including the M2 browser-bridge `prepare_job`/`finish_job` and the M3
+ffmpeg path); clean-variant M2 jobs are separate browser round-trips
+against the clean input, using the identical M2 gain/EQ/alignment policy
+-- only the underlying source audio differs. Clean renders are written to
+`results/rendered_clean/` (verified during authoring: NONE of the clean
+renders' bytes match any diagnostic render's bytes, since the underlying
+audio differs by construction). `scripts/build_listening_pack.py` now
+reads EXCLUSIVELY from `results/rendered_clean/` -- verified by its own
+`source_variant: "clean"` field recorded in `blind_key.json`'s
+`clip_manifest` for all 11 clips, and empirically by the blinding
+verifier's format-parity check (§18) plus this repair's own construction
+(no code path in `build_listening_pack.py` can read `results/rendered/`
+at all -- the diagnostic directory constant isn't even imported there).
+
+## 18. R5-R6 -- true blinding + Signalsmith latency evidence
+
+### R5 -- blinding was reproducible from committed repository state
+
+**Defect** (independently reproduced by PM): `scripts/build_listening_pack.py`
+hardcoded `BLIND_SEED = 20260812` in committed source, and
+`results/blind_key.json` (the full letter-to-method mapping) was itself
+committed to git at HEAD `090fa84` -- an owner with `git log`/`git show`
+access could read the mapping before listening.
+
+**Repair**:
+1. `git rm --cached tools/p0m3/audio_render_shootout/results/blind_key.json`
+   and added `results/blind_key.json` + `results/.blind_seed_local` +
+   `premix_diag/` to `.gitignore` -- verified by
+   `git ls-files --error-unmatch` failing against the path (§18's
+   verifier check).
+2. `scripts/build_listening_pack.py` no longer has any `BLIND_SEED`
+   constant. It requires the seed via the `AUTOMIX_R3_BLIND_SEED`
+   environment variable and exits 1 with a clear error if unset --
+   verified interactively this pass (`python scripts/build_listening_pack.py`
+   with no env var set -> `ERROR: AUTOMIX_R3_BLIND_SEED environment
+   variable is required ...`, exit 1).
+3. A NEW seed (a 63-bit value from Python's `secrets.randbelow`, generated
+   in this session, never written to any committed file or this document)
+   was used to rebuild the pack. `scripts/verify_blinding.py` asserts the
+   seed in use is NOT the old committed value (`20260812`) -- **`OK`**.
+4. `scripts/verify_blinding.py` extended with format-parity checks across
+   every owner WAV: identical sample rate, channel count, bit depth, and
+   container/format tag, plus clip-duration spread `<= 0.5s`. Actual
+   result this pass: sample rate `{44100}`, channels `{2}`, bit depth
+   `{16}`, format tag `{1}` (PCM), duration spread `0.000s` (all 11 clips
+   exactly 28.00s) -- **zero variance across every field, zero
+   method-correlated file-format signal available to the owner**.
+5. The owner ZIP still contains no blind key/seed/method name (all
+   original Issue #7 checks re-verified against the rebuilt pack).
+
+`python scripts/verify_blinding.py` (seed supplied via env var) --
+**`ALL CHECKS PASS`**.
+
+### R6 -- Signalsmith latency/scheduling evidence
+
+**Repair**: `web/stretch_worker.html` now calls `await
+stretchNode.latency()` before scheduling/rendering and includes it,
+alongside `requested_input_sample_rate`, `decoded_sample_rate`,
+`output_sample_rate`, `channels`, `requested_tempo_rate`,
+`requested_semitones`, `block_ms`, `tail_pad_s`, `input_duration_s`,
+`output_sample_count`, `output_duration_s`, and the exact `scheduling_params`
+object passed to `.schedule()`, in a machine-readable sidecar JSON
+uploaded alongside the audio (`{tag}_m2_sidecar.json`) and folded verbatim
+into each M2 cell's `render_meta` JSON as `signalsmith_job_sidecar`. No
+latency value is trimmed/subtracted a second time anywhere in the
+pipeline -- the pinned node's own latency-compensated `schedule()`
+contract is used as-is, per the upstream README's documented behavior;
+this repair only ADDS visibility into the value, it does not add a second,
+independent latency correction on top of it. **Observed value: `0.12s`
+(120ms) consistently across all 6 browser jobs** (A/B/C x
+diagnostic/clean) -- equal to the `blockMs=120` configured block length,
+consistent with the upstream docs' description of latency scaling with
+block size. §16 R3's repaired distinct-marker diagnostics (measured on
+premix buffers, where M0/M1/D report exact `0.0ms` alignment) show no
+evidence that a residual scheduling correction beyond the node's own
+latency compensation is needed for this pass's fixtures; no such
+correction was added.
+
+## 19. Updated verification + PM STAGE A REVIEW repair closeout
+
+Exact commands (from `tools/p0m3/audio_render_shootout/`):
+
+```
+python fixtures/generate_planner_decisions.py
+python fixtures/generate_audio.py
+python scripts/render_all.py
+# M2: prepare/finish for diagnostic AND clean variants, A/B/C (6 browser round-trips)
+python dsp/render_m2_signalsmith.py prepare R3-A diagnostic   # ... open URL, wait for DONE ...
+python dsp/render_m2_signalsmith.py finish  R3-A diagnostic
+python dsp/render_m2_signalsmith.py prepare R3-A clean
+python dsp/render_m2_signalsmith.py finish  R3-A clean
+# (repeat for R3-B, R3-C)
+python dsp/render_m2_signalsmith.py fallback R3-D diagnostic
+python dsp/render_m2_signalsmith.py fallback R3-D clean
+python dsp/render_m3_rubberband.py R3-A diagnostic
+python dsp/render_m3_rubberband.py R3-A clean
+# (repeat for R3-B, R3-C, and R3-D diagnostic-only)
+python scripts/verify_cross_method_consistency.py   # NEW -- R1
+python scripts/verify_beat_grid_membership.py       # NEW -- R2
+python scripts/compute_metrics.py                   # repaired -- R3
+python scripts/selftest_fail_closed.py
+AUTOMIX_R3_BLIND_SEED=<new secret seed> python scripts/build_listening_pack.py   # R4 (clean-only) + R5 (required seed)
+python scripts/build_owner_pack.py
+AUTOMIX_R3_BLIND_SEED=<same seed> python scripts/verify_blinding.py             # R5, extended checks
+python scripts/build_pm_pack.py
+```
+
+All exited 0. `ALL CHECKS PASS` on `verify_cross_method_consistency.py`,
+`verify_beat_grid_membership.py`, `selftest_fail_closed.py` (8/8), and
+`verify_blinding.py` (including all new R5 checks). 16/16 diagnostic cells
+and 11/11 clean owner clips rendered; 0 NaN/Inf, 0 clipped samples across
+every diagnostic cell.
+
+### Updated AC check (deltas from §15's original pass only)
+
+- **AC6** (same boundary across methods): now machine-verified, not just
+  structurally argued -- `verify_cross_method_consistency.py` PASS.
+- **AC9** (beat/downbeat synthetic-ground-truth errors reported): now
+  reports 3 separate honest numbers per cell with confidence, including
+  legitimate `UNKNOWN` results for M2/M3 incoming markers, never a
+  fabricated `0.0`.
+- **AC12** (blind owner listening ZIP passes blinding-integrity checks):
+  re-verified against the REBUILT pack with a new, non-derivable seed and
+  new format-parity checks.
+- All other AC1-AC17 results from §15 stand, re-verified against the
+  repaired pipeline.
+
+### Unknowns / risks (additions to §13)
+
+- M2/M3's incoming-marker detection quality (`UNKNOWN_LOW_CONFIDENCE`) is
+  itself only diagnostic evidence about matched-filter detectability of a
+  short synthetic transient under phase-vocoder stretch -- it is NOT
+  evidence about, and must not be read as evidence about, actual
+  perceptual/rhythmic correctness of the stretched incoming audio itself.
+  Only human listening (Stage B) can assess that.
+  outgoing/M0/M1/D alignment remains fully confirmed at `0.0ms`, `HIGH`
+  confidence.
+- The new blind seed is known only to this session's local environment
+  (supplied via `AUTOMIX_R3_BLIND_SEED`, never written to any committed
+  file); the PM review ZIP's `blind_key.json` is the sole authoritative
+  record going forward.
+
+## PM REVIEW REQUEST (supersedes §15)
+
+Please independently verify:
+
+1. Run `python scripts/verify_cross_method_consistency.py`,
+   `python scripts/verify_beat_grid_membership.py`,
+   `python scripts/selftest_fail_closed.py`, and (with the seed from the
+   PM ZIP's `blind_key.json` exported as `AUTOMIX_R3_BLIND_SEED`)
+   `python scripts/verify_blinding.py` -- confirm all four print
+   `ALL CHECKS PASS` / `ALL SELF-TESTS PASS`.
+2. Open `results/machine_metrics.json` and confirm R3-A/C
+   `overlap_duration_ms = 10000.0` and R3-B `overlap_duration_ms ≈
+   10286.01` across all 4 methods each (not the prior pass's
+   `9187.5`/`10106.25`).
+3. Confirm `fixtures/scenario_fixtures.py`'s `SCENARIO_B` outgoing exit is
+   `t_ms=45714` (not `45000`) and that
+   `fixtures/planner_decisions/R3-B.json` was regenerated (check its file
+   mtime / regenerate it yourself) rather than hand-edited.
+4. Confirm `results/blind_key.json` is NOT present via `git ls-files
+   tools/p0m3/audio_render_shootout/results/` and that
+   `tools/p0m3/audio_render_shootout/scripts/build_listening_pack.py`
+   contains no hardcoded seed constant.
+5. Confirm the NEW `P0-M3-R3-OWNER-LISTENING.zip` SHA-256 (§ below /
+   `HANDOFF_TO_PM.md`) differs from the invalidated prior pack's
+   `6a4dc2250a746701b1863dec3c9accea3981a9bb6a6fbf4a597deeff23fbc09e`.
+6. Instruct the owner to listen to the NEW `P0-M3-R3-OWNER-LISTENING.zip`
+   ONLY -- the prior pack is invalidated and must not be rated.
+
+Do not start P1. Result remains `OWNER_LISTENING_REQUIRED`.
 
 **Do not start P1. Result: `OWNER_LISTENING_REQUIRED`, not `PASS`.**

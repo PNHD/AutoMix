@@ -1,8 +1,11 @@
 {
   "method": "M3",
   "method_role": "rubberband_quality_reference_only_documented_fallback",
+  "variant": "diagnostic",
   "engine": "none_full_dj_blend_withheld_by_planner",
   "transition_id": "R3-D",
+  "canonical_sample_rate": 44100,
+  "channels": 2,
   "rendered_transition_class": "SIMPLE_CROSSFADE",
   "planner_allowed_transition_class_set": [
     "SIMPLE_CROSSFADE"

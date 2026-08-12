@@ -1,6 +1,7 @@
 {
   "method": "M3",
   "method_role": "rubberband_quality_reference_only",
+  "variant": "diagnostic",
   "engine": "ffmpeg_librubberband_filter_subprocess",
   "engine_provenance_doc": "docs/research/P0-M3-R3-DSP-CANDIDATE-PROVENANCE.md",
   "ffmpeg_command": [
@@ -10,14 +11,16 @@
     "-loglevel",
     "error",
     "-i",
-    "E:\\AIProjects\\AutoMix\\tools\\p0m3\\audio_render_shootout\\serve_tmp\\R3-A_m3_input.wav",
+    "E:\\AIProjects\\AutoMix\\tools\\p0m3\\audio_render_shootout\\serve_tmp\\R3-A_diagnostic_m3_input.wav",
     "-af",
     "rubberband=tempo=1.0:pitch=1.0",
     "-c:a",
     "pcm_f32le",
-    "E:\\AIProjects\\AutoMix\\tools\\p0m3\\audio_render_shootout\\serve_tmp\\R3-A_m3_output.wav"
+    "E:\\AIProjects\\AutoMix\\tools\\p0m3\\audio_render_shootout\\serve_tmp\\R3-A_diagnostic_m3_output.wav"
   ],
   "transition_id": "R3-A",
+  "canonical_sample_rate": 44100,
+  "channels": 2,
   "rendered_transition_class": "FULL_DJ_BLEND",
   "planner_allowed_transition_class_set": [
     "FULL_DJ_BLEND",
@@ -54,6 +57,6 @@
     "clipped_sample_count": 0,
     "ceiling_dbfs": -1.0
   },
-  "render_wall_time_s": 0.6295028999993519,
-  "real_time_factor": 0.015737582499968993
+  "render_wall_time_s": 0.612182799999573,
+  "real_time_factor": 0.015304590000050666
 }

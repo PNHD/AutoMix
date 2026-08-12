@@ -18,17 +18,20 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from dsp.mixing import assemble_transition_render, apply_headroom_and_safety  # noqa: E402
-from dsp.render_common import load_scenario_context, compute_segments, fit_exact_length  # noqa: E402
+from dsp.render_common import load_scenario_context, compute_segments, fit_exact_length, save_premix_diagnostic  # noqa: E402
 
 
-def render(transition_id: str) -> tuple:
-    ctx = load_scenario_context(transition_id)
+def render(transition_id: str, variant: str = "diagnostic") -> tuple:
+    ctx = load_scenario_context(transition_id, variant=variant)
     segs = compute_segments(ctx)
     sr = segs["sr"]
 
     overlap_len = segs["overlap_len_smp"]
     incoming_overlap = fit_exact_length(segs["incoming_raw_segment"][:overlap_len], overlap_len)
     incoming_post = segs["incoming_raw_segment"][overlap_len:]
+
+    if variant == "diagnostic":
+        save_premix_diagnostic(transition_id, "M1", segs["outgoing_overlap"], incoming_overlap, sr)
 
     rendered = assemble_transition_render(
         segs["outgoing_pre"], segs["outgoing_overlap"], incoming_overlap, incoming_post,
@@ -40,7 +43,10 @@ def render(transition_id: str) -> tuple:
     metadata = {
         "method": "M1",
         "method_role": "planner_correct_equal_power_simple_crossfade_reference",
+        "variant": variant,
         "transition_id": transition_id,
+        "canonical_sample_rate": sr,
+        "channels": safe_audio.shape[1],
         "rendered_transition_class": "SIMPLE_CROSSFADE",
         "planner_allowed_transition_class_set": decision["allowed_transition_class_set"],
         "gain_law": "equal_power",

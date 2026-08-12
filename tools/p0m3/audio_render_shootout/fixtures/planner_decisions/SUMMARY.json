@@ -34,7 +34,7 @@
     "required_pitch_shift_semitones": 0,
     "beat_alignment_action": "ALIGN_OUTGOING_BEAT_TARGET_TO_INCOMING_BEAT_TARGET",
     "bar_alignment_action": "ALIGN_OUTGOING_DOWNBEAT_TARGET_TO_INCOMING_DOWNBEAT_TARGET",
-    "outgoing_beat_alignment_target_ms": 45000,
+    "outgoing_beat_alignment_target_ms": 45714,
     "incoming_beat_alignment_target_ms": 0
   },
   {

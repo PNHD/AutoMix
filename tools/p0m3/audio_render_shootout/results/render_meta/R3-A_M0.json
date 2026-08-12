@@ -1,7 +1,10 @@
 {
   "method": "M0",
   "method_role": "intentionally_weak_negative_baseline",
+  "variant": "diagnostic",
   "transition_id": "R3-A",
+  "canonical_sample_rate": 44100,
+  "channels": 2,
   "rendered_transition_class": "SIMPLE_CROSSFADE_LINEAR_UNCORRECTED",
   "planner_allowed_transition_class_set": [
     "FULL_DJ_BLEND",
@@ -32,6 +35,6 @@
     "clipped_sample_count": 0,
     "ceiling_dbfs": -1.0
   },
-  "render_wall_time_s": 0.11152909999873373,
-  "real_time_factor": 0.002788227499968343
+  "render_wall_time_s": 0.12003919999915524,
+  "real_time_factor": 0.003000979999978881
 }

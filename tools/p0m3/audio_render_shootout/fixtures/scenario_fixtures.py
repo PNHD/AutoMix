@@ -135,6 +135,18 @@ SCENARIO_B = {
     "transition_id": "R3-B",
     "title": "moderate_direct_stretch_5_pct",
     "purpose": "Realistic modest tempo correction (126->120 == 5% deviation, inside MAX_JUSTIFIED_TEMPO_STRETCH_PCT=0.12): exposes transient smearing/phasiness/bass-vocal artifacts from a real DIRECT time-stretch.",
+    # PM STAGE A REVIEW R2 repair: the exit candidate MUST land on a real
+    # beat AND downbeat of the authored 126bpm grid. bar_dur_ms =
+    # 4*(60000/126) = 1904.761904...; the 24th bar boundary is
+    # 24*1904.761904... = 45714.285714...ms -- rounded to the nearest
+    # integer ms (45714) for the fixture's t_ms field, 0.2857ms from the
+    # true grid position (well within any reasonable analyzer tolerance).
+    # The PRIOR value (45000ms) was exactly 94.5 beats from t=0 -- a half-
+    # beat offset, not a beat or downbeat at all -- and had been accepted
+    # as `beat_downbeat_aligned: true` without ever being checked against
+    # the actual synthetic beat grid. See
+    # scripts/verify_beat_grid_membership.py for the machine check that
+    # would have caught this.
     "outgoing_track": {
         "duration_ms": 56000,
         "genre_tags": ["house"],
@@ -142,7 +154,7 @@ SCENARIO_B = {
         "candidates": [
             {
                 "candidate_id": "R3B-OUT-EXIT",
-                "t_ms": 45000,
+                "t_ms": 45714,
                 "source": "authored_outro",
                 "beat_downbeat_aligned": True,
                 "in_acceptable_exit_region": True,
@@ -201,7 +213,7 @@ SCENARIO_B = {
                 {"start_s": 25.0, "end_s": 41.0, "label": "chorus", "energy": 1.00, "layers": ["pad", "hat", "bass", "kick", "snare", "melody"]},
                 {"start_s": 41.0, "end_s": 56.0, "label": "outro", "energy": 0.55, "layers": ["pad", "hat", "bass", "kick"]},
             ],
-            "marker_ms": [45000],
+            "marker_ms": [45714],
         },
         "incoming": {
             "bpm": 120, "duration_s": 50.0, "seed": 2002, "root_hz": 246.94,

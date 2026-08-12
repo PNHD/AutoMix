@@ -66,23 +66,40 @@ def ms_to_samples(ms: float, sr: int) -> int:
     return int(round(ms / 1000.0 * sr))
 
 
-def load_scenario_context(transition_id: str) -> dict:
+VALID_VARIANTS = ("diagnostic", "clean")
+
+
+def load_scenario_context(transition_id: str, variant: str = "diagnostic") -> dict:
+    """
+    PM STAGE A REVIEW R4 repair: `variant="diagnostic"` loads the
+    marker-embedded source audio (used for the full DSP pipeline + machine
+    alignment metrics + PM forensic review). `variant="clean"` loads
+    marker-FREE source audio (used ONLY for owner-listening renders) --
+    diagnostic ticks must never reach owner-listening audio.
+    """
+    if variant not in VALID_VARIANTS:
+        raise ValueError(f"variant must be one of {VALID_VARIANTS}, got {variant!r}")
     scenario = SCENARIOS_BY_ID[transition_id]
     decision = json.loads((PLANNER_DECISIONS_DIR / f"{transition_id}.json").read_text(encoding="utf-8"))
     audio_source_id = scenario.get("reuses_audio_from", transition_id)
+    suffix = "" if variant == "diagnostic" else "_clean"
 
-    out_wav, sr_out = read_wav_float(AUDIO_DIR / f"{audio_source_id}_outgoing.wav")
-    in_wav, sr_in = read_wav_float(AUDIO_DIR / f"{audio_source_id}_incoming.wav")
+    out_wav, sr_out = read_wav_float(AUDIO_DIR / f"{audio_source_id}_outgoing{suffix}.wav")
+    in_wav, sr_in = read_wav_float(AUDIO_DIR / f"{audio_source_id}_incoming{suffix}.wav")
     assert sr_out == sr_in, "outgoing/incoming sample rates must match for this harness's fixtures"
 
-    out_gt = json.loads((GROUND_TRUTH_DIR / f"{audio_source_id}_outgoing.ground_truth.json").read_text(encoding="utf-8"))
-    in_gt = json.loads((GROUND_TRUTH_DIR / f"{audio_source_id}_incoming.ground_truth.json").read_text(encoding="utf-8"))
+    out_gt = None
+    in_gt = None
+    if variant == "diagnostic":
+        out_gt = json.loads((GROUND_TRUTH_DIR / f"{audio_source_id}_outgoing.ground_truth.json").read_text(encoding="utf-8"))
+        in_gt = json.loads((GROUND_TRUTH_DIR / f"{audio_source_id}_incoming.ground_truth.json").read_text(encoding="utf-8"))
 
     return {
         "transition_id": transition_id,
         "scenario": scenario,
         "decision": decision,
         "audio_source_id": audio_source_id,
+        "variant": variant,
         "sr": sr_out,
         "outgoing_audio": out_wav,
         "incoming_audio": in_wav,
@@ -166,6 +183,35 @@ def apply_time_offset(x: np.ndarray, offset_ms: float, sr: int) -> np.ndarray:
         pad = np.zeros((offset_smp, x.shape[1]), dtype=x.dtype)
         return np.concatenate([pad, x], axis=0)
     return x[-offset_smp:]
+
+
+PREMIX_DIAG_DIR = Path(__file__).resolve().parent.parent / "results" / "premix_diag"
+
+
+def save_premix_diagnostic(transition_id: str, method: str, outgoing_overlap: np.ndarray, incoming_overlap: np.ndarray, sr: int) -> None:
+    """
+    PM STAGE A REVIEW R3 follow-up finding: equal-power gain is exactly 0
+    at the very start of the incoming side's crossfade-in by mathematical
+    construction (`sin(0) == 0`) -- a diagnostic marker embedded at the
+    incoming track's own alignment-anchor sample is therefore ALWAYS
+    silenced at that exact instant in the fully gain-mixed final render,
+    regardless of whether the renderer positioned it correctly. That is a
+    real, expected property of equal-power crossfades, not a placement
+    bug -- but it makes the FINAL MIXED render an unreliable place to
+    empirically verify incoming-side alignment. This saves the PRE-GAIN
+    `outgoing_overlap`/`incoming_overlap` buffers (exactly as each
+    renderer computed them, post-stretch/post-alignment-shift, before
+    `dsp.mixing.mix_overlap` multiplies by the crossfade gain curve) so
+    `scripts/compute_metrics.py` can measure marker positions on content
+    that was never gain-nulled. Diagnostic-only, local, not committed.
+    """
+    from dsp.wav_io import write_wav_float32
+    PREMIX_DIAG_DIR.mkdir(parents=True, exist_ok=True)
+    # Only the first ~600ms of each is needed (markers are <=12ms long and
+    # placed at sample 0 of each overlap buffer) -- kept small deliberately.
+    snippet_len = min(outgoing_overlap.shape[0], incoming_overlap.shape[0], int(round(0.6 * sr)))
+    write_wav_float32(PREMIX_DIAG_DIR / f"{transition_id}_{method}_outgoing_premix.wav", outgoing_overlap[:snippet_len], sr)
+    write_wav_float32(PREMIX_DIAG_DIR / f"{transition_id}_{method}_incoming_premix.wav", incoming_overlap[:snippet_len], sr)
 
 
 def fit_exact_length(x: np.ndarray, n: int) -> np.ndarray:

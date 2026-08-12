@@ -20,6 +20,15 @@ vendor/rubberband/
 # Local-only deliverable ZIPs (never committed -- Issue #7 explicit instruction)
 *.zip
 
+# PM STAGE A REVIEW R5 repair: blind key/mapping/seed artifacts are
+# PM-review-only evidence -- NEVER committed, so the repository itself can
+# never be used to unblind an owner-listening pack. The seed itself is
+# supplied at runtime via a required env var (AUTOMIX_R3_BLIND_SEED,
+# see scripts/build_listening_pack.py) and is never hardcoded in source.
+results/blind_key.json
+results/.blind_seed_local
+premix_diag/
+
 # Node modules if any browser-harness tooling is added locally
 node_modules/
 

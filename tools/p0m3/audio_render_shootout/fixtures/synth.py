@@ -7,15 +7,32 @@ authored sections (intro/verse/chorus/outro) with controlled energy
 variation, over a known, exact beat/downbeat/bar grid derived directly from
 the fixture's own bpm (Issue #7 "AUDIO FIXTURES").
 
-A short, distinctive high-frequency "alignment marker" tick is embedded at
-each requested `marker_ms` position (exact sample-accurate ground truth,
-since this project authors the waveform numerically) so post-render beat/
+A short, distinctive diagnostic "alignment marker" is embedded at each
+requested `marker_ms` position (exact sample-accurate ground truth, since
+this project authors the waveform numerically) so post-render beat/
 downbeat alignment error can be measured against synthetic ground truth by
-matched-filter peak detection, not merely asserted.
+matched-filter peak detection, not merely asserted. Outgoing and incoming
+tracks use INDEPENDENTLY IDENTIFIABLE marker signatures (`dsp/markers.py`)
+-- never the same template on both sides (PM STAGE A REVIEW R3 repair) --
+so a matched-filter search can never mechanically "detect the same peak
+twice" and report a false relative alignment error of `0.0`.
+
+Diagnostic markers are audible-ish, high-frequency ticks and MUST NOT
+appear in owner-listening audio (PM STAGE A REVIEW R4 repair). Pass
+`embed_markers=False` to synthesize CLEAN audio with no diagnostic content
+at all -- used only for the owner listening pack. Diagnostic (marker-
+embedded) audio is used only for the full DSP pipeline / machine alignment
+metrics / PM forensic review, never for owner listening.
 """
 from __future__ import annotations
 
+import sys
+from pathlib import Path
+
 import numpy as np
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from dsp.markers import marker_spec_for_role, build_marker_waveform, marker_duration_samples  # noqa: E402
 
 SR = 44100
 
@@ -23,10 +40,6 @@ SR = 44100
 # from the track's root_hz), cycled one degree per bar -- i, bVII, bVI, IV-ish.
 CHORD_PROGRESSION_SEMITONES = [0, -2, -4, 5]
 MELODY_SCALE_SEMITONES = [0, 3, 5, 7, 10, 12]  # minor pentatonic + octave
-
-MARKER_FREQ_HZ = 13000.0
-MARKER_DURATION_S = 0.003
-MARKER_AMPLITUDE = 0.22
 
 
 def _semitone_ratio(n: float) -> float:
@@ -80,9 +93,13 @@ def _active_section(sections: list[dict], t_s: float) -> dict:
     return sections[-1]
 
 
-def make_track(spec: dict, sr: int = SR) -> tuple[np.ndarray, dict]:
+def make_track(spec: dict, sr: int = SR, marker_role: str | None = None, embed_markers: bool = True) -> tuple[np.ndarray, dict]:
     """
     spec: {bpm, duration_s, seed, root_hz, sections:[{start_s,end_s,label,energy,layers}], marker_ms:[...]}
+    marker_role: "outgoing" | "incoming" -- selects which distinct marker
+        signature (dsp/markers.py) to embed; REQUIRED when embed_markers=True.
+    embed_markers: False produces CLEAN audio (no diagnostic marker content
+        at all) -- used only for owner-listening renders (R4 repair).
     Returns (stereo_float32[n, 2], ground_truth_dict).
     """
     bpm = float(spec["bpm"])
@@ -90,7 +107,9 @@ def make_track(spec: dict, sr: int = SR) -> tuple[np.ndarray, dict]:
     seed = int(spec["seed"])
     root_hz = float(spec["root_hz"])
     sections = spec["sections"]
-    marker_ms = spec.get("marker_ms", [])
+    marker_ms = spec.get("marker_ms", []) if embed_markers else []
+    if embed_markers and marker_ms and marker_role is None:
+        raise ValueError("marker_role is required when embed_markers=True and marker_ms is non-empty")
 
     rng = np.random.default_rng(seed)
     n_total = int(round(duration_s * sr))
@@ -106,6 +125,8 @@ def make_track(spec: dict, sr: int = SR) -> tuple[np.ndarray, dict]:
         "beats_ms": [],
         "downbeats_ms": [],
         "marker_ms": list(marker_ms),
+        "markers_embedded": bool(embed_markers and marker_ms),
+        "marker_role": marker_role if (embed_markers and marker_ms) else None,
     }
 
     t = 0.0
@@ -175,18 +196,19 @@ def make_track(spec: dict, sr: int = SR) -> tuple[np.ndarray, dict]:
         t += beat_dur_s
 
     marker_sample_positions = []
-    marker_len = max(1, int(round(MARKER_DURATION_S * sr)))
-    for ms in marker_ms:
-        smp = int(round(ms / 1000.0 * sr))
-        mn = min(max(0, n_total - smp), marker_len)
-        if mn > 0:
-            tt = np.arange(mn) / sr
-            blip = np.sin(2 * np.pi * MARKER_FREQ_HZ * tt) * np.exp(-tt * 3500.0) * MARKER_AMPLITUDE
-            buf[smp:smp + mn] += blip
-        marker_sample_positions.append(smp)
+    marker_spec = None
+    if embed_markers and marker_ms:
+        marker_spec = marker_spec_for_role(marker_role)
+        marker_len = marker_duration_samples(marker_spec, sr)
+        for ms in marker_ms:
+            smp = int(round(ms / 1000.0 * sr))
+            mn = min(max(0, n_total - smp), marker_len)
+            if mn > 0:
+                blip = build_marker_waveform(marker_spec, mn, sr)
+                buf[smp:smp + mn] += blip
+            marker_sample_positions.append(smp)
     ground_truth["marker_sample_positions"] = marker_sample_positions
-    ground_truth["marker_freq_hz"] = MARKER_FREQ_HZ
-    ground_truth["marker_duration_s"] = MARKER_DURATION_S
+    ground_truth["marker_spec"] = marker_spec
 
     peak = float(np.max(np.abs(buf))) if buf.size else 1.0
     if peak > 0:

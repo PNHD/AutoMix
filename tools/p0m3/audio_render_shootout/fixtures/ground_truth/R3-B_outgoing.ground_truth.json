@@ -207,11 +207,19 @@
     55238.095
   ],
   "marker_ms": [
-    45000
+    45714
   ],
+  "markers_embedded": true,
+  "marker_role": "outgoing",
   "marker_sample_positions": [
-    1984500
+    2015987
   ],
-  "marker_freq_hz": 13000.0,
-  "marker_duration_s": 0.003
+  "marker_spec": {
+    "role": "outgoing",
+    "kind": "decaying_sine",
+    "freq_hz": 9500.0,
+    "decay_rate": 2200.0,
+    "duration_s": 0.01,
+    "amplitude": 0.85
+  }
 }

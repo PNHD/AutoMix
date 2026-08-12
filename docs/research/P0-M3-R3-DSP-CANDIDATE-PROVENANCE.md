@@ -170,3 +170,32 @@ which Rubber Band engine tier is shipping-representative.
 - `docs/research/P0-M3-R3-DSP-CANDIDATE-PROVENANCE.md` (this document)
 - `tools/p0m3/audio_render_shootout/vendor/signalsmith-stretch/` (local-only,
   gitignored, re-fetchable via the commands in §1.2)
+
+## 5. PM STAGE A REVIEW addendum -- explicit sample rate + latency evidence
+
+PM STAGE A REVIEW (see `docs/research/P0-M3-R3-SEAMLESS-RENDER-SHOOTOUT.md`
+§16 R1) found that §1.2's browser bridge decoded the source WAV through a
+DEFAULT `new AudioContext()`, which uses the browser's hardware output
+rate (48000Hz on this machine) rather than the source file's own rate
+(44100Hz) -- `decodeAudioData` silently resamples to whatever rate the
+context itself was created at. `web/stretch_worker.html` was repaired to
+decode/render through an `OfflineAudioContext` created at an explicitly
+requested `expectedSampleRate`, and to assert (not merely hope) that both
+`audioBuffer.sampleRate` (post-decode) and `rendered.sampleRate`
+(post-render) equal that requested value -- failing loudly, not silently,
+on any mismatch. This is a harness-side integration bug in how this
+project's own code invoked the pinned Signalsmith WASM release; it is not
+a defect in `Signalsmith-Audio/signalsmith-stretch` itself, whose
+`OfflineAudioContext`/`AudioWorkletNode` API works exactly as documented
+once given an explicit target rate.
+
+Per the pinned commit's own `web/release/README.md`, `stretch.latency()`
+("the latency when used in 'live input' mode... also how far ahead you
+might want to schedule things to give the node enough time to fully
+compensate for its own latency") is now queried and recorded for every M2
+browser job. Observed value across all 6 jobs run this pass (scenarios
+A/B/C, diagnostic + clean variants): **`0.12s` (120ms), consistently
+equal to the configured `blockMs=120` block length** -- consistent with
+the upstream docs' description of latency scaling with block size. No
+second, independent latency correction was added on top of the node's own
+latency-compensated `schedule()` contract.

@@ -175,9 +175,18 @@
   "marker_ms": [
     0
   ],
+  "markers_embedded": true,
+  "marker_role": "incoming",
   "marker_sample_positions": [
     0
   ],
-  "marker_freq_hz": 13000.0,
-  "marker_duration_s": 0.003
+  "marker_spec": {
+    "role": "incoming",
+    "kind": "decaying_chirp",
+    "freq_start_hz": 15500.0,
+    "freq_end_hz": 19500.0,
+    "decay_rate": 1800.0,
+    "duration_s": 0.012,
+    "amplitude": 0.85
+  }
 }

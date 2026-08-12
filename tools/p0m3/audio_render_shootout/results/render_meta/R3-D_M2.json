@@ -1,6 +1,7 @@
 {
   "method": "M2",
   "method_role": "signalsmith_stretch_candidate_documented_fallback",
+  "variant": "diagnostic",
   "engine": "none_full_dj_blend_withheld_by_planner",
   "transition_id": "R3-D",
   "rendered_transition_class": "SIMPLE_CROSSFADE",
@@ -34,5 +35,7 @@
     "nan_inf_sample_count": 0,
     "clipped_sample_count": 0,
     "ceiling_dbfs": -1.0
-  }
+  },
+  "canonical_sample_rate": 44100,
+  "channels": 2
 }

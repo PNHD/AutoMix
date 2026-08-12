@@ -49,6 +49,14 @@ function encodeWavFloat32(audioBuffer) {
   return buffer;
 }
 
+async function uploadBytes(name, bodyBytesOrString) {
+  const up = await fetch("/upload?name=" + encodeURIComponent(name), {
+    method: "POST",
+    body: bodyBytesOrString,
+  });
+  if (!up.ok) throw new Error("upload of " + name + " failed: HTTP " + up.status);
+}
+
 async function run() {
   try {
     const mod = await import("../vendor/signalsmith-stretch/web/release/SignalsmithStretch.mjs?v=" + Date.now());
@@ -61,17 +69,29 @@ async function run() {
     const outputName = params.get("output");
     const blockMs = parseFloat(params.get("blockMs") || "120");
     const tailPadS = parseFloat(params.get("tailPadS") || "1.5");
+    const expectedSampleRate = parseInt(params.get("expectedSampleRate"), 10);
+    const sidecarName = params.get("sidecar");
     if (!inputUrl || !outputName) throw new Error("missing input/output query params");
+    if (!expectedSampleRate) throw new Error("missing required expectedSampleRate query param -- R1 repair: never decode at an unrequested default context rate");
 
     setStatus("FETCHING");
     const resp = await fetch(inputUrl);
     if (!resp.ok) throw new Error("fetch input failed: HTTP " + resp.status);
     const arrayBuf = await resp.arrayBuffer();
 
-    setStatus("DECODING");
-    const probeCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const audioBuffer = await probeCtx.decodeAudioData(arrayBuf.slice(0));
-    await probeCtx.close();
+    setStatus("DECODING @" + expectedSampleRate + "Hz");
+    // R1 repair: decode into a context CREATED AT the expected/canonical
+    // sample rate, instead of a default AudioContext (which uses the
+    // browser's hardware output rate, e.g. 48000Hz, and silently resamples
+    // decodeAudioData's output to that rate regardless of the source
+    // file's native rate -- the root cause of the R1 defect). Decoding via
+    // an OfflineAudioContext lets us pin the exact target rate; assert it
+    // explicitly rather than trusting it silently.
+    const decodeCtx = new OfflineAudioContext(1, 1, expectedSampleRate);
+    const audioBuffer = await decodeCtx.decodeAudioData(arrayBuf.slice(0));
+    if (audioBuffer.sampleRate !== expectedSampleRate) {
+      throw new Error("SAMPLE_RATE_ASSERTION_FAILED: decoded " + audioBuffer.sampleRate + "Hz != expected " + expectedSampleRate + "Hz (fail closed, R1 repair)");
+    }
 
     const sampleRate = audioBuffer.sampleRate;
     const numChannels = audioBuffer.numberOfChannels;
@@ -88,24 +108,60 @@ async function run() {
     if (blockMs) await stretchNode.configure({ blockMs });
     stretchNode.connect(offlineCtx.destination);
 
+    // R6: query the official node latency BEFORE scheduling/rendering, per
+    // the pinned upstream contract ("this is also how far ahead you might
+    // want to schedule things"). Recorded honestly even if 0/undefined in
+    // buffer (non-live-input) mode -- never fabricated.
+    let stretchLatencyS = null;
+    try {
+      stretchLatencyS = await stretchNode.latency();
+    } catch (e) {
+      stretchLatencyS = null;
+      console.warn("[stretch_worker] stretch.latency() unavailable:", e);
+    }
+
     const chans = [];
     for (let c = 0; c < numChannels; c++) chans.push(audioBuffer.getChannelData(c));
     await stretchNode.addBuffers(chans);
-    await stretchNode.schedule({ output: 0, input: 0, active: true, rate: rate, semitones: semitones });
+    const schedulingParams = { output: 0, input: 0, active: true, rate: rate, semitones: semitones };
+    await stretchNode.schedule(schedulingParams);
     await stretchNode.start(0);
 
     const rendered = await offlineCtx.startRendering();
+    if (rendered.sampleRate !== expectedSampleRate) {
+      throw new Error("SAMPLE_RATE_ASSERTION_FAILED: rendered " + rendered.sampleRate + "Hz != expected " + expectedSampleRate + "Hz (fail closed, R1 repair)");
+    }
+    if (rendered.numberOfChannels !== numChannels) {
+      throw new Error("CHANNEL_ASSERTION_FAILED: rendered " + rendered.numberOfChannels + " != input " + numChannels);
+    }
+
     setStatus("ENCODING");
     const wavBytes = encodeWavFloat32(rendered);
 
     setStatus("UPLOADING");
-    const up = await fetch("/upload?name=" + encodeURIComponent(outputName), {
-      method: "POST",
-      body: wavBytes,
-    });
-    if (!up.ok) throw new Error("upload failed: HTTP " + up.status);
+    await uploadBytes(outputName, wavBytes);
 
-    setStatus("DONE input_s=" + inputDurationS.toFixed(3) + " output_s=" + (rendered.length / sampleRate).toFixed(3));
+    if (sidecarName) {
+      const sidecar = {
+        requested_input_sample_rate: expectedSampleRate,
+        decoded_sample_rate: audioBuffer.sampleRate,
+        output_sample_rate: rendered.sampleRate,
+        channels: numChannels,
+        stretch_latency_s: stretchLatencyS,
+        requested_tempo_rate: rate,
+        requested_semitones: semitones,
+        block_ms: blockMs,
+        tail_pad_s: tailPadS,
+        input_duration_s: inputDurationS,
+        output_sample_count: rendered.length,
+        output_duration_s: rendered.length / rendered.sampleRate,
+        scheduling_params: schedulingParams,
+        sample_rate_assertions_passed: true,
+      };
+      await uploadBytes(sidecarName, JSON.stringify(sidecar, null, 2));
+    }
+
+    setStatus("DONE input_s=" + inputDurationS.toFixed(3) + " output_s=" + (rendered.length / sampleRate).toFixed(3) + " latency_s=" + stretchLatencyS);
   } catch (e) {
     console.error(e);
     setStatus("ERROR: " + (e && e.message ? e.message : String(e)));

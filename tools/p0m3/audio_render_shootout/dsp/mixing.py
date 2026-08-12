@@ -17,12 +17,47 @@ public-domain coefficient formulas) implemented from scratch in numpy/scipy.
 """
 from __future__ import annotations
 
+import math
+
 import numpy as np
-from scipy.signal import lfilter
+from scipy.signal import lfilter, resample_poly
 
 BASS_CUTOFF_HZ = 150.0
 BASS_HANDOFF_SPEED = 2.2  # bass swap completes faster than the full-band blend (reduces bass-on-bass collision time)
 CLIP_HEADROOM_DBFS = -1.0  # peak ceiling applied after mixing
+
+
+class SampleRateMismatchError(Exception):
+    """
+    R1 repair: raised when a render engine's output sample rate does not
+    match this pass's canonical rate and no explicit normalization step has
+    run. Fail closed -- never silently concatenate sample arrays from two
+    different rate domains under one declared sample rate.
+    """
+
+
+def normalize_sample_rate(audio: np.ndarray, actual_sr: int, target_sr: int) -> tuple[np.ndarray, bool]:
+    """
+    R1 repair: explicit, deterministic, documented high-quality resample
+    (rational polyphase filtering, `scipy.signal.resample_poly`) -- used
+    ONLY as a defense-in-depth fallback if an upstream engine ever returns
+    audio at a rate other than the canonical render rate (with the R1 fix
+    to `web/stretch_worker.html`, this should not happen for M2 in
+    practice, since the browser is now told the exact expected rate and
+    asserts it itself before upload). Returns (audio_at_target_sr,
+    was_resampled). Callers MUST fail closed (raise
+    SampleRateMismatchError) rather than call this silently and pretend
+    nothing happened -- see dsp/render_m2_signalsmith.finish_job.
+    """
+    if actual_sr == target_sr:
+        return audio, False
+    g = math.gcd(actual_sr, target_sr)
+    up, down = target_sr // g, actual_sr // g
+    resampled = np.stack(
+        [resample_poly(audio[:, c], up, down) for c in range(audio.shape[1])],
+        axis=1,
+    ).astype(np.float32)
+    return resampled, True
 
 
 def equal_power_gains(n: int) -> tuple[np.ndarray, np.ndarray]:

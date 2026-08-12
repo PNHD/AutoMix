@@ -1,10 +1,26 @@
 {
-  "method": "M2",
-  "method_role": "signalsmith_stretch_candidate",
-  "variant": "diagnostic",
-  "engine": "official_pinned_web_release_wasm_webaudio_fallback",
+  "method": "M3",
+  "method_role": "rubberband_quality_reference_only",
+  "variant": "clean",
+  "engine": "ffmpeg_librubberband_filter_subprocess",
   "engine_provenance_doc": "docs/research/P0-M3-R3-DSP-CANDIDATE-PROVENANCE.md",
+  "ffmpeg_command": [
+    "C:\\Users\\phamn\\AppData\\Local\\Microsoft\\WinGet\\Packages\\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\\ffmpeg-8.1.1-full_build\\bin\\ffmpeg.EXE",
+    "-y",
+    "-hide_banner",
+    "-loglevel",
+    "error",
+    "-i",
+    "E:\\AIProjects\\AutoMix\\tools\\p0m3\\audio_render_shootout\\serve_tmp\\R3-C_clean_m3_input.wav",
+    "-af",
+    "rubberband=tempo=0.9709:pitch=1.0",
+    "-c:a",
+    "pcm_f32le",
+    "E:\\AIProjects\\AutoMix\\tools\\p0m3\\audio_render_shootout\\serve_tmp\\R3-C_clean_m3_output.wav"
+  ],
   "transition_id": "R3-C",
+  "canonical_sample_rate": 44100,
+  "channels": 2,
   "rendered_transition_class": "FULL_DJ_BLEND",
   "planner_allowed_transition_class_set": [
     "FULL_DJ_BLEND",
@@ -15,6 +31,7 @@
   "bass_eq_handoff_applied": true,
   "applied_tempo_ratio": 0.9709,
   "planner_required_tempo_ratio": 0.9709,
+  "measured_input_output_ratio": 0.97089979963737,
   "applied_pitch_shift_semitones": 0,
   "planner_required_pitch_shift_semitones": 0,
   "applied_alignment_offset_ms": 0.0,
@@ -40,32 +57,6 @@
     "clipped_sample_count": 0,
     "ceiling_dbfs": -1.0
   },
-  "canonical_sample_rate": 44100,
-  "browser_output_sample_rate_from_file": 44100,
-  "sample_rate_resample_applied": false,
-  "channels": 2,
-  "signalsmith_job_sidecar": {
-    "requested_input_sample_rate": 44100,
-    "decoded_sample_rate": 44100,
-    "output_sample_rate": 44100,
-    "channels": 2,
-    "stretch_latency_s": 0.12,
-    "requested_tempo_rate": 0.9709,
-    "requested_semitones": 0,
-    "block_ms": 120,
-    "tail_pad_s": 1.5,
-    "input_duration_s": 24.272517006802723,
-    "output_sample_count": 1168651,
-    "output_duration_s": 26.50002267573696,
-    "scheduling_params": {
-      "output": 0,
-      "input": 0,
-      "active": true,
-      "rate": 0.9709,
-      "semitones": 0
-    },
-    "sample_rate_assertions_passed": true
-  },
-  "render_wall_time_s_note": "measures only this process's post-stretch mixing/assembly; the WASM stretch itself runs in a separate browser process/tab and its wall time is NOT captured by this harness (documented limitation, not fabricated as 0)",
-  "render_wall_time_s_python_side": 0.2002968000015244
+  "render_wall_time_s": 1.5948678999993717,
+  "real_time_factor": 0.03987171999997372
 }

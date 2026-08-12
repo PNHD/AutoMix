@@ -1,6 +1,7 @@
 {
   "method": "M3",
   "method_role": "rubberband_quality_reference_only",
+  "variant": "diagnostic",
   "engine": "ffmpeg_librubberband_filter_subprocess",
   "engine_provenance_doc": "docs/research/P0-M3-R3-DSP-CANDIDATE-PROVENANCE.md",
   "ffmpeg_command": [
@@ -10,14 +11,16 @@
     "-loglevel",
     "error",
     "-i",
-    "E:\\AIProjects\\AutoMix\\tools\\p0m3\\audio_render_shootout\\serve_tmp\\R3-B_m3_input.wav",
+    "E:\\AIProjects\\AutoMix\\tools\\p0m3\\audio_render_shootout\\serve_tmp\\R3-B_diagnostic_m3_input.wav",
     "-af",
     "rubberband=tempo=1.05:pitch=1.0",
     "-c:a",
     "pcm_f32le",
-    "E:\\AIProjects\\AutoMix\\tools\\p0m3\\audio_render_shootout\\serve_tmp\\R3-B_m3_output.wav"
+    "E:\\AIProjects\\AutoMix\\tools\\p0m3\\audio_render_shootout\\serve_tmp\\R3-B_diagnostic_m3_output.wav"
   ],
   "transition_id": "R3-B",
+  "canonical_sample_rate": 44100,
+  "channels": 2,
   "rendered_transition_class": "FULL_DJ_BLEND",
   "planner_allowed_transition_class_set": [
     "FULL_DJ_BLEND",
@@ -28,22 +31,22 @@
   "bass_eq_handoff_applied": true,
   "applied_tempo_ratio": 1.05,
   "planner_required_tempo_ratio": 1.05,
-  "measured_input_output_ratio": 1.05,
+  "measured_input_output_ratio": 1.0500003138695362,
   "applied_pitch_shift_semitones": 0,
   "planner_required_pitch_shift_semitones": 0,
   "applied_alignment_offset_ms": 0.0,
   "beat_alignment_applied": true,
   "beat_alignment_action": "ALIGN_OUTGOING_BEAT_TARGET_TO_INCOMING_BEAT_TARGET",
   "bar_alignment_action": "ALIGN_OUTGOING_DOWNBEAT_TARGET_TO_INCOMING_DOWNBEAT_TARGET",
-  "outgoing_beat_alignment_target_ms": 45000,
+  "outgoing_beat_alignment_target_ms": 45714,
   "incoming_beat_alignment_target_ms": 0,
   "input_padded_samples": 0,
-  "onset_ms": 45000,
+  "onset_ms": 45714,
   "content_end_ms": 56000,
   "entry_ms": 0,
-  "overlap_len_samples": 485100,
-  "overlap_duration_ms": 11000.0,
-  "output_duration_s": 41.0,
+  "overlap_len_samples": 453613,
+  "overlap_duration_ms": 10286.009070294785,
+  "output_duration_s": 40.28600907029478,
   "safety": {
     "pre_peak_linear": 0.8500000238418579,
     "pre_peak_dbfs": -1.4116212420815057,
@@ -54,6 +57,6 @@
     "clipped_sample_count": 0,
     "ceiling_dbfs": -1.0
   },
-  "render_wall_time_s": 1.0680898999999044,
-  "real_time_factor": 0.02605099024394138
+  "render_wall_time_s": 1.0511327999993227,
+  "real_time_factor": 0.02609177538948818
 }

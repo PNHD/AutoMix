@@ -15,24 +15,34 @@
       "applied_tempo_ratio": 1.0,
       "planner_required_tempo_ratio": 1.0,
       "applied_pitch_shift_semitones": 0,
-      "applied_alignment_offset_ms": 0.0
+      "applied_alignment_offset_ms": 0.0,
+      "canonical_sample_rate": 44100,
+      "channels": 2
     },
     "timing": {
-      "beat_alignment_error_ms": 0.0,
-      "downbeat_alignment_error_ms": 0.0,
+      "outgoing_anchor_absolute_error_ms": 0.0,
+      "incoming_anchor_absolute_error_ms": 0.0,
+      "relative_alignment_error_ms": 0.0,
+      "relative_alignment_quality": "COMPUTED_FROM_TWO_CONFIDENT_DISTINCT_MARKER_DETECTIONS",
       "outgoing_marker_detection": {
-        "detected": true,
-        "expected_sample": 661500,
-        "detected_sample": 672769,
-        "error_ms": 255.53287981859413,
-        "correlation_peak": 0.29026912607184324
+        "expected_sample": 0,
+        "detected_sample": 0,
+        "error_ms": 0.0,
+        "correlation_peak": 0.23793652656272696,
+        "correlation_z_score": 14.536432742606086,
+        "quality": "HIGH",
+        "confident": true,
+        "marker_role": "outgoing"
       },
       "incoming_marker_detection": {
-        "detected": true,
-        "expected_sample": 661500,
-        "detected_sample": 672769,
-        "error_ms": 255.53287981859413,
-        "correlation_peak": 0.29026912607184324
+        "expected_sample": 0,
+        "detected_sample": 0,
+        "error_ms": 0.0,
+        "correlation_peak": 0.39433677536566464,
+        "correlation_z_score": 25.820282046375773,
+        "quality": "HIGH",
+        "confident": true,
+        "marker_role": "incoming"
       },
       "output_duration_s": 40.0,
       "overlap_duration_ms": 10000.0,
@@ -44,7 +54,7 @@
       "clipped_sample_count": 0,
       "discontinuity_proxy_whole_clip_note": "whole-clip proxy legitimately fires on ordinary drum/percussion transients -- not a splice indicator by itself; see discontinuity_proxy_at_transition_edges for the seam-scoped check",
       "discontinuity_proxy_whole_clip": {
-        "discontinuity_count": 4468,
+        "discontinuity_count": 4470,
         "max_abs_delta": 1.0249974727630615,
         "max_abs_delta_position_s": 2.500249433106576
       },
@@ -52,8 +62,8 @@
         "per_edge": [
           {
             "edge_sample": 661500,
-            "discontinuity_count": 234,
-            "max_abs_delta": 0.2888237237930298
+            "discontinuity_count": 246,
+            "max_abs_delta": 0.4939291775226593
           },
           {
             "edge_sample": 1102500,
@@ -61,19 +71,20 @@
             "max_abs_delta": 0.36987191438674927
           }
         ],
-        "total_discontinuity_count": 438
+        "total_discontinuity_count": 450
       }
     },
     "loudness": {
-      "overall_rms_dbfs": -22.82124542746677,
-      "loudness_jump_at_overlap_start_db": 5.78515654120114,
+      "overall_rms_dbfs": -22.82077711216004,
+      "loudness_jump_at_overlap_start_db": 5.845871289678975,
       "loudness_jump_at_overlap_end_db": 6.493475317993745
     },
     "performance": {
-      "render_wall_time_s": 0.11152909999873373,
-      "real_time_factor": 0.002788227499968343,
+      "render_wall_time_s": 0.12003919999915524,
+      "real_time_factor": 0.003000979999978881,
       "note": null
-    }
+    },
+    "signalsmith_job_sidecar": null
   },
   {
     "transition_id": "R3-A",
@@ -91,176 +102,34 @@
       "applied_tempo_ratio": 1.0,
       "planner_required_tempo_ratio": 1.0,
       "applied_pitch_shift_semitones": 0,
-      "applied_alignment_offset_ms": 0.0
+      "applied_alignment_offset_ms": 0.0,
+      "canonical_sample_rate": 44100,
+      "channels": 2
     },
     "timing": {
-      "beat_alignment_error_ms": 0.0,
-      "downbeat_alignment_error_ms": 0.0,
+      "outgoing_anchor_absolute_error_ms": 0.0,
+      "incoming_anchor_absolute_error_ms": 0.0,
+      "relative_alignment_error_ms": 0.0,
+      "relative_alignment_quality": "COMPUTED_FROM_TWO_CONFIDENT_DISTINCT_MARKER_DETECTIONS",
       "outgoing_marker_detection": {
-        "detected": true,
-        "expected_sample": 661500,
-        "detected_sample": 672769,
-        "error_ms": 255.53287981859413,
-        "correlation_peak": 0.29078189817479394
+        "expected_sample": 0,
+        "detected_sample": 0,
+        "error_ms": 0.0,
+        "correlation_peak": 0.23793652656272696,
+        "correlation_z_score": 14.536432742606086,
+        "quality": "HIGH",
+        "confident": true,
+        "marker_role": "outgoing"
       },
       "incoming_marker_detection": {
-        "detected": true,
-        "expected_sample": 661500,
-        "detected_sample": 672769,
-        "error_ms": 255.53287981859413,
-        "correlation_peak": 0.29078189817479394
-      },
-      "output_duration_s": 40.0,
-      "overlap_duration_ms": 10000.0,
-      "stretch_ratio_error": 0.0
-    },
-    "signal_safety": {
-      "nan_inf_sample_count": 0,
-      "peak_dbfs": -1.4116212420815057,
-      "clipped_sample_count": 0,
-      "discontinuity_proxy_whole_clip_note": "whole-clip proxy legitimately fires on ordinary drum/percussion transients -- not a splice indicator by itself; see discontinuity_proxy_at_transition_edges for the seam-scoped check",
-      "discontinuity_proxy_whole_clip": {
-        "discontinuity_count": 4506,
-        "max_abs_delta": 1.0249974727630615,
-        "max_abs_delta_position_s": 2.500249433106576
-      },
-      "discontinuity_proxy_at_transition_edges": {
-        "per_edge": [
-          {
-            "edge_sample": 661500,
-            "discontinuity_count": 234,
-            "max_abs_delta": 0.28882452845573425
-          },
-          {
-            "edge_sample": 1102500,
-            "discontinuity_count": 204,
-            "max_abs_delta": 0.36987191438674927
-          }
-        ],
-        "total_discontinuity_count": 438
-      }
-    },
-    "loudness": {
-      "overall_rms_dbfs": -22.585399976448244,
-      "loudness_jump_at_overlap_start_db": 5.855434452117155,
-      "loudness_jump_at_overlap_end_db": 6.309910809228612
-    },
-    "performance": {
-      "render_wall_time_s": 0.1132417999979225,
-      "real_time_factor": 0.0028310449999480623,
-      "note": null
-    }
-  },
-  {
-    "transition_id": "R3-A",
-    "method": "M2",
-    "contract": {
-      "rendered_transition_class": "FULL_DJ_BLEND",
-      "planner_allowed_transition_class_set": [
-        "FULL_DJ_BLEND",
-        "SHORT_EQ_BLEND",
-        "SIMPLE_CROSSFADE"
-      ],
-      "onset_ms": 44000,
-      "content_end_ms": 54000,
-      "entry_ms": 0,
-      "applied_tempo_ratio": 1.0,
-      "planner_required_tempo_ratio": 1.0,
-      "applied_pitch_shift_semitones": 0,
-      "applied_alignment_offset_ms": 0.0
-    },
-    "timing": {
-      "beat_alignment_error_ms": 0.0,
-      "downbeat_alignment_error_ms": 0.0,
-      "outgoing_marker_detection": {
-        "detected": true,
-        "expected_sample": 661500,
-        "detected_sample": 672834,
-        "error_ms": 236.125,
-        "correlation_peak": 0.24862252427043546
-      },
-      "incoming_marker_detection": {
-        "detected": true,
-        "expected_sample": 661500,
-        "detected_sample": 672834,
-        "error_ms": 236.125,
-        "correlation_peak": 0.24862252427043546
-      },
-      "output_duration_s": 37.96875,
-      "overlap_duration_ms": 9187.5,
-      "stretch_ratio_error": 0.0
-    },
-    "signal_safety": {
-      "nan_inf_sample_count": 0,
-      "peak_dbfs": -1.4116212420815057,
-      "clipped_sample_count": 0,
-      "discontinuity_proxy_whole_clip_note": "whole-clip proxy legitimately fires on ordinary drum/percussion transients -- not a splice indicator by itself; see discontinuity_proxy_at_transition_edges for the seam-scoped check",
-      "discontinuity_proxy_whole_clip": {
-        "discontinuity_count": 15315,
-        "max_abs_delta": 1.0249974727630615,
-        "max_abs_delta_position_s": 2.2971041666666667
-      },
-      "discontinuity_proxy_at_transition_edges": {
-        "per_edge": [
-          {
-            "edge_sample": 661500,
-            "discontinuity_count": 252,
-            "max_abs_delta": 0.2888246476650238
-          },
-          {
-            "edge_sample": 1102500,
-            "discontinuity_count": 8,
-            "max_abs_delta": 0.04152227193117142
-          }
-        ],
-        "total_discontinuity_count": 260
-      }
-    },
-    "loudness": {
-      "overall_rms_dbfs": -22.824891041964793,
-      "loudness_jump_at_overlap_start_db": 5.413394177365518,
-      "loudness_jump_at_overlap_end_db": 3.506892429267033
-    },
-    "performance": {
-      "render_wall_time_s": null,
-      "real_time_factor": null,
-      "note": null
-    }
-  },
-  {
-    "transition_id": "R3-A",
-    "method": "M3",
-    "contract": {
-      "rendered_transition_class": "FULL_DJ_BLEND",
-      "planner_allowed_transition_class_set": [
-        "FULL_DJ_BLEND",
-        "SHORT_EQ_BLEND",
-        "SIMPLE_CROSSFADE"
-      ],
-      "onset_ms": 44000,
-      "content_end_ms": 54000,
-      "entry_ms": 0,
-      "applied_tempo_ratio": 1.0,
-      "planner_required_tempo_ratio": 1.0,
-      "applied_pitch_shift_semitones": 0,
-      "applied_alignment_offset_ms": 0.0
-    },
-    "timing": {
-      "beat_alignment_error_ms": 0.0,
-      "downbeat_alignment_error_ms": 0.0,
-      "outgoing_marker_detection": {
-        "detected": true,
-        "expected_sample": 661500,
-        "detected_sample": 672769,
-        "error_ms": 255.53287981859413,
-        "correlation_peak": 0.2908896542942716
-      },
-      "incoming_marker_detection": {
-        "detected": true,
-        "expected_sample": 661500,
-        "detected_sample": 672769,
-        "error_ms": 255.53287981859413,
-        "correlation_peak": 0.2908896542942716
+        "expected_sample": 0,
+        "detected_sample": 0,
+        "error_ms": 0.0,
+        "correlation_peak": 0.39433677536566464,
+        "correlation_z_score": 25.820282046375773,
+        "quality": "HIGH",
+        "confident": true,
+        "marker_role": "incoming"
       },
       "output_duration_s": 40.0,
       "overlap_duration_ms": 10000.0,
@@ -280,8 +149,203 @@
         "per_edge": [
           {
             "edge_sample": 661500,
-            "discontinuity_count": 234,
-            "max_abs_delta": 0.2888246178627014
+            "discontinuity_count": 246,
+            "max_abs_delta": 0.49392977356910706
+          },
+          {
+            "edge_sample": 1102500,
+            "discontinuity_count": 204,
+            "max_abs_delta": 0.36987191438674927
+          }
+        ],
+        "total_discontinuity_count": 450
+      }
+    },
+    "loudness": {
+      "overall_rms_dbfs": -22.584956393677487,
+      "loudness_jump_at_overlap_start_db": 5.915183970256631,
+      "loudness_jump_at_overlap_end_db": 6.309910809228612
+    },
+    "performance": {
+      "render_wall_time_s": 0.1249868000013521,
+      "real_time_factor": 0.0031246700000338024,
+      "note": null
+    },
+    "signalsmith_job_sidecar": null
+  },
+  {
+    "transition_id": "R3-A",
+    "method": "M2",
+    "contract": {
+      "rendered_transition_class": "FULL_DJ_BLEND",
+      "planner_allowed_transition_class_set": [
+        "FULL_DJ_BLEND",
+        "SHORT_EQ_BLEND",
+        "SIMPLE_CROSSFADE"
+      ],
+      "onset_ms": 44000,
+      "content_end_ms": 54000,
+      "entry_ms": 0,
+      "applied_tempo_ratio": 1.0,
+      "planner_required_tempo_ratio": 1.0,
+      "applied_pitch_shift_semitones": 0,
+      "applied_alignment_offset_ms": 0.0,
+      "canonical_sample_rate": 44100,
+      "channels": 2
+    },
+    "timing": {
+      "outgoing_anchor_absolute_error_ms": 0.0,
+      "incoming_anchor_absolute_error_ms": null,
+      "relative_alignment_error_ms": null,
+      "relative_alignment_quality": "UNKNOWN_INSUFFICIENT_CONFIDENT_DETECTIONS",
+      "outgoing_marker_detection": {
+        "expected_sample": 0,
+        "detected_sample": 0,
+        "error_ms": 0.0,
+        "correlation_peak": 0.23793652656272696,
+        "correlation_z_score": 14.536432742606086,
+        "quality": "HIGH",
+        "confident": true,
+        "marker_role": "outgoing"
+      },
+      "incoming_marker_detection": {
+        "expected_sample": 0,
+        "detected_sample": null,
+        "error_ms": null,
+        "correlation_peak": 0.030000480731851693,
+        "correlation_z_score": 6.287520550879327,
+        "quality": "UNKNOWN_LOW_CONFIDENCE",
+        "confident": false,
+        "marker_role": "incoming"
+      },
+      "output_duration_s": 40.0,
+      "overlap_duration_ms": 10000.0,
+      "stretch_ratio_error": 0.0
+    },
+    "signal_safety": {
+      "nan_inf_sample_count": 0,
+      "peak_dbfs": -1.4116212420815057,
+      "clipped_sample_count": 0,
+      "discontinuity_proxy_whole_clip_note": "whole-clip proxy legitimately fires on ordinary drum/percussion transients -- not a splice indicator by itself; see discontinuity_proxy_at_transition_edges for the seam-scoped check",
+      "discontinuity_proxy_whole_clip": {
+        "discontinuity_count": 7745,
+        "max_abs_delta": 1.0249974727630615,
+        "max_abs_delta_position_s": 2.500249433106576
+      },
+      "discontinuity_proxy_at_transition_edges": {
+        "per_edge": [
+          {
+            "edge_sample": 661500,
+            "discontinuity_count": 246,
+            "max_abs_delta": 0.4939313232898712
+          },
+          {
+            "edge_sample": 1102500,
+            "discontinuity_count": 4,
+            "max_abs_delta": 0.3537542521953583
+          }
+        ],
+        "total_discontinuity_count": 250
+      }
+    },
+    "loudness": {
+      "overall_rms_dbfs": -22.809551684038986,
+      "loudness_jump_at_overlap_start_db": 5.925260788762937,
+      "loudness_jump_at_overlap_end_db": 6.146103640189406
+    },
+    "performance": {
+      "render_wall_time_s": 0.20471460000044317,
+      "real_time_factor": null,
+      "note": "measures only this process's post-stretch mixing/assembly; the WASM stretch itself runs in a separate browser process/tab and its wall time is NOT captured by this harness (documented limitation, not fabricated as 0)"
+    },
+    "signalsmith_job_sidecar": {
+      "requested_input_sample_rate": 44100,
+      "decoded_sample_rate": 44100,
+      "output_sample_rate": 44100,
+      "channels": 2,
+      "stretch_latency_s": 0.12,
+      "requested_tempo_rate": 1,
+      "requested_semitones": 0,
+      "block_ms": 120,
+      "tail_pad_s": 1.5,
+      "input_duration_s": 25,
+      "output_sample_count": 1168650,
+      "output_duration_s": 26.5,
+      "scheduling_params": {
+        "output": 0,
+        "input": 0,
+        "active": true,
+        "rate": 1,
+        "semitones": 0
+      },
+      "sample_rate_assertions_passed": true
+    }
+  },
+  {
+    "transition_id": "R3-A",
+    "method": "M3",
+    "contract": {
+      "rendered_transition_class": "FULL_DJ_BLEND",
+      "planner_allowed_transition_class_set": [
+        "FULL_DJ_BLEND",
+        "SHORT_EQ_BLEND",
+        "SIMPLE_CROSSFADE"
+      ],
+      "onset_ms": 44000,
+      "content_end_ms": 54000,
+      "entry_ms": 0,
+      "applied_tempo_ratio": 1.0,
+      "planner_required_tempo_ratio": 1.0,
+      "applied_pitch_shift_semitones": 0,
+      "applied_alignment_offset_ms": 0.0,
+      "canonical_sample_rate": 44100,
+      "channels": 2
+    },
+    "timing": {
+      "outgoing_anchor_absolute_error_ms": 0.0,
+      "incoming_anchor_absolute_error_ms": null,
+      "relative_alignment_error_ms": null,
+      "relative_alignment_quality": "UNKNOWN_INSUFFICIENT_CONFIDENT_DETECTIONS",
+      "outgoing_marker_detection": {
+        "expected_sample": 0,
+        "detected_sample": 0,
+        "error_ms": 0.0,
+        "correlation_peak": 0.23793652656272696,
+        "correlation_z_score": 14.536432742606086,
+        "quality": "HIGH",
+        "confident": true,
+        "marker_role": "outgoing"
+      },
+      "incoming_marker_detection": {
+        "expected_sample": 0,
+        "detected_sample": null,
+        "error_ms": null,
+        "correlation_peak": 0.018312818303138793,
+        "correlation_z_score": 3.4947289877100656,
+        "quality": "UNKNOWN_LOW_CONFIDENCE",
+        "confident": false,
+        "marker_role": "incoming"
+      },
+      "output_duration_s": 40.0,
+      "overlap_duration_ms": 10000.0,
+      "stretch_ratio_error": 0.0
+    },
+    "signal_safety": {
+      "nan_inf_sample_count": 0,
+      "peak_dbfs": -1.4116212420815057,
+      "clipped_sample_count": 0,
+      "discontinuity_proxy_whole_clip_note": "whole-clip proxy legitimately fires on ordinary drum/percussion transients -- not a splice indicator by itself; see discontinuity_proxy_at_transition_edges for the seam-scoped check",
+      "discontinuity_proxy_whole_clip": {
+        "discontinuity_count": 4510,
+        "max_abs_delta": 1.0249974727630615,
+        "max_abs_delta_position_s": 2.500249433106576
+      },
+      "discontinuity_proxy_at_transition_edges": {
+        "per_edge": [
+          {
+            "edge_sample": 661500,
+            "discontinuity_count": 246,
+            "max_abs_delta": 0.4939313232898712
           },
           {
             "edge_sample": 1102500,
@@ -289,19 +353,20 @@
             "max_abs_delta": 0.36987173557281494
           }
         ],
-        "total_discontinuity_count": 438
+        "total_discontinuity_count": 450
       }
     },
     "loudness": {
-      "overall_rms_dbfs": -22.673098989739223,
-      "loudness_jump_at_overlap_start_db": 5.871006834545657,
+      "overall_rms_dbfs": -22.672646361346604,
+      "loudness_jump_at_overlap_start_db": 5.930543636657269,
       "loudness_jump_at_overlap_end_db": 6.312354509427742
     },
     "performance": {
-      "render_wall_time_s": 0.6295028999993519,
-      "real_time_factor": 0.015737582499968993,
+      "render_wall_time_s": 0.612182799999573,
+      "real_time_factor": 0.015304590000050666,
       "note": null
-    }
+    },
+    "signalsmith_job_sidecar": null
   },
   {
     "transition_id": "R3-B",
@@ -313,33 +378,43 @@
         "SHORT_EQ_BLEND",
         "SIMPLE_CROSSFADE"
       ],
-      "onset_ms": 45000,
+      "onset_ms": 45714,
       "content_end_ms": 56000,
       "entry_ms": 0,
       "applied_tempo_ratio": 1.0,
       "planner_required_tempo_ratio": 1.05,
       "applied_pitch_shift_semitones": 0,
-      "applied_alignment_offset_ms": 0.0
+      "applied_alignment_offset_ms": 0.0,
+      "canonical_sample_rate": 44100,
+      "channels": 2
     },
     "timing": {
-      "beat_alignment_error_ms": 0.0,
-      "downbeat_alignment_error_ms": 0.0,
+      "outgoing_anchor_absolute_error_ms": 0.0,
+      "incoming_anchor_absolute_error_ms": 0.0,
+      "relative_alignment_error_ms": 0.0,
+      "relative_alignment_quality": "COMPUTED_FROM_TWO_CONFIDENT_DISTINCT_MARKER_DETECTIONS",
       "outgoing_marker_detection": {
-        "detected": true,
-        "expected_sample": 661500,
-        "detected_sample": 661622,
-        "error_ms": 2.766439909297052,
-        "correlation_peak": 0.30845416339499904
+        "expected_sample": 0,
+        "detected_sample": 0,
+        "error_ms": 0.0,
+        "correlation_peak": 0.24635131737146534,
+        "correlation_z_score": 14.680323069778254,
+        "quality": "HIGH",
+        "confident": true,
+        "marker_role": "outgoing"
       },
       "incoming_marker_detection": {
-        "detected": true,
-        "expected_sample": 661500,
-        "detected_sample": 661622,
-        "error_ms": 2.766439909297052,
-        "correlation_peak": 0.30845416339499904
+        "expected_sample": 0,
+        "detected_sample": 0,
+        "error_ms": 0.0,
+        "correlation_peak": 0.39647586359143605,
+        "correlation_z_score": 28.49754311192356,
+        "quality": "HIGH",
+        "confident": true,
+        "marker_role": "incoming"
       },
-      "output_duration_s": 41.0,
-      "overlap_duration_ms": 11000.0,
+      "output_duration_s": 40.28600907029478,
+      "overlap_duration_ms": 10286.009070294785,
       "stretch_ratio_error": 0.050000000000000044
     },
     "signal_safety": {
@@ -348,36 +423,37 @@
       "clipped_sample_count": 0,
       "discontinuity_proxy_whole_clip_note": "whole-clip proxy legitimately fires on ordinary drum/percussion transients -- not a splice indicator by itself; see discontinuity_proxy_at_transition_edges for the seam-scoped check",
       "discontinuity_proxy_whole_clip": {
-        "discontinuity_count": 9495,
+        "discontinuity_count": 9375,
         "max_abs_delta": 1.0154823064804077,
-        "max_abs_delta_position_s": 4.764240362811791
+        "max_abs_delta_position_s": 4.050249433106576
       },
       "discontinuity_proxy_at_transition_edges": {
         "per_edge": [
           {
             "edge_sample": 661500,
-            "discontinuity_count": 127,
-            "max_abs_delta": 0.27778661251068115
+            "discontinuity_count": 185,
+            "max_abs_delta": 0.44213247299194336
           },
           {
-            "edge_sample": 1146600,
-            "discontinuity_count": 245,
-            "max_abs_delta": 0.2949362099170685
+            "edge_sample": 1115113,
+            "discontinuity_count": 0,
+            "max_abs_delta": 0.08763157576322556
           }
         ],
-        "total_discontinuity_count": 372
+        "total_discontinuity_count": 185
       }
     },
     "loudness": {
-      "overall_rms_dbfs": -23.310192939856247,
-      "loudness_jump_at_overlap_start_db": 5.58486675119666,
-      "loudness_jump_at_overlap_end_db": 6.587451102348943
+      "overall_rms_dbfs": -23.393397132987154,
+      "loudness_jump_at_overlap_start_db": 6.131151770732142,
+      "loudness_jump_at_overlap_end_db": 4.214102290370207
     },
     "performance": {
-      "render_wall_time_s": 0.11370340000212309,
-      "real_time_factor": 0.002773253658588368,
+      "render_wall_time_s": 0.14315249999708612,
+      "real_time_factor": 0.003553404849492545,
       "note": null
-    }
+    },
+    "signalsmith_job_sidecar": null
   },
   {
     "transition_id": "R3-B",
@@ -389,33 +465,43 @@
         "SHORT_EQ_BLEND",
         "SIMPLE_CROSSFADE"
       ],
-      "onset_ms": 45000,
+      "onset_ms": 45714,
       "content_end_ms": 56000,
       "entry_ms": 0,
       "applied_tempo_ratio": 1.0,
       "planner_required_tempo_ratio": 1.05,
       "applied_pitch_shift_semitones": 0,
-      "applied_alignment_offset_ms": 0.0
+      "applied_alignment_offset_ms": 0.0,
+      "canonical_sample_rate": 44100,
+      "channels": 2
     },
     "timing": {
-      "beat_alignment_error_ms": 0.0,
-      "downbeat_alignment_error_ms": 0.0,
+      "outgoing_anchor_absolute_error_ms": 0.0,
+      "incoming_anchor_absolute_error_ms": 0.0,
+      "relative_alignment_error_ms": 0.0,
+      "relative_alignment_quality": "COMPUTED_FROM_TWO_CONFIDENT_DISTINCT_MARKER_DETECTIONS",
       "outgoing_marker_detection": {
-        "detected": true,
-        "expected_sample": 661500,
-        "detected_sample": 661622,
-        "error_ms": 2.766439909297052,
-        "correlation_peak": 0.3084282037832258
+        "expected_sample": 0,
+        "detected_sample": 0,
+        "error_ms": 0.0,
+        "correlation_peak": 0.24635131737146534,
+        "correlation_z_score": 14.680323069778254,
+        "quality": "HIGH",
+        "confident": true,
+        "marker_role": "outgoing"
       },
       "incoming_marker_detection": {
-        "detected": true,
-        "expected_sample": 661500,
-        "detected_sample": 661622,
-        "error_ms": 2.766439909297052,
-        "correlation_peak": 0.3084282037832258
+        "expected_sample": 0,
+        "detected_sample": 0,
+        "error_ms": 0.0,
+        "correlation_peak": 0.39647586359143605,
+        "correlation_z_score": 28.49754311192356,
+        "quality": "HIGH",
+        "confident": true,
+        "marker_role": "incoming"
       },
-      "output_duration_s": 41.0,
-      "overlap_duration_ms": 11000.0,
+      "output_duration_s": 40.28600907029478,
+      "overlap_duration_ms": 10286.009070294785,
       "stretch_ratio_error": 0.050000000000000044
     },
     "signal_safety": {
@@ -424,36 +510,37 @@
       "clipped_sample_count": 0,
       "discontinuity_proxy_whole_clip_note": "whole-clip proxy legitimately fires on ordinary drum/percussion transients -- not a splice indicator by itself; see discontinuity_proxy_at_transition_edges for the seam-scoped check",
       "discontinuity_proxy_whole_clip": {
-        "discontinuity_count": 9556,
+        "discontinuity_count": 9436,
         "max_abs_delta": 1.0154823064804077,
-        "max_abs_delta_position_s": 4.764240362811791
+        "max_abs_delta_position_s": 4.050249433106576
       },
       "discontinuity_proxy_at_transition_edges": {
         "per_edge": [
           {
             "edge_sample": 661500,
-            "discontinuity_count": 127,
-            "max_abs_delta": 0.277810275554657
+            "discontinuity_count": 185,
+            "max_abs_delta": 0.44213467836380005
           },
           {
-            "edge_sample": 1146600,
-            "discontinuity_count": 245,
-            "max_abs_delta": 0.2949362099170685
+            "edge_sample": 1115113,
+            "discontinuity_count": 0,
+            "max_abs_delta": 0.08766519278287888
           }
         ],
-        "total_discontinuity_count": 372
+        "total_discontinuity_count": 185
       }
     },
     "loudness": {
-      "overall_rms_dbfs": -23.1087430666155,
-      "loudness_jump_at_overlap_start_db": 5.42051815696901,
-      "loudness_jump_at_overlap_end_db": 6.418229180999546
+      "overall_rms_dbfs": -23.205568378846017,
+      "loudness_jump_at_overlap_start_db": 6.197921453434265,
+      "loudness_jump_at_overlap_end_db": 4.411300613967214
     },
     "performance": {
-      "render_wall_time_s": 0.11727569999857224,
-      "real_time_factor": 0.002860382926794445,
+      "render_wall_time_s": 0.1471679000023869,
+      "real_time_factor": 0.003653077169932485,
       "note": null
-    }
+    },
+    "signalsmith_job_sidecar": null
   },
   {
     "transition_id": "R3-B",
@@ -465,33 +552,43 @@
         "SHORT_EQ_BLEND",
         "SIMPLE_CROSSFADE"
       ],
-      "onset_ms": 45000,
+      "onset_ms": 45714,
       "content_end_ms": 56000,
       "entry_ms": 0,
       "applied_tempo_ratio": 1.05,
       "planner_required_tempo_ratio": 1.05,
       "applied_pitch_shift_semitones": 0,
-      "applied_alignment_offset_ms": 0.0
+      "applied_alignment_offset_ms": 0.0,
+      "canonical_sample_rate": 44100,
+      "channels": 2
     },
     "timing": {
-      "beat_alignment_error_ms": 0.0,
-      "downbeat_alignment_error_ms": 0.0,
+      "outgoing_anchor_absolute_error_ms": 0.0,
+      "incoming_anchor_absolute_error_ms": null,
+      "relative_alignment_error_ms": null,
+      "relative_alignment_quality": "UNKNOWN_INSUFFICIENT_CONFIDENT_DETECTIONS",
       "outgoing_marker_detection": {
-        "detected": true,
-        "expected_sample": 661500,
-        "detected_sample": 661872,
-        "error_ms": 7.75,
-        "correlation_peak": 0.32877269641331797
+        "expected_sample": 0,
+        "detected_sample": 0,
+        "error_ms": 0.0,
+        "correlation_peak": 0.24635131737146534,
+        "correlation_z_score": 14.680323069778254,
+        "quality": "HIGH",
+        "confident": true,
+        "marker_role": "outgoing"
       },
       "incoming_marker_detection": {
-        "detected": true,
-        "expected_sample": 661500,
-        "detected_sample": 661872,
-        "error_ms": 7.75,
-        "correlation_peak": 0.32877269641331797
+        "expected_sample": 0,
+        "detected_sample": null,
+        "error_ms": null,
+        "correlation_peak": 0.012180108619790825,
+        "correlation_z_score": 2.628619293707497,
+        "quality": "UNKNOWN_LOW_CONFIDENCE",
+        "confident": false,
+        "marker_role": "incoming"
       },
-      "output_duration_s": 38.8875,
-      "overlap_duration_ms": 10106.25,
+      "output_duration_s": 40.28600907029478,
+      "overlap_duration_ms": 10286.009070294785,
       "stretch_ratio_error": 0.0
     },
     "signal_safety": {
@@ -500,35 +597,57 @@
       "clipped_sample_count": 0,
       "discontinuity_proxy_whole_clip_note": "whole-clip proxy legitimately fires on ordinary drum/percussion transients -- not a splice indicator by itself; see discontinuity_proxy_at_transition_edges for the seam-scoped check",
       "discontinuity_proxy_whole_clip": {
-        "discontinuity_count": 12874,
+        "discontinuity_count": 10995,
         "max_abs_delta": 1.0154823064804077,
-        "max_abs_delta_position_s": 4.3771458333333335
+        "max_abs_delta_position_s": 4.050249433106576
       },
       "discontinuity_proxy_at_transition_edges": {
         "per_edge": [
           {
             "edge_sample": 661500,
-            "discontinuity_count": 131,
-            "max_abs_delta": 0.2778105139732361
+            "discontinuity_count": 185,
+            "max_abs_delta": 0.44213560223579407
           },
           {
-            "edge_sample": 1146600,
+            "edge_sample": 1115113,
             "discontinuity_count": 0,
-            "max_abs_delta": 0.03349599987268448
+            "max_abs_delta": 0.03400295972824097
           }
         ],
-        "total_discontinuity_count": 131
+        "total_discontinuity_count": 185
       }
     },
     "loudness": {
-      "overall_rms_dbfs": -23.138031086912456,
-      "loudness_jump_at_overlap_start_db": 5.205914591660864,
-      "loudness_jump_at_overlap_end_db": 2.201955530113274
+      "overall_rms_dbfs": -23.194292563856223,
+      "loudness_jump_at_overlap_start_db": 6.164770057696913,
+      "loudness_jump_at_overlap_end_db": 3.974538335135364
     },
     "performance": {
-      "render_wall_time_s": null,
+      "render_wall_time_s": 0.19017909999820404,
       "real_time_factor": null,
-      "note": null
+      "note": "measures only this process's post-stretch mixing/assembly; the WASM stretch itself runs in a separate browser process/tab and its wall time is NOT captured by this harness (documented limitation, not fabricated as 0)"
+    },
+    "signalsmith_job_sidecar": {
+      "requested_input_sample_rate": 44100,
+      "decoded_sample_rate": 44100,
+      "output_sample_rate": 44100,
+      "channels": 2,
+      "stretch_latency_s": 0.12,
+      "requested_tempo_rate": 1.05,
+      "requested_semitones": 0,
+      "block_ms": 120,
+      "tail_pad_s": 1.5,
+      "input_duration_s": 26.550317460317462,
+      "output_sample_count": 1181264,
+      "output_duration_s": 26.786031746031746,
+      "scheduling_params": {
+        "output": 0,
+        "input": 0,
+        "active": true,
+        "rate": 1.05,
+        "semitones": 0
+      },
+      "sample_rate_assertions_passed": true
     }
   },
   {
@@ -541,33 +660,43 @@
         "SHORT_EQ_BLEND",
         "SIMPLE_CROSSFADE"
       ],
-      "onset_ms": 45000,
+      "onset_ms": 45714,
       "content_end_ms": 56000,
       "entry_ms": 0,
       "applied_tempo_ratio": 1.05,
       "planner_required_tempo_ratio": 1.05,
       "applied_pitch_shift_semitones": 0,
-      "applied_alignment_offset_ms": 0.0
+      "applied_alignment_offset_ms": 0.0,
+      "canonical_sample_rate": 44100,
+      "channels": 2
     },
     "timing": {
-      "beat_alignment_error_ms": 0.0,
-      "downbeat_alignment_error_ms": 0.0,
+      "outgoing_anchor_absolute_error_ms": 0.0,
+      "incoming_anchor_absolute_error_ms": null,
+      "relative_alignment_error_ms": null,
+      "relative_alignment_quality": "UNKNOWN_INSUFFICIENT_CONFIDENT_DETECTIONS",
       "outgoing_marker_detection": {
-        "detected": true,
-        "expected_sample": 661500,
-        "detected_sample": 661622,
-        "error_ms": 2.766439909297052,
-        "correlation_peak": 0.3083957849246933
+        "expected_sample": 0,
+        "detected_sample": 0,
+        "error_ms": 0.0,
+        "correlation_peak": 0.24635131737146534,
+        "correlation_z_score": 14.680323069778254,
+        "quality": "HIGH",
+        "confident": true,
+        "marker_role": "outgoing"
       },
       "incoming_marker_detection": {
-        "detected": true,
-        "expected_sample": 661500,
-        "detected_sample": 661622,
-        "error_ms": 2.766439909297052,
-        "correlation_peak": 0.3083957849246933
+        "expected_sample": 0,
+        "detected_sample": null,
+        "error_ms": null,
+        "correlation_peak": 0.024500803321156228,
+        "correlation_z_score": 4.549350664625735,
+        "quality": "UNKNOWN_LOW_CONFIDENCE",
+        "confident": false,
+        "marker_role": "incoming"
       },
-      "output_duration_s": 41.0,
-      "overlap_duration_ms": 11000.0,
+      "output_duration_s": 40.28600907029478,
+      "overlap_duration_ms": 10286.009070294785,
       "stretch_ratio_error": 0.0
     },
     "signal_safety": {
@@ -576,36 +705,37 @@
       "clipped_sample_count": 0,
       "discontinuity_proxy_whole_clip_note": "whole-clip proxy legitimately fires on ordinary drum/percussion transients -- not a splice indicator by itself; see discontinuity_proxy_at_transition_edges for the seam-scoped check",
       "discontinuity_proxy_whole_clip": {
-        "discontinuity_count": 10574,
+        "discontinuity_count": 10394,
         "max_abs_delta": 1.0154823064804077,
-        "max_abs_delta_position_s": 4.764240362811791
+        "max_abs_delta_position_s": 4.050249433106576
       },
       "discontinuity_proxy_at_transition_edges": {
         "per_edge": [
           {
             "edge_sample": 661500,
-            "discontinuity_count": 127,
-            "max_abs_delta": 0.2778105139732361
+            "discontinuity_count": 185,
+            "max_abs_delta": 0.44213560223579407
           },
           {
-            "edge_sample": 1146600,
+            "edge_sample": 1115113,
             "discontinuity_count": 0,
-            "max_abs_delta": 0.1623069792985916
+            "max_abs_delta": 0.04708106070756912
           }
         ],
-        "total_discontinuity_count": 127
+        "total_discontinuity_count": 185
       }
     },
     "loudness": {
-      "overall_rms_dbfs": -23.05000021758495,
-      "loudness_jump_at_overlap_start_db": 5.437918938050835,
-      "loudness_jump_at_overlap_end_db": 1.6788536875777957
+      "overall_rms_dbfs": -23.29309225612343,
+      "loudness_jump_at_overlap_start_db": 6.205699179682785,
+      "loudness_jump_at_overlap_end_db": 4.0004593655162495
     },
     "performance": {
-      "render_wall_time_s": 1.0680898999999044,
-      "real_time_factor": 0.02605099024394138,
+      "render_wall_time_s": 1.0511327999993227,
+      "real_time_factor": 0.02609177538948818,
       "note": null
-    }
+    },
+    "signalsmith_job_sidecar": null
   },
   {
     "transition_id": "R3-C",
@@ -623,24 +753,34 @@
       "applied_tempo_ratio": 1.0,
       "planner_required_tempo_ratio": 0.9709,
       "applied_pitch_shift_semitones": 0,
-      "applied_alignment_offset_ms": 0.0
+      "applied_alignment_offset_ms": 0.0,
+      "canonical_sample_rate": 44100,
+      "channels": 2
     },
     "timing": {
-      "beat_alignment_error_ms": 0.0,
-      "downbeat_alignment_error_ms": 0.0,
+      "outgoing_anchor_absolute_error_ms": 0.0,
+      "incoming_anchor_absolute_error_ms": 0.0,
+      "relative_alignment_error_ms": 0.0,
+      "relative_alignment_quality": "COMPUTED_FROM_TWO_CONFIDENT_DISTINCT_MARKER_DETECTIONS",
       "outgoing_marker_detection": {
-        "detected": true,
-        "expected_sample": 661500,
-        "detected_sample": 650594,
-        "error_ms": -247.3015873015873,
-        "correlation_peak": 0.2858372081239122
+        "expected_sample": 0,
+        "detected_sample": 0,
+        "error_ms": 0.0,
+        "correlation_peak": 0.23839493280826066,
+        "correlation_z_score": 14.271623389519034,
+        "quality": "HIGH",
+        "confident": true,
+        "marker_role": "outgoing"
       },
       "incoming_marker_detection": {
-        "detected": true,
-        "expected_sample": 661500,
-        "detected_sample": 650594,
-        "error_ms": -247.3015873015873,
-        "correlation_peak": 0.2858372081239122
+        "expected_sample": 0,
+        "detected_sample": 0,
+        "error_ms": 0.0,
+        "correlation_peak": 0.4013794596927729,
+        "correlation_z_score": 28.63855347442505,
+        "quality": "HIGH",
+        "confident": true,
+        "marker_role": "incoming"
       },
       "output_duration_s": 40.0,
       "overlap_duration_ms": 10000.0,
@@ -652,7 +792,7 @@
       "clipped_sample_count": 0,
       "discontinuity_proxy_whole_clip_note": "whole-clip proxy legitimately fires on ordinary drum/percussion transients -- not a splice indicator by itself; see discontinuity_proxy_at_transition_edges for the seam-scoped check",
       "discontinuity_proxy_whole_clip": {
-        "discontinuity_count": 6515,
+        "discontinuity_count": 6518,
         "max_abs_delta": 0.9724856615066528,
         "max_abs_delta_position_s": 9.502607709750567
       },
@@ -660,8 +800,8 @@
         "per_edge": [
           {
             "edge_sample": 661500,
-            "discontinuity_count": 273,
-            "max_abs_delta": 0.3665105104446411
+            "discontinuity_count": 269,
+            "max_abs_delta": 0.5380474328994751
           },
           {
             "edge_sample": 1102500,
@@ -669,19 +809,20 @@
             "max_abs_delta": 0.08570320159196854
           }
         ],
-        "total_discontinuity_count": 275
+        "total_discontinuity_count": 271
       }
     },
     "loudness": {
-      "overall_rms_dbfs": -23.718817994390594,
-      "loudness_jump_at_overlap_start_db": 5.829565486086583,
+      "overall_rms_dbfs": -23.718282755017466,
+      "loudness_jump_at_overlap_start_db": 5.889117168762635,
       "loudness_jump_at_overlap_end_db": 6.069658436038914
     },
     "performance": {
-      "render_wall_time_s": 0.11145229999965522,
-      "real_time_factor": 0.0027863074999913808,
+      "render_wall_time_s": 0.1174801999986812,
+      "real_time_factor": 0.00293700499996703,
       "note": null
-    }
+    },
+    "signalsmith_job_sidecar": null
   },
   {
     "transition_id": "R3-C",
@@ -699,24 +840,34 @@
       "applied_tempo_ratio": 1.0,
       "planner_required_tempo_ratio": 0.9709,
       "applied_pitch_shift_semitones": 0,
-      "applied_alignment_offset_ms": 0.0
+      "applied_alignment_offset_ms": 0.0,
+      "canonical_sample_rate": 44100,
+      "channels": 2
     },
     "timing": {
-      "beat_alignment_error_ms": 0.0,
-      "downbeat_alignment_error_ms": 0.0,
+      "outgoing_anchor_absolute_error_ms": 0.0,
+      "incoming_anchor_absolute_error_ms": 0.0,
+      "relative_alignment_error_ms": 0.0,
+      "relative_alignment_quality": "COMPUTED_FROM_TWO_CONFIDENT_DISTINCT_MARKER_DETECTIONS",
       "outgoing_marker_detection": {
-        "detected": true,
-        "expected_sample": 661500,
-        "detected_sample": 650594,
-        "error_ms": -247.3015873015873,
-        "correlation_peak": 0.2858372081239122
+        "expected_sample": 0,
+        "detected_sample": 0,
+        "error_ms": 0.0,
+        "correlation_peak": 0.23839493280826066,
+        "correlation_z_score": 14.271623389519034,
+        "quality": "HIGH",
+        "confident": true,
+        "marker_role": "outgoing"
       },
       "incoming_marker_detection": {
-        "detected": true,
-        "expected_sample": 661500,
-        "detected_sample": 650594,
-        "error_ms": -247.3015873015873,
-        "correlation_peak": 0.2858372081239122
+        "expected_sample": 0,
+        "detected_sample": 0,
+        "error_ms": 0.0,
+        "correlation_peak": 0.4013794596927729,
+        "correlation_z_score": 28.63855347442505,
+        "quality": "HIGH",
+        "confident": true,
+        "marker_role": "incoming"
       },
       "output_duration_s": 40.0,
       "overlap_duration_ms": 10000.0,
@@ -728,7 +879,7 @@
       "clipped_sample_count": 0,
       "discontinuity_proxy_whole_clip_note": "whole-clip proxy legitimately fires on ordinary drum/percussion transients -- not a splice indicator by itself; see discontinuity_proxy_at_transition_edges for the seam-scoped check",
       "discontinuity_proxy_whole_clip": {
-        "discontinuity_count": 6540,
+        "discontinuity_count": 6543,
         "max_abs_delta": 0.9724856615066528,
         "max_abs_delta_position_s": 9.502607709750567
       },
@@ -736,8 +887,8 @@
         "per_edge": [
           {
             "edge_sample": 661500,
-            "discontinuity_count": 273,
-            "max_abs_delta": 0.36652445793151855
+            "discontinuity_count": 269,
+            "max_abs_delta": 0.5380712151527405
           },
           {
             "edge_sample": 1102500,
@@ -745,19 +896,20 @@
             "max_abs_delta": 0.08575081080198288
           }
         ],
-        "total_discontinuity_count": 275
+        "total_discontinuity_count": 271
       }
     },
     "loudness": {
-      "overall_rms_dbfs": -23.585729590487823,
-      "loudness_jump_at_overlap_start_db": 5.899699937464213,
+      "overall_rms_dbfs": -23.585210475735288,
+      "loudness_jump_at_overlap_start_db": 5.958307177955231,
       "loudness_jump_at_overlap_end_db": 6.275321158593712
     },
     "performance": {
-      "render_wall_time_s": 0.11600969999926747,
-      "real_time_factor": 0.0029002424999816866,
+      "render_wall_time_s": 0.1214778000030492,
+      "real_time_factor": 0.00303694500007623,
       "note": null
-    }
+    },
+    "signalsmith_job_sidecar": null
   },
   {
     "transition_id": "R3-C",
@@ -775,27 +927,37 @@
       "applied_tempo_ratio": 0.9709,
       "planner_required_tempo_ratio": 0.9709,
       "applied_pitch_shift_semitones": 0,
-      "applied_alignment_offset_ms": 0.0
+      "applied_alignment_offset_ms": 0.0,
+      "canonical_sample_rate": 44100,
+      "channels": 2
     },
     "timing": {
-      "beat_alignment_error_ms": 0.0,
-      "downbeat_alignment_error_ms": 0.0,
+      "outgoing_anchor_absolute_error_ms": 0.0,
+      "incoming_anchor_absolute_error_ms": null,
+      "relative_alignment_error_ms": null,
+      "relative_alignment_quality": "UNKNOWN_INSUFFICIENT_CONFIDENT_DETECTIONS",
       "outgoing_marker_detection": {
-        "detected": true,
-        "expected_sample": 661500,
-        "detected_sample": 650786,
-        "error_ms": -223.20833333333334,
-        "correlation_peak": 0.2788762508091864
+        "expected_sample": 0,
+        "detected_sample": 0,
+        "error_ms": 0.0,
+        "correlation_peak": 0.23839493280826066,
+        "correlation_z_score": 14.271623389519034,
+        "quality": "HIGH",
+        "confident": true,
+        "marker_role": "outgoing"
       },
       "incoming_marker_detection": {
-        "detected": true,
-        "expected_sample": 661500,
-        "detected_sample": 650786,
-        "error_ms": -223.20833333333334,
-        "correlation_peak": 0.2788762508091864
+        "expected_sample": 0,
+        "detected_sample": null,
+        "error_ms": null,
+        "correlation_peak": 0.038946220919187986,
+        "correlation_z_score": 7.797985256945013,
+        "quality": "UNKNOWN_LOW_CONFIDENCE",
+        "confident": false,
+        "marker_role": "incoming"
       },
-      "output_duration_s": 37.96875,
-      "overlap_duration_ms": 9187.5,
+      "output_duration_s": 40.0,
+      "overlap_duration_ms": 10000.0,
       "stretch_ratio_error": 0.0
     },
     "signal_safety": {
@@ -804,35 +966,57 @@
       "clipped_sample_count": 0,
       "discontinuity_proxy_whole_clip_note": "whole-clip proxy legitimately fires on ordinary drum/percussion transients -- not a splice indicator by itself; see discontinuity_proxy_at_transition_edges for the seam-scoped check",
       "discontinuity_proxy_whole_clip": {
-        "discontinuity_count": 11069,
+        "discontinuity_count": 5572,
         "max_abs_delta": 0.9724856615066528,
-        "max_abs_delta_position_s": 8.730520833333333
+        "max_abs_delta_position_s": 9.502607709750567
       },
       "discontinuity_proxy_at_transition_edges": {
         "per_edge": [
           {
             "edge_sample": 661500,
-            "discontinuity_count": 289,
-            "max_abs_delta": 0.3665176033973694
+            "discontinuity_count": 269,
+            "max_abs_delta": 0.5380510091781616
           },
           {
             "edge_sample": 1102500,
-            "discontinuity_count": 6,
-            "max_abs_delta": 0.06354093551635742
+            "discontinuity_count": 8,
+            "max_abs_delta": 0.40911832451820374
           }
         ],
-        "total_discontinuity_count": 295
+        "total_discontinuity_count": 277
       }
     },
     "loudness": {
-      "overall_rms_dbfs": -23.752238687009353,
-      "loudness_jump_at_overlap_start_db": 5.46252172406286,
-      "loudness_jump_at_overlap_end_db": 1.0134848359323598
+      "overall_rms_dbfs": -23.688179616325336,
+      "loudness_jump_at_overlap_start_db": 5.960040649045087,
+      "loudness_jump_at_overlap_end_db": 6.737897715693457
     },
     "performance": {
-      "render_wall_time_s": null,
+      "render_wall_time_s": 0.2002968000015244,
       "real_time_factor": null,
-      "note": null
+      "note": "measures only this process's post-stretch mixing/assembly; the WASM stretch itself runs in a separate browser process/tab and its wall time is NOT captured by this harness (documented limitation, not fabricated as 0)"
+    },
+    "signalsmith_job_sidecar": {
+      "requested_input_sample_rate": 44100,
+      "decoded_sample_rate": 44100,
+      "output_sample_rate": 44100,
+      "channels": 2,
+      "stretch_latency_s": 0.12,
+      "requested_tempo_rate": 0.9709,
+      "requested_semitones": 0,
+      "block_ms": 120,
+      "tail_pad_s": 1.5,
+      "input_duration_s": 24.272517006802723,
+      "output_sample_count": 1168651,
+      "output_duration_s": 26.50002267573696,
+      "scheduling_params": {
+        "output": 0,
+        "input": 0,
+        "active": true,
+        "rate": 0.9709,
+        "semitones": 0
+      },
+      "sample_rate_assertions_passed": true
     }
   },
   {
@@ -851,24 +1035,34 @@
       "applied_tempo_ratio": 0.9709,
       "planner_required_tempo_ratio": 0.9709,
       "applied_pitch_shift_semitones": 0,
-      "applied_alignment_offset_ms": 0.0
+      "applied_alignment_offset_ms": 0.0,
+      "canonical_sample_rate": 44100,
+      "channels": 2
     },
     "timing": {
-      "beat_alignment_error_ms": 0.0,
-      "downbeat_alignment_error_ms": 0.0,
+      "outgoing_anchor_absolute_error_ms": 0.0,
+      "incoming_anchor_absolute_error_ms": null,
+      "relative_alignment_error_ms": null,
+      "relative_alignment_quality": "UNKNOWN_INSUFFICIENT_CONFIDENT_DETECTIONS",
       "outgoing_marker_detection": {
-        "detected": true,
-        "expected_sample": 661500,
-        "detected_sample": 650594,
-        "error_ms": -247.3015873015873,
-        "correlation_peak": 0.2858372081239122
+        "expected_sample": 0,
+        "detected_sample": 0,
+        "error_ms": 0.0,
+        "correlation_peak": 0.23839493280826066,
+        "correlation_z_score": 14.271623389519034,
+        "quality": "HIGH",
+        "confident": true,
+        "marker_role": "outgoing"
       },
       "incoming_marker_detection": {
-        "detected": true,
-        "expected_sample": 661500,
-        "detected_sample": 650594,
-        "error_ms": -247.3015873015873,
-        "correlation_peak": 0.2858372081239122
+        "expected_sample": 0,
+        "detected_sample": null,
+        "error_ms": null,
+        "correlation_peak": 0.018401900421427943,
+        "correlation_z_score": 3.5087258500374965,
+        "quality": "UNKNOWN_LOW_CONFIDENCE",
+        "confident": false,
+        "marker_role": "incoming"
       },
       "output_duration_s": 40.0,
       "overlap_duration_ms": 10000.0,
@@ -880,7 +1074,7 @@
       "clipped_sample_count": 0,
       "discontinuity_proxy_whole_clip_note": "whole-clip proxy legitimately fires on ordinary drum/percussion transients -- not a splice indicator by itself; see discontinuity_proxy_at_transition_edges for the seam-scoped check",
       "discontinuity_proxy_whole_clip": {
-        "discontinuity_count": 4784,
+        "discontinuity_count": 4787,
         "max_abs_delta": 0.9724856615066528,
         "max_abs_delta_position_s": 9.502607709750567
       },
@@ -888,8 +1082,8 @@
         "per_edge": [
           {
             "edge_sample": 661500,
-            "discontinuity_count": 273,
-            "max_abs_delta": 0.366517573595047
+            "discontinuity_count": 269,
+            "max_abs_delta": 0.5380510687828064
           },
           {
             "edge_sample": 1102500,
@@ -897,19 +1091,20 @@
             "max_abs_delta": 0.3282843828201294
           }
         ],
-        "total_discontinuity_count": 273
+        "total_discontinuity_count": 269
       }
     },
     "loudness": {
-      "overall_rms_dbfs": -23.74205041548373,
-      "loudness_jump_at_overlap_start_db": 5.912204857710819,
+      "overall_rms_dbfs": -23.741512280156485,
+      "loudness_jump_at_overlap_start_db": 5.970644317117422,
       "loudness_jump_at_overlap_end_db": 5.80331566979315
     },
     "performance": {
-      "render_wall_time_s": 1.2318845000008878,
-      "real_time_factor": 0.03079712250000739,
+      "render_wall_time_s": 1.1370585999975447,
+      "real_time_factor": 0.02842647749994285,
       "note": null
-    }
+    },
+    "signalsmith_job_sidecar": null
   },
   {
     "transition_id": "R3-D",
@@ -925,24 +1120,34 @@
       "applied_tempo_ratio": 1.0,
       "planner_required_tempo_ratio": null,
       "applied_pitch_shift_semitones": 0,
-      "applied_alignment_offset_ms": 0.0
+      "applied_alignment_offset_ms": 0.0,
+      "canonical_sample_rate": 44100,
+      "channels": 2
     },
     "timing": {
-      "beat_alignment_error_ms": 0.0,
-      "downbeat_alignment_error_ms": 0.0,
+      "outgoing_anchor_absolute_error_ms": 0.0,
+      "incoming_anchor_absolute_error_ms": 0.0,
+      "relative_alignment_error_ms": 0.0,
+      "relative_alignment_quality": "COMPUTED_FROM_TWO_CONFIDENT_DISTINCT_MARKER_DETECTIONS",
       "outgoing_marker_detection": {
-        "detected": true,
-        "expected_sample": 661500,
-        "detected_sample": 672769,
-        "error_ms": 255.53287981859413,
-        "correlation_peak": 0.29026912607184324
+        "expected_sample": 0,
+        "detected_sample": 0,
+        "error_ms": 0.0,
+        "correlation_peak": 0.23793652656272696,
+        "correlation_z_score": 14.536432742606086,
+        "quality": "HIGH",
+        "confident": true,
+        "marker_role": "outgoing"
       },
       "incoming_marker_detection": {
-        "detected": true,
-        "expected_sample": 661500,
-        "detected_sample": 672769,
-        "error_ms": 255.53287981859413,
-        "correlation_peak": 0.29026912607184324
+        "expected_sample": 0,
+        "detected_sample": 0,
+        "error_ms": 0.0,
+        "correlation_peak": 0.39433677536566464,
+        "correlation_z_score": 25.820282046375773,
+        "quality": "HIGH",
+        "confident": true,
+        "marker_role": "incoming"
       },
       "output_duration_s": 40.0,
       "overlap_duration_ms": 10000.0,
@@ -954,7 +1159,7 @@
       "clipped_sample_count": 0,
       "discontinuity_proxy_whole_clip_note": "whole-clip proxy legitimately fires on ordinary drum/percussion transients -- not a splice indicator by itself; see discontinuity_proxy_at_transition_edges for the seam-scoped check",
       "discontinuity_proxy_whole_clip": {
-        "discontinuity_count": 4468,
+        "discontinuity_count": 4470,
         "max_abs_delta": 1.0249974727630615,
         "max_abs_delta_position_s": 2.500249433106576
       },
@@ -962,8 +1167,8 @@
         "per_edge": [
           {
             "edge_sample": 661500,
-            "discontinuity_count": 234,
-            "max_abs_delta": 0.2888237237930298
+            "discontinuity_count": 246,
+            "max_abs_delta": 0.4939291775226593
           },
           {
             "edge_sample": 1102500,
@@ -971,19 +1176,20 @@
             "max_abs_delta": 0.36987191438674927
           }
         ],
-        "total_discontinuity_count": 438
+        "total_discontinuity_count": 450
       }
     },
     "loudness": {
-      "overall_rms_dbfs": -22.82124542746677,
-      "loudness_jump_at_overlap_start_db": 5.78515654120114,
+      "overall_rms_dbfs": -22.82077711216004,
+      "loudness_jump_at_overlap_start_db": 5.845871289678975,
       "loudness_jump_at_overlap_end_db": 6.493475317993745
     },
     "performance": {
-      "render_wall_time_s": 0.116269199999806,
-      "real_time_factor": 0.0029067299999951503,
+      "render_wall_time_s": 0.11412399999971967,
+      "real_time_factor": 0.0028530999999929916,
       "note": null
-    }
+    },
+    "signalsmith_job_sidecar": null
   },
   {
     "transition_id": "R3-D",
@@ -999,24 +1205,34 @@
       "applied_tempo_ratio": 1.0,
       "planner_required_tempo_ratio": null,
       "applied_pitch_shift_semitones": 0,
-      "applied_alignment_offset_ms": 0.0
+      "applied_alignment_offset_ms": 0.0,
+      "canonical_sample_rate": 44100,
+      "channels": 2
     },
     "timing": {
-      "beat_alignment_error_ms": 0.0,
-      "downbeat_alignment_error_ms": 0.0,
+      "outgoing_anchor_absolute_error_ms": 0.0,
+      "incoming_anchor_absolute_error_ms": 0.0,
+      "relative_alignment_error_ms": 0.0,
+      "relative_alignment_quality": "COMPUTED_FROM_TWO_CONFIDENT_DISTINCT_MARKER_DETECTIONS",
       "outgoing_marker_detection": {
-        "detected": true,
-        "expected_sample": 661500,
-        "detected_sample": 672769,
-        "error_ms": 255.53287981859413,
-        "correlation_peak": 0.29078189817479394
+        "expected_sample": 0,
+        "detected_sample": 0,
+        "error_ms": 0.0,
+        "correlation_peak": 0.23793652656272696,
+        "correlation_z_score": 14.536432742606086,
+        "quality": "HIGH",
+        "confident": true,
+        "marker_role": "outgoing"
       },
       "incoming_marker_detection": {
-        "detected": true,
-        "expected_sample": 661500,
-        "detected_sample": 672769,
-        "error_ms": 255.53287981859413,
-        "correlation_peak": 0.29078189817479394
+        "expected_sample": 0,
+        "detected_sample": 0,
+        "error_ms": 0.0,
+        "correlation_peak": 0.39433677536566464,
+        "correlation_z_score": 25.820282046375773,
+        "quality": "HIGH",
+        "confident": true,
+        "marker_role": "incoming"
       },
       "output_duration_s": 40.0,
       "overlap_duration_ms": 10000.0,
@@ -1028,7 +1244,7 @@
       "clipped_sample_count": 0,
       "discontinuity_proxy_whole_clip_note": "whole-clip proxy legitimately fires on ordinary drum/percussion transients -- not a splice indicator by itself; see discontinuity_proxy_at_transition_edges for the seam-scoped check",
       "discontinuity_proxy_whole_clip": {
-        "discontinuity_count": 4506,
+        "discontinuity_count": 4508,
         "max_abs_delta": 1.0249974727630615,
         "max_abs_delta_position_s": 2.500249433106576
       },
@@ -1036,8 +1252,8 @@
         "per_edge": [
           {
             "edge_sample": 661500,
-            "discontinuity_count": 234,
-            "max_abs_delta": 0.28882452845573425
+            "discontinuity_count": 246,
+            "max_abs_delta": 0.49392977356910706
           },
           {
             "edge_sample": 1102500,
@@ -1045,19 +1261,20 @@
             "max_abs_delta": 0.36987191438674927
           }
         ],
-        "total_discontinuity_count": 438
+        "total_discontinuity_count": 450
       }
     },
     "loudness": {
-      "overall_rms_dbfs": -22.585399976448244,
-      "loudness_jump_at_overlap_start_db": 5.855434452117155,
+      "overall_rms_dbfs": -22.584956393677487,
+      "loudness_jump_at_overlap_start_db": 5.915183970256631,
       "loudness_jump_at_overlap_end_db": 6.309910809228612
     },
     "performance": {
-      "render_wall_time_s": 0.11178369999834104,
-      "real_time_factor": 0.002794592499958526,
+      "render_wall_time_s": 0.12664769999901182,
+      "real_time_factor": 0.0031661924999752955,
       "note": null
-    }
+    },
+    "signalsmith_job_sidecar": null
   },
   {
     "transition_id": "R3-D",
@@ -1073,24 +1290,34 @@
       "applied_tempo_ratio": 1.0,
       "planner_required_tempo_ratio": null,
       "applied_pitch_shift_semitones": 0,
-      "applied_alignment_offset_ms": 0.0
+      "applied_alignment_offset_ms": 0.0,
+      "canonical_sample_rate": 44100,
+      "channels": 2
     },
     "timing": {
-      "beat_alignment_error_ms": 0.0,
-      "downbeat_alignment_error_ms": 0.0,
+      "outgoing_anchor_absolute_error_ms": 0.0,
+      "incoming_anchor_absolute_error_ms": 0.0,
+      "relative_alignment_error_ms": 0.0,
+      "relative_alignment_quality": "COMPUTED_FROM_TWO_CONFIDENT_DISTINCT_MARKER_DETECTIONS",
       "outgoing_marker_detection": {
-        "detected": true,
-        "expected_sample": 661500,
-        "detected_sample": 672769,
-        "error_ms": 255.53287981859413,
-        "correlation_peak": 0.29078189817479394
+        "expected_sample": 0,
+        "detected_sample": 0,
+        "error_ms": 0.0,
+        "correlation_peak": 0.23793652656272696,
+        "correlation_z_score": 14.536432742606086,
+        "quality": "HIGH",
+        "confident": true,
+        "marker_role": "outgoing"
       },
       "incoming_marker_detection": {
-        "detected": true,
-        "expected_sample": 661500,
-        "detected_sample": 672769,
-        "error_ms": 255.53287981859413,
-        "correlation_peak": 0.29078189817479394
+        "expected_sample": 0,
+        "detected_sample": 0,
+        "error_ms": 0.0,
+        "correlation_peak": 0.39433677536566464,
+        "correlation_z_score": 25.820282046375773,
+        "quality": "HIGH",
+        "confident": true,
+        "marker_role": "incoming"
       },
       "output_duration_s": 40.0,
       "overlap_duration_ms": 10000.0,
@@ -1102,7 +1329,7 @@
       "clipped_sample_count": 0,
       "discontinuity_proxy_whole_clip_note": "whole-clip proxy legitimately fires on ordinary drum/percussion transients -- not a splice indicator by itself; see discontinuity_proxy_at_transition_edges for the seam-scoped check",
       "discontinuity_proxy_whole_clip": {
-        "discontinuity_count": 4506,
+        "discontinuity_count": 4508,
         "max_abs_delta": 1.0249974727630615,
         "max_abs_delta_position_s": 2.500249433106576
       },
@@ -1110,8 +1337,8 @@
         "per_edge": [
           {
             "edge_sample": 661500,
-            "discontinuity_count": 234,
-            "max_abs_delta": 0.28882452845573425
+            "discontinuity_count": 246,
+            "max_abs_delta": 0.49392977356910706
           },
           {
             "edge_sample": 1102500,
@@ -1119,19 +1346,20 @@
             "max_abs_delta": 0.36987191438674927
           }
         ],
-        "total_discontinuity_count": 438
+        "total_discontinuity_count": 450
       }
     },
     "loudness": {
-      "overall_rms_dbfs": -22.585399976448244,
-      "loudness_jump_at_overlap_start_db": 5.855434452117155,
+      "overall_rms_dbfs": -22.584956393677487,
+      "loudness_jump_at_overlap_start_db": 5.915183970256631,
       "loudness_jump_at_overlap_end_db": 6.309910809228612
     },
     "performance": {
       "render_wall_time_s": null,
       "real_time_factor": null,
       "note": null
-    }
+    },
+    "signalsmith_job_sidecar": null
   },
   {
     "transition_id": "R3-D",
@@ -1147,24 +1375,34 @@
       "applied_tempo_ratio": 1.0,
       "planner_required_tempo_ratio": null,
       "applied_pitch_shift_semitones": 0,
-      "applied_alignment_offset_ms": 0.0
+      "applied_alignment_offset_ms": 0.0,
+      "canonical_sample_rate": 44100,
+      "channels": 2
     },
     "timing": {
-      "beat_alignment_error_ms": 0.0,
-      "downbeat_alignment_error_ms": 0.0,
+      "outgoing_anchor_absolute_error_ms": 0.0,
+      "incoming_anchor_absolute_error_ms": 0.0,
+      "relative_alignment_error_ms": 0.0,
+      "relative_alignment_quality": "COMPUTED_FROM_TWO_CONFIDENT_DISTINCT_MARKER_DETECTIONS",
       "outgoing_marker_detection": {
-        "detected": true,
-        "expected_sample": 661500,
-        "detected_sample": 672769,
-        "error_ms": 255.53287981859413,
-        "correlation_peak": 0.29078189817479394
+        "expected_sample": 0,
+        "detected_sample": 0,
+        "error_ms": 0.0,
+        "correlation_peak": 0.23793652656272696,
+        "correlation_z_score": 14.536432742606086,
+        "quality": "HIGH",
+        "confident": true,
+        "marker_role": "outgoing"
       },
       "incoming_marker_detection": {
-        "detected": true,
-        "expected_sample": 661500,
-        "detected_sample": 672769,
-        "error_ms": 255.53287981859413,
-        "correlation_peak": 0.29078189817479394
+        "expected_sample": 0,
+        "detected_sample": 0,
+        "error_ms": 0.0,
+        "correlation_peak": 0.39433677536566464,
+        "correlation_z_score": 25.820282046375773,
+        "quality": "HIGH",
+        "confident": true,
+        "marker_role": "incoming"
       },
       "output_duration_s": 40.0,
       "overlap_duration_ms": 10000.0,
@@ -1176,7 +1414,7 @@
       "clipped_sample_count": 0,
       "discontinuity_proxy_whole_clip_note": "whole-clip proxy legitimately fires on ordinary drum/percussion transients -- not a splice indicator by itself; see discontinuity_proxy_at_transition_edges for the seam-scoped check",
       "discontinuity_proxy_whole_clip": {
-        "discontinuity_count": 4506,
+        "discontinuity_count": 4508,
         "max_abs_delta": 1.0249974727630615,
         "max_abs_delta_position_s": 2.500249433106576
       },
@@ -1184,8 +1422,8 @@
         "per_edge": [
           {
             "edge_sample": 661500,
-            "discontinuity_count": 234,
-            "max_abs_delta": 0.28882452845573425
+            "discontinuity_count": 246,
+            "max_abs_delta": 0.49392977356910706
           },
           {
             "edge_sample": 1102500,
@@ -1193,18 +1431,19 @@
             "max_abs_delta": 0.36987191438674927
           }
         ],
-        "total_discontinuity_count": 438
+        "total_discontinuity_count": 450
       }
     },
     "loudness": {
-      "overall_rms_dbfs": -22.585399976448244,
-      "loudness_jump_at_overlap_start_db": 5.855434452117155,
+      "overall_rms_dbfs": -22.584956393677487,
+      "loudness_jump_at_overlap_start_db": 5.915183970256631,
       "loudness_jump_at_overlap_end_db": 6.309910809228612
     },
     "performance": {
       "render_wall_time_s": null,
       "real_time_factor": null,
       "note": null
-    }
+    },
+    "signalsmith_job_sidecar": null
   }
 ]

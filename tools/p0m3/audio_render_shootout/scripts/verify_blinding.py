@@ -1,7 +1,7 @@
 """
 Machine-verifiable blinding integrity checks (Issue #7 "BLINDING
-VERIFICATION"). Exits non-zero and prints every failing assertion if any
-check fails.
+VERIFICATION" + PM STAGE A REVIEW R5 repair). Exits non-zero and prints
+every failing assertion if any check fails.
 
 Checks:
   1. Owner ZIP contains no blind key.
@@ -12,18 +12,27 @@ Checks:
      chunks, so there is no LIST/INFO/ID3 metadata chunk for a name to hide
      in; this is asserted directly against each clip's chunk list.
   4. Every listening WAV's SHA-256 appears in the PM's blind_key.json.
-  5. The blind mapping reproduces byte-for-byte from the fixed seed
-     (re-running scripts/build_listening_pack.py's shuffle logic).
+  5. The blind mapping reproduces byte-for-byte from the seed supplied via
+     AUTOMIX_R3_BLIND_SEED (never a hardcoded default -- R5 repair).
   6. OWNER_RATINGS_TEMPLATE.json (inside the owner ZIP) refers only to
      opaque S#-X clip IDs -- never an internal method name or transition id.
+  7. (R5) results/blind_key.json is NOT tracked by git.
+  8. (R5) The seed in use is NOT the old, previously-committed seed
+     (20260812) -- proof this is a genuinely new mapping, not a reused one.
+  9. (R5) Owner WAV format parity: identical sample rate, channel count,
+     bit depth/container policy, and clip duration within tolerance across
+     every clip -- no method-correlated file-format signal an owner could
+     use to guess which clip is which technique.
 
 Usage:
-    python scripts/verify_blinding.py
+    AUTOMIX_R3_BLIND_SEED=<the same seed used to build the pack> python scripts/verify_blinding.py
 """
 import hashlib
 import json
+import os
 import random
 import struct
+import subprocess
 import sys
 import zipfile
 from pathlib import Path
@@ -32,10 +41,11 @@ ROOT = Path(__file__).resolve().parents[1]
 REPO_ROOT = ROOT.parents[2]
 sys.path.insert(0, str(ROOT))
 
-from scripts.build_listening_pack import SCENARIO_PLAN, BLIND_SEED  # noqa: E402
+from scripts.build_listening_pack import SCENARIO_PLAN, BLIND_SEED_ENV_VAR, require_blind_seed  # noqa: E402
 
 OWNER_ZIP = REPO_ROOT / "P0-M3-R3-OWNER-LISTENING.zip"
 BLIND_KEY_PATH = ROOT / "results" / "blind_key.json"
+OLD_COMMITTED_SEED = 20260812  # the R2-repair-cycle pack's hardcoded seed -- now removed from source; must never reappear
 
 FORBIDDEN_TERMS = [
     "signalsmith", "rubberband", "rubber band", "rubber-band",
@@ -53,6 +63,8 @@ FORBIDDEN_TERMS = [
 # almost certain) and would make this check meaninglessly noisy.
 FORBIDDEN_TERMS_BINARY = [t for t in FORBIDDEN_TERMS if len(t) >= 4]
 
+DURATION_TOLERANCE_S = 0.5
+
 failures = []
 
 
@@ -64,7 +76,31 @@ def check(condition: bool, message: str):
         print(f"OK:   {message}")
 
 
+def wav_fmt_info(raw: bytes) -> dict:
+    pos = 12
+    info = {}
+    while pos + 8 <= len(raw):
+        cid = raw[pos:pos + 4]
+        size = struct.unpack("<I", raw[pos + 4:pos + 8])[0]
+        if cid == b"fmt ":
+            fmt_tag, channels, sample_rate, _byte_rate, _block_align, bits_per_sample = struct.unpack("<HHIIHH", raw[pos + 8:pos + 8 + 16])
+            info = {"fmt_tag": fmt_tag, "channels": channels, "sample_rate": sample_rate, "bits_per_sample": bits_per_sample}
+        if cid == b"data":
+            info["data_size_bytes"] = size
+        pos += 8 + size + (size % 2)
+    return info
+
+
 def main():
+    blind_seed = require_blind_seed()
+
+    check(blind_seed != OLD_COMMITTED_SEED, f"blind seed ({blind_seed}) is NOT the old previously-committed seed ({OLD_COMMITTED_SEED}) -- genuinely new mapping")
+
+    git_ls = subprocess.run(["git", "-C", str(REPO_ROOT), "ls-files", "--error-unmatch",
+                              "tools/p0m3/audio_render_shootout/results/blind_key.json"],
+                             capture_output=True, text=True)
+    check(git_ls.returncode != 0, "results/blind_key.json is NOT tracked by git (git ls-files --error-unmatch fails)")
+
     zf = zipfile.ZipFile(OWNER_ZIP)
     names = zf.namelist()
 
@@ -77,6 +113,8 @@ def main():
         for term in FORBIDDEN_TERMS:
             check(term not in content, f"'{term}' not present in {name}")
 
+    fmt_infos = {}
+    durations = {}
     for name in names:
         if name.endswith(".wav"):
             lower_name = name.lower()
@@ -99,7 +137,27 @@ def main():
             for term in FORBIDDEN_TERMS_BINARY:
                 check(term.encode() not in raw_lower, f"'{term}' not present as raw bytes in {name}")
 
+            info = wav_fmt_info(raw)
+            fmt_infos[name] = info
+            bytes_per_frame = info["channels"] * (info["bits_per_sample"] // 8)
+            durations[name] = info["data_size_bytes"] / bytes_per_frame / info["sample_rate"]
+
+    # R5 format-parity: no method-correlated file-format signal.
+    if fmt_infos:
+        sample_rates = {v["sample_rate"] for v in fmt_infos.values()}
+        channels = {v["channels"] for v in fmt_infos.values()}
+        bit_depths = {v["bits_per_sample"] for v in fmt_infos.values()}
+        fmt_tags = {v["fmt_tag"] for v in fmt_infos.values()}
+        check(len(sample_rates) == 1, f"all owner WAVs share one sample rate: {sample_rates}")
+        check(len(channels) == 1, f"all owner WAVs share one channel count: {channels}")
+        check(len(bit_depths) == 1, f"all owner WAVs share one bit depth: {bit_depths}")
+        check(len(fmt_tags) == 1, f"all owner WAVs share one container/format tag (PCM vs float, etc): {fmt_tags}")
+        dur_values = list(durations.values())
+        dur_spread = max(dur_values) - min(dur_values)
+        check(dur_spread <= DURATION_TOLERANCE_S, f"all owner WAV durations within {DURATION_TOLERANCE_S}s of each other (spread={dur_spread:.3f}s): {durations}")
+
     blind_key = json.loads(BLIND_KEY_PATH.read_text(encoding="utf-8"))
+    check(blind_key.get("seed") == blind_seed, f"blind_key.json's recorded seed matches the seed supplied via {BLIND_SEED_ENV_VAR}")
     manifest_hashes = {entry["clip_name"]: entry["sha256"] for entry in blind_key["clip_manifest"]}
     for name in names:
         if name.endswith(".wav"):
@@ -110,13 +168,13 @@ def main():
 
     # Reproduce the seeded shuffle independently and compare.
     for scenario_label, transition_id, methods in SCENARIO_PLAN:
-        rng = random.Random(f"{BLIND_SEED}:{transition_id}")
+        rng = random.Random(f"{blind_seed}:{transition_id}")
         letters = list("ABCDEFGH")[: len(methods)]
         shuffled = methods[:]
         rng.shuffle(shuffled)
         expected = dict(zip(letters, shuffled))
         actual = blind_key["scenarios"][scenario_label]["letter_to_method"]
-        check(expected == actual, f"{scenario_label} blind mapping reproduces exactly from seed {BLIND_SEED}")
+        check(expected == actual, f"{scenario_label} blind mapping reproduces exactly from the supplied seed")
 
     ratings = json.loads(zf.read("OWNER_RATINGS_TEMPLATE.json").decode("utf-8"))
     clip_ids = set(ratings["clips"].keys())

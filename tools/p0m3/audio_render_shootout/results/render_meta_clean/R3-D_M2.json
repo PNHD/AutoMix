@@ -1,22 +1,25 @@
 {
-  "method": "M0",
-  "method_role": "intentionally_weak_negative_baseline",
-  "variant": "diagnostic",
+  "method": "M2",
+  "method_role": "signalsmith_stretch_candidate_documented_fallback",
+  "variant": "clean",
+  "engine": "none_full_dj_blend_withheld_by_planner",
   "transition_id": "R3-D",
-  "canonical_sample_rate": 44100,
-  "channels": 2,
-  "rendered_transition_class": "SIMPLE_CROSSFADE_LINEAR_UNCORRECTED",
+  "rendered_transition_class": "SIMPLE_CROSSFADE",
   "planner_allowed_transition_class_set": [
     "SIMPLE_CROSSFADE"
   ],
-  "gain_law": "linear",
+  "gain_law": "equal_power",
   "bass_eq_handoff_applied": false,
   "applied_tempo_ratio": 1.0,
   "planner_required_tempo_ratio": null,
-  "tempo_correction_deliberately_skipped": false,
   "applied_pitch_shift_semitones": 0,
   "applied_alignment_offset_ms": 0.0,
   "beat_alignment_applied": false,
+  "fallback_reason": "FULL_DJ_BLEND withheld by R2 pair-compatibility gate -- see planner reason_codes",
+  "planner_reason_codes": [
+    "STRUCTURAL_EVIDENCE_PRESENT",
+    "BEST_RANKED_COMPLETE_BOUNDARY_PLAN"
+  ],
   "onset_ms": 44000,
   "content_end_ms": 54000,
   "entry_ms": 0,
@@ -33,6 +36,6 @@
     "clipped_sample_count": 0,
     "ceiling_dbfs": -1.0
   },
-  "render_wall_time_s": 0.11412399999971967,
-  "real_time_factor": 0.0028530999999929916
+  "canonical_sample_rate": 44100,
+  "channels": 2
 }

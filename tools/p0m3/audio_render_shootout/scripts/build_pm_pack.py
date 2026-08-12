@@ -47,6 +47,8 @@ RESULT_FILES = [
 ]
 RESULT_GLOBS = [
     "results/render_meta/*.json",
+    "results/render_meta_clean/*.json",
+    "results/premix_diag/*.wav",  # synthetic, project-generated alignment-diagnostic evidence (R3 repair) -- forensic review only, not owner listening
 ]
 
 LISTENING_CLIPS_GLOB = "results/listening_clips/*.wav"

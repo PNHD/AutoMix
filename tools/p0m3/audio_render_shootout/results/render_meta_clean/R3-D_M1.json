@@ -1,15 +1,15 @@
 {
-  "method": "M0",
-  "method_role": "intentionally_weak_negative_baseline",
-  "variant": "diagnostic",
+  "method": "M1",
+  "method_role": "planner_correct_equal_power_simple_crossfade_reference",
+  "variant": "clean",
   "transition_id": "R3-D",
   "canonical_sample_rate": 44100,
   "channels": 2,
-  "rendered_transition_class": "SIMPLE_CROSSFADE_LINEAR_UNCORRECTED",
+  "rendered_transition_class": "SIMPLE_CROSSFADE",
   "planner_allowed_transition_class_set": [
     "SIMPLE_CROSSFADE"
   ],
-  "gain_law": "linear",
+  "gain_law": "equal_power",
   "bass_eq_handoff_applied": false,
   "applied_tempo_ratio": 1.0,
   "planner_required_tempo_ratio": null,
@@ -33,6 +33,6 @@
     "clipped_sample_count": 0,
     "ceiling_dbfs": -1.0
   },
-  "render_wall_time_s": 0.11412399999971967,
-  "real_time_factor": 0.0028530999999929916
+  "render_wall_time_s": 0.11826079999809735,
+  "real_time_factor": 0.0029565199999524337
 }

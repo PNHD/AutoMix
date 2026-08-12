@@ -1,28 +1,30 @@
 {
-  "method": "M0",
-  "method_role": "intentionally_weak_negative_baseline",
-  "variant": "diagnostic",
-  "transition_id": "R3-D",
+  "method": "M1",
+  "method_role": "planner_correct_equal_power_simple_crossfade_reference",
+  "variant": "clean",
+  "transition_id": "R3-B",
   "canonical_sample_rate": 44100,
   "channels": 2,
-  "rendered_transition_class": "SIMPLE_CROSSFADE_LINEAR_UNCORRECTED",
+  "rendered_transition_class": "SIMPLE_CROSSFADE",
   "planner_allowed_transition_class_set": [
+    "FULL_DJ_BLEND",
+    "SHORT_EQ_BLEND",
     "SIMPLE_CROSSFADE"
   ],
-  "gain_law": "linear",
+  "gain_law": "equal_power",
   "bass_eq_handoff_applied": false,
   "applied_tempo_ratio": 1.0,
-  "planner_required_tempo_ratio": null,
-  "tempo_correction_deliberately_skipped": false,
+  "planner_required_tempo_ratio": 1.05,
+  "tempo_correction_deliberately_skipped": true,
   "applied_pitch_shift_semitones": 0,
   "applied_alignment_offset_ms": 0.0,
   "beat_alignment_applied": false,
-  "onset_ms": 44000,
-  "content_end_ms": 54000,
+  "onset_ms": 45714,
+  "content_end_ms": 56000,
   "entry_ms": 0,
-  "overlap_len_samples": 441000,
-  "overlap_duration_ms": 10000.0,
-  "output_duration_s": 40.0,
+  "overlap_len_samples": 453613,
+  "overlap_duration_ms": 10286.009070294785,
+  "output_duration_s": 40.28600907029478,
   "safety": {
     "pre_peak_linear": 0.8500000238418579,
     "pre_peak_dbfs": -1.4116212420815057,
@@ -33,6 +35,6 @@
     "clipped_sample_count": 0,
     "ceiling_dbfs": -1.0
   },
-  "render_wall_time_s": 0.11412399999971967,
-  "real_time_factor": 0.0028530999999929916
+  "render_wall_time_s": 0.12991110000075423,
+  "real_time_factor": 0.0032247200206422344
 }

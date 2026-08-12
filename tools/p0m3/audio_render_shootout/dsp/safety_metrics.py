@@ -121,26 +121,51 @@ def loudness_jump_at_handoff_db(x: np.ndarray, sr: int, handoff_sample: int, win
     return abs(rms_dbfs(before) - rms_dbfs(after))
 
 
+# Confidence is PROMINENCE-based (z-score of the best-scoring position
+# against the distribution of ALL scores in the search window), not a bare
+# absolute-correlation threshold. Empirically, a marker summed additively
+# into a busy mix (this project's markers are deliberately placed AT
+# authored downbeats, which is also exactly where kick hits trigger) rarely
+# exceeds an absolute correlation of ~0.3-0.4 even at the exact correct
+# position, because the marker is only one additive component of the local
+# signal, not the whole signal -- but the CORRECT position still stands out
+# as an overwhelming statistical outlier (z-scores of 10+ observed) against
+# the rest of the search window, which is a far more robust confidence
+# signal than an absolute magnitude cutoff. Project benchmark diagnostic
+# tolerance (PROJECT_INFERENCE, not derived from any Apple disclosure) --
+# see PM STAGE A REVIEW R3 repair item 5.
+MARKER_QUALITY_HIGH_Z = 6.0
+MARKER_QUALITY_LOW_Z = 3.0
+MARKER_MIN_ABSOLUTE_SCORE = 0.05  # floor to avoid classifying pure-noise "peaks" as confident when the whole window is near-silent
+
+
 def detect_marker(
     x: np.ndarray,
     sr: int,
     expected_sample: int,
-    freq_hz: float,
-    duration_s: float,
+    marker_spec: dict,
     search_window_ms: float = 300.0,
 ) -> dict:
     """
-    Matched-filter detection of the synthetic alignment-marker tick
-    (fixtures/synth.py's high-frequency blip, embedded at an EXACTLY known
-    sample position at authoring time) within a search window around the
-    expected post-render position. Returns the actual detected sample and
-    the ms error against synthetic ground truth (Issue #7 "beat alignment
-    error ms against synthetic ground truth").
+    Matched-filter detection of a distinct diagnostic marker
+    (dsp/markers.py -- outgoing and incoming use INDEPENDENTLY
+    IDENTIFIABLE signatures, so calling this with the wrong role's spec
+    against the wrong side's audio scores low by construction, not by
+    accident of search-window placement) within a search window around the
+    expected post-render position (PM STAGE A REVIEW R3 repair).
+
+    Returns a dict with `quality` in {"HIGH", "LOW", "UNKNOWN_NO_SEGMENT",
+    "UNKNOWN_LOW_CONFIDENCE"}. A failed/ambiguous detection reports
+    `error_ms: None` -- NEVER a fabricated `0.0` (R3 repair: the prior
+    version's `0.0` "success" cases were sometimes actually 200+ms wrong,
+    silently, because both calls could lock onto the same identical-
+    template peak).
     """
+    from dsp.markers import build_marker_waveform  # local import avoids a cycle at module load time
+
     mono = x.mean(axis=1) if x.ndim == 2 else x
-    n_template = max(1, int(round(duration_s * sr)))
-    tt = np.arange(n_template) / sr
-    template = np.sin(2 * np.pi * freq_hz * tt) * np.exp(-tt * 3500.0)
+    n_template = max(1, int(round(marker_spec["duration_s"] * sr)))
+    template = build_marker_waveform(marker_spec, n_template, sr)
     template = template / (np.linalg.norm(template) + 1e-12)
 
     half_window = int(round(search_window_ms / 1000.0 * sr))
@@ -148,7 +173,11 @@ def detect_marker(
     hi = min(len(mono), expected_sample + half_window + n_template)
     segment = mono[lo:hi]
     if len(segment) < n_template:
-        return {"detected": False, "expected_sample": expected_sample, "detected_sample": None, "error_ms": None, "correlation_peak": 0.0}
+        return {
+            "expected_sample": expected_sample, "detected_sample": None, "error_ms": None,
+            "correlation_peak": 0.0, "quality": "UNKNOWN_NO_SEGMENT", "confident": False,
+            "marker_role": marker_spec.get("role"),
+        }
 
     # Cross-correlation via a plain sliding dot-product (search window is
     # small -- a few hundred ms -- so this is fast without needing FFT
@@ -162,11 +191,29 @@ def detect_marker(
         scores[i] = float(np.dot(window, template) / norm)
     best_idx = int(np.argmax(scores))
     detected_sample = lo + best_idx
-    error_ms = (detected_sample - expected_sample) / sr * 1000.0
+    peak = float(scores[best_idx])
+
+    mean_score = float(np.mean(scores))
+    std_score = float(np.std(scores))
+    z_score = (peak - mean_score) / std_score if std_score > 1e-9 else 0.0
+
+    if peak >= MARKER_MIN_ABSOLUTE_SCORE and z_score >= MARKER_QUALITY_HIGH_Z:
+        quality = "HIGH"
+    elif peak >= MARKER_MIN_ABSOLUTE_SCORE and z_score >= MARKER_QUALITY_LOW_Z:
+        quality = "LOW"
+    else:
+        quality = "UNKNOWN_LOW_CONFIDENCE"
+
+    confident = quality in ("HIGH", "LOW")
+    error_ms = ((detected_sample - expected_sample) / sr * 1000.0) if confident else None
+
     return {
-        "detected": bool(scores[best_idx] > 0.15),
         "expected_sample": expected_sample,
-        "detected_sample": detected_sample,
+        "detected_sample": detected_sample if confident else None,
         "error_ms": error_ms,
-        "correlation_peak": float(scores[best_idx]),
+        "correlation_peak": peak,
+        "correlation_z_score": z_score,
+        "quality": quality,
+        "confident": confident,
+        "marker_role": marker_spec.get("role"),
     }

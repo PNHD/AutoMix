@@ -1,7 +1,7 @@
 {
   "method": "M0",
   "method_role": "intentionally_weak_negative_baseline",
-  "variant": "diagnostic",
+  "variant": "clean",
   "transition_id": "R3-D",
   "canonical_sample_rate": 44100,
   "channels": 2,
@@ -33,6 +33,6 @@
     "clipped_sample_count": 0,
     "ceiling_dbfs": -1.0
   },
-  "render_wall_time_s": 0.11412399999971967,
-  "real_time_factor": 0.0028530999999929916
+  "render_wall_time_s": 0.11188589999801479,
+  "real_time_factor": 0.00279714749995037
 }
