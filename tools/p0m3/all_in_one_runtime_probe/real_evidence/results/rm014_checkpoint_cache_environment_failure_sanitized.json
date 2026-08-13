@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "runtime": {
+    "python_version": "3.10.18",
+    "torch_version": "2.0.0+cu118",
+    "torch_cuda_build": "11.8",
+    "cuda_available": true,
+    "natten_version": "0.14.6",
+    "natten_source_commit": "3b54c76185904f3cb59a49fff7bc044e4513d106",
+    "all_in_one_source_commit": "18e78903c0365147a2c5d4e5e57ebf88cb7d800e",
+    "source_semantic_diff_ignoring_eol_clean": true,
+    "public_api": "allin1.analyze",
+    "public_api_source": "src/allin1/analyze.py::analyze",
+    "model_name": "harmonix-fold0",
+    "audio_decode_tools": {
+      "ffmpeg_version_line": "ffmpeg version N-126086-ge5ecfe8970-20260812 Copyright (c) 2000-2026 the FFmpeg developers",
+      "ffprobe_version_line": "ffprobe version N-126086-ge5ecfe8970-20260812 Copyright (c) 2007-2026 the FFmpeg developers",
+      "distribution": "BtbN/FFmpeg-Builds_PINNED_LINUX64_GPL_ARCHIVE",
+      "release_tag": "autobuild-2026-08-12-13-15",
+      "archive_sha256": "cf55934e9faa1969bff4c3fc1e1352707c9c9384e4d7986388830a8c8a726913",
+      "environment_isolated": true,
+      "system_install_changed": false
+    }
+  },
+  "runs": [
+    {
+      "execution_order": 1,
+      "opaque_id": "RM014",
+      "run_index": 1,
+      "execution_result": "FAIL",
+      "failure_class": "LocalEntryNotFoundError",
+      "failure_reason_code": "ALL_IN_ONE_PUBLIC_AUDIO_PIPELINE_FAILED"
+    }
+  ],
+  "private_paths_emitted": false,
+  "source_filenames_emitted": false
+}

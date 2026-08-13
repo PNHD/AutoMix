@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "runtime": {
+    "python_version": "3.10.18",
+    "torch_version": "2.0.0+cu118",
+    "torch_cuda_build": "11.8",
+    "cuda_available": true,
+    "natten_version": "0.14.6",
+    "natten_source_commit": "3b54c76185904f3cb59a49fff7bc044e4513d106",
+    "all_in_one_source_commit": "18e78903c0365147a2c5d4e5e57ebf88cb7d800e",
+    "source_semantic_diff_ignoring_eol_clean": true,
+    "public_api": "allin1.analyze",
+    "public_api_source": "src/allin1/analyze.py::analyze",
+    "model_name": "harmonix-fold0"
+  },
+  "runs": [
+    {
+      "execution_order": 1,
+      "opaque_id": "RM014",
+      "run_index": 1,
+      "execution_result": "FAIL",
+      "failure_class": "CalledProcessError",
+      "failure_reason_code": "ALL_IN_ONE_PUBLIC_AUDIO_PIPELINE_FAILED"
+    }
+  ],
+  "private_paths_emitted": false,
+  "source_filenames_emitted": false
+}

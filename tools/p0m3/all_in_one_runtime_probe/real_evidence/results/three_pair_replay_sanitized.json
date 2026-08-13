@@ -1,0 +1,281 @@
+{
+  "schema_version": 1,
+  "result": "ALL_IN_ONE_REAL_PIPELINE_VALIDATED_RESIDUAL_BLOCKERS",
+  "pair_count": 3,
+  "pairs": [
+    {
+      "category": "V1",
+      "outgoing_opaque_id": "RM014",
+      "incoming_opaque_id": "RM010",
+      "pre_all_in_one_failed_gates": [
+        "genre",
+        "downbeat",
+        "harmonic",
+        "analysis_confidence"
+      ],
+      "new_all_in_one_evidence": {
+        "outgoing_boundary": {
+          "role": "outgoing_exit",
+          "target_t_ms": 194256.0,
+          "functional_section_containing_boundary": [
+            192350.0,
+            208250.0
+          ],
+          "functional_label": "outro",
+          "previous_functional_label": "chorus",
+          "next_functional_label": "end",
+          "nearest_functional_section_boundary_ms": 192350.0,
+          "boundary_distance_ms": 1906.0,
+          "boundary_distance_beats": 3.344,
+          "boundary_distance_bars": 0.836,
+          "meter_used_for_bar_distance": 4,
+          "analyzer_source": "ALL_IN_ONE_CANONICAL_PUBLIC_AUDIO_PIPELINE",
+          "evidence_class": "BENCHMARK_MODEL_OUTPUT_UNCALIBRATED",
+          "functional_label_from_actual_output": true,
+          "phrase_claimed": false,
+          "outro_fabricated": false
+        },
+        "incoming_boundary": {
+          "role": "incoming_entry",
+          "target_t_ms": 0.0,
+          "functional_section_containing_boundary": [
+            0.0,
+            20.0
+          ],
+          "functional_label": "start",
+          "previous_functional_label": null,
+          "next_functional_label": "chorus",
+          "nearest_functional_section_boundary_ms": 0.0,
+          "boundary_distance_ms": 0.0,
+          "boundary_distance_beats": 0.0,
+          "boundary_distance_bars": 0.0,
+          "meter_used_for_bar_distance": 4,
+          "analyzer_source": "ALL_IN_ONE_CANONICAL_PUBLIC_AUDIO_PIPELINE",
+          "evidence_class": "BENCHMARK_MODEL_OUTPUT_UNCALIBRATED",
+          "functional_label_from_actual_output": true,
+          "phrase_claimed": false,
+          "outro_fabricated": false
+        },
+        "outgoing_downbeat_evidence": "SEE_FOUR_TRACK_EVIDENCE",
+        "incoming_downbeat_evidence": "SEE_FOUR_TRACK_EVIDENCE",
+        "evidence_class": "BENCHMARK_MODEL_OUTPUT_UNCALIBRATED"
+      },
+      "downbeat_status_before": "INSUFFICIENT",
+      "downbeat_status_after": "STRICT_R2_UNCHANGED_DIAGNOSTIC_ONLY",
+      "structure_status_before": "SUFFICIENT",
+      "structure_status_after": "STRICT_R2_UNCHANGED_FUNCTIONAL_OUTPUT_DIAGNOSTIC_ONLY",
+      "harmonic_status": "UNCHANGED",
+      "genre_style_status": "UNCHANGED",
+      "texture_status": "UNCHANGED",
+      "canonical_analysis_confidence_behavior": "UNCHANGED",
+      "strict_existing_r2_verdict": "FULL_DJ_WITHHELD",
+      "confidence_ledger_diagnostic_verdict": "WITHHELD_DIAGNOSTIC",
+      "exact_remaining_blockers": [
+        "genre",
+        "downbeat",
+        "harmonic",
+        "analysis_confidence"
+      ],
+      "strict_reason_codes_unchanged": [
+        "GENRE_INCOMPATIBLE",
+        "TEMPO_DIRECT_COMPATIBLE",
+        "BEAT_CONFIDENCE_SUFFICIENT",
+        "DOWNBEAT_CONFIDENCE_INSUFFICIENT",
+        "HARMONIC_UNKNOWN",
+        "HARMONIC_UNKNOWN_DOWNGRADED",
+        "ENERGY_CONTINUITY_STRONG",
+        "STRUCTURE_COMPATIBLE",
+        "VOCAL_COLLISION_RISK_ACCEPTABLE",
+        "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+        "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+        "ANALYSIS_CONFIDENCE_LOW_PAIR"
+      ],
+      "real_render_candidate": false
+    },
+    {
+      "category": "V2",
+      "outgoing_opaque_id": "RM014",
+      "incoming_opaque_id": "RM081",
+      "pre_all_in_one_failed_gates": [
+        "genre",
+        "downbeat",
+        "harmonic",
+        "analysis_confidence"
+      ],
+      "new_all_in_one_evidence": {
+        "outgoing_boundary": {
+          "role": "outgoing_exit",
+          "target_t_ms": 194256.0,
+          "functional_section_containing_boundary": [
+            192350.0,
+            208250.0
+          ],
+          "functional_label": "outro",
+          "previous_functional_label": "chorus",
+          "next_functional_label": "end",
+          "nearest_functional_section_boundary_ms": 192350.0,
+          "boundary_distance_ms": 1906.0,
+          "boundary_distance_beats": 3.344,
+          "boundary_distance_bars": 0.836,
+          "meter_used_for_bar_distance": 4,
+          "analyzer_source": "ALL_IN_ONE_CANONICAL_PUBLIC_AUDIO_PIPELINE",
+          "evidence_class": "BENCHMARK_MODEL_OUTPUT_UNCALIBRATED",
+          "functional_label_from_actual_output": true,
+          "phrase_claimed": false,
+          "outro_fabricated": false
+        },
+        "incoming_boundary": {
+          "role": "incoming_entry",
+          "target_t_ms": 0.0,
+          "functional_section_containing_boundary": [
+            0.0,
+            20.0
+          ],
+          "functional_label": "start",
+          "previous_functional_label": null,
+          "next_functional_label": "intro",
+          "nearest_functional_section_boundary_ms": 0.0,
+          "boundary_distance_ms": 0.0,
+          "boundary_distance_beats": 0.0,
+          "boundary_distance_bars": 0.0,
+          "meter_used_for_bar_distance": 4,
+          "analyzer_source": "ALL_IN_ONE_CANONICAL_PUBLIC_AUDIO_PIPELINE",
+          "evidence_class": "BENCHMARK_MODEL_OUTPUT_UNCALIBRATED",
+          "functional_label_from_actual_output": true,
+          "phrase_claimed": false,
+          "outro_fabricated": false
+        },
+        "outgoing_downbeat_evidence": "SEE_FOUR_TRACK_EVIDENCE",
+        "incoming_downbeat_evidence": "SEE_FOUR_TRACK_EVIDENCE",
+        "evidence_class": "BENCHMARK_MODEL_OUTPUT_UNCALIBRATED"
+      },
+      "downbeat_status_before": "INSUFFICIENT",
+      "downbeat_status_after": "STRICT_R2_UNCHANGED_DIAGNOSTIC_ONLY",
+      "structure_status_before": "SUFFICIENT",
+      "structure_status_after": "STRICT_R2_UNCHANGED_FUNCTIONAL_OUTPUT_DIAGNOSTIC_ONLY",
+      "harmonic_status": "UNCHANGED",
+      "genre_style_status": "UNCHANGED",
+      "texture_status": "UNCHANGED",
+      "canonical_analysis_confidence_behavior": "UNCHANGED",
+      "strict_existing_r2_verdict": "FULL_DJ_WITHHELD",
+      "confidence_ledger_diagnostic_verdict": "WITHHELD_DIAGNOSTIC",
+      "exact_remaining_blockers": [
+        "genre",
+        "downbeat",
+        "harmonic",
+        "analysis_confidence"
+      ],
+      "strict_reason_codes_unchanged": [
+        "GENRE_INCOMPATIBLE",
+        "TEMPO_DIRECT_COMPATIBLE",
+        "BEAT_CONFIDENCE_SUFFICIENT",
+        "DOWNBEAT_CONFIDENCE_INSUFFICIENT",
+        "HARMONIC_UNKNOWN",
+        "HARMONIC_UNKNOWN_DOWNGRADED",
+        "ENERGY_CONTINUITY_STRONG",
+        "STRUCTURE_COMPATIBLE",
+        "VOCAL_COLLISION_RISK_ACCEPTABLE",
+        "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+        "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+        "ANALYSIS_CONFIDENCE_LOW_PAIR"
+      ],
+      "real_render_candidate": false
+    },
+    {
+      "category": "V2",
+      "outgoing_opaque_id": "RM041",
+      "incoming_opaque_id": "RM014",
+      "pre_all_in_one_failed_gates": [
+        "downbeat",
+        "harmonic",
+        "structure",
+        "analysis_confidence"
+      ],
+      "new_all_in_one_evidence": {
+        "outgoing_boundary": {
+          "role": "outgoing_exit",
+          "target_t_ms": 186456.2,
+          "functional_section_containing_boundary": [
+            171290.0,
+            191250.0
+          ],
+          "functional_label": "chorus",
+          "previous_functional_label": "inst",
+          "next_functional_label": "end",
+          "nearest_functional_section_boundary_ms": 191250.0,
+          "boundary_distance_ms": 4793.8,
+          "boundary_distance_beats": 8.265,
+          "boundary_distance_bars": 2.066,
+          "meter_used_for_bar_distance": 4,
+          "analyzer_source": "ALL_IN_ONE_CANONICAL_PUBLIC_AUDIO_PIPELINE",
+          "evidence_class": "BENCHMARK_MODEL_OUTPUT_UNCALIBRATED",
+          "functional_label_from_actual_output": true,
+          "phrase_claimed": false,
+          "outro_fabricated": false
+        },
+        "incoming_boundary": {
+          "role": "incoming_entry",
+          "target_t_ms": 0.0,
+          "functional_section_containing_boundary": [
+            0.0,
+            10.0
+          ],
+          "functional_label": "intro",
+          "previous_functional_label": null,
+          "next_functional_label": "intro",
+          "nearest_functional_section_boundary_ms": 0.0,
+          "boundary_distance_ms": 0.0,
+          "boundary_distance_beats": 0.0,
+          "boundary_distance_bars": 0.0,
+          "meter_used_for_bar_distance": 4,
+          "analyzer_source": "ALL_IN_ONE_CANONICAL_PUBLIC_AUDIO_PIPELINE",
+          "evidence_class": "BENCHMARK_MODEL_OUTPUT_UNCALIBRATED",
+          "functional_label_from_actual_output": true,
+          "phrase_claimed": false,
+          "outro_fabricated": false
+        },
+        "outgoing_downbeat_evidence": "SEE_FOUR_TRACK_EVIDENCE",
+        "incoming_downbeat_evidence": "SEE_FOUR_TRACK_EVIDENCE",
+        "evidence_class": "BENCHMARK_MODEL_OUTPUT_UNCALIBRATED"
+      },
+      "downbeat_status_before": "INSUFFICIENT",
+      "downbeat_status_after": "STRICT_R2_UNCHANGED_DIAGNOSTIC_ONLY",
+      "structure_status_before": "INSUFFICIENT",
+      "structure_status_after": "STRICT_R2_UNCHANGED_FUNCTIONAL_OUTPUT_DIAGNOSTIC_ONLY",
+      "harmonic_status": "UNCHANGED",
+      "genre_style_status": "UNCHANGED",
+      "texture_status": "UNCHANGED",
+      "canonical_analysis_confidence_behavior": "UNCHANGED",
+      "strict_existing_r2_verdict": "FULL_DJ_WITHHELD",
+      "confidence_ledger_diagnostic_verdict": "WITHHELD_DIAGNOSTIC",
+      "exact_remaining_blockers": [
+        "downbeat",
+        "harmonic",
+        "structure",
+        "analysis_confidence"
+      ],
+      "strict_reason_codes_unchanged": [
+        "GENRE_COMPATIBLE_SAME_FAMILY",
+        "TEMPO_DIRECT_COMPATIBLE",
+        "BEAT_CONFIDENCE_SUFFICIENT",
+        "DOWNBEAT_CONFIDENCE_INSUFFICIENT",
+        "HARMONIC_UNKNOWN",
+        "HARMONIC_UNKNOWN_DOWNGRADED",
+        "ENERGY_CONTINUITY_STRONG",
+        "STRUCTURE_UNKNOWN",
+        "STRUCTURE_COMPATIBILITY_REQUIRED_FOR_FULL_DJ",
+        "VOCAL_COLLISION_RISK_ACCEPTABLE",
+        "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+        "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+        "ANALYSIS_CONFIDENCE_LOW_PAIR"
+      ],
+      "real_render_candidate": false
+    }
+  ],
+  "harmonic_status_unchanged_for_all": true,
+  "genre_style_status_unchanged_for_all": true,
+  "texture_status_unchanged_for_all": true,
+  "canonical_analysis_confidence_unchanged_for_all": true,
+  "strict_r2_gates_unchanged": true,
+  "render_candidate_count": 0
+}

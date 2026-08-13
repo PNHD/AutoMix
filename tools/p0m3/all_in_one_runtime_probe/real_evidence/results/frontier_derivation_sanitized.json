@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "starting_head": "64a78894166b873987de57437b2d74d4d057e97a",
+  "source_artifact_result": "ANALYZER_EVIDENCE_INSUFFICIENT_AND_MEASURED_INCOMPATIBILITY",
+  "derivation_rule": "RETAIN_ONLY_NEAR_MISS_REPLAYS_WITH_MEASURED_TEXTURE_STATUS_COMPATIBLE",
+  "source_pair_count": 20,
+  "observed_texture_statuses": [
+    "COMPATIBLE",
+    "INCOMPATIBLE"
+  ],
+  "measured_texture_incompatible_pair_count": 17,
+  "derived_pair_count": 3,
+  "derived_pairs": [
+    {
+      "category": "V1",
+      "outgoing_opaque_id": "RM014",
+      "incoming_opaque_id": "RM010"
+    },
+    {
+      "category": "V2",
+      "outgoing_opaque_id": "RM014",
+      "incoming_opaque_id": "RM081"
+    },
+    {
+      "category": "V2",
+      "outgoing_opaque_id": "RM041",
+      "incoming_opaque_id": "RM014"
+    }
+  ],
+  "derived_track_count": 4,
+  "derived_track_ids": [
+    "RM010",
+    "RM014",
+    "RM041",
+    "RM081"
+  ],
+  "exact_expected_pair_equality": true,
+  "exact_expected_track_equality": true,
+  "frontier_result": "FRONTIER_DERIVED_EXACT"
+}

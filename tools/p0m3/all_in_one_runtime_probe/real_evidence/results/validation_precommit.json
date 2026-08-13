@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "result": "PASS",
+  "assertion_count": 18,
+  "assertions": [
+    {
+      "name": "1 starting HEAD exact",
+      "status": "PASS"
+    },
+    {
+      "name": "2 frontier independently derives exactly three pairs",
+      "status": "PASS"
+    },
+    {
+      "name": "3 frontier independently derives exactly four tracks",
+      "status": "PASS"
+    },
+    {
+      "name": "4 no track outside frontier analyzed",
+      "status": "PASS"
+    },
+    {
+      "name": "5 RM014 executes twice before any other private track",
+      "status": "PASS"
+    },
+    {
+      "name": "6 real public audio path used instead of direct feature tensor",
+      "status": "PASS"
+    },
+    {
+      "name": "7 canonical source runtime and checkpoint lineage unchanged",
+      "status": "PASS"
+    },
+    {
+      "name": "8 All-In-One output not promoted to calibrated HIGH",
+      "status": "PASS"
+    },
+    {
+      "name": "9 BeatNet beat ownership unchanged",
+      "status": "PASS"
+    },
+    {
+      "name": "10 functional labels originate in actual All-In-One output",
+      "status": "PASS"
+    },
+    {
+      "name": "11 no phrase or outro fabrication",
+      "status": "PASS"
+    },
+    {
+      "name": "12 harmonic genre texture and aggregate evidence unchanged",
+      "status": "PASS"
+    },
+    {
+      "name": "13 existing R2 strict evaluator and gates unchanged",
+      "status": "PASS"
+    },
+    {
+      "name": "13b render-candidate enum derives from literal unchanged strict R2 verdicts",
+      "status": "PASS"
+    },
+    {
+      "name": "14 only three frontier pairs replayed",
+      "status": "PASS"
+    },
+    {
+      "name": "15 no render listening Signalsmith or Rubber Band",
+      "status": "PASS"
+    },
+    {
+      "name": "16 no private mapping values filenames paths tags or audio hashes leak",
+      "status": "PASS"
+    },
+    {
+      "name": "17 no P1 production work",
+      "status": "PASS"
+    }
+  ],
+  "origin_match_checked": false
+}
