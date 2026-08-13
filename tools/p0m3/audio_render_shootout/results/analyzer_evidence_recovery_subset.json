@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "derivation": "EXACT_UNION_OF_CACHED_TOP_10_V1_AND_TOP_10_V2_NEAR_MISSES",
+  "source_trace_fields": [
+    "v1_near_misses_top10_ranked_by_fewest_failed_gates",
+    "v2_near_misses_top10_ranked_by_fewest_failed_gates"
+  ],
+  "v1_pair_count": 10,
+  "v2_pair_count": 10,
+  "unique_track_count": 19,
+  "opaque_track_ids": [
+    "RM001",
+    "RM002",
+    "RM003",
+    "RM010",
+    "RM014",
+    "RM015",
+    "RM017",
+    "RM026",
+    "RM041",
+    "RM042",
+    "RM043",
+    "RM051",
+    "RM070",
+    "RM071",
+    "RM075",
+    "RM081",
+    "RM082",
+    "RM083",
+    "RM092"
+  ],
+  "pairs": {
+    "V1": [
+      {
+        "outgoing_opaque_id": "RM092",
+        "incoming_opaque_id": "RM070"
+      },
+      {
+        "outgoing_opaque_id": "RM075",
+        "incoming_opaque_id": "RM043"
+      },
+      {
+        "outgoing_opaque_id": "RM075",
+        "incoming_opaque_id": "RM003"
+      },
+      {
+        "outgoing_opaque_id": "RM042",
+        "incoming_opaque_id": "RM083"
+      },
+      {
+        "outgoing_opaque_id": "RM042",
+        "incoming_opaque_id": "RM051"
+      },
+      {
+        "outgoing_opaque_id": "RM042",
+        "incoming_opaque_id": "RM002"
+      },
+      {
+        "outgoing_opaque_id": "RM042",
+        "incoming_opaque_id": "RM015"
+      },
+      {
+        "outgoing_opaque_id": "RM082",
+        "incoming_opaque_id": "RM092"
+      },
+      {
+        "outgoing_opaque_id": "RM082",
+        "incoming_opaque_id": "RM070"
+      },
+      {
+        "outgoing_opaque_id": "RM014",
+        "incoming_opaque_id": "RM010"
+      }
+    ],
+    "V2": [
+      {
+        "outgoing_opaque_id": "RM014",
+        "incoming_opaque_id": "RM041"
+      },
+      {
+        "outgoing_opaque_id": "RM014",
+        "incoming_opaque_id": "RM081"
+      },
+      {
+        "outgoing_opaque_id": "RM014",
+        "incoming_opaque_id": "RM070"
+      },
+      {
+        "outgoing_opaque_id": "RM014",
+        "incoming_opaque_id": "RM071"
+      },
+      {
+        "outgoing_opaque_id": "RM014",
+        "incoming_opaque_id": "RM092"
+      },
+      {
+        "outgoing_opaque_id": "RM041",
+        "incoming_opaque_id": "RM014"
+      },
+      {
+        "outgoing_opaque_id": "RM075",
+        "incoming_opaque_id": "RM092"
+      },
+      {
+        "outgoing_opaque_id": "RM042",
+        "incoming_opaque_id": "RM026"
+      },
+      {
+        "outgoing_opaque_id": "RM042",
+        "incoming_opaque_id": "RM001"
+      },
+      {
+        "outgoing_opaque_id": "RM042",
+        "incoming_opaque_id": "RM017"
+      }
+    ]
+  }
+}

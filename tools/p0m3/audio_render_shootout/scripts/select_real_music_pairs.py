@@ -20,9 +20,10 @@ prior pass's fabricated/non-independent evidence:
         are computed from MEASURED boundary-local low-frequency energy/
         onset-density (bass) and spectral-centroid/flatness/onset-density
         (texture) evidence -- never a hardcoded constant, never RMS+vocal
-        alone. analysis_confidence reflects genuine independent-evidence
-        completeness (beat+downbeat+structure+genre+harmonic), not just
-        the outgoing candidate's own structure label.
+        alone. The canonical R2 analysis_confidence aggregate is preserved
+        byte-for-behavior for baseline comparison, while a transparent
+        per-lane confidence ledger makes its ownership explicit and prevents
+        research diagnostics from counting the aggregate as a new analyzer.
   R4 -- entry_candidate_t_ms uses the REAL analyzer-detected value
         (silence-skip or instrumental-lead end), with
         leading_silence_is_authored_non_musical/leading_silence_ms wired
@@ -140,6 +141,103 @@ def _combine_risk_min_side(risk_a: str, risk_b: str) -> str:
     return {0: "LOW", 1: "MEDIUM", 2: "HIGH"}[combined]
 
 
+def _recovery_sources(track: dict, lane: str, fallback: str) -> list[str]:
+    evidence = track.get("evidence_recovery", {}).get(lane, {})
+    source = evidence.get("source")
+    return [source] if source else [fallback]
+
+
+def build_confidence_ledger(
+    out_a: dict,
+    in_a: dict,
+    *,
+    structure_compatibility: str,
+    harmonic: str | None,
+    texture_compatible: bool,
+    vocal_collision_risk: str,
+    bass_percussion_collision_risk: str,
+) -> dict:
+    """Research-only ownership ledger for every independent evidence lane.
+
+    The accepted R2 evaluator still receives its original scalar fields.
+    This ledger is additional provenance: it never changes a production gate
+    and never treats the legacy ``analysis_confidence`` minimum as a ninth
+    measurement.  Recovered-oracle sources are read only from explicit local
+    overlays created by the bounded Issue #7 recovery runner.
+    """
+    beat_conf = min_conf(out_a["beat"]["confidence"], in_a["beat"]["confidence"])
+    downbeat_conf = min_conf(out_a["downbeat"]["confidence"], in_a["downbeat"]["confidence"])
+    out_key_eff = corroborated_key(out_a.get("key_at_exit", out_a["key"]), out_a["key"])
+    in_key_eff = corroborated_key(in_a.get("key_at_entry", in_a["key"]), in_a["key"])
+    harmonic_conf = min_conf(out_key_eff["confidence"], in_key_eff["confidence"])
+
+    def lane(sources, confidence, status, evidence_type):
+        return {
+            "sources": sorted(set(sources)),
+            "confidence": confidence,
+            "status": status,
+            "evidence_type": evidence_type,
+        }
+
+    return {
+        "beat_confidence_source": lane(
+            _recovery_sources(out_a, "beat", "CACHED_STAGE_B_ONSET_AUTOCORRELATION")
+            + _recovery_sources(in_a, "beat", "CACHED_STAGE_B_ONSET_AUTOCORRELATION"),
+            beat_conf,
+            "SUFFICIENT" if beat_conf == "HIGH" else "INSUFFICIENT",
+            "BEAT_TIMING_MEASUREMENT",
+        ),
+        "downbeat_confidence_source": lane(
+            _recovery_sources(out_a, "downbeat", "CACHED_STAGE_B_KICK_PHASE_HEURISTIC")
+            + _recovery_sources(in_a, "downbeat", "CACHED_STAGE_B_KICK_PHASE_HEURISTIC"),
+            downbeat_conf,
+            "SUFFICIENT" if downbeat_conf == "HIGH" else "INSUFFICIENT",
+            "BAR_PHASE_MEASUREMENT",
+        ),
+        "structure_confidence_source": lane(
+            _recovery_sources(out_a, "structure", out_a["candidates"].get("exit_structure_evidence_method", "UNKNOWN"))
+            + _recovery_sources(in_a, "structure", "CACHED_STAGE_B_ENTRY_BOUNDARY"),
+            out_a["candidates"].get("exit_structure_confidence", "NONE"),
+            "SUFFICIENT" if structure_compatibility == "COMPATIBLE" else "INSUFFICIENT",
+            "SECTION_OR_FUNCTIONAL_BOUNDARY_EVIDENCE",
+        ),
+        "genre_style_confidence_source": lane(
+            _recovery_sources(out_a, "genre_style", out_a.get("genre_tag_provenance", "UNKNOWN"))
+            + _recovery_sources(in_a, "genre_style", in_a.get("genre_tag_provenance", "UNKNOWN")),
+            "HIGH" if (out_a.get("genre_tags") and in_a.get("genre_tags")) else "NONE",
+            "AVAILABLE" if (out_a.get("genre_tags") and in_a.get("genre_tags")) else "UNKNOWN",
+            "OWNER_LOCAL_GENERIC_STYLE_OR_AUDIO_ORACLE",
+        ),
+        "harmonic_confidence_source": lane(
+            _recovery_sources(out_a, "harmonic", "CACHED_STAGE_B_STFT_CHROMA")
+            + _recovery_sources(in_a, "harmonic", "CACHED_STAGE_B_STFT_CHROMA"),
+            harmonic_conf,
+            "AVAILABLE" if harmonic is not None else "UNKNOWN",
+            "BOUNDARY_LOCAL_KEY_CHROMA_MEASUREMENT",
+        ),
+        "vocal_proxy_confidence_source": lane(
+            ["CACHED_STAGE_B_VOCAL_FORMANT_ENERGY_PROXY"],
+            "HEURISTIC_PROXY",
+            "MEASURED",
+            "VOCAL_ACTIVITY_PROXY_NOT_SOURCE_SEPARATION",
+        ),
+        "texture_measurement_confidence_source": lane(
+            [out_a.get("texture", {}).get("method", "CACHED_STAGE_B_BOUNDARY_TEXTURE"),
+             in_a.get("texture", {}).get("method", "CACHED_STAGE_B_BOUNDARY_TEXTURE")],
+            "MEASURED",
+            "COMPATIBLE" if texture_compatible else "INCOMPATIBLE",
+            "BOUNDARY_LOCAL_TIMBRAL_RHYTHMIC_FEATURES",
+        ),
+        "bass_measurement_confidence_source": lane(
+            [out_a.get("bass_percussion", {}).get("method", "CACHED_STAGE_B_LOW_BAND_ACTIVITY"),
+             in_a.get("bass_percussion", {}).get("method", "CACHED_STAGE_B_LOW_BAND_ACTIVITY")],
+            "MEASURED",
+            "SAFE" if bass_percussion_collision_risk != "HIGH" else "UNSAFE",
+            "BOUNDARY_LOCAL_LOW_FREQUENCY_ACTIVITY",
+        ),
+    }
+
+
 def build_pair_compat_input(out_a: dict, in_a: dict) -> dict:
     # R1: real genre evidence, never fabricated.
     genre_out = out_a.get("genre_tags", [])
@@ -201,23 +299,30 @@ def build_pair_compat_input(out_a: dict, in_a: dict) -> dict:
     # would.
     energy_continuity_field = "STRONG" if energy_continuity_bucket == "STRONG" else "WEAK"
 
-    # R3 repair item 5: analysis_confidence reflects the STRENGTH of the
+    # Canonical R2 baseline: preserve the existing scalar aggregate exactly.
     # measurements underlying structure/genre/harmonic evidence for THIS
     # pair/boundary -- not the outgoing candidate's own structure label
     # repeated. Deliberately does NOT re-test beat/downbeat/vocal/bass/
     # texture pass-fail here: those already have their OWN dedicated gates
     # in compatibility.py (BEAT_CONFIDENCE_INSUFFICIENT etc.) -- re-folding
     # them into analysis_confidence would require the SAME evidence to
-    # independently clear the SAME bar twice (the exact double-jeopardy
-    # bug already identified and removed from this pass's earlier
-    # design), not genuinely new information. Structure/genre/harmonic are
-    # the three dimensions this PM repair specifically found fabricated or
-    # under-evidenced, so their MEASURED strength (not just boolean pass/
-    # fail) is what belongs here.
+    # independently clear the SAME bar twice.  The confidence-ledger
+    # diagnostic in pair_gate_audit.py therefore does not count this scalar
+    # as another independent measurement; changing the canonical R2 contract
+    # remains PM-owned.
     structure_strength = out_a["candidates"]["exit_structure_confidence"] if structure_compatibility == "COMPATIBLE" else "LOW"
     genre_strength = "HIGH" if (genre_out and genre_in) else "LOW"
     harmonic_strength = min_conf(out_key_eff["confidence"], in_key_eff["confidence"]) if harmonic is not None else "LOW"
     analysis_confidence = min_conf(structure_strength, genre_strength, harmonic_strength)
+    confidence_ledger = build_confidence_ledger(
+        out_a,
+        in_a,
+        structure_compatibility=structure_compatibility,
+        harmonic=harmonic,
+        texture_compatible=texture_compatible,
+        vocal_collision_risk=vocal_collision_risk,
+        bass_percussion_collision_risk=bass_percussion_collision_risk,
+    )
 
     return {
         "outgoing": {"genre_tags": genre_out, "bpm": out_a["tempo"]["bpm"]},
@@ -231,6 +336,7 @@ def build_pair_compat_input(out_a: dict, in_a: dict) -> dict:
         "bass_percussion_collision_risk": bass_percussion_collision_risk,
         "intro_outro_texture_compatible": texture_compatible,
         "analysis_confidence": analysis_confidence,
+        "_confidence_ledger": confidence_ledger,
         "_out_structure_evidence": out_structure_evidence,
         "_in_structure_evidence": in_structure_evidence,
         "_projected_loudness_gap_db": round(projected_loudness_gap_db, 2),

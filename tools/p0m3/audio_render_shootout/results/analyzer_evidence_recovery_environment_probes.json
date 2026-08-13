@@ -1,0 +1,62 @@
+{
+  "retrieved_at_utc_date": "2026-08-13",
+  "all_in_one": {
+    "canonical_commit": "18e78903c0365147a2c5d4e5e57ebf88cb7d800e",
+    "canonical_main_head_at_probe": "18e78903c0365147a2c5d4e5e57ebf88cb7d800e",
+    "canonical_source": "https://github.com/mir-aidj/all-in-one",
+    "known_blocker": "https://github.com/mir-aidj/all-in-one/issues/30",
+    "published_natten_21_patch_pr": "https://github.com/mir-aidj/all-in-one/pull/37",
+    "published_natten_21_patch_commit": "5c2b2ce571c04054a0b54ceba365c0b8c1188099",
+    "published_patch_state": "CLOSED_NOT_MERGED",
+    "isolated_probe_environment": {
+      "wsl": "Ubuntu 24.04 / WSL2",
+      "python": "3.12.3",
+      "torch": "2.13.0+cu126",
+      "natten": "0.21.7+torch2130cu126",
+      "cuda_available": true,
+      "gpu": "NVIDIA GeForce RTX 2060"
+    },
+    "baseline_import_result": "BLOCKED_IMPORT_ERROR_MISSING_NATTEN_LEGACY_FUNCTIONAL_SYMBOLS",
+    "published_patch_import_result": "BLOCKED_IMPORT_ERROR_MISSING_NA1D_QK_FUNCTIONAL_SYMBOLS",
+    "official_natten_0_21_api_observed": [
+      "neighborhood_attention_generic",
+      "na1d",
+      "na2d",
+      "na3d"
+    ],
+    "execution_result": "NOT_EXECUTED",
+    "license_boundary": "MIT code; checkpoint training-audio provenance remains UNKNOWN_NEEDS_LEGAL_REVIEW"
+  },
+  "downbeat_oracle": {
+    "implementation": "madmom RNNDownBeatProcessor + DBNDownBeatTrackingProcessor",
+    "installed_ref": "27f032e8947204902c675e5e341a3faf5dc86dae",
+    "installed_version": "0.17.dev0",
+    "runtime_role": "BENCHMARK_ONLY",
+    "license_boundary": "Installed metadata reports BSD and CC BY-NC-SA components; no production adoption decision",
+    "resolution_rule_project_diagnostic": {
+      "minimum_downbeat_count": 8,
+      "minimum_median_downbeat_activation": 0.2,
+      "maximum_downbeat_interval_cv": 0.12,
+      "resolved_high_maximum_median_grid_error_ms": 100.0,
+      "resolved_conflict_minimum_median_grid_error_ms_exclusive": 250.0,
+      "calibrated_product_confidence": false
+    }
+  },
+  "harmonic_and_boundary_oracle": {
+    "implementation": "librosa CQT key plus beat-synchronous CQT/MFCC/spectral-contrast change points",
+    "version": "0.11.0",
+    "license": "ISC",
+    "runtime_role": "BENCHMARK_ONLY",
+    "functional_section_labels_available": false,
+    "phrase_claimed": false,
+    "section_boundary_rule_project_diagnostic": "adjacent beat-synchronous feature novelty >=1.5 robust-z, minimum spacing 8 beats; boundary-only, not functional-label confidence",
+    "key_confidence_rule_project_diagnostic": "HIGH if top-two Krumhansl profile-score margin >=0.08; MEDIUM if >=0.04; otherwise LOW; not calibrated product confidence"
+  },
+  "genre_style_oracle": {
+    "preferred_candidate": "Essentia Discogs-EffNet",
+    "installed": false,
+    "pip_index_probe": "ERROR_NO_MATCHING_DISTRIBUTION_FOR_ESSENTIA_ON_WSL_PYTHON_3_12",
+    "tensorflow_installed": false,
+    "result": "GENRE_STYLE_ORACLE_UNAVAILABLE"
+  }
+}

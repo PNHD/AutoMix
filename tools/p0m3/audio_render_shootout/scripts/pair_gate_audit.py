@@ -31,6 +31,7 @@ import select_real_music_pairs as selector  # noqa: E402
 from policy.compatibility import evaluate_pair_compatibility, _tempo_relation  # noqa: E402
 
 GATE_ORDER = ["genre", "tempo", "beat", "downbeat", "harmonic", "structure", "texture", "vocal", "bass", "analysis_confidence"]
+CONFIDENCE_LEDGER_DIAGNOSTIC_GATE_ORDER = [g for g in GATE_ORDER if g != "analysis_confidence"]
 
 PASS = "PASS"
 MEASURED_INCOMPATIBLE = "MEASURED_INCOMPATIBLE"
@@ -68,6 +69,23 @@ def classify_pair(out_a: dict, in_a: dict):
 
     failed_gates = [g for g in GATE_ORDER if gate_status[g] != PASS]
     return ci, compat, gate_status, failed_gates
+
+
+def confidence_ledger_diagnostic(gate_status: dict) -> dict:
+    """A1 diagnostic verdict with no duplicate aggregate-confidence gate.
+
+    Every underlying load-bearing lane remains required.  Only the legacy
+    ``analysis_confidence=min(structure, genre, harmonic)`` aggregate is
+    omitted because those same three lanes are already represented directly.
+    This function is research-only and never calls or modifies the R2 policy.
+    """
+    failed = [g for g in CONFIDENCE_LEDGER_DIAGNOSTIC_GATE_ORDER if gate_status[g] != PASS]
+    return {
+        "gate_order": CONFIDENCE_LEDGER_DIAGNOSTIC_GATE_ORDER,
+        "eligible": not failed,
+        "failed_gates": failed,
+        "aggregate_analysis_confidence_counted_as_independent": False,
+    }
 
 
 def iter_tempo_eligible_pairs(analysis: dict, lo: float, hi: float):
