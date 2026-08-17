@@ -246,9 +246,9 @@ everywhere it is used; structure labels are literal model output with no
 phrase claim; the harmonic sensitivity grid covers exactly the declared
 window lengths and perturbations and uses the unmodified pairwise
 function; the counterfactual matrix never treats downbeat as resolved; no
-`.wav` file and no Signalsmith/Rubber Band reference exist under
-`pair_stability/`; no privacy-pattern (path, filename, audio extension) or
-disallowed RM id appears in any committed evidence file.
+audio-render output file and no Signalsmith/Rubber Band reference exist
+under `pair_stability/`; no privacy-pattern (path, filename, audio
+extension) or disallowed RM id appears in any committed evidence file.
 
 Additional git-level checks (run directly, not re-implemented in the
 verifier): `compatibility.py` and `select_real_music_pairs.py` are
