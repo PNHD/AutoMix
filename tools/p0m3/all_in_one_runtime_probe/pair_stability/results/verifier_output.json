@@ -1,0 +1,845 @@
+{
+  "schema_version": 1,
+  "passed": 209,
+  "total": 209,
+  "all_pass": true,
+  "failed_checks": [],
+  "checks": [
+    {
+      "check": "exactly_10_raw_run_files_no_more_no_less",
+      "passed": true
+    },
+    {
+      "check": "raw_run_filenames_match_expected_track_seed_set",
+      "passed": true
+    },
+    {
+      "check": "private_paths_not_emitted[RM014-seed0.json]",
+      "passed": true
+    },
+    {
+      "check": "source_filenames_not_emitted[RM014-seed0.json]",
+      "passed": true
+    },
+    {
+      "check": "canonical_source_commit_pinned[RM014-seed0.json]",
+      "passed": true
+    },
+    {
+      "check": "natten_source_commit_pinned[RM014-seed0.json]",
+      "passed": true
+    },
+    {
+      "check": "checkpoint_sha256_pinned[RM014-seed0.json]",
+      "passed": true
+    },
+    {
+      "check": "seed_matches_filename[RM014-seed0.json]",
+      "passed": true
+    },
+    {
+      "check": "private_paths_not_emitted[RM014-seed1.json]",
+      "passed": true
+    },
+    {
+      "check": "source_filenames_not_emitted[RM014-seed1.json]",
+      "passed": true
+    },
+    {
+      "check": "canonical_source_commit_pinned[RM014-seed1.json]",
+      "passed": true
+    },
+    {
+      "check": "natten_source_commit_pinned[RM014-seed1.json]",
+      "passed": true
+    },
+    {
+      "check": "checkpoint_sha256_pinned[RM014-seed1.json]",
+      "passed": true
+    },
+    {
+      "check": "seed_matches_filename[RM014-seed1.json]",
+      "passed": true
+    },
+    {
+      "check": "private_paths_not_emitted[RM014-seed2.json]",
+      "passed": true
+    },
+    {
+      "check": "source_filenames_not_emitted[RM014-seed2.json]",
+      "passed": true
+    },
+    {
+      "check": "canonical_source_commit_pinned[RM014-seed2.json]",
+      "passed": true
+    },
+    {
+      "check": "natten_source_commit_pinned[RM014-seed2.json]",
+      "passed": true
+    },
+    {
+      "check": "checkpoint_sha256_pinned[RM014-seed2.json]",
+      "passed": true
+    },
+    {
+      "check": "seed_matches_filename[RM014-seed2.json]",
+      "passed": true
+    },
+    {
+      "check": "private_paths_not_emitted[RM014-seed3.json]",
+      "passed": true
+    },
+    {
+      "check": "source_filenames_not_emitted[RM014-seed3.json]",
+      "passed": true
+    },
+    {
+      "check": "canonical_source_commit_pinned[RM014-seed3.json]",
+      "passed": true
+    },
+    {
+      "check": "natten_source_commit_pinned[RM014-seed3.json]",
+      "passed": true
+    },
+    {
+      "check": "checkpoint_sha256_pinned[RM014-seed3.json]",
+      "passed": true
+    },
+    {
+      "check": "seed_matches_filename[RM014-seed3.json]",
+      "passed": true
+    },
+    {
+      "check": "private_paths_not_emitted[RM014-seed4.json]",
+      "passed": true
+    },
+    {
+      "check": "source_filenames_not_emitted[RM014-seed4.json]",
+      "passed": true
+    },
+    {
+      "check": "canonical_source_commit_pinned[RM014-seed4.json]",
+      "passed": true
+    },
+    {
+      "check": "natten_source_commit_pinned[RM014-seed4.json]",
+      "passed": true
+    },
+    {
+      "check": "checkpoint_sha256_pinned[RM014-seed4.json]",
+      "passed": true
+    },
+    {
+      "check": "seed_matches_filename[RM014-seed4.json]",
+      "passed": true
+    },
+    {
+      "check": "private_paths_not_emitted[RM041-seed0.json]",
+      "passed": true
+    },
+    {
+      "check": "source_filenames_not_emitted[RM041-seed0.json]",
+      "passed": true
+    },
+    {
+      "check": "canonical_source_commit_pinned[RM041-seed0.json]",
+      "passed": true
+    },
+    {
+      "check": "natten_source_commit_pinned[RM041-seed0.json]",
+      "passed": true
+    },
+    {
+      "check": "checkpoint_sha256_pinned[RM041-seed0.json]",
+      "passed": true
+    },
+    {
+      "check": "seed_matches_filename[RM041-seed0.json]",
+      "passed": true
+    },
+    {
+      "check": "private_paths_not_emitted[RM041-seed1.json]",
+      "passed": true
+    },
+    {
+      "check": "source_filenames_not_emitted[RM041-seed1.json]",
+      "passed": true
+    },
+    {
+      "check": "canonical_source_commit_pinned[RM041-seed1.json]",
+      "passed": true
+    },
+    {
+      "check": "natten_source_commit_pinned[RM041-seed1.json]",
+      "passed": true
+    },
+    {
+      "check": "checkpoint_sha256_pinned[RM041-seed1.json]",
+      "passed": true
+    },
+    {
+      "check": "seed_matches_filename[RM041-seed1.json]",
+      "passed": true
+    },
+    {
+      "check": "private_paths_not_emitted[RM041-seed2.json]",
+      "passed": true
+    },
+    {
+      "check": "source_filenames_not_emitted[RM041-seed2.json]",
+      "passed": true
+    },
+    {
+      "check": "canonical_source_commit_pinned[RM041-seed2.json]",
+      "passed": true
+    },
+    {
+      "check": "natten_source_commit_pinned[RM041-seed2.json]",
+      "passed": true
+    },
+    {
+      "check": "checkpoint_sha256_pinned[RM041-seed2.json]",
+      "passed": true
+    },
+    {
+      "check": "seed_matches_filename[RM041-seed2.json]",
+      "passed": true
+    },
+    {
+      "check": "private_paths_not_emitted[RM041-seed3.json]",
+      "passed": true
+    },
+    {
+      "check": "source_filenames_not_emitted[RM041-seed3.json]",
+      "passed": true
+    },
+    {
+      "check": "canonical_source_commit_pinned[RM041-seed3.json]",
+      "passed": true
+    },
+    {
+      "check": "natten_source_commit_pinned[RM041-seed3.json]",
+      "passed": true
+    },
+    {
+      "check": "checkpoint_sha256_pinned[RM041-seed3.json]",
+      "passed": true
+    },
+    {
+      "check": "seed_matches_filename[RM041-seed3.json]",
+      "passed": true
+    },
+    {
+      "check": "private_paths_not_emitted[RM041-seed4.json]",
+      "passed": true
+    },
+    {
+      "check": "source_filenames_not_emitted[RM041-seed4.json]",
+      "passed": true
+    },
+    {
+      "check": "canonical_source_commit_pinned[RM041-seed4.json]",
+      "passed": true
+    },
+    {
+      "check": "natten_source_commit_pinned[RM041-seed4.json]",
+      "passed": true
+    },
+    {
+      "check": "checkpoint_sha256_pinned[RM041-seed4.json]",
+      "passed": true
+    },
+    {
+      "check": "seed_matches_filename[RM041-seed4.json]",
+      "passed": true
+    },
+    {
+      "check": "all_10_runs_pass",
+      "passed": true
+    },
+    {
+      "check": "rm041_all_5_seeds_present_no_cherry_pick",
+      "passed": true
+    },
+    {
+      "check": "rm014_all_5_seeds_present_no_cherry_pick",
+      "passed": true
+    },
+    {
+      "check": "RM014.beat_grid_cross_seed.has_median_p90_max",
+      "passed": true
+    },
+    {
+      "check": "RM014.beat_grid_cross_seed.has_coverage_25_50_100",
+      "passed": true
+    },
+    {
+      "check": "RM014.downbeat_grid_cross_seed.has_median_p90_max",
+      "passed": true
+    },
+    {
+      "check": "RM014.downbeat_grid_cross_seed.has_coverage_25_50_100",
+      "passed": true
+    },
+    {
+      "check": "RM014.boundary_target_matches_accepted",
+      "passed": true
+    },
+    {
+      "check": "RM014.boundary_uses_bidirectional_madmom_comparison",
+      "passed": true
+    },
+    {
+      "check": "RM014.boundary_has_5_seed_entries",
+      "passed": true
+    },
+    {
+      "check": "RM041.beat_grid_cross_seed.has_median_p90_max",
+      "passed": true
+    },
+    {
+      "check": "RM041.beat_grid_cross_seed.has_coverage_25_50_100",
+      "passed": true
+    },
+    {
+      "check": "RM041.downbeat_grid_cross_seed.has_median_p90_max",
+      "passed": true
+    },
+    {
+      "check": "RM041.downbeat_grid_cross_seed.has_coverage_25_50_100",
+      "passed": true
+    },
+    {
+      "check": "RM041.boundary_target_matches_accepted",
+      "passed": true
+    },
+    {
+      "check": "RM041.boundary_uses_bidirectional_madmom_comparison",
+      "passed": true
+    },
+    {
+      "check": "RM041.boundary_has_5_seed_entries",
+      "passed": true
+    },
+    {
+      "check": "RM014.structure.has_5_seed_entries",
+      "passed": true
+    },
+    {
+      "check": "RM014.structure.labels_from_actual_output",
+      "passed": true
+    },
+    {
+      "check": "RM014.structure.no_phrase_claimed",
+      "passed": true
+    },
+    {
+      "check": "RM014.structure.has_consensus_fraction",
+      "passed": true
+    },
+    {
+      "check": "RM014.structure.has_boundary_displacement_median_p90_max",
+      "passed": true
+    },
+    {
+      "check": "RM041.structure.has_5_seed_entries",
+      "passed": true
+    },
+    {
+      "check": "RM041.structure.labels_from_actual_output",
+      "passed": true
+    },
+    {
+      "check": "RM041.structure.no_phrase_claimed",
+      "passed": true
+    },
+    {
+      "check": "RM041.structure.has_consensus_fraction",
+      "passed": true
+    },
+    {
+      "check": "RM041.structure.has_boundary_displacement_median_p90_max",
+      "passed": true
+    },
+    {
+      "check": "harmonic.window_lengths_match_declared",
+      "passed": true
+    },
+    {
+      "check": "harmonic.perturbations_match_declared",
+      "passed": true
+    },
+    {
+      "check": "harmonic.accepted_boundaries_preserved",
+      "passed": true
+    },
+    {
+      "check": "harmonic.exit_cells_count_matches_grid",
+      "passed": true
+    },
+    {
+      "check": "harmonic.entry_cells_count_matches_grid",
+      "passed": true
+    },
+    {
+      "check": "harmonic.uses_unmodified_harmonic_relationship_semantics",
+      "passed": true
+    },
+    {
+      "check": "counterfactual.scope_is_rm041_rm014_only",
+      "passed": true
+    },
+    {
+      "check": "counterfactual.case0_reproduces_accepted_reason_codes",
+      "passed": true
+    },
+    {
+      "check": "counterfactual.has_4_cases",
+      "passed": true
+    },
+    {
+      "check": "counterfactual.no_case_declares_render_candidate",
+      "passed": true
+    },
+    {
+      "check": "counterfactual.downbeat_never_assumed_resolved",
+      "passed": true
+    },
+    {
+      "check": "no_wav_files_under_pair_stability",
+      "passed": true
+    },
+    {
+      "check": "no_signalsmith_reference[analyze_downbeat_consensus.py]",
+      "passed": true
+    },
+    {
+      "check": "no_rubberband_reference[analyze_downbeat_consensus.py]",
+      "passed": true
+    },
+    {
+      "check": "no_signalsmith_reference[analyze_harmonic_sensitivity.py]",
+      "passed": true
+    },
+    {
+      "check": "no_rubberband_reference[analyze_harmonic_sensitivity.py]",
+      "passed": true
+    },
+    {
+      "check": "no_signalsmith_reference[analyze_structure_consensus.py]",
+      "passed": true
+    },
+    {
+      "check": "no_rubberband_reference[analyze_structure_consensus.py]",
+      "passed": true
+    },
+    {
+      "check": "no_signalsmith_reference[build_counterfactual_matrix.py]",
+      "passed": true
+    },
+    {
+      "check": "no_rubberband_reference[build_counterfactual_matrix.py]",
+      "passed": true
+    },
+    {
+      "check": "no_signalsmith_reference[run_cross_seed_stability.py]",
+      "passed": true
+    },
+    {
+      "check": "no_rubberband_reference[run_cross_seed_stability.py]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[cross_seed_metrics.json][[A-Za-z]:\\\\\\\\?[Uu]sers]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[cross_seed_metrics.json][owner_music_input]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[cross_seed_metrics.json][/mnt/[a-z]/]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[cross_seed_metrics.json][\\.mp3]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[cross_seed_metrics.json][\\.wav]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[cross_seed_metrics.json][\\.flac]",
+      "passed": true
+    },
+    {
+      "check": "only_allowed_rm_ids[cross_seed_metrics.json]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[structure_consensus.json][[A-Za-z]:\\\\\\\\?[Uu]sers]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[structure_consensus.json][owner_music_input]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[structure_consensus.json][/mnt/[a-z]/]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[structure_consensus.json][\\.mp3]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[structure_consensus.json][\\.wav]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[structure_consensus.json][\\.flac]",
+      "passed": true
+    },
+    {
+      "check": "only_allowed_rm_ids[structure_consensus.json]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[harmonic_sensitivity.json][[A-Za-z]:\\\\\\\\?[Uu]sers]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[harmonic_sensitivity.json][owner_music_input]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[harmonic_sensitivity.json][/mnt/[a-z]/]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[harmonic_sensitivity.json][\\.mp3]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[harmonic_sensitivity.json][\\.wav]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[harmonic_sensitivity.json][\\.flac]",
+      "passed": true
+    },
+    {
+      "check": "only_allowed_rm_ids[harmonic_sensitivity.json]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[counterfactual_matrix.json][[A-Za-z]:\\\\\\\\?[Uu]sers]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[counterfactual_matrix.json][owner_music_input]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[counterfactual_matrix.json][/mnt/[a-z]/]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[counterfactual_matrix.json][\\.mp3]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[counterfactual_matrix.json][\\.wav]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[counterfactual_matrix.json][\\.flac]",
+      "passed": true
+    },
+    {
+      "check": "only_allowed_rm_ids[counterfactual_matrix.json]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM014-seed0.json][[A-Za-z]:\\\\\\\\?[Uu]sers]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM014-seed0.json][owner_music_input]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM014-seed0.json][/mnt/[a-z]/]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM014-seed0.json][\\.mp3]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM014-seed0.json][\\.wav]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM014-seed0.json][\\.flac]",
+      "passed": true
+    },
+    {
+      "check": "only_allowed_rm_ids[RM014-seed0.json]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM014-seed1.json][[A-Za-z]:\\\\\\\\?[Uu]sers]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM014-seed1.json][owner_music_input]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM014-seed1.json][/mnt/[a-z]/]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM014-seed1.json][\\.mp3]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM014-seed1.json][\\.wav]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM014-seed1.json][\\.flac]",
+      "passed": true
+    },
+    {
+      "check": "only_allowed_rm_ids[RM014-seed1.json]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM014-seed2.json][[A-Za-z]:\\\\\\\\?[Uu]sers]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM014-seed2.json][owner_music_input]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM014-seed2.json][/mnt/[a-z]/]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM014-seed2.json][\\.mp3]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM014-seed2.json][\\.wav]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM014-seed2.json][\\.flac]",
+      "passed": true
+    },
+    {
+      "check": "only_allowed_rm_ids[RM014-seed2.json]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM014-seed3.json][[A-Za-z]:\\\\\\\\?[Uu]sers]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM014-seed3.json][owner_music_input]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM014-seed3.json][/mnt/[a-z]/]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM014-seed3.json][\\.mp3]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM014-seed3.json][\\.wav]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM014-seed3.json][\\.flac]",
+      "passed": true
+    },
+    {
+      "check": "only_allowed_rm_ids[RM014-seed3.json]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM014-seed4.json][[A-Za-z]:\\\\\\\\?[Uu]sers]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM014-seed4.json][owner_music_input]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM014-seed4.json][/mnt/[a-z]/]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM014-seed4.json][\\.mp3]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM014-seed4.json][\\.wav]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM014-seed4.json][\\.flac]",
+      "passed": true
+    },
+    {
+      "check": "only_allowed_rm_ids[RM014-seed4.json]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM041-seed0.json][[A-Za-z]:\\\\\\\\?[Uu]sers]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM041-seed0.json][owner_music_input]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM041-seed0.json][/mnt/[a-z]/]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM041-seed0.json][\\.mp3]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM041-seed0.json][\\.wav]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM041-seed0.json][\\.flac]",
+      "passed": true
+    },
+    {
+      "check": "only_allowed_rm_ids[RM041-seed0.json]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM041-seed1.json][[A-Za-z]:\\\\\\\\?[Uu]sers]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM041-seed1.json][owner_music_input]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM041-seed1.json][/mnt/[a-z]/]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM041-seed1.json][\\.mp3]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM041-seed1.json][\\.wav]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM041-seed1.json][\\.flac]",
+      "passed": true
+    },
+    {
+      "check": "only_allowed_rm_ids[RM041-seed1.json]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM041-seed2.json][[A-Za-z]:\\\\\\\\?[Uu]sers]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM041-seed2.json][owner_music_input]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM041-seed2.json][/mnt/[a-z]/]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM041-seed2.json][\\.mp3]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM041-seed2.json][\\.wav]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM041-seed2.json][\\.flac]",
+      "passed": true
+    },
+    {
+      "check": "only_allowed_rm_ids[RM041-seed2.json]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM041-seed3.json][[A-Za-z]:\\\\\\\\?[Uu]sers]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM041-seed3.json][owner_music_input]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM041-seed3.json][/mnt/[a-z]/]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM041-seed3.json][\\.mp3]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM041-seed3.json][\\.wav]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM041-seed3.json][\\.flac]",
+      "passed": true
+    },
+    {
+      "check": "only_allowed_rm_ids[RM041-seed3.json]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM041-seed4.json][[A-Za-z]:\\\\\\\\?[Uu]sers]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM041-seed4.json][owner_music_input]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM041-seed4.json][/mnt/[a-z]/]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM041-seed4.json][\\.mp3]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM041-seed4.json][\\.wav]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[RM041-seed4.json][\\.flac]",
+      "passed": true
+    },
+    {
+      "check": "only_allowed_rm_ids[RM041-seed4.json]",
+      "passed": true
+    }
+  ]
+}

@@ -1,0 +1,183 @@
+{
+  "schema_version": 1,
+  "scope": "RM041 -> RM014 ONLY",
+  "note": "COUNTERFACTUAL DIAGNOSTIC ONLY. Does not mutate canonical evidence, compatibility.py, or select_real_music_pairs.py. Does not declare a render candidate. downbeat is never assumed resolved in any case (BeatNet ownership unchanged, no gate mutation).",
+  "case0_reproduces_accepted_reason_codes_exactly": true,
+  "cases": [
+    {
+      "case_id": "CASE_0_CURRENT_ACCEPTED_EVIDENCE",
+      "description": "Current accepted evidence, unchanged.",
+      "harmonic_assumed_defensibly_high": false,
+      "structure_assumed_defensibly_high": false,
+      "pair_compatibility": {
+        "genre_compatibility": "COMPATIBLE",
+        "tempo_compatibility": "DIRECT",
+        "required_tempo_stretch_pct": 0.019,
+        "required_tempo_ratio": 0.981,
+        "tempo_requires_playback_rate_change": true,
+        "beat_compatibility": "SUFFICIENT",
+        "downbeat_compatibility": "INSUFFICIENT",
+        "harmonic_compatibility": "UNKNOWN",
+        "harmonic_exception_applied": false,
+        "energy_continuity": "STRONG",
+        "structure_compatibility": "UNKNOWN",
+        "vocal_collision_risk": "LOW",
+        "bass_percussion_collision_risk": "LOW",
+        "intro_outro_texture_compatibility": "COMPATIBLE",
+        "analysis_confidence": "LOW",
+        "overall_dynamic_mix_eligible": false,
+        "reason_codes": [
+          "GENRE_COMPATIBLE_SAME_FAMILY",
+          "TEMPO_DIRECT_COMPATIBLE",
+          "BEAT_CONFIDENCE_SUFFICIENT",
+          "DOWNBEAT_CONFIDENCE_INSUFFICIENT",
+          "HARMONIC_UNKNOWN",
+          "HARMONIC_UNKNOWN_DOWNGRADED",
+          "ENERGY_CONTINUITY_STRONG",
+          "STRUCTURE_UNKNOWN",
+          "STRUCTURE_COMPATIBILITY_REQUIRED_FOR_FULL_DJ",
+          "VOCAL_COLLISION_RISK_ACCEPTABLE",
+          "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+          "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+          "ANALYSIS_CONFIDENCE_LOW_PAIR"
+        ]
+      },
+      "remaining_hard_gates": [
+        "downbeat",
+        "structure",
+        "analysis_confidence",
+        "harmonic"
+      ],
+      "strict_full_dj_eligible_if_legitimately_resolved": false
+    },
+    {
+      "case_id": "CASE_1_ONLY_HARMONIC_HIGH",
+      "description": "Only harmonic becomes defensibly HIGH (hypothetical).",
+      "harmonic_assumed_defensibly_high": true,
+      "structure_assumed_defensibly_high": false,
+      "pair_compatibility": {
+        "genre_compatibility": "COMPATIBLE",
+        "tempo_compatibility": "DIRECT",
+        "required_tempo_stretch_pct": 0.019,
+        "required_tempo_ratio": 0.981,
+        "tempo_requires_playback_rate_change": true,
+        "beat_compatibility": "SUFFICIENT",
+        "downbeat_compatibility": "INSUFFICIENT",
+        "harmonic_compatibility": "COMPATIBLE",
+        "harmonic_exception_applied": false,
+        "energy_continuity": "STRONG",
+        "structure_compatibility": "UNKNOWN",
+        "vocal_collision_risk": "LOW",
+        "bass_percussion_collision_risk": "LOW",
+        "intro_outro_texture_compatibility": "COMPATIBLE",
+        "analysis_confidence": "LOW",
+        "overall_dynamic_mix_eligible": false,
+        "reason_codes": [
+          "GENRE_COMPATIBLE_SAME_FAMILY",
+          "TEMPO_DIRECT_COMPATIBLE",
+          "BEAT_CONFIDENCE_SUFFICIENT",
+          "DOWNBEAT_CONFIDENCE_INSUFFICIENT",
+          "HARMONIC_COMPATIBLE",
+          "ENERGY_CONTINUITY_STRONG",
+          "STRUCTURE_UNKNOWN",
+          "STRUCTURE_COMPATIBILITY_REQUIRED_FOR_FULL_DJ",
+          "VOCAL_COLLISION_RISK_ACCEPTABLE",
+          "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+          "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+          "ANALYSIS_CONFIDENCE_LOW_PAIR"
+        ]
+      },
+      "remaining_hard_gates": [
+        "downbeat",
+        "structure",
+        "analysis_confidence"
+      ],
+      "strict_full_dj_eligible_if_legitimately_resolved": false
+    },
+    {
+      "case_id": "CASE_2_ONLY_STRUCTURE_HIGH",
+      "description": "Only structure becomes defensibly HIGH (hypothetical).",
+      "harmonic_assumed_defensibly_high": false,
+      "structure_assumed_defensibly_high": true,
+      "pair_compatibility": {
+        "genre_compatibility": "COMPATIBLE",
+        "tempo_compatibility": "DIRECT",
+        "required_tempo_stretch_pct": 0.019,
+        "required_tempo_ratio": 0.981,
+        "tempo_requires_playback_rate_change": true,
+        "beat_compatibility": "SUFFICIENT",
+        "downbeat_compatibility": "INSUFFICIENT",
+        "harmonic_compatibility": "UNKNOWN",
+        "harmonic_exception_applied": false,
+        "energy_continuity": "STRONG",
+        "structure_compatibility": "COMPATIBLE",
+        "vocal_collision_risk": "LOW",
+        "bass_percussion_collision_risk": "LOW",
+        "intro_outro_texture_compatibility": "COMPATIBLE",
+        "analysis_confidence": "LOW",
+        "overall_dynamic_mix_eligible": false,
+        "reason_codes": [
+          "GENRE_COMPATIBLE_SAME_FAMILY",
+          "TEMPO_DIRECT_COMPATIBLE",
+          "BEAT_CONFIDENCE_SUFFICIENT",
+          "DOWNBEAT_CONFIDENCE_INSUFFICIENT",
+          "HARMONIC_UNKNOWN",
+          "HARMONIC_UNKNOWN_DOWNGRADED",
+          "ENERGY_CONTINUITY_STRONG",
+          "STRUCTURE_COMPATIBLE",
+          "VOCAL_COLLISION_RISK_ACCEPTABLE",
+          "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+          "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+          "ANALYSIS_CONFIDENCE_LOW_PAIR"
+        ]
+      },
+      "remaining_hard_gates": [
+        "downbeat",
+        "analysis_confidence",
+        "harmonic"
+      ],
+      "strict_full_dj_eligible_if_legitimately_resolved": false
+    },
+    {
+      "case_id": "CASE_3_HARMONIC_AND_STRUCTURE_HIGH",
+      "description": "Harmonic AND structure both become defensibly HIGH (hypothetical).",
+      "harmonic_assumed_defensibly_high": true,
+      "structure_assumed_defensibly_high": true,
+      "pair_compatibility": {
+        "genre_compatibility": "COMPATIBLE",
+        "tempo_compatibility": "DIRECT",
+        "required_tempo_stretch_pct": 0.019,
+        "required_tempo_ratio": 0.981,
+        "tempo_requires_playback_rate_change": true,
+        "beat_compatibility": "SUFFICIENT",
+        "downbeat_compatibility": "INSUFFICIENT",
+        "harmonic_compatibility": "COMPATIBLE",
+        "harmonic_exception_applied": false,
+        "energy_continuity": "STRONG",
+        "structure_compatibility": "COMPATIBLE",
+        "vocal_collision_risk": "LOW",
+        "bass_percussion_collision_risk": "LOW",
+        "intro_outro_texture_compatibility": "COMPATIBLE",
+        "analysis_confidence": "HIGH",
+        "overall_dynamic_mix_eligible": false,
+        "reason_codes": [
+          "GENRE_COMPATIBLE_SAME_FAMILY",
+          "TEMPO_DIRECT_COMPATIBLE",
+          "BEAT_CONFIDENCE_SUFFICIENT",
+          "DOWNBEAT_CONFIDENCE_INSUFFICIENT",
+          "HARMONIC_COMPATIBLE",
+          "ENERGY_CONTINUITY_STRONG",
+          "STRUCTURE_COMPATIBLE",
+          "VOCAL_COLLISION_RISK_ACCEPTABLE",
+          "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+          "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+          "ANALYSIS_CONFIDENCE_SUFFICIENT"
+        ]
+      },
+      "remaining_hard_gates": [
+        "downbeat"
+      ],
+      "strict_full_dj_eligible_if_legitimately_resolved": false
+    }
+  ]
+}

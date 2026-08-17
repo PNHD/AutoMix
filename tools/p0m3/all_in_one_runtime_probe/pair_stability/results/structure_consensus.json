@@ -1,0 +1,227 @@
+{
+  "schema_version": 1,
+  "scope": "RM041, RM014 ONLY",
+  "seeds_used": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "tracks": {
+    "RM041": {
+      "role": "outgoing_exit",
+      "target_ms": 186456.2,
+      "per_seed": {
+        "0": {
+          "segment_index": 10,
+          "functional_label": "chorus",
+          "segment_start_ms": 171290.0,
+          "segment_end_ms": 191250.0,
+          "previous_label": "inst",
+          "next_label": "end",
+          "nearest_functional_section_boundary": {
+            "nearest_ms": 191250.0,
+            "signed_distance_ms": 4793.8,
+            "abs_distance_ms": 4793.8
+          },
+          "distance_beats": 8.265,
+          "distance_bars": 2.066,
+          "meter_used": 4,
+          "functional_label_from_actual_output": true,
+          "phrase_claimed": false
+        },
+        "1": {
+          "segment_index": 10,
+          "functional_label": "chorus",
+          "segment_start_ms": 171290.0,
+          "segment_end_ms": 191250.0,
+          "previous_label": "inst",
+          "next_label": "end",
+          "nearest_functional_section_boundary": {
+            "nearest_ms": 191250.0,
+            "signed_distance_ms": 4793.8,
+            "abs_distance_ms": 4793.8
+          },
+          "distance_beats": 8.265,
+          "distance_bars": 2.066,
+          "meter_used": 4,
+          "functional_label_from_actual_output": true,
+          "phrase_claimed": false
+        },
+        "2": {
+          "segment_index": 10,
+          "functional_label": "chorus",
+          "segment_start_ms": 171290.0,
+          "segment_end_ms": 191250.0,
+          "previous_label": "chorus",
+          "next_label": "end",
+          "nearest_functional_section_boundary": {
+            "nearest_ms": 191250.0,
+            "signed_distance_ms": 4793.8,
+            "abs_distance_ms": 4793.8
+          },
+          "distance_beats": 8.265,
+          "distance_bars": 2.066,
+          "meter_used": 4,
+          "functional_label_from_actual_output": true,
+          "phrase_claimed": false
+        },
+        "3": {
+          "segment_index": 10,
+          "functional_label": "chorus",
+          "segment_start_ms": 171290.0,
+          "segment_end_ms": 191250.0,
+          "previous_label": "inst",
+          "next_label": "end",
+          "nearest_functional_section_boundary": {
+            "nearest_ms": 191250.0,
+            "signed_distance_ms": 4793.8,
+            "abs_distance_ms": 4793.8
+          },
+          "distance_beats": 8.265,
+          "distance_bars": 2.066,
+          "meter_used": 4,
+          "functional_label_from_actual_output": true,
+          "phrase_claimed": false
+        },
+        "4": {
+          "segment_index": 10,
+          "functional_label": "chorus",
+          "segment_start_ms": 171290.0,
+          "segment_end_ms": 191250.0,
+          "previous_label": "inst",
+          "next_label": "end",
+          "nearest_functional_section_boundary": {
+            "nearest_ms": 191250.0,
+            "signed_distance_ms": 4793.8,
+            "abs_distance_ms": 4793.8
+          },
+          "distance_beats": 8.265,
+          "distance_bars": 2.066,
+          "meter_used": 4,
+          "functional_label_from_actual_output": true,
+          "phrase_claimed": false
+        }
+      },
+      "label_counts": {
+        "chorus": 5
+      },
+      "label_consensus_fraction": 1.0,
+      "modal_label": "chorus",
+      "boundary_displacement_ms": {
+        "median": 4793.8,
+        "p90": 4793.8,
+        "max": 4793.8
+      },
+      "same_functional_role_across_all_seeds": true
+    },
+    "RM014": {
+      "role": "incoming_entry",
+      "target_ms": 0.0,
+      "per_seed": {
+        "0": {
+          "segment_index": 0,
+          "functional_label": "intro",
+          "segment_start_ms": 0.0,
+          "segment_end_ms": 10.0,
+          "previous_label": null,
+          "next_label": "intro",
+          "nearest_functional_section_boundary": {
+            "nearest_ms": 0.0,
+            "signed_distance_ms": 0.0,
+            "abs_distance_ms": 0.0
+          },
+          "distance_beats": 0.0,
+          "distance_bars": 0.0,
+          "meter_used": 4,
+          "functional_label_from_actual_output": true,
+          "phrase_claimed": false
+        },
+        "1": {
+          "segment_index": 0,
+          "functional_label": "intro",
+          "segment_start_ms": 0.0,
+          "segment_end_ms": 10.0,
+          "previous_label": null,
+          "next_label": "intro",
+          "nearest_functional_section_boundary": {
+            "nearest_ms": 0.0,
+            "signed_distance_ms": 0.0,
+            "abs_distance_ms": 0.0
+          },
+          "distance_beats": 0.0,
+          "distance_bars": 0.0,
+          "meter_used": 4,
+          "functional_label_from_actual_output": true,
+          "phrase_claimed": false
+        },
+        "2": {
+          "segment_index": 0,
+          "functional_label": "intro",
+          "segment_start_ms": 0.0,
+          "segment_end_ms": 20.0,
+          "previous_label": null,
+          "next_label": "intro",
+          "nearest_functional_section_boundary": {
+            "nearest_ms": 0.0,
+            "signed_distance_ms": 0.0,
+            "abs_distance_ms": 0.0
+          },
+          "distance_beats": 0.0,
+          "distance_bars": 0.0,
+          "meter_used": 4,
+          "functional_label_from_actual_output": true,
+          "phrase_claimed": false
+        },
+        "3": {
+          "segment_index": 0,
+          "functional_label": "intro",
+          "segment_start_ms": 0.0,
+          "segment_end_ms": 10.0,
+          "previous_label": null,
+          "next_label": "intro",
+          "nearest_functional_section_boundary": {
+            "nearest_ms": 0.0,
+            "signed_distance_ms": 0.0,
+            "abs_distance_ms": 0.0
+          },
+          "distance_beats": 0.0,
+          "distance_bars": 0.0,
+          "meter_used": 4,
+          "functional_label_from_actual_output": true,
+          "phrase_claimed": false
+        },
+        "4": {
+          "segment_index": 0,
+          "functional_label": "intro",
+          "segment_start_ms": 0.0,
+          "segment_end_ms": 10.0,
+          "previous_label": null,
+          "next_label": "intro",
+          "nearest_functional_section_boundary": {
+            "nearest_ms": 0.0,
+            "signed_distance_ms": 0.0,
+            "abs_distance_ms": 0.0
+          },
+          "distance_beats": 0.0,
+          "distance_bars": 0.0,
+          "meter_used": 4,
+          "functional_label_from_actual_output": true,
+          "phrase_claimed": false
+        }
+      },
+      "label_counts": {
+        "intro": 5
+      },
+      "label_consensus_fraction": 1.0,
+      "modal_label": "intro",
+      "boundary_displacement_ms": {
+        "median": 0.0,
+        "p90": 0.0,
+        "max": 0.0
+      },
+      "same_functional_role_across_all_seeds": true
+    }
+  }
+}

@@ -1,0 +1,669 @@
+{
+  "schema_version": 1,
+  "scope": "RM041 exit -> RM014 entry ONLY",
+  "methodology_source": "wsl_bounded_audio_oracles.py::cqt_key_at/_profile_key (unmodified methodology, reimplemented here to sweep window/perturbation instead of a single fixed window)",
+  "pair_relation_function_source": "select_real_music_pairs.harmonic_relationship (imported unmodified)",
+  "accepted_boundaries_ms": {
+    "rm041_exit": 186456.2,
+    "rm014_entry": 0.0
+  },
+  "window_lengths_s_tested": [
+    10.0,
+    15.0,
+    20.0,
+    30.0
+  ],
+  "boundary_perturbations_ms_tested": [
+    -1000,
+    -500,
+    0,
+    500,
+    1000
+  ],
+  "rm041_exit_cells": [
+    {
+      "role": "exit",
+      "window_length_s": 10.0,
+      "boundary_perturbation_ms": -1000,
+      "status": "MEASURED",
+      "window_start_ms": 175456.2,
+      "window_end_ms": 185456.2,
+      "root": "D",
+      "mode": "minor",
+      "top_score": 0.648151,
+      "second_score": 0.607469,
+      "margin": 0.040682,
+      "confidence": "MEDIUM"
+    },
+    {
+      "role": "exit",
+      "window_length_s": 10.0,
+      "boundary_perturbation_ms": -500,
+      "status": "MEASURED",
+      "window_start_ms": 175956.2,
+      "window_end_ms": 185956.2,
+      "root": "D",
+      "mode": "minor",
+      "top_score": 0.65217,
+      "second_score": 0.609349,
+      "margin": 0.042821,
+      "confidence": "MEDIUM"
+    },
+    {
+      "role": "exit",
+      "window_length_s": 10.0,
+      "boundary_perturbation_ms": 0,
+      "status": "MEASURED",
+      "window_start_ms": 176456.2,
+      "window_end_ms": 186456.2,
+      "root": "D",
+      "mode": "minor",
+      "top_score": 0.646518,
+      "second_score": 0.598307,
+      "margin": 0.048212,
+      "confidence": "MEDIUM"
+    },
+    {
+      "role": "exit",
+      "window_length_s": 10.0,
+      "boundary_perturbation_ms": 500,
+      "status": "MEASURED",
+      "window_start_ms": 176956.2,
+      "window_end_ms": 186956.2,
+      "root": "D",
+      "mode": "minor",
+      "top_score": 0.662198,
+      "second_score": 0.611871,
+      "margin": 0.050327,
+      "confidence": "MEDIUM"
+    },
+    {
+      "role": "exit",
+      "window_length_s": 10.0,
+      "boundary_perturbation_ms": 1000,
+      "status": "MEASURED",
+      "window_start_ms": 177456.2,
+      "window_end_ms": 187456.2,
+      "root": "D",
+      "mode": "minor",
+      "top_score": 0.673033,
+      "second_score": 0.617016,
+      "margin": 0.056017,
+      "confidence": "MEDIUM"
+    },
+    {
+      "role": "exit",
+      "window_length_s": 15.0,
+      "boundary_perturbation_ms": -1000,
+      "status": "MEASURED",
+      "window_start_ms": 170456.2,
+      "window_end_ms": 185456.2,
+      "root": "D",
+      "mode": "minor",
+      "top_score": 0.625397,
+      "second_score": 0.567758,
+      "margin": 0.05764,
+      "confidence": "MEDIUM"
+    },
+    {
+      "role": "exit",
+      "window_length_s": 15.0,
+      "boundary_perturbation_ms": -500,
+      "status": "MEASURED",
+      "window_start_ms": 170956.2,
+      "window_end_ms": 185956.2,
+      "root": "D",
+      "mode": "minor",
+      "top_score": 0.629648,
+      "second_score": 0.582891,
+      "margin": 0.046757,
+      "confidence": "MEDIUM"
+    },
+    {
+      "role": "exit",
+      "window_length_s": 15.0,
+      "boundary_perturbation_ms": 0,
+      "status": "MEASURED",
+      "window_start_ms": 171456.2,
+      "window_end_ms": 186456.2,
+      "root": "D",
+      "mode": "minor",
+      "top_score": 0.629525,
+      "second_score": 0.587439,
+      "margin": 0.042085,
+      "confidence": "MEDIUM"
+    },
+    {
+      "role": "exit",
+      "window_length_s": 15.0,
+      "boundary_perturbation_ms": 500,
+      "status": "MEASURED",
+      "window_start_ms": 171956.2,
+      "window_end_ms": 186956.2,
+      "root": "D",
+      "mode": "minor",
+      "top_score": 0.636828,
+      "second_score": 0.596959,
+      "margin": 0.039869,
+      "confidence": "LOW"
+    },
+    {
+      "role": "exit",
+      "window_length_s": 15.0,
+      "boundary_perturbation_ms": 1000,
+      "status": "MEASURED",
+      "window_start_ms": 172456.2,
+      "window_end_ms": 187456.2,
+      "root": "D",
+      "mode": "minor",
+      "top_score": 0.650764,
+      "second_score": 0.607355,
+      "margin": 0.043409,
+      "confidence": "MEDIUM"
+    },
+    {
+      "role": "exit",
+      "window_length_s": 20.0,
+      "boundary_perturbation_ms": -1000,
+      "status": "MEASURED",
+      "window_start_ms": 165456.2,
+      "window_end_ms": 185456.2,
+      "root": "D",
+      "mode": "minor",
+      "top_score": 0.571109,
+      "second_score": 0.452165,
+      "margin": 0.118945,
+      "confidence": "HIGH"
+    },
+    {
+      "role": "exit",
+      "window_length_s": 20.0,
+      "boundary_perturbation_ms": -500,
+      "status": "MEASURED",
+      "window_start_ms": 165956.2,
+      "window_end_ms": 185956.2,
+      "root": "D",
+      "mode": "minor",
+      "top_score": 0.583583,
+      "second_score": 0.471496,
+      "margin": 0.112088,
+      "confidence": "HIGH"
+    },
+    {
+      "role": "exit",
+      "window_length_s": 20.0,
+      "boundary_perturbation_ms": 0,
+      "status": "MEASURED",
+      "window_start_ms": 166456.2,
+      "window_end_ms": 186456.2,
+      "root": "D",
+      "mode": "minor",
+      "top_score": 0.583866,
+      "second_score": 0.473659,
+      "margin": 0.110208,
+      "confidence": "HIGH"
+    },
+    {
+      "role": "exit",
+      "window_length_s": 20.0,
+      "boundary_perturbation_ms": 500,
+      "status": "MEASURED",
+      "window_start_ms": 166956.2,
+      "window_end_ms": 186956.2,
+      "root": "D",
+      "mode": "minor",
+      "top_score": 0.606628,
+      "second_score": 0.494109,
+      "margin": 0.112519,
+      "confidence": "HIGH"
+    },
+    {
+      "role": "exit",
+      "window_length_s": 20.0,
+      "boundary_perturbation_ms": 1000,
+      "status": "MEASURED",
+      "window_start_ms": 167456.2,
+      "window_end_ms": 187456.2,
+      "root": "D",
+      "mode": "minor",
+      "top_score": 0.614795,
+      "second_score": 0.509785,
+      "margin": 0.10501,
+      "confidence": "HIGH"
+    },
+    {
+      "role": "exit",
+      "window_length_s": 30.0,
+      "boundary_perturbation_ms": -1000,
+      "status": "MEASURED",
+      "window_start_ms": 155456.2,
+      "window_end_ms": 185456.2,
+      "root": "D",
+      "mode": "minor",
+      "top_score": 0.529626,
+      "second_score": 0.324054,
+      "margin": 0.205571,
+      "confidence": "HIGH"
+    },
+    {
+      "role": "exit",
+      "window_length_s": 30.0,
+      "boundary_perturbation_ms": -500,
+      "status": "MEASURED",
+      "window_start_ms": 155956.2,
+      "window_end_ms": 185956.2,
+      "root": "D",
+      "mode": "minor",
+      "top_score": 0.534696,
+      "second_score": 0.339306,
+      "margin": 0.19539,
+      "confidence": "HIGH"
+    },
+    {
+      "role": "exit",
+      "window_length_s": 30.0,
+      "boundary_perturbation_ms": 0,
+      "status": "MEASURED",
+      "window_start_ms": 156456.2,
+      "window_end_ms": 186456.2,
+      "root": "D",
+      "mode": "minor",
+      "top_score": 0.538047,
+      "second_score": 0.34611,
+      "margin": 0.191937,
+      "confidence": "HIGH"
+    },
+    {
+      "role": "exit",
+      "window_length_s": 30.0,
+      "boundary_perturbation_ms": 500,
+      "status": "MEASURED",
+      "window_start_ms": 156956.2,
+      "window_end_ms": 186956.2,
+      "root": "D",
+      "mode": "minor",
+      "top_score": 0.547879,
+      "second_score": 0.357461,
+      "margin": 0.190418,
+      "confidence": "HIGH"
+    },
+    {
+      "role": "exit",
+      "window_length_s": 30.0,
+      "boundary_perturbation_ms": 1000,
+      "status": "MEASURED",
+      "window_start_ms": 157456.2,
+      "window_end_ms": 187456.2,
+      "root": "D",
+      "mode": "minor",
+      "top_score": 0.557748,
+      "second_score": 0.372343,
+      "margin": 0.185405,
+      "confidence": "HIGH"
+    }
+  ],
+  "rm014_entry_cells": [
+    {
+      "role": "entry",
+      "window_length_s": 10.0,
+      "boundary_perturbation_ms": -1000,
+      "status": "OUT_OF_AVAILABLE_AUDIO_RANGE"
+    },
+    {
+      "role": "entry",
+      "window_length_s": 10.0,
+      "boundary_perturbation_ms": -500,
+      "status": "OUT_OF_AVAILABLE_AUDIO_RANGE"
+    },
+    {
+      "role": "entry",
+      "window_length_s": 10.0,
+      "boundary_perturbation_ms": 0,
+      "status": "MEASURED",
+      "window_start_ms": 0.0,
+      "window_end_ms": 10000.0,
+      "root": "D#",
+      "mode": "major",
+      "top_score": 0.659114,
+      "second_score": 0.650896,
+      "margin": 0.008219,
+      "confidence": "LOW"
+    },
+    {
+      "role": "entry",
+      "window_length_s": 10.0,
+      "boundary_perturbation_ms": 500,
+      "status": "MEASURED",
+      "window_start_ms": 500.0,
+      "window_end_ms": 10500.0,
+      "root": "D#",
+      "mode": "major",
+      "top_score": 0.652597,
+      "second_score": 0.592755,
+      "margin": 0.059842,
+      "confidence": "MEDIUM"
+    },
+    {
+      "role": "entry",
+      "window_length_s": 10.0,
+      "boundary_perturbation_ms": 1000,
+      "status": "MEASURED",
+      "window_start_ms": 1000.0,
+      "window_end_ms": 11000.0,
+      "root": "D#",
+      "mode": "major",
+      "top_score": 0.634792,
+      "second_score": 0.575536,
+      "margin": 0.059256,
+      "confidence": "MEDIUM"
+    },
+    {
+      "role": "entry",
+      "window_length_s": 15.0,
+      "boundary_perturbation_ms": -1000,
+      "status": "OUT_OF_AVAILABLE_AUDIO_RANGE"
+    },
+    {
+      "role": "entry",
+      "window_length_s": 15.0,
+      "boundary_perturbation_ms": -500,
+      "status": "OUT_OF_AVAILABLE_AUDIO_RANGE"
+    },
+    {
+      "role": "entry",
+      "window_length_s": 15.0,
+      "boundary_perturbation_ms": 0,
+      "status": "MEASURED",
+      "window_start_ms": 0.0,
+      "window_end_ms": 15000.0,
+      "root": "F#",
+      "mode": "major",
+      "top_score": 0.485455,
+      "second_score": 0.48384,
+      "margin": 0.001615,
+      "confidence": "LOW"
+    },
+    {
+      "role": "entry",
+      "window_length_s": 15.0,
+      "boundary_perturbation_ms": 500,
+      "status": "MEASURED",
+      "window_start_ms": 500.0,
+      "window_end_ms": 15500.0,
+      "root": "D#",
+      "mode": "major",
+      "top_score": 0.534919,
+      "second_score": 0.532602,
+      "margin": 0.002317,
+      "confidence": "LOW"
+    },
+    {
+      "role": "entry",
+      "window_length_s": 15.0,
+      "boundary_perturbation_ms": 1000,
+      "status": "MEASURED",
+      "window_start_ms": 1000.0,
+      "window_end_ms": 16000.0,
+      "root": "D#",
+      "mode": "major",
+      "top_score": 0.523236,
+      "second_score": 0.505466,
+      "margin": 0.01777,
+      "confidence": "LOW"
+    },
+    {
+      "role": "entry",
+      "window_length_s": 20.0,
+      "boundary_perturbation_ms": -1000,
+      "status": "OUT_OF_AVAILABLE_AUDIO_RANGE"
+    },
+    {
+      "role": "entry",
+      "window_length_s": 20.0,
+      "boundary_perturbation_ms": -500,
+      "status": "OUT_OF_AVAILABLE_AUDIO_RANGE"
+    },
+    {
+      "role": "entry",
+      "window_length_s": 20.0,
+      "boundary_perturbation_ms": 0,
+      "status": "MEASURED",
+      "window_start_ms": 0.0,
+      "window_end_ms": 20000.0,
+      "root": "F#",
+      "mode": "major",
+      "top_score": 0.453405,
+      "second_score": 0.386244,
+      "margin": 0.067161,
+      "confidence": "MEDIUM"
+    },
+    {
+      "role": "entry",
+      "window_length_s": 20.0,
+      "boundary_perturbation_ms": 500,
+      "status": "MEASURED",
+      "window_start_ms": 500.0,
+      "window_end_ms": 20500.0,
+      "root": "G",
+      "mode": "minor",
+      "top_score": 0.489036,
+      "second_score": 0.48086,
+      "margin": 0.008176,
+      "confidence": "LOW"
+    },
+    {
+      "role": "entry",
+      "window_length_s": 20.0,
+      "boundary_perturbation_ms": 1000,
+      "status": "MEASURED",
+      "window_start_ms": 1000.0,
+      "window_end_ms": 21000.0,
+      "root": "C",
+      "mode": "minor",
+      "top_score": 0.470399,
+      "second_score": 0.45271,
+      "margin": 0.017689,
+      "confidence": "LOW"
+    },
+    {
+      "role": "entry",
+      "window_length_s": 30.0,
+      "boundary_perturbation_ms": -1000,
+      "status": "OUT_OF_AVAILABLE_AUDIO_RANGE"
+    },
+    {
+      "role": "entry",
+      "window_length_s": 30.0,
+      "boundary_perturbation_ms": -500,
+      "status": "OUT_OF_AVAILABLE_AUDIO_RANGE"
+    },
+    {
+      "role": "entry",
+      "window_length_s": 30.0,
+      "boundary_perturbation_ms": 0,
+      "status": "MEASURED",
+      "window_start_ms": 0.0,
+      "window_end_ms": 30000.0,
+      "root": "G",
+      "mode": "minor",
+      "top_score": 0.60753,
+      "second_score": 0.331103,
+      "margin": 0.276427,
+      "confidence": "HIGH"
+    },
+    {
+      "role": "entry",
+      "window_length_s": 30.0,
+      "boundary_perturbation_ms": 500,
+      "status": "MEASURED",
+      "window_start_ms": 500.0,
+      "window_end_ms": 30500.0,
+      "root": "G",
+      "mode": "minor",
+      "top_score": 0.657229,
+      "second_score": 0.420527,
+      "margin": 0.236703,
+      "confidence": "HIGH"
+    },
+    {
+      "role": "entry",
+      "window_length_s": 30.0,
+      "boundary_perturbation_ms": 1000,
+      "status": "MEASURED",
+      "window_start_ms": 1000.0,
+      "window_end_ms": 31000.0,
+      "root": "G",
+      "mode": "minor",
+      "top_score": 0.650559,
+      "second_score": 0.425009,
+      "margin": 0.22555,
+      "confidence": "HIGH"
+    }
+  ],
+  "pair_relation_by_matched_window_perturbation": [
+    {
+      "window_length_s": 10.0,
+      "boundary_perturbation_ms": -1000,
+      "status": "EXCLUDED_OUT_OF_RANGE",
+      "relation": null
+    },
+    {
+      "window_length_s": 10.0,
+      "boundary_perturbation_ms": -500,
+      "status": "EXCLUDED_OUT_OF_RANGE",
+      "relation": null
+    },
+    {
+      "window_length_s": 10.0,
+      "boundary_perturbation_ms": 0,
+      "status": "MEASURED",
+      "exit_root_mode": "D minor",
+      "entry_root_mode": "D# major",
+      "relation": "UNKNOWN"
+    },
+    {
+      "window_length_s": 10.0,
+      "boundary_perturbation_ms": 500,
+      "status": "MEASURED",
+      "exit_root_mode": "D minor",
+      "entry_root_mode": "D# major",
+      "relation": "INCOMPATIBLE"
+    },
+    {
+      "window_length_s": 10.0,
+      "boundary_perturbation_ms": 1000,
+      "status": "MEASURED",
+      "exit_root_mode": "D minor",
+      "entry_root_mode": "D# major",
+      "relation": "INCOMPATIBLE"
+    },
+    {
+      "window_length_s": 15.0,
+      "boundary_perturbation_ms": -1000,
+      "status": "EXCLUDED_OUT_OF_RANGE",
+      "relation": null
+    },
+    {
+      "window_length_s": 15.0,
+      "boundary_perturbation_ms": -500,
+      "status": "EXCLUDED_OUT_OF_RANGE",
+      "relation": null
+    },
+    {
+      "window_length_s": 15.0,
+      "boundary_perturbation_ms": 0,
+      "status": "MEASURED",
+      "exit_root_mode": "D minor",
+      "entry_root_mode": "F# major",
+      "relation": "UNKNOWN"
+    },
+    {
+      "window_length_s": 15.0,
+      "boundary_perturbation_ms": 500,
+      "status": "MEASURED",
+      "exit_root_mode": "D minor",
+      "entry_root_mode": "D# major",
+      "relation": "UNKNOWN"
+    },
+    {
+      "window_length_s": 15.0,
+      "boundary_perturbation_ms": 1000,
+      "status": "MEASURED",
+      "exit_root_mode": "D minor",
+      "entry_root_mode": "D# major",
+      "relation": "UNKNOWN"
+    },
+    {
+      "window_length_s": 20.0,
+      "boundary_perturbation_ms": -1000,
+      "status": "EXCLUDED_OUT_OF_RANGE",
+      "relation": null
+    },
+    {
+      "window_length_s": 20.0,
+      "boundary_perturbation_ms": -500,
+      "status": "EXCLUDED_OUT_OF_RANGE",
+      "relation": null
+    },
+    {
+      "window_length_s": 20.0,
+      "boundary_perturbation_ms": 0,
+      "status": "MEASURED",
+      "exit_root_mode": "D minor",
+      "entry_root_mode": "F# major",
+      "relation": "INCOMPATIBLE"
+    },
+    {
+      "window_length_s": 20.0,
+      "boundary_perturbation_ms": 500,
+      "status": "MEASURED",
+      "exit_root_mode": "D minor",
+      "entry_root_mode": "G minor",
+      "relation": "UNKNOWN"
+    },
+    {
+      "window_length_s": 20.0,
+      "boundary_perturbation_ms": 1000,
+      "status": "MEASURED",
+      "exit_root_mode": "D minor",
+      "entry_root_mode": "C minor",
+      "relation": "UNKNOWN"
+    },
+    {
+      "window_length_s": 30.0,
+      "boundary_perturbation_ms": -1000,
+      "status": "EXCLUDED_OUT_OF_RANGE",
+      "relation": null
+    },
+    {
+      "window_length_s": 30.0,
+      "boundary_perturbation_ms": -500,
+      "status": "EXCLUDED_OUT_OF_RANGE",
+      "relation": null
+    },
+    {
+      "window_length_s": 30.0,
+      "boundary_perturbation_ms": 0,
+      "status": "MEASURED",
+      "exit_root_mode": "D minor",
+      "entry_root_mode": "G minor",
+      "relation": "COMPATIBLE"
+    },
+    {
+      "window_length_s": 30.0,
+      "boundary_perturbation_ms": 500,
+      "status": "MEASURED",
+      "exit_root_mode": "D minor",
+      "entry_root_mode": "G minor",
+      "relation": "COMPATIBLE"
+    },
+    {
+      "window_length_s": 30.0,
+      "boundary_perturbation_ms": 1000,
+      "status": "MEASURED",
+      "exit_root_mode": "D minor",
+      "entry_root_mode": "G minor",
+      "relation": "COMPATIBLE"
+    }
+  ]
+}
