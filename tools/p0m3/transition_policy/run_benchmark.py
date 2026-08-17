@@ -10,7 +10,7 @@ Produces:
   results/playthrough_demo.json   -- explicit PLAY_THROUGH vs NO_SPECIAL_TRANSITION proof (AC10)
   results/order_invariance.json   -- TP-12 normal/reverse/shuffled candidate order -> identical winner
   results/pair_compatibility.json -- PAIR-01..10 component report + TP-11 integration proof
-  results/boundary_planning.json  -- PM REVIEW #2 R1/R2: TX-01..05 complete boundary-plan results
+  results/boundary_planning.json  -- PM REVIEW #2 R1/R2: TX-01..08 complete boundary-plan results
   results/SUMMARY.md              -- human-readable summary
 
 Run: python run_benchmark.py
@@ -409,7 +409,7 @@ def write_summary(metrics, sensitivity, order_invariance, pair_report, denominat
 
     if boundary_report is not None:
         lines.append("")
-        lines.append("## PM REVIEW #2 -- complete boundary-plan results (TX-01..05)")
+        lines.append("## PM REVIEW #2 -- complete boundary-plan results (TX-01..08)")
         lines.append("")
         lines.append("| Transition | Expected winner | Selected winner | Matches |")
         lines.append("|---|---|---|---|")
@@ -475,7 +475,7 @@ def main():
     print(json.dumps(order_invariance, indent=2))
     print("=== PAIR COMPATIBILITY ===")
     print(json.dumps({k: v["matches_expectation"] for k, v in pair_report["components_by_pair"].items()}, indent=2))
-    print("=== BOUNDARY PLANNING (TX-01..05) ===")
+    print("=== BOUNDARY PLANNING (TX-01..08) ===")
     print(json.dumps({k: v["matches_expectation"] for k, v in boundary_report["transitions"].items()}, indent=2))
     print("TX-01 order invariance:", boundary_report["tx01_order_invariance"]["order_invariant"])
     print("=== R4 MUTATION PAIR REPORT ===")

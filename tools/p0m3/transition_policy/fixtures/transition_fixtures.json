@@ -599,5 +599,79 @@
       "TX07-OUT-C",
       "TX07-OUT-D"
     ]
+  },
+  {
+    "transition_id": "TX-08",
+    "title": "incoming_entry_zero_ms_with_separate_later_explicit_alignment_anchor",
+    "purpose": "A9 (alignment-anchor contract separation): proves an incoming track may audibly start at 0ms while a later, explicit beat/downbeat anchor is used purely as an alignment reference. The incoming candidate carries explicit beat_alignment_target_ms/downbeat_alignment_target_ms (EXPLICIT mode) instead of the legacy beat_downbeat_aligned boolean, and is otherwise honestly FULL_DJ-compatible under the existing, unmodified gates.",
+    "outgoing_track": {
+      "duration_ms": 200000,
+      "genre_tags": [
+        "pop"
+      ],
+      "bpm": 120,
+      "candidates": [
+        {
+          "candidate_id": "TX08-OUT-1",
+          "t_ms": 180000,
+          "source": "authored_outro",
+          "beat_downbeat_aligned": true,
+          "in_acceptable_exit_region": true,
+          "musical_unit_complete": true,
+          "is_outro_tail_opportunity": true,
+          "vocal_collision_risk": "LOW",
+          "structure_confidence": "HIGH",
+          "is_end_of_track": false
+        },
+        {
+          "candidate_id": "TX08-OUT-END",
+          "t_ms": 200000,
+          "source": "authored_outro",
+          "beat_downbeat_aligned": true,
+          "in_acceptable_exit_region": true,
+          "musical_unit_complete": true,
+          "is_outro_tail_opportunity": true,
+          "vocal_collision_risk": "NONE",
+          "structure_confidence": "HIGH",
+          "is_end_of_track": true
+        }
+      ]
+    },
+    "incoming_track": {
+      "genre_tags": [
+        "pop"
+      ],
+      "bpm": 120,
+      "candidates": [
+        {
+          "candidate_id": "TX08-IN-ZERO-SEPARATE-ANCHOR",
+          "t_ms": 0,
+          "phrase_section_evidence": false,
+          "beat_downbeat_aligned": false,
+          "is_authored_silence_skip": false,
+          "beat_alignment_target_ms": 8000,
+          "downbeat_alignment_target_ms": 8000
+        }
+      ]
+    },
+    "pair_base": {
+      "beat_confidence": "HIGH",
+      "downbeat_confidence": "HIGH",
+      "harmonic_relationship": "COMPATIBLE",
+      "energy_continuity": "STRONG",
+      "structure_compatibility": "COMPATIBLE",
+      "vocal_collision_risk": "LOW",
+      "bass_percussion_collision_risk": "LOW",
+      "intro_outro_texture_compatible": true,
+      "analysis_confidence": "HIGH"
+    },
+    "boundary_overrides": {},
+    "expected_winner": {
+      "outgoing": "TX08-OUT-1",
+      "incoming": "TX08-IN-ZERO-SEPARATE-ANCHOR"
+    },
+    "expect_full_dj_blend": true,
+    "expect_entry_window_zero": true,
+    "expect_incoming_alignment_target_ms": 8000
   }
 ]

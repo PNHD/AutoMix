@@ -21,6 +21,14 @@ PM REVIEW #2 repairs applied here:
   (which exposed a single outgoing timestamp as if it specified both sides)
   are replaced by outgoing_*/incoming_* pairs plus beat_phase_relation /
   bar_phase_relation.
+
+P0-M3-R3 alignment-anchor contract separation (RM014 diagnostic,
+docs/research/P0-M3-R3-RM014-ENTRY-ANCHOR-FEASIBILITY.md, "Case B"):
+`entry_candidate["t_ms"]` means ONLY the audible/source entry time; it never
+silently changes meaning. `resolve_alignment_targets()` below resolves a
+candidate's beat/downbeat ALIGNMENT reference as a separate, optional
+concept -- a later alignment anchor never moves the audible entry window
+(see policy/boundary.py's incoming-entry planning, unchanged by this repair).
 """
 
 from dataclasses import dataclass, field, asdict
@@ -118,6 +126,39 @@ class PlannerDecision:
         return asdict(self)
 
 
+def resolve_alignment_targets(candidate: dict):
+    """
+    A1 (alignment-anchor contract separation): resolves a candidate's
+    beat/downbeat ALIGNMENT reference independently of its audible
+    entry/exit timestamp (candidate["t_ms"], which keeps its existing
+    meaning unchanged everywhere else -- see policy/boundary.py's
+    incoming-entry window, which is NEVER derived from this function).
+
+    EXPLICIT mode: if EITHER `beat_alignment_target_ms` or
+    `downbeat_alignment_target_ms` is present on the candidate, EXPLICIT
+    mode applies. A missing field is NOT backfilled from t_ms -- a
+    partially explicit candidate stays partially known (A1: "explicit mode
+    always wins over legacy mode").
+
+    LEGACY mode: only when NEITHER explicit field is present. Reproduces
+    the pre-existing `beat_downbeat_aligned` behavior exactly: both targets
+    equal t_ms when true, else both None.
+
+    Returns (beat_target_ms, downbeat_target_ms, source) where source is
+    one of "EXPLICIT" | "LEGACY_T_MS" | "NONE".
+    """
+    has_explicit_beat = "beat_alignment_target_ms" in candidate
+    has_explicit_downbeat = "downbeat_alignment_target_ms" in candidate
+    if has_explicit_beat or has_explicit_downbeat:
+        beat_target = candidate.get("beat_alignment_target_ms") if has_explicit_beat else None
+        downbeat_target = candidate.get("downbeat_alignment_target_ms") if has_explicit_downbeat else None
+        return beat_target, downbeat_target, "EXPLICIT"
+    if candidate.get("beat_downbeat_aligned"):
+        t_ms = candidate["t_ms"]
+        return t_ms, t_ms, "LEGACY_T_MS"
+    return None, None, "NONE"
+
+
 def _compatibility_payload(pair: Optional[dict]):
     if pair is None:
         return None, None
@@ -177,7 +218,7 @@ def build_transition_decision(fixture_id, intent, policy_name, chosen_eligibilit
         bass_constraint = f"PAIR_BASS_PERCUSSION_COLLISION_RISK={compat_result.bass_percussion_collision_risk}"
         energy_target = f"PAIR_ENERGY_CONTINUITY={compat_result.energy_continuity}"
 
-    outgoing_beat_target = chosen_eligibility.t_ms if candidate.get("beat_downbeat_aligned") else None
+    outgoing_beat_target, outgoing_downbeat_target, _outgoing_alignment_source = resolve_alignment_targets(candidate)
 
     return PlannerDecision(
         fixture_id=fixture_id,
@@ -198,7 +239,7 @@ def build_transition_decision(fixture_id, intent, policy_name, chosen_eligibilit
         pair_compatibility_components=compat_payload,
         outgoing_beat_alignment_target_ms=outgoing_beat_target,
         incoming_beat_alignment_target_ms=None,
-        outgoing_downbeat_alignment_target_ms=outgoing_beat_target,
+        outgoing_downbeat_alignment_target_ms=outgoing_downbeat_target,
         incoming_downbeat_alignment_target_ms=None,
         beat_phase_relation="NOT_APPLICABLE",
         bar_phase_relation="NOT_APPLICABLE",
@@ -231,10 +272,16 @@ def build_boundary_transition_decision(
     compat_payload = winner_entry["pair_compatibility_components"]
     allowed_class_set = winner_entry["allowed_transition_class_set"]
 
-    outgoing_beat_target = exit_result.t_ms if exit_candidate.get("beat_downbeat_aligned") else None
-    outgoing_downbeat_target = outgoing_beat_target
-    incoming_beat_target = entry_candidate["t_ms"] if entry_candidate.get("beat_downbeat_aligned") else None
-    incoming_downbeat_target = incoming_beat_target
+    # A1/A6 (alignment-anchor contract separation): the SAME canonical
+    # resolver is used for both sides. In LEGACY mode (no explicit
+    # candidate-level alignment fields) this reproduces the prior coupled
+    # t_ms-reuse behavior exactly -- TX-01..07 are unaffected. In EXPLICIT
+    # mode (e.g. TX-08), the incoming alignment reference is resolved
+    # independently of entry_candidate["t_ms"], which keeps its own,
+    # unchanged meaning as the audible/source entry time (see
+    # `entry_window` below, which is NEVER derived from these targets).
+    outgoing_beat_target, outgoing_downbeat_target, _outgoing_alignment_source = resolve_alignment_targets(exit_candidate)
+    incoming_beat_target, incoming_downbeat_target, _incoming_alignment_source = resolve_alignment_targets(entry_candidate)
 
     # R9 (PM REVIEW #3) repair: beat_phase_relation/bar_phase_relation are
     # OBSERVED-relation fields. This project has no beat-index/bar-position

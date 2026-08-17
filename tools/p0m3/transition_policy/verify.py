@@ -22,6 +22,7 @@ from policy.policies import decide, decide_at_time, POLICY_NAMES
 from policy.compatibility import evaluate_pair_compatibility, downgrade_transition_class_set
 from policy.boundary import plan_transition_boundary
 from policy.eligibility import evaluate_candidate
+from policy.contract import resolve_alignment_targets
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 FIXTURES_PATH = os.path.join(HERE, "fixtures", "fixtures.json")
@@ -140,7 +141,7 @@ def main():
     print("=== 0. Structural / scope-boundary checks ===")
     check("timing fixture count == 14 (spec letters A-N)", len(fixtures) == 14, f"got {len(fixtures)}")
     check("pair fixture count == 13 (spec letters G-K + R4 mutation pairs PAIR-06..10 + R7 mutation pairs PAIR-11..13)", len(pair_fixtures) == 13, f"got {len(pair_fixtures)}")
-    check("transition boundary fixture count == 7 (TX-01..07)", len(tx_fixtures) == 7, f"got {len(tx_fixtures)}")
+    check("transition boundary fixture count == 8 (TX-01..08)", len(tx_fixtures) == 8, f"got {len(tx_fixtures)}")
     ac_isolation_check()
     no_dsp_dependency_check()
     no_audio_bytes_check()
@@ -302,7 +303,7 @@ def main():
     tx_decisions = {tid: plan_transition_boundary(tx, "SEAMLESS_FULL_TRACK_DEFAULT") for tid, tx in tx_by_id.items()}
     all_windows = [d.next_track_entry_window_ms for d in tx_decisions.values()]
     check(
-        "5. next_track_entry_window_ms is NOT a universal {0,0} placeholder across TX-01..05 (at least one real nonzero entry window exists)",
+        "5. next_track_entry_window_ms is NOT a universal {0,0} placeholder across TX-01..08 (at least one real nonzero entry window exists)",
         any(w is not None and w["t_start_ms"] != 0 for w in all_windows),
     )
     check("TX-03 selects the silence-skip entry (5000ms), not 0ms or the too-far candidate", tx_decisions["TX-03"].selected_incoming_entry_candidate_id == "TX03-IN-SKIP")
@@ -314,7 +315,7 @@ def main():
 
     print("\n=== PM REVIEW #2: transition_onset_window_ms is a REAL narrow window, never onset..content_end ===")
     check(
-        "6. every TX-01..05 winning transition_onset_window_ms has t_start_ms == t_end_ms (an exact cue, never a span to effective_content_end_ms)",
+        "6. every TX-01..08 winning transition_onset_window_ms has t_start_ms == t_end_ms (an exact cue, never a span to effective_content_end_ms)",
         all(d.transition_onset_window_ms["t_start_ms"] == d.transition_onset_window_ms["t_end_ms"] for d in tx_decisions.values()),
     )
     check(
@@ -506,6 +507,79 @@ def main():
     check("bar_alignment_action is likewise present whenever both downbeat targets are known", all((d.bar_alignment_action == "ALIGN_OUTGOING_DOWNBEAT_TARGET_TO_INCOMING_DOWNBEAT_TARGET") == (d.outgoing_downbeat_alignment_target_ms is not None and d.incoming_downbeat_alignment_target_ms is not None) for d in all_tx_decisions))
     check("TX-01 winner: beat_phase_relation is NOT_MEASURED (honest -- both sides evidenced, but relation was never actually computed)", dtx01.beat_phase_relation == "NOT_MEASURED")
     check("TX-02 winner (0ms unanchored): beat_phase_relation is NOT_APPLICABLE (incoming side has no target at all)", d02.beat_phase_relation == "NOT_APPLICABLE")
+
+    print("\n=== P0-M3-R3 A1-A9: alignment-anchor contract separation (entry != alignment target) ===")
+    tx08 = tx_by_id["TX-08"]
+    d08 = tx_decisions["TX-08"]
+    entry_trace_tx08 = next(t for t in d08.candidate_rank_trace if t["incoming_candidate_id"] == "TX08-IN-ZERO-SEPARATE-ANCHOR")
+
+    print("1. EXPLICIT SEPARATION (TX-08): entry stays 0ms, alignment targets use the later explicit value")
+    check("TX-08 selects the 0ms entry candidate", d08.selected_incoming_entry_candidate_id == "TX08-IN-ZERO-SEPARATE-ANCHOR")
+    check("TX-08 next_track_entry_window_ms remains 0..0 (audible entry unmoved)", d08.next_track_entry_window_ms == {"t_start_ms": 0, "t_end_ms": 0})
+    check("TX-08 incoming_beat_alignment_target_ms == 8000 (the separate explicit anchor, not 0)", d08.incoming_beat_alignment_target_ms == 8000)
+    check("TX-08 incoming_downbeat_alignment_target_ms == 8000", d08.incoming_downbeat_alignment_target_ms == 8000)
+    check("TX-08 FULL_DJ_BLEND is authorized (both sides resolve real targets)", "FULL_DJ_BLEND" in d08.allowed_transition_class_set)
+    check("TX-08 beat_alignment_action is applicable", d08.beat_alignment_action == "ALIGN_OUTGOING_BEAT_TARGET_TO_INCOMING_BEAT_TARGET")
+    check("TX-08 bar_alignment_action is applicable", d08.bar_alignment_action == "ALIGN_OUTGOING_DOWNBEAT_TARGET_TO_INCOMING_DOWNBEAT_TARGET")
+
+    print("2. LEGACY COMPATIBILITY: old beat_downbeat_aligned=true candidate (no explicit fields) still resolves targets == t_ms")
+    tx06_entry = next(c for c in tx_by_id["TX-06"]["incoming_track"]["candidates"] if c["candidate_id"] == "TX06-IN-ZERO-ANCHORED")
+    legacy_beat, legacy_downbeat, legacy_source = resolve_alignment_targets(tx06_entry)
+    check("legacy candidate resolves source == LEGACY_T_MS", legacy_source == "LEGACY_T_MS")
+    check("legacy candidate resolves beat target == t_ms (0)", legacy_beat == 0)
+    check("legacy candidate resolves downbeat target == t_ms (0)", legacy_downbeat == 0)
+
+    print("3. EXPLICIT OVERRIDES LEGACY: explicit fields present AND legacy boolean true -> explicit values win")
+    synthetic_both = {"t_ms": 0, "beat_downbeat_aligned": True, "beat_alignment_target_ms": 5000, "downbeat_alignment_target_ms": 5000}
+    both_beat, both_downbeat, both_source = resolve_alignment_targets(synthetic_both)
+    check("EXPLICIT mode wins over a simultaneously-true legacy boolean", both_source == "EXPLICIT")
+    check("resolved beat target is the EXPLICIT value (5000), not the legacy t_ms (0)", both_beat == 5000)
+    check("resolved downbeat target is the EXPLICIT value (5000), not the legacy t_ms (0)", both_downbeat == 5000)
+
+    print("4. PARTIAL EXPLICIT: explicit beat target but no downbeat target -> never backfilled from t_ms -> FULL_DJ withheld")
+    tx08_partial = json.loads(json.dumps(tx08))
+    del tx08_partial["incoming_track"]["candidates"][0]["downbeat_alignment_target_ms"]
+    d08_partial = plan_transition_boundary(tx08_partial, "SEAMLESS_FULL_TRACK_DEFAULT")
+    check("partial-explicit incoming_beat_alignment_target_ms still resolves (8000)", d08_partial.incoming_beat_alignment_target_ms == 8000)
+    check("partial-explicit incoming_downbeat_alignment_target_ms is None (never backfilled from t_ms)", d08_partial.incoming_downbeat_alignment_target_ms is None)
+    check("partial-explicit boundary withholds FULL_DJ_BLEND", "FULL_DJ_BLEND" not in d08_partial.allowed_transition_class_set)
+    partial_trace = next(t for t in d08_partial.candidate_rank_trace if t["incoming_candidate_id"] == "TX08-IN-ZERO-SEPARATE-ANCHOR")
+    check("trace records PARTIAL_INCOMING_ALIGNMENT_EVIDENCE", "PARTIAL_INCOMING_ALIGNMENT_EVIDENCE" in partial_trace["entry_reason_codes"])
+
+    print("5. INVALID BEFORE ENTRY: explicit alignment target precedes the candidate's own entry -> fail closed, never clamped")
+    tx_invalid = json.loads(json.dumps(tx08))
+    tx_invalid["transition_id"] = "TX-08-INVALID-ALIGNMENT-TEST"
+    tx_invalid["incoming_track"]["candidates"] = [{
+        "candidate_id": "TX08-IN-INVALID",
+        "t_ms": 5000,
+        "phrase_section_evidence": True,
+        "beat_downbeat_aligned": False,
+        "is_authored_silence_skip": False,
+        "beat_alignment_target_ms": 1000,
+        "downbeat_alignment_target_ms": 1000,
+    }]
+    d_invalid = plan_transition_boundary(tx_invalid, "SEAMLESS_FULL_TRACK_DEFAULT")
+    check("invalid-anchor entry candidate is still selected (entry itself is independently valid via phrase evidence)", d_invalid.selected_incoming_entry_candidate_id == "TX08-IN-INVALID")
+    check("invalid-anchor boundary withholds FULL_DJ_BLEND", "FULL_DJ_BLEND" not in d_invalid.allowed_transition_class_set)
+    invalid_trace = next(t for t in d_invalid.candidate_rank_trace if t["incoming_candidate_id"] == "TX08-IN-INVALID")
+    check("trace records INVALID_INCOMING_ALIGNMENT_TARGET_PRECEDES_ENTRY", "INVALID_INCOMING_ALIGNMENT_TARGET_PRECEDES_ENTRY" in invalid_trace["entry_reason_codes"])
+    check("the invalid target is reported honestly (1000), never clamped/rewritten to entry t_ms", d_invalid.incoming_beat_alignment_target_ms == 1000)
+
+    print("6. ZERO ENTRY DOES NOT REQUIRE PHRASE-SKIP EVIDENCE merely because the alignment anchor occurs later")
+    check("TX-08's 0ms entry is accepted via ENTRY_AT_TRACK_START, not phrase/cue evidence", "ENTRY_AT_TRACK_START" in entry_trace_tx08["entry_reason_codes"])
+    check("TX-08's 0ms entry never needed ENTRY_SKIPS_MEANINGFUL_INTRO_WITHOUT_EVIDENCE", "ENTRY_SKIPS_MEANINGFUL_INTRO_WITHOUT_EVIDENCE" not in entry_trace_tx08["entry_reason_codes"])
+
+    print("7. ENTRY WINDOW NEVER FOLLOWS THE ALIGNMENT TARGET")
+    check("TX-08 entry window (0) is independent of and does not follow the alignment target (8000)", d08.next_track_entry_window_ms["t_start_ms"] < d08.incoming_beat_alignment_target_ms)
+
+    print("8. ALIGNMENT TARGET NEVER CHANGES incoming_effective_content_start_ms")
+    check("TX-08 incoming_effective_content_start_ms stays 0 despite an 8000ms alignment anchor", d08.incoming_effective_content_start_ms == 0)
+
+    print("9. Pair compatibility gates are unchanged by this repair (TX-08's pair is genuinely, honestly eligible)")
+    check("TX-08 winning boundary's pair compatibility is genuinely eligible_for_dynamic_mix", entry_trace_tx08["eligible_for_dynamic_mix"] is True)
+
+    print("10. Preservation safety is unchanged by this repair")
+    check("TX-08 preservation target still respects the existing SEAMLESS_FULL_TRACK_DEFAULT floor (>=0.95)", d08.outgoing_content_preservation_target is not None and d08.outgoing_content_preservation_target >= 0.95)
 
     print("\n=== PM REVIEW #3: full prior 111 assertions + preservation/highlight/dead-air/order-invariance gates re-verified below ===")
 

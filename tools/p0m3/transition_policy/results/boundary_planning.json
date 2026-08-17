@@ -25,6 +25,7 @@
         },
         "incoming_entry_reason_codes": [
           "PHRASE_CUE_EVIDENCE_PRESENT",
+          "ENTRY_AND_ALIGNMENT_ANCHOR_COINCIDE",
           "BOUNDARY_ALIGNMENT_EVIDENCE_PRESENT"
         ],
         "incoming_phrase_section_evidence": true,
@@ -114,6 +115,14 @@
               "beat_downbeat_aligned": true
             },
             "boundary_beat_downbeat_alignable": false,
+            "incoming_entry_t_ms": 0,
+            "incoming_beat_alignment_target_ms": null,
+            "incoming_downbeat_alignment_target_ms": null,
+            "incoming_alignment_target_source": "NONE",
+            "incoming_alignment_separate_from_entry": false,
+            "outgoing_beat_alignment_target_ms": 270000,
+            "outgoing_downbeat_alignment_target_ms": 270000,
+            "outgoing_alignment_target_source": "LEGACY_T_MS",
             "pair_compatibility_components": {
               "genre_compatibility": "COMPATIBLE",
               "tempo_compatibility": "DIRECT",
@@ -167,7 +176,8 @@
             "incoming_candidate_id": "TX01-IN-2",
             "eligible": true,
             "entry_reason_codes": [
-              "PHRASE_CUE_EVIDENCE_PRESENT"
+              "PHRASE_CUE_EVIDENCE_PRESENT",
+              "ENTRY_AND_ALIGNMENT_ANCHOR_COINCIDE"
             ],
             "outgoing_content_preservation_ratio": 1.0,
             "preservation_band": "PREFERRED",
@@ -188,6 +198,14 @@
               "beat_downbeat_aligned": true
             },
             "boundary_beat_downbeat_alignable": true,
+            "incoming_entry_t_ms": 6000,
+            "incoming_beat_alignment_target_ms": 6000,
+            "incoming_downbeat_alignment_target_ms": 6000,
+            "incoming_alignment_target_source": "LEGACY_T_MS",
+            "incoming_alignment_separate_from_entry": false,
+            "outgoing_beat_alignment_target_ms": 270000,
+            "outgoing_downbeat_alignment_target_ms": 270000,
+            "outgoing_alignment_target_source": "LEGACY_T_MS",
             "pair_compatibility_components": {
               "genre_compatibility": "COMPATIBLE",
               "tempo_compatibility": "DIRECT",
@@ -263,6 +281,14 @@
               "beat_downbeat_aligned": true
             },
             "boundary_beat_downbeat_alignable": false,
+            "incoming_entry_t_ms": 0,
+            "incoming_beat_alignment_target_ms": null,
+            "incoming_downbeat_alignment_target_ms": null,
+            "incoming_alignment_target_source": "NONE",
+            "incoming_alignment_separate_from_entry": false,
+            "outgoing_beat_alignment_target_ms": 260000,
+            "outgoing_downbeat_alignment_target_ms": 260000,
+            "outgoing_alignment_target_source": "LEGACY_T_MS",
             "pair_compatibility_components": {
               "genre_compatibility": "COMPATIBLE",
               "tempo_compatibility": "DIRECT",
@@ -319,6 +345,7 @@
             "eligible": true,
             "entry_reason_codes": [
               "PHRASE_CUE_EVIDENCE_PRESENT",
+              "ENTRY_AND_ALIGNMENT_ANCHOR_COINCIDE",
               "BOUNDARY_ALIGNMENT_EVIDENCE_PRESENT"
             ],
             "outgoing_content_preservation_ratio": 1.0,
@@ -340,6 +367,14 @@
               "beat_downbeat_aligned": true
             },
             "boundary_beat_downbeat_alignable": true,
+            "incoming_entry_t_ms": 6000,
+            "incoming_beat_alignment_target_ms": 6000,
+            "incoming_downbeat_alignment_target_ms": 6000,
+            "incoming_alignment_target_source": "LEGACY_T_MS",
+            "incoming_alignment_separate_from_entry": false,
+            "outgoing_beat_alignment_target_ms": 260000,
+            "outgoing_downbeat_alignment_target_ms": 260000,
+            "outgoing_alignment_target_source": "LEGACY_T_MS",
             "pair_compatibility_components": {
               "genre_compatibility": "COMPATIBLE",
               "tempo_compatibility": "DIRECT",
@@ -421,6 +456,14 @@
               "beat_downbeat_aligned": true
             },
             "boundary_beat_downbeat_alignable": false,
+            "incoming_entry_t_ms": 0,
+            "incoming_beat_alignment_target_ms": null,
+            "incoming_downbeat_alignment_target_ms": null,
+            "incoming_alignment_target_source": "NONE",
+            "incoming_alignment_separate_from_entry": false,
+            "outgoing_beat_alignment_target_ms": 270000,
+            "outgoing_downbeat_alignment_target_ms": 270000,
+            "outgoing_alignment_target_source": "LEGACY_T_MS",
             "pair_compatibility_components": {
               "genre_compatibility": "COMPATIBLE",
               "tempo_compatibility": "DIRECT",
@@ -474,7 +517,8 @@
             "incoming_candidate_id": "TX01-IN-2",
             "eligible": true,
             "entry_reason_codes": [
-              "PHRASE_CUE_EVIDENCE_PRESENT"
+              "PHRASE_CUE_EVIDENCE_PRESENT",
+              "ENTRY_AND_ALIGNMENT_ANCHOR_COINCIDE"
             ],
             "outgoing_content_preservation_ratio": 1.0,
             "preservation_band": "PREFERRED",
@@ -495,6 +539,14 @@
               "beat_downbeat_aligned": true
             },
             "boundary_beat_downbeat_alignable": true,
+            "incoming_entry_t_ms": 6000,
+            "incoming_beat_alignment_target_ms": 6000,
+            "incoming_downbeat_alignment_target_ms": 6000,
+            "incoming_alignment_target_source": "LEGACY_T_MS",
+            "incoming_alignment_separate_from_entry": false,
+            "outgoing_beat_alignment_target_ms": 270000,
+            "outgoing_downbeat_alignment_target_ms": 270000,
+            "outgoing_alignment_target_source": "LEGACY_T_MS",
             "pair_compatibility_components": {
               "genre_compatibility": "COMPATIBLE",
               "tempo_compatibility": "DIRECT",
@@ -570,6 +622,14 @@
               "beat_downbeat_aligned": true
             },
             "boundary_beat_downbeat_alignable": false,
+            "incoming_entry_t_ms": 0,
+            "incoming_beat_alignment_target_ms": null,
+            "incoming_downbeat_alignment_target_ms": null,
+            "incoming_alignment_target_source": "NONE",
+            "incoming_alignment_separate_from_entry": false,
+            "outgoing_beat_alignment_target_ms": 260000,
+            "outgoing_downbeat_alignment_target_ms": 260000,
+            "outgoing_alignment_target_source": "LEGACY_T_MS",
             "pair_compatibility_components": {
               "genre_compatibility": "COMPATIBLE",
               "tempo_compatibility": "DIRECT",
@@ -626,6 +686,7 @@
             "eligible": true,
             "entry_reason_codes": [
               "PHRASE_CUE_EVIDENCE_PRESENT",
+              "ENTRY_AND_ALIGNMENT_ANCHOR_COINCIDE",
               "BOUNDARY_ALIGNMENT_EVIDENCE_PRESENT"
             ],
             "outgoing_content_preservation_ratio": 1.0,
@@ -647,6 +708,14 @@
               "beat_downbeat_aligned": true
             },
             "boundary_beat_downbeat_alignable": true,
+            "incoming_entry_t_ms": 6000,
+            "incoming_beat_alignment_target_ms": 6000,
+            "incoming_downbeat_alignment_target_ms": 6000,
+            "incoming_alignment_target_source": "LEGACY_T_MS",
+            "incoming_alignment_separate_from_entry": false,
+            "outgoing_beat_alignment_target_ms": 260000,
+            "outgoing_downbeat_alignment_target_ms": 260000,
+            "outgoing_alignment_target_source": "LEGACY_T_MS",
             "pair_compatibility_components": {
               "genre_compatibility": "COMPATIBLE",
               "tempo_compatibility": "DIRECT",
@@ -821,6 +890,14 @@
               "beat_downbeat_aligned": true
             },
             "boundary_beat_downbeat_alignable": false,
+            "incoming_entry_t_ms": 0,
+            "incoming_beat_alignment_target_ms": null,
+            "incoming_downbeat_alignment_target_ms": null,
+            "incoming_alignment_target_source": "NONE",
+            "incoming_alignment_separate_from_entry": false,
+            "outgoing_beat_alignment_target_ms": 180000,
+            "outgoing_downbeat_alignment_target_ms": 180000,
+            "outgoing_alignment_target_source": "LEGACY_T_MS",
             "pair_compatibility_components": {
               "genre_compatibility": "COMPATIBLE",
               "tempo_compatibility": "DIRECT",
@@ -900,6 +977,14 @@
               "beat_downbeat_aligned": true
             },
             "boundary_beat_downbeat_alignable": false,
+            "incoming_entry_t_ms": 8000,
+            "incoming_beat_alignment_target_ms": null,
+            "incoming_downbeat_alignment_target_ms": null,
+            "incoming_alignment_target_source": "NONE",
+            "incoming_alignment_separate_from_entry": false,
+            "outgoing_beat_alignment_target_ms": 180000,
+            "outgoing_downbeat_alignment_target_ms": 180000,
+            "outgoing_alignment_target_source": "LEGACY_T_MS",
             "pair_compatibility_components": {
               "genre_compatibility": "COMPATIBLE",
               "tempo_compatibility": "DIRECT",
@@ -979,6 +1064,14 @@
               "beat_downbeat_aligned": true
             },
             "boundary_beat_downbeat_alignable": false,
+            "incoming_entry_t_ms": 0,
+            "incoming_beat_alignment_target_ms": null,
+            "incoming_downbeat_alignment_target_ms": null,
+            "incoming_alignment_target_source": "NONE",
+            "incoming_alignment_separate_from_entry": false,
+            "outgoing_beat_alignment_target_ms": 180000,
+            "outgoing_downbeat_alignment_target_ms": 180000,
+            "outgoing_alignment_target_source": "LEGACY_T_MS",
             "pair_compatibility_components": {
               "genre_compatibility": "COMPATIBLE",
               "tempo_compatibility": "DIRECT",
@@ -1058,6 +1151,14 @@
               "beat_downbeat_aligned": true
             },
             "boundary_beat_downbeat_alignable": false,
+            "incoming_entry_t_ms": 8000,
+            "incoming_beat_alignment_target_ms": null,
+            "incoming_downbeat_alignment_target_ms": null,
+            "incoming_alignment_target_source": "NONE",
+            "incoming_alignment_separate_from_entry": false,
+            "outgoing_beat_alignment_target_ms": 180000,
+            "outgoing_downbeat_alignment_target_ms": 180000,
+            "outgoing_alignment_target_source": "LEGACY_T_MS",
             "pair_compatibility_components": {
               "genre_compatibility": "COMPATIBLE",
               "tempo_compatibility": "DIRECT",
@@ -1140,6 +1241,7 @@
         },
         "incoming_entry_reason_codes": [
           "AUTHORED_LEADING_SILENCE_SKIPPED",
+          "ENTRY_AND_ALIGNMENT_ANCHOR_COINCIDE",
           "BOUNDARY_ALIGNMENT_EVIDENCE_PRESENT"
         ],
         "incoming_phrase_section_evidence": false,
@@ -1230,6 +1332,14 @@
               "beat_downbeat_aligned": true
             },
             "boundary_beat_downbeat_alignable": false,
+            "incoming_entry_t_ms": 0,
+            "incoming_beat_alignment_target_ms": null,
+            "incoming_downbeat_alignment_target_ms": null,
+            "incoming_alignment_target_source": "NONE",
+            "incoming_alignment_separate_from_entry": false,
+            "outgoing_beat_alignment_target_ms": 180000,
+            "outgoing_downbeat_alignment_target_ms": 180000,
+            "outgoing_alignment_target_source": "LEGACY_T_MS",
             "pair_compatibility_components": {
               "genre_compatibility": "COMPATIBLE",
               "tempo_compatibility": "DIRECT",
@@ -1286,6 +1396,7 @@
             "eligible": true,
             "entry_reason_codes": [
               "AUTHORED_LEADING_SILENCE_SKIPPED",
+              "ENTRY_AND_ALIGNMENT_ANCHOR_COINCIDE",
               "BOUNDARY_ALIGNMENT_EVIDENCE_PRESENT"
             ],
             "outgoing_content_preservation_ratio": 1.0,
@@ -1307,6 +1418,14 @@
               "beat_downbeat_aligned": true
             },
             "boundary_beat_downbeat_alignable": true,
+            "incoming_entry_t_ms": 5000,
+            "incoming_beat_alignment_target_ms": 5000,
+            "incoming_downbeat_alignment_target_ms": 5000,
+            "incoming_alignment_target_source": "LEGACY_T_MS",
+            "incoming_alignment_separate_from_entry": false,
+            "outgoing_beat_alignment_target_ms": 180000,
+            "outgoing_downbeat_alignment_target_ms": 180000,
+            "outgoing_alignment_target_source": "LEGACY_T_MS",
             "pair_compatibility_components": {
               "genre_compatibility": "COMPATIBLE",
               "tempo_compatibility": "DIRECT",
@@ -1387,6 +1506,14 @@
               "beat_downbeat_aligned": true
             },
             "boundary_beat_downbeat_alignable": false,
+            "incoming_entry_t_ms": 15000,
+            "incoming_beat_alignment_target_ms": null,
+            "incoming_downbeat_alignment_target_ms": null,
+            "incoming_alignment_target_source": "NONE",
+            "incoming_alignment_separate_from_entry": false,
+            "outgoing_beat_alignment_target_ms": 180000,
+            "outgoing_downbeat_alignment_target_ms": 180000,
+            "outgoing_alignment_target_source": "LEGACY_T_MS",
             "pair_compatibility_components": {
               "genre_compatibility": "COMPATIBLE",
               "tempo_compatibility": "DIRECT",
@@ -1466,6 +1593,14 @@
               "beat_downbeat_aligned": true
             },
             "boundary_beat_downbeat_alignable": false,
+            "incoming_entry_t_ms": 0,
+            "incoming_beat_alignment_target_ms": null,
+            "incoming_downbeat_alignment_target_ms": null,
+            "incoming_alignment_target_source": "NONE",
+            "incoming_alignment_separate_from_entry": false,
+            "outgoing_beat_alignment_target_ms": 180000,
+            "outgoing_downbeat_alignment_target_ms": 180000,
+            "outgoing_alignment_target_source": "LEGACY_T_MS",
             "pair_compatibility_components": {
               "genre_compatibility": "COMPATIBLE",
               "tempo_compatibility": "DIRECT",
@@ -1522,6 +1657,7 @@
             "eligible": true,
             "entry_reason_codes": [
               "AUTHORED_LEADING_SILENCE_SKIPPED",
+              "ENTRY_AND_ALIGNMENT_ANCHOR_COINCIDE",
               "BOUNDARY_ALIGNMENT_EVIDENCE_PRESENT"
             ],
             "outgoing_content_preservation_ratio": 1.0,
@@ -1543,6 +1679,14 @@
               "beat_downbeat_aligned": true
             },
             "boundary_beat_downbeat_alignable": true,
+            "incoming_entry_t_ms": 5000,
+            "incoming_beat_alignment_target_ms": 5000,
+            "incoming_downbeat_alignment_target_ms": 5000,
+            "incoming_alignment_target_source": "LEGACY_T_MS",
+            "incoming_alignment_separate_from_entry": false,
+            "outgoing_beat_alignment_target_ms": 180000,
+            "outgoing_downbeat_alignment_target_ms": 180000,
+            "outgoing_alignment_target_source": "LEGACY_T_MS",
             "pair_compatibility_components": {
               "genre_compatibility": "COMPATIBLE",
               "tempo_compatibility": "DIRECT",
@@ -1623,6 +1767,14 @@
               "beat_downbeat_aligned": true
             },
             "boundary_beat_downbeat_alignable": false,
+            "incoming_entry_t_ms": 15000,
+            "incoming_beat_alignment_target_ms": null,
+            "incoming_downbeat_alignment_target_ms": null,
+            "incoming_alignment_target_source": "NONE",
+            "incoming_alignment_separate_from_entry": false,
+            "outgoing_beat_alignment_target_ms": 180000,
+            "outgoing_downbeat_alignment_target_ms": 180000,
+            "outgoing_alignment_target_source": "LEGACY_T_MS",
             "pair_compatibility_components": {
               "genre_compatibility": "COMPATIBLE",
               "tempo_compatibility": "DIRECT",
@@ -1705,6 +1857,7 @@
         },
         "incoming_entry_reason_codes": [
           "PHRASE_CUE_EVIDENCE_PRESENT",
+          "ENTRY_AND_ALIGNMENT_ANCHOR_COINCIDE",
           "BOUNDARY_ALIGNMENT_EVIDENCE_PRESENT"
         ],
         "incoming_phrase_section_evidence": true,
@@ -1795,6 +1948,14 @@
               "beat_downbeat_aligned": true
             },
             "boundary_beat_downbeat_alignable": false,
+            "incoming_entry_t_ms": 0,
+            "incoming_beat_alignment_target_ms": null,
+            "incoming_downbeat_alignment_target_ms": null,
+            "incoming_alignment_target_source": "NONE",
+            "incoming_alignment_separate_from_entry": false,
+            "outgoing_beat_alignment_target_ms": 180000,
+            "outgoing_downbeat_alignment_target_ms": 180000,
+            "outgoing_alignment_target_source": "LEGACY_T_MS",
             "pair_compatibility_components": {
               "genre_compatibility": "COMPATIBLE",
               "tempo_compatibility": "DIRECT",
@@ -1851,6 +2012,7 @@
             "eligible": true,
             "entry_reason_codes": [
               "PHRASE_CUE_EVIDENCE_PRESENT",
+              "ENTRY_AND_ALIGNMENT_ANCHOR_COINCIDE",
               "BOUNDARY_ALIGNMENT_EVIDENCE_PRESENT"
             ],
             "outgoing_content_preservation_ratio": 1.0,
@@ -1872,6 +2034,14 @@
               "beat_downbeat_aligned": true
             },
             "boundary_beat_downbeat_alignable": true,
+            "incoming_entry_t_ms": 8000,
+            "incoming_beat_alignment_target_ms": 8000,
+            "incoming_downbeat_alignment_target_ms": 8000,
+            "incoming_alignment_target_source": "LEGACY_T_MS",
+            "incoming_alignment_separate_from_entry": false,
+            "outgoing_beat_alignment_target_ms": 180000,
+            "outgoing_downbeat_alignment_target_ms": 180000,
+            "outgoing_alignment_target_source": "LEGACY_T_MS",
             "pair_compatibility_components": {
               "genre_compatibility": "COMPATIBLE",
               "tempo_compatibility": "DIRECT",
@@ -1954,6 +2124,14 @@
               "beat_downbeat_aligned": true
             },
             "boundary_beat_downbeat_alignable": false,
+            "incoming_entry_t_ms": 0,
+            "incoming_beat_alignment_target_ms": null,
+            "incoming_downbeat_alignment_target_ms": null,
+            "incoming_alignment_target_source": "NONE",
+            "incoming_alignment_separate_from_entry": false,
+            "outgoing_beat_alignment_target_ms": 180000,
+            "outgoing_downbeat_alignment_target_ms": 180000,
+            "outgoing_alignment_target_source": "LEGACY_T_MS",
             "pair_compatibility_components": {
               "genre_compatibility": "COMPATIBLE",
               "tempo_compatibility": "DIRECT",
@@ -2010,6 +2188,7 @@
             "eligible": true,
             "entry_reason_codes": [
               "PHRASE_CUE_EVIDENCE_PRESENT",
+              "ENTRY_AND_ALIGNMENT_ANCHOR_COINCIDE",
               "BOUNDARY_ALIGNMENT_EVIDENCE_PRESENT"
             ],
             "outgoing_content_preservation_ratio": 1.0,
@@ -2031,6 +2210,14 @@
               "beat_downbeat_aligned": true
             },
             "boundary_beat_downbeat_alignable": true,
+            "incoming_entry_t_ms": 8000,
+            "incoming_beat_alignment_target_ms": 8000,
+            "incoming_downbeat_alignment_target_ms": 8000,
+            "incoming_alignment_target_source": "LEGACY_T_MS",
+            "incoming_alignment_separate_from_entry": false,
+            "outgoing_beat_alignment_target_ms": 180000,
+            "outgoing_downbeat_alignment_target_ms": 180000,
+            "outgoing_alignment_target_source": "LEGACY_T_MS",
             "pair_compatibility_components": {
               "genre_compatibility": "COMPATIBLE",
               "tempo_compatibility": "DIRECT",
@@ -2116,6 +2303,7 @@
         },
         "incoming_entry_reason_codes": [
           "PHRASE_CUE_EVIDENCE_PRESENT",
+          "ENTRY_AND_ALIGNMENT_ANCHOR_COINCIDE",
           "BOUNDARY_ALIGNMENT_EVIDENCE_PRESENT"
         ],
         "incoming_phrase_section_evidence": true,
@@ -2205,6 +2393,14 @@
               "beat_downbeat_aligned": true
             },
             "boundary_beat_downbeat_alignable": false,
+            "incoming_entry_t_ms": 0,
+            "incoming_beat_alignment_target_ms": null,
+            "incoming_downbeat_alignment_target_ms": null,
+            "incoming_alignment_target_source": "NONE",
+            "incoming_alignment_separate_from_entry": false,
+            "outgoing_beat_alignment_target_ms": 180000,
+            "outgoing_downbeat_alignment_target_ms": 180000,
+            "outgoing_alignment_target_source": "LEGACY_T_MS",
             "pair_compatibility_components": {
               "genre_compatibility": "COMPATIBLE",
               "tempo_compatibility": "DIRECT",
@@ -2259,6 +2455,7 @@
             "eligible": true,
             "entry_reason_codes": [
               "PHRASE_CUE_EVIDENCE_PRESENT",
+              "ENTRY_AND_ALIGNMENT_ANCHOR_COINCIDE",
               "BOUNDARY_ALIGNMENT_EVIDENCE_PRESENT"
             ],
             "outgoing_content_preservation_ratio": 1.0,
@@ -2280,6 +2477,14 @@
               "beat_downbeat_aligned": true
             },
             "boundary_beat_downbeat_alignable": true,
+            "incoming_entry_t_ms": 6000,
+            "incoming_beat_alignment_target_ms": 6000,
+            "incoming_downbeat_alignment_target_ms": 6000,
+            "incoming_alignment_target_source": "LEGACY_T_MS",
+            "incoming_alignment_separate_from_entry": false,
+            "outgoing_beat_alignment_target_ms": 180000,
+            "outgoing_downbeat_alignment_target_ms": 180000,
+            "outgoing_alignment_target_source": "LEGACY_T_MS",
             "pair_compatibility_components": {
               "genre_compatibility": "COMPATIBLE",
               "tempo_compatibility": "DIRECT",
@@ -2361,6 +2566,14 @@
               "beat_downbeat_aligned": true
             },
             "boundary_beat_downbeat_alignable": false,
+            "incoming_entry_t_ms": 0,
+            "incoming_beat_alignment_target_ms": null,
+            "incoming_downbeat_alignment_target_ms": null,
+            "incoming_alignment_target_source": "NONE",
+            "incoming_alignment_separate_from_entry": false,
+            "outgoing_beat_alignment_target_ms": 180000,
+            "outgoing_downbeat_alignment_target_ms": 180000,
+            "outgoing_alignment_target_source": "LEGACY_T_MS",
             "pair_compatibility_components": {
               "genre_compatibility": "COMPATIBLE",
               "tempo_compatibility": "DIRECT",
@@ -2415,6 +2628,7 @@
             "eligible": true,
             "entry_reason_codes": [
               "PHRASE_CUE_EVIDENCE_PRESENT",
+              "ENTRY_AND_ALIGNMENT_ANCHOR_COINCIDE",
               "BOUNDARY_ALIGNMENT_EVIDENCE_PRESENT"
             ],
             "outgoing_content_preservation_ratio": 1.0,
@@ -2436,6 +2650,14 @@
               "beat_downbeat_aligned": true
             },
             "boundary_beat_downbeat_alignable": true,
+            "incoming_entry_t_ms": 6000,
+            "incoming_beat_alignment_target_ms": 6000,
+            "incoming_downbeat_alignment_target_ms": 6000,
+            "incoming_alignment_target_source": "LEGACY_T_MS",
+            "incoming_alignment_separate_from_entry": false,
+            "outgoing_beat_alignment_target_ms": 180000,
+            "outgoing_downbeat_alignment_target_ms": 180000,
+            "outgoing_alignment_target_source": "LEGACY_T_MS",
             "pair_compatibility_components": {
               "genre_compatibility": "COMPATIBLE",
               "tempo_compatibility": "DIRECT",
@@ -2521,6 +2743,7 @@
         },
         "incoming_entry_reason_codes": [
           "ENTRY_AT_TRACK_START",
+          "ENTRY_AND_ALIGNMENT_ANCHOR_COINCIDE",
           "BOUNDARY_ALIGNMENT_EVIDENCE_PRESENT"
         ],
         "incoming_phrase_section_evidence": false,
@@ -2590,6 +2813,7 @@
             "eligible": true,
             "entry_reason_codes": [
               "ENTRY_AT_TRACK_START",
+              "ENTRY_AND_ALIGNMENT_ANCHOR_COINCIDE",
               "BOUNDARY_ALIGNMENT_EVIDENCE_PRESENT"
             ],
             "outgoing_content_preservation_ratio": 1.0,
@@ -2611,6 +2835,14 @@
               "beat_downbeat_aligned": true
             },
             "boundary_beat_downbeat_alignable": true,
+            "incoming_entry_t_ms": 0,
+            "incoming_beat_alignment_target_ms": 0,
+            "incoming_downbeat_alignment_target_ms": 0,
+            "incoming_alignment_target_source": "LEGACY_T_MS",
+            "incoming_alignment_separate_from_entry": false,
+            "outgoing_beat_alignment_target_ms": 180000,
+            "outgoing_downbeat_alignment_target_ms": 180000,
+            "outgoing_alignment_target_source": "LEGACY_T_MS",
             "pair_compatibility_components": {
               "genre_compatibility": "COMPATIBLE",
               "tempo_compatibility": "DIRECT",
@@ -2672,6 +2904,7 @@
             "eligible": true,
             "entry_reason_codes": [
               "ENTRY_AT_TRACK_START",
+              "ENTRY_AND_ALIGNMENT_ANCHOR_COINCIDE",
               "BOUNDARY_ALIGNMENT_EVIDENCE_PRESENT"
             ],
             "outgoing_content_preservation_ratio": 1.0,
@@ -2693,6 +2926,14 @@
               "beat_downbeat_aligned": true
             },
             "boundary_beat_downbeat_alignable": true,
+            "incoming_entry_t_ms": 0,
+            "incoming_beat_alignment_target_ms": 0,
+            "incoming_downbeat_alignment_target_ms": 0,
+            "incoming_alignment_target_source": "LEGACY_T_MS",
+            "incoming_alignment_separate_from_entry": false,
+            "outgoing_beat_alignment_target_ms": 180000,
+            "outgoing_downbeat_alignment_target_ms": 180000,
+            "outgoing_alignment_target_source": "LEGACY_T_MS",
             "pair_compatibility_components": {
               "genre_compatibility": "COMPATIBLE",
               "tempo_compatibility": "DIRECT",
@@ -2778,6 +3019,7 @@
         },
         "incoming_entry_reason_codes": [
           "ENTRY_AT_TRACK_START",
+          "ENTRY_AND_ALIGNMENT_ANCHOR_COINCIDE",
           "BOUNDARY_ALIGNMENT_EVIDENCE_PRESENT"
         ],
         "incoming_phrase_section_evidence": false,
@@ -2846,7 +3088,8 @@
             "incoming_candidate_id": "TX07-IN-1",
             "eligible": true,
             "entry_reason_codes": [
-              "ENTRY_AT_TRACK_START"
+              "ENTRY_AT_TRACK_START",
+              "ENTRY_AND_ALIGNMENT_ANCHOR_COINCIDE"
             ],
             "outgoing_content_preservation_ratio": 1.0,
             "preservation_band": "PREFERRED",
@@ -2867,6 +3110,14 @@
               "beat_downbeat_aligned": true
             },
             "boundary_beat_downbeat_alignable": true,
+            "incoming_entry_t_ms": 0,
+            "incoming_beat_alignment_target_ms": 0,
+            "incoming_downbeat_alignment_target_ms": 0,
+            "incoming_alignment_target_source": "LEGACY_T_MS",
+            "incoming_alignment_separate_from_entry": false,
+            "outgoing_beat_alignment_target_ms": 270000,
+            "outgoing_downbeat_alignment_target_ms": 270000,
+            "outgoing_alignment_target_source": "LEGACY_T_MS",
             "pair_compatibility_components": {
               "genre_compatibility": "COMPATIBLE",
               "tempo_compatibility": "DIRECT",
@@ -2921,6 +3172,7 @@
             "eligible": true,
             "entry_reason_codes": [
               "ENTRY_AT_TRACK_START",
+              "ENTRY_AND_ALIGNMENT_ANCHOR_COINCIDE",
               "BOUNDARY_ALIGNMENT_EVIDENCE_PRESENT"
             ],
             "outgoing_content_preservation_ratio": 0.99,
@@ -2942,6 +3194,14 @@
               "beat_downbeat_aligned": true
             },
             "boundary_beat_downbeat_alignable": true,
+            "incoming_entry_t_ms": 0,
+            "incoming_beat_alignment_target_ms": 0,
+            "incoming_downbeat_alignment_target_ms": 0,
+            "incoming_alignment_target_source": "LEGACY_T_MS",
+            "incoming_alignment_separate_from_entry": false,
+            "outgoing_beat_alignment_target_ms": 257000,
+            "outgoing_downbeat_alignment_target_ms": 257000,
+            "outgoing_alignment_target_source": "LEGACY_T_MS",
             "pair_compatibility_components": {
               "genre_compatibility": "COMPATIBLE",
               "tempo_compatibility": "DIRECT",
@@ -3002,7 +3262,8 @@
             "incoming_candidate_id": "TX07-IN-1",
             "eligible": true,
             "entry_reason_codes": [
-              "ENTRY_AT_TRACK_START"
+              "ENTRY_AT_TRACK_START",
+              "ENTRY_AND_ALIGNMENT_ANCHOR_COINCIDE"
             ],
             "outgoing_content_preservation_ratio": 1.0,
             "preservation_band": "PREFERRED",
@@ -3023,6 +3284,14 @@
               "beat_downbeat_aligned": true
             },
             "boundary_beat_downbeat_alignable": true,
+            "incoming_entry_t_ms": 0,
+            "incoming_beat_alignment_target_ms": 0,
+            "incoming_downbeat_alignment_target_ms": 0,
+            "incoming_alignment_target_source": "LEGACY_T_MS",
+            "incoming_alignment_separate_from_entry": false,
+            "outgoing_beat_alignment_target_ms": 270000,
+            "outgoing_downbeat_alignment_target_ms": 270000,
+            "outgoing_alignment_target_source": "LEGACY_T_MS",
             "pair_compatibility_components": {
               "genre_compatibility": "COMPATIBLE",
               "tempo_compatibility": "DIRECT",
@@ -3077,6 +3346,7 @@
             "eligible": true,
             "entry_reason_codes": [
               "ENTRY_AT_TRACK_START",
+              "ENTRY_AND_ALIGNMENT_ANCHOR_COINCIDE",
               "BOUNDARY_ALIGNMENT_EVIDENCE_PRESENT"
             ],
             "outgoing_content_preservation_ratio": 0.99,
@@ -3098,6 +3368,14 @@
               "beat_downbeat_aligned": true
             },
             "boundary_beat_downbeat_alignable": true,
+            "incoming_entry_t_ms": 0,
+            "incoming_beat_alignment_target_ms": 0,
+            "incoming_downbeat_alignment_target_ms": 0,
+            "incoming_alignment_target_source": "LEGACY_T_MS",
+            "incoming_alignment_separate_from_entry": false,
+            "outgoing_beat_alignment_target_ms": 257000,
+            "outgoing_downbeat_alignment_target_ms": 257000,
+            "outgoing_alignment_target_source": "LEGACY_T_MS",
             "pair_compatibility_components": {
               "genre_compatibility": "COMPATIBLE",
               "tempo_compatibility": "DIRECT",
@@ -3156,6 +3434,282 @@
       "expected_winner": {
         "outgoing": "TX07-OUT-B",
         "incoming": "TX07-IN-1"
+      },
+      "matches_expectation": true
+    },
+    "TX-08": {
+      "title": "incoming_entry_zero_ms_with_separate_later_explicit_alignment_anchor",
+      "purpose": "A9 (alignment-anchor contract separation): proves an incoming track may audibly start at 0ms while a later, explicit beat/downbeat anchor is used purely as an alignment reference. The incoming candidate carries explicit beat_alignment_target_ms/downbeat_alignment_target_ms (EXPLICIT mode) instead of the legacy beat_downbeat_aligned boolean, and is otherwise honestly FULL_DJ-compatible under the existing, unmodified gates.",
+      "decision": {
+        "fixture_id": "TX-08",
+        "listener_intent": "SEAMLESS_FULL_TRACK_DEFAULT",
+        "policy_name": "SEAMLESS_FULL_TRACK_DEFAULT_BOUNDARY",
+        "decision_type": "TRANSITION",
+        "current_track_effective_content_end_ms": 200000,
+        "selected_outgoing_exit_candidate_id": "TX08-OUT-1",
+        "transition_onset_window_ms": {
+          "t_start_ms": 180000,
+          "t_end_ms": 180000
+        },
+        "outgoing_last_audible_target_ms": 200000,
+        "outgoing_content_preservation_target": 1.0,
+        "selected_incoming_entry_candidate_id": "TX08-IN-ZERO-SEPARATE-ANCHOR",
+        "incoming_effective_content_start_ms": 0,
+        "next_track_entry_window_ms": {
+          "t_start_ms": 0,
+          "t_end_ms": 0
+        },
+        "incoming_entry_reason_codes": [
+          "ENTRY_AT_TRACK_START",
+          "SEPARATE_INCOMING_ALIGNMENT_ANCHOR_PRESENT",
+          "BOUNDARY_ALIGNMENT_EVIDENCE_PRESENT"
+        ],
+        "incoming_phrase_section_evidence": false,
+        "allowed_transition_class_set": [
+          "FULL_DJ_BLEND",
+          "SHORT_EQ_BLEND",
+          "SIMPLE_CROSSFADE"
+        ],
+        "pair_compatibility_components": {
+          "genre_compatibility": "COMPATIBLE",
+          "tempo_compatibility": "DIRECT",
+          "required_tempo_stretch_pct": 0.0,
+          "required_tempo_ratio": 1.0,
+          "tempo_requires_playback_rate_change": false,
+          "beat_compatibility": "SUFFICIENT",
+          "downbeat_compatibility": "SUFFICIENT",
+          "harmonic_compatibility": "COMPATIBLE",
+          "harmonic_exception_applied": false,
+          "energy_continuity": "STRONG",
+          "structure_compatibility": "COMPATIBLE",
+          "vocal_collision_risk": "LOW",
+          "bass_percussion_collision_risk": "LOW",
+          "intro_outro_texture_compatibility": "COMPATIBLE",
+          "analysis_confidence": "HIGH",
+          "overall_dynamic_mix_eligible": true,
+          "reason_codes": [
+            "GENRE_COMPATIBLE_SAME_FAMILY",
+            "TEMPO_DIRECT_COMPATIBLE",
+            "BEAT_CONFIDENCE_SUFFICIENT",
+            "DOWNBEAT_CONFIDENCE_SUFFICIENT",
+            "HARMONIC_COMPATIBLE",
+            "ENERGY_CONTINUITY_STRONG",
+            "STRUCTURE_COMPATIBLE",
+            "VOCAL_COLLISION_RISK_ACCEPTABLE",
+            "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+            "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+            "ANALYSIS_CONFIDENCE_SUFFICIENT",
+            "PAIR_FULLY_COMPATIBLE_COMPLEX_MIX_ELIGIBLE"
+          ]
+        },
+        "outgoing_beat_alignment_target_ms": 180000,
+        "incoming_beat_alignment_target_ms": 8000,
+        "outgoing_downbeat_alignment_target_ms": 180000,
+        "incoming_downbeat_alignment_target_ms": 8000,
+        "beat_phase_relation": "NOT_MEASURED",
+        "bar_phase_relation": "NOT_MEASURED",
+        "beat_alignment_action": "ALIGN_OUTGOING_BEAT_TARGET_TO_INCOMING_BEAT_TARGET",
+        "bar_alignment_action": "ALIGN_OUTGOING_DOWNBEAT_TARGET_TO_INCOMING_DOWNBEAT_TARGET",
+        "required_tempo_ratio": 1.0,
+        "permitted_tempo_ratio_max_deviation": 0.12,
+        "required_pitch_shift_semitones": 0,
+        "permitted_pitch_shift_semitones_min": -3,
+        "permitted_pitch_shift_semitones_max": 3,
+        "energy_continuity_target": "PAIR_ENERGY_CONTINUITY=STRONG",
+        "vocal_collision_constraints": "PAIR_VOCAL_COLLISION_RISK=LOW",
+        "bass_collision_constraints": "PAIR_BASS_PERCUSSION_COLLISION_RISK=LOW",
+        "analysis_confidence": "HIGH",
+        "reason_codes": [
+          "STRUCTURAL_EVIDENCE_PRESENT",
+          "BEST_RANKED_COMPLETE_BOUNDARY_PLAN"
+        ],
+        "queue_order_independent_of_exit_timing": true,
+        "candidate_rank_trace": [
+          {
+            "outgoing_candidate_id": "TX08-OUT-1",
+            "incoming_candidate_id": "TX08-IN-ZERO-SEPARATE-ANCHOR",
+            "eligible": true,
+            "entry_reason_codes": [
+              "ENTRY_AT_TRACK_START",
+              "SEPARATE_INCOMING_ALIGNMENT_ANCHOR_PRESENT",
+              "BOUNDARY_ALIGNMENT_EVIDENCE_PRESENT"
+            ],
+            "outgoing_content_preservation_ratio": 1.0,
+            "preservation_band": "PREFERRED",
+            "musical_structure_score": 0.5,
+            "outgoing_structure_score": 1.0,
+            "incoming_structure_score": 0.0,
+            "outgoing_preservation_components": {
+              "effective_content_end_ms": 200000,
+              "transition_onset_ms": 180000,
+              "outgoing_last_audible_ms": 200000,
+              "overlap_duration_ms": 20000,
+              "outgoing_content_lost_ms": 0
+            },
+            "outgoing_structure_components": {
+              "in_acceptable_exit_region": true,
+              "is_outro_tail_opportunity": true,
+              "musical_unit_complete": true,
+              "beat_downbeat_aligned": true
+            },
+            "boundary_beat_downbeat_alignable": true,
+            "incoming_entry_t_ms": 0,
+            "incoming_beat_alignment_target_ms": 8000,
+            "incoming_downbeat_alignment_target_ms": 8000,
+            "incoming_alignment_target_source": "EXPLICIT",
+            "incoming_alignment_separate_from_entry": true,
+            "outgoing_beat_alignment_target_ms": 180000,
+            "outgoing_downbeat_alignment_target_ms": 180000,
+            "outgoing_alignment_target_source": "LEGACY_T_MS",
+            "pair_compatibility_components": {
+              "genre_compatibility": "COMPATIBLE",
+              "tempo_compatibility": "DIRECT",
+              "required_tempo_stretch_pct": 0.0,
+              "required_tempo_ratio": 1.0,
+              "tempo_requires_playback_rate_change": false,
+              "beat_compatibility": "SUFFICIENT",
+              "downbeat_compatibility": "SUFFICIENT",
+              "harmonic_compatibility": "COMPATIBLE",
+              "harmonic_exception_applied": false,
+              "energy_continuity": "STRONG",
+              "structure_compatibility": "COMPATIBLE",
+              "vocal_collision_risk": "LOW",
+              "bass_percussion_collision_risk": "LOW",
+              "intro_outro_texture_compatibility": "COMPATIBLE",
+              "analysis_confidence": "HIGH",
+              "overall_dynamic_mix_eligible": true,
+              "reason_codes": [
+                "GENRE_COMPATIBLE_SAME_FAMILY",
+                "TEMPO_DIRECT_COMPATIBLE",
+                "BEAT_CONFIDENCE_SUFFICIENT",
+                "DOWNBEAT_CONFIDENCE_SUFFICIENT",
+                "HARMONIC_COMPATIBLE",
+                "ENERGY_CONTINUITY_STRONG",
+                "STRUCTURE_COMPATIBLE",
+                "VOCAL_COLLISION_RISK_ACCEPTABLE",
+                "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+                "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+                "ANALYSIS_CONFIDENCE_SUFFICIENT",
+                "PAIR_FULLY_COMPATIBLE_COMPLEX_MIX_ELIGIBLE"
+              ]
+            },
+            "energy_continuity_priority": "STRONG",
+            "required_tempo_ratio": 1.0,
+            "required_pitch_shift_semitones": 0,
+            "permitted_pitch_shift_semitones_range": [
+              -3,
+              3
+            ],
+            "eligible_for_dynamic_mix": true,
+            "allowed_transition_class_set": [
+              "FULL_DJ_BLEND",
+              "SHORT_EQ_BLEND",
+              "SIMPLE_CROSSFADE"
+            ],
+            "confidence": "HIGH",
+            "effective_content_end_ms": 200000,
+            "boundary_rank": 1,
+            "selected": true,
+            "selection_reason_codes": [
+              "BEST_RANKED_COMPLETE_BOUNDARY_PLAN"
+            ]
+          }
+        ],
+        "candidate_trace": [
+          {
+            "outgoing_candidate_id": "TX08-OUT-1",
+            "incoming_candidate_id": "TX08-IN-ZERO-SEPARATE-ANCHOR",
+            "eligible": true,
+            "entry_reason_codes": [
+              "ENTRY_AT_TRACK_START",
+              "SEPARATE_INCOMING_ALIGNMENT_ANCHOR_PRESENT",
+              "BOUNDARY_ALIGNMENT_EVIDENCE_PRESENT"
+            ],
+            "outgoing_content_preservation_ratio": 1.0,
+            "preservation_band": "PREFERRED",
+            "musical_structure_score": 0.5,
+            "outgoing_structure_score": 1.0,
+            "incoming_structure_score": 0.0,
+            "outgoing_preservation_components": {
+              "effective_content_end_ms": 200000,
+              "transition_onset_ms": 180000,
+              "outgoing_last_audible_ms": 200000,
+              "overlap_duration_ms": 20000,
+              "outgoing_content_lost_ms": 0
+            },
+            "outgoing_structure_components": {
+              "in_acceptable_exit_region": true,
+              "is_outro_tail_opportunity": true,
+              "musical_unit_complete": true,
+              "beat_downbeat_aligned": true
+            },
+            "boundary_beat_downbeat_alignable": true,
+            "incoming_entry_t_ms": 0,
+            "incoming_beat_alignment_target_ms": 8000,
+            "incoming_downbeat_alignment_target_ms": 8000,
+            "incoming_alignment_target_source": "EXPLICIT",
+            "incoming_alignment_separate_from_entry": true,
+            "outgoing_beat_alignment_target_ms": 180000,
+            "outgoing_downbeat_alignment_target_ms": 180000,
+            "outgoing_alignment_target_source": "LEGACY_T_MS",
+            "pair_compatibility_components": {
+              "genre_compatibility": "COMPATIBLE",
+              "tempo_compatibility": "DIRECT",
+              "required_tempo_stretch_pct": 0.0,
+              "required_tempo_ratio": 1.0,
+              "tempo_requires_playback_rate_change": false,
+              "beat_compatibility": "SUFFICIENT",
+              "downbeat_compatibility": "SUFFICIENT",
+              "harmonic_compatibility": "COMPATIBLE",
+              "harmonic_exception_applied": false,
+              "energy_continuity": "STRONG",
+              "structure_compatibility": "COMPATIBLE",
+              "vocal_collision_risk": "LOW",
+              "bass_percussion_collision_risk": "LOW",
+              "intro_outro_texture_compatibility": "COMPATIBLE",
+              "analysis_confidence": "HIGH",
+              "overall_dynamic_mix_eligible": true,
+              "reason_codes": [
+                "GENRE_COMPATIBLE_SAME_FAMILY",
+                "TEMPO_DIRECT_COMPATIBLE",
+                "BEAT_CONFIDENCE_SUFFICIENT",
+                "DOWNBEAT_CONFIDENCE_SUFFICIENT",
+                "HARMONIC_COMPATIBLE",
+                "ENERGY_CONTINUITY_STRONG",
+                "STRUCTURE_COMPATIBLE",
+                "VOCAL_COLLISION_RISK_ACCEPTABLE",
+                "BASS_PERCUSSION_COLLISION_RISK_ACCEPTABLE",
+                "INTRO_OUTRO_TEXTURE_COMPATIBLE",
+                "ANALYSIS_CONFIDENCE_SUFFICIENT",
+                "PAIR_FULLY_COMPATIBLE_COMPLEX_MIX_ELIGIBLE"
+              ]
+            },
+            "energy_continuity_priority": "STRONG",
+            "required_tempo_ratio": 1.0,
+            "required_pitch_shift_semitones": 0,
+            "permitted_pitch_shift_semitones_range": [
+              -3,
+              3
+            ],
+            "eligible_for_dynamic_mix": true,
+            "allowed_transition_class_set": [
+              "FULL_DJ_BLEND",
+              "SHORT_EQ_BLEND",
+              "SIMPLE_CROSSFADE"
+            ],
+            "confidence": "HIGH",
+            "effective_content_end_ms": 200000,
+            "boundary_rank": 1,
+            "selected": true,
+            "selection_reason_codes": [
+              "BEST_RANKED_COMPLETE_BOUNDARY_PLAN"
+            ]
+          }
+        ]
+      },
+      "expected_winner": {
+        "outgoing": "TX08-OUT-1",
+        "incoming": "TX08-IN-ZERO-SEPARATE-ANCHOR"
       },
       "matches_expectation": true
     }

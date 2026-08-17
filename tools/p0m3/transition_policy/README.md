@@ -15,7 +15,7 @@ Stretch / Rubber Band / production engine code exists here.
 ```
 fixtures/fixtures.json            14 timing/preservation fixtures (letters A-N), single-track/legacy planner, metadata-only
 fixtures/pair_fixtures.json       13 pair-compatibility fixtures (letters G-K + R4 mutations PAIR-06..08 + R7 mutations PAIR-09/11..13), metadata-only
-fixtures/transition_fixtures.json 7 COMPLETE boundary-planning fixtures TX-01..07 (outgoing exit x incoming entry x pair), metadata-only
+fixtures/transition_fixtures.json 8 COMPLETE boundary-planning fixtures TX-01..08 (outgoing exit x incoming entry x pair), metadata-only
 fixtures/manifest.json            index + spec-letter coverage map + ground-truth-isolation note
 policy/metrics.py                 effective_content_end_ms / transition_onset / preservation-ratio model + preservation_band (R8)
 policy/compatibility.py           pair-level mixability gate; R4 hard-gates structure+texture+harmonic; R6 canonical tempo-ratio math; R7 structured harmonic exception
@@ -135,6 +135,23 @@ shuffle uses a fixed seed).
   weaken preservation safety -- within the SAME band, pair compatibility
   now outranks a marginal (e.g. 1%) preservation edge (TX-07: a 0.99
   pair-compatible boundary beats a 1.00 pair-incompatible one).
+- **Entry and alignment anchor are separate concepts (P0-M3-R3 alignment-anchor
+  contract separation).** `entry_candidate["t_ms"]` means ONLY the audible/
+  source incoming entry time and never silently changes meaning.
+  `policy/contract.resolve_alignment_targets()` resolves an OPTIONAL, separate
+  beat/downbeat alignment reference: EXPLICIT mode
+  (`beat_alignment_target_ms`/`downbeat_alignment_target_ms` on the
+  candidate) always wins over LEGACY mode (the pre-existing
+  `beat_downbeat_aligned` boolean, reproduced byte-for-byte for TX-01..07);
+  a partially-explicit candidate is never backfilled from `t_ms`, and an
+  explicit target that precedes its own candidate's entry is rejected
+  outright (never clamped/rewritten). `next_track_entry_window_ms` and
+  `incoming_effective_content_start_ms` are NEVER derived from an alignment
+  target -- only from `t_ms`/`onset_window_ms` -- so a later alignment
+  anchor never moves the audible entry. `TX-08` proves the full separation:
+  incoming entry stays at `0ms` while an explicit `8000ms` beat/downbeat
+  anchor authorizes `FULL_DJ_BLEND`. See
+  `docs/research/P0-M3-R3-ALIGNMENT-ANCHOR-CONTRACT.md`.
 - **Honest phase semantics, explicit render actions (R9).**
   `beat_phase_relation`/`bar_phase_relation` report only `NOT_MEASURED`
   (both targets known, but no real phase measurement exists in this P0

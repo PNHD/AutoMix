@@ -36,7 +36,7 @@ song early"):
 from . import eligibility as elig_mod
 from .compatibility import evaluate_pair_compatibility, downgrade_transition_class_set
 from .ranking import rank_boundary_plans
-from .contract import build_boundary_transition_decision, build_fallback_decision
+from .contract import build_boundary_transition_decision, build_fallback_decision, resolve_alignment_targets
 
 INCOMING_REASON = {
     "ENTRY_AT_TRACK_START": "t_ms == 0; always a valid entry point",
@@ -45,8 +45,12 @@ INCOMING_REASON = {
     "ENTRY_SKIPS_MEANINGFUL_INTRO_WITHOUT_EVIDENCE": "entry candidate starts after 0ms with no authored-silence-skip or phrase/cue evidence -- would silently remove meaningful intro content; rejected",
     "NO_ELIGIBLE_ENTRY_FOR_ANY_SAFE_EXIT": "at least one outgoing exit was safe, but no incoming entry candidate was eligible for any of them",
     "NO_SAFE_OUTGOING_EXIT": "no outgoing candidate cleared the preservation/structural/confidence/vocal-safety guards; incoming entry was never evaluated",
-    "FULL_DJ_BLEND_WITHHELD_NO_BOUNDARY_ALIGNMENT_EVIDENCE": "R5 (PM REVIEW #3): FULL_DJ_BLEND requires explicit beat/downbeat alignment evidence on BOTH the outgoing exit AND the incoming entry candidates of THIS specific boundary -- pair-level beat/downbeat CONFIDENCE alone is not renderable alignment evidence",
-    "BOUNDARY_ALIGNMENT_EVIDENCE_PRESENT": "both the outgoing exit and incoming entry candidates of this boundary carry explicit beat/downbeat alignment evidence",
+    "FULL_DJ_BLEND_WITHHELD_NO_BOUNDARY_ALIGNMENT_EVIDENCE": "R5 (PM REVIEW #3) / A5 (alignment-anchor contract separation): FULL_DJ_BLEND requires a RESOLVED beat AND downbeat alignment target (policy/contract.resolve_alignment_targets) on BOTH the outgoing exit AND the incoming entry candidates of THIS specific boundary -- pair-level beat/downbeat CONFIDENCE alone is not renderable alignment evidence",
+    "BOUNDARY_ALIGNMENT_EVIDENCE_PRESENT": "both the outgoing exit and incoming entry candidates of this boundary carry resolved beat/downbeat alignment evidence",
+    "SEPARATE_INCOMING_ALIGNMENT_ANCHOR_PRESENT": "A7: the incoming candidate's resolved alignment target(s) differ from its own audible entry t_ms -- an explicit, separate alignment anchor, not a coincidental match",
+    "ENTRY_AND_ALIGNMENT_ANCHOR_COINCIDE": "A7: the incoming candidate's resolved alignment target(s) equal its own audible entry t_ms (legacy behavior, or an explicit anchor authored at the same point)",
+    "PARTIAL_INCOMING_ALIGNMENT_EVIDENCE": "A1/A10: the incoming candidate supplied only ONE of beat_alignment_target_ms/downbeat_alignment_target_ms explicitly -- the missing side is never backfilled from t_ms, so FULL_DJ_BLEND is withheld",
+    "INVALID_INCOMING_ALIGNMENT_TARGET_PRECEDES_ENTRY": "A4: an incoming alignment target preceded the candidate's own audible entry t_ms -- rejected outright (fail closed), never clamped or rewritten",
 }
 
 
@@ -139,17 +143,54 @@ def plan_transition_boundary(tx_fixture: dict, intent: str, floor_override=None,
             compat = _boundary_pair_compat(tx_fixture, exit_c["candidate_id"], entry_c["candidate_id"])
             allowed_classes = downgrade_transition_class_set(exit_result.preferred_transition_class_set, compat)
 
-            # R5 (PM REVIEW #3): FULL_DJ_BLEND additionally requires
-            # explicit, renderable beat/downbeat alignment evidence on BOTH
-            # sides of THIS specific boundary -- pair-level beat/downbeat
-            # CONFIDENCE (compat.beat_compatibility/downbeat_compatibility,
-            # already required above) is analyzer trust, not proof that the
-            # SELECTED exit/entry candidates actually carry alignment
-            # targets. A candidate's single beat_downbeat_aligned boolean is
-            # used as the explicit machine-readable evidence for BOTH the
-            # beat and downbeat/bar target on that side (see
-            # contract.build_boundary_transition_decision).
-            boundary_alignable = bool(exit_c.get("beat_downbeat_aligned")) and bool(entry_c.get("beat_downbeat_aligned"))
+            # R5 (PM REVIEW #3) / A5 (alignment-anchor contract separation):
+            # FULL_DJ_BLEND additionally requires RESOLVED TARGET PRESENCE
+            # on BOTH sides of THIS specific boundary -- pair-level
+            # beat/downbeat CONFIDENCE (compat.beat_compatibility/
+            # downbeat_compatibility, already required above) is analyzer
+            # trust, not proof that the SELECTED exit/entry candidates
+            # actually carry renderable alignment targets. Each side's
+            # target is resolved by the SAME canonical helper
+            # (policy/contract.resolve_alignment_targets): EXPLICIT
+            # candidate-level fields when present (A1), else the legacy
+            # beat_downbeat_aligned boolean (unchanged behavior for
+            # TX-01..07).
+            exit_beat_target, exit_downbeat_target, exit_alignment_source = resolve_alignment_targets(exit_c)
+            entry_beat_target, entry_downbeat_target, entry_alignment_source = resolve_alignment_targets(entry_c)
+            entry_t_ms = entry_c["t_ms"]
+
+            # A4: an incoming alignment target must never precede the
+            # candidate's own audible entry -- fail closed (withhold),
+            # never clamp/rewrite the timestamp.
+            invalid_incoming_alignment = (
+                (entry_beat_target is not None and entry_beat_target < entry_t_ms)
+                or (entry_downbeat_target is not None and entry_downbeat_target < entry_t_ms)
+            )
+            # A7 provenance: does the resolved alignment target genuinely
+            # differ from the candidate's own entry t_ms? (Independent of
+            # validity -- an invalid target still "differs".)
+            incoming_alignment_separate_from_entry = bool(
+                entry_alignment_source != "NONE" and (
+                    (entry_beat_target is not None and entry_beat_target != entry_t_ms)
+                    or (entry_downbeat_target is not None and entry_downbeat_target != entry_t_ms)
+                )
+            )
+
+            if invalid_incoming_alignment:
+                entry_reasons = entry_reasons + ["INVALID_INCOMING_ALIGNMENT_TARGET_PRECEDES_ENTRY"]
+            elif entry_alignment_source != "NONE":
+                if entry_beat_target is None or entry_downbeat_target is None:
+                    entry_reasons = entry_reasons + ["PARTIAL_INCOMING_ALIGNMENT_EVIDENCE"]
+                elif incoming_alignment_separate_from_entry:
+                    entry_reasons = entry_reasons + ["SEPARATE_INCOMING_ALIGNMENT_ANCHOR_PRESENT"]
+                else:
+                    entry_reasons = entry_reasons + ["ENTRY_AND_ALIGNMENT_ANCHOR_COINCIDE"]
+
+            boundary_alignable = (
+                exit_beat_target is not None and exit_downbeat_target is not None
+                and entry_beat_target is not None and entry_downbeat_target is not None
+                and not invalid_incoming_alignment
+            )
             if not boundary_alignable and "FULL_DJ_BLEND" in allowed_classes:
                 allowed_classes = [c for c in allowed_classes if c != "FULL_DJ_BLEND"]
                 entry_reasons = entry_reasons + ["FULL_DJ_BLEND_WITHHELD_NO_BOUNDARY_ALIGNMENT_EVIDENCE"]
@@ -199,6 +240,17 @@ def plan_transition_boundary(tx_fixture: dict, intent: str, floor_override=None,
                     "beat_downbeat_aligned": bool(exit_c.get("beat_downbeat_aligned")),
                 },
                 "boundary_beat_downbeat_alignable": boundary_alignable,
+                # A7 (alignment-anchor contract separation) trace provenance
+                # -- present for EVERY boundary candidate, not only the
+                # winner.
+                "incoming_entry_t_ms": entry_t_ms,
+                "incoming_beat_alignment_target_ms": entry_beat_target,
+                "incoming_downbeat_alignment_target_ms": entry_downbeat_target,
+                "incoming_alignment_target_source": entry_alignment_source,
+                "incoming_alignment_separate_from_entry": incoming_alignment_separate_from_entry,
+                "outgoing_beat_alignment_target_ms": exit_beat_target,
+                "outgoing_downbeat_alignment_target_ms": exit_downbeat_target,
+                "outgoing_alignment_target_source": exit_alignment_source,
                 "pair_compatibility_components": compat.to_dict(),
                 "energy_continuity_priority": compat.energy_continuity,
                 "required_tempo_ratio": compat.required_tempo_ratio,

@@ -6,7 +6,7 @@
   "transition_fixtures_file": "transition_fixtures.json",
   "fixture_count": 14,
   "pair_fixture_count": 13,
-  "transition_fixture_count": 7,
+  "transition_fixture_count": 8,
   "pm_review_2_repairs": {
     "R1": "boundary.py ranks complete (outgoing exit, incoming entry, pair compatibility AT that boundary) plans -- see TX-01",
     "R2": "boundary.py plans real incoming-entry candidates -- see TX-02 (0ms correct), TX-03 (leading-silence skip), TX-04 (later phrase/cue better), TX-05 (entry changes compatibility)",
@@ -20,6 +20,12 @@
     "R8": "policy/ranking.py ranks by preservation SAFETY BAND (PREFERRED/ACCEPTABLE/UNSAFE, policy/metrics.preservation_band) before pair compatibility, not the raw rounded ratio -- within the same band, pair compatibility now outranks a marginal preservation edge. See TX-07",
     "R9": "beat_phase_relation/bar_phase_relation now report NOT_MEASURED/NOT_APPLICABLE only (never fabricated ALIGNED); new beat_alignment_action/bar_alignment_action fields carry the explicit DSP render-plan instruction"
   },
+  "p0_m3_r3_alignment_anchor_contract_repair": {
+    "source": "docs/research/P0-M3-R3-RM014-ENTRY-ANCHOR-FEASIBILITY.md 'Case B' (diagnostic, no RM014-specific values used here)",
+    "defect_repaired": "entry_candidate[\"t_ms\"] previously meant BOTH the audible/source entry time AND (when beat_downbeat_aligned) the beat/downbeat alignment reference -- a later alignment anchor could not be represented without moving the audible entry itself.",
+    "repair": "policy/contract.resolve_alignment_targets() resolves an optional, separate EXPLICIT alignment reference (beat_alignment_target_ms/downbeat_alignment_target_ms) per candidate; entry_candidate[\"t_ms\"] keeps its existing audible/source-entry meaning unchanged. EXPLICIT mode always wins over the LEGACY beat_downbeat_aligned fallback (never backfilled/partial); an incoming alignment target may never precede its own entry (fail closed, never clamped). See TX-08.",
+    "backward_compatibility": "TX-01..07 use only the legacy beat_downbeat_aligned boolean and are behaviorally unchanged -- resolve_alignment_targets() reproduces that exact prior mapping in LEGACY mode."
+  },
   "transition_fixture_letter_coverage": [
     { "fixture_id": "TX-01", "description": "R1 adversarial: 2 safe near-end exits x 2 entries; every boundary touching the structurally-better exit is pair-incompatible, the other is fully compatible -- planner must select the compatible boundary, order-invariant across both arrays" },
     { "fixture_id": "TX-02", "description": "incoming entry case A: 0ms is genuinely correct; a later no-evidence candidate is rejected. Also R5 case A: 0ms has no beat/downbeat anchor -> FULL_DJ_BLEND withheld (SIMPLE_CROSSFADE remains valid)" },
@@ -27,7 +33,8 @@
     { "fixture_id": "TX-04", "description": "incoming entry case C: a later phrase/cue entry is clearly better than 0ms" },
     { "fixture_id": "TX-05", "description": "incoming entry case D: entry choice alone changes vocal/pair compatibility at the boundary" },
     { "fixture_id": "TX-06", "description": "R5 case B: 0ms IS explicitly authored as a beat/downbeat anchor -> FULL_DJ_BLEND may remain eligible when every other hard gate passes" },
-    { "fixture_id": "TX-07", "description": "R8: preservation-band ranking. OUT-A (1.00, pair-incompatible) vs OUT-B (0.99, pair-compatible), both PREFERRED band -> B wins. OUT-C (0.94) and OUT-D (0.85) never reach the eligible set regardless of compatibility -- the hard floor cannot be crossed" }
+    { "fixture_id": "TX-07", "description": "R8: preservation-band ranking. OUT-A (1.00, pair-incompatible) vs OUT-B (0.99, pair-compatible), both PREFERRED band -> B wins. OUT-C (0.94) and OUT-D (0.85) never reach the eligible set regardless of compatibility -- the hard floor cannot be crossed" },
+    { "fixture_id": "TX-08", "description": "A9 (alignment-anchor contract separation): incoming entry stays audibly at 0ms while an explicit, separate 8000ms beat/downbeat alignment anchor is supplied -- entry window remains 0..0, alignment targets report 8000, FULL_DJ_BLEND is authorized because both sides resolve real targets" }
   ],
   "spec_letter_coverage": [
     { "letter": "A", "fixture_id": "TP-01", "description": "normal 3-4 min track, technical mix point ~30s, no legitimate exit -> reject" },

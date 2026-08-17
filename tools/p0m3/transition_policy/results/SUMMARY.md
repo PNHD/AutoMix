@@ -48,7 +48,7 @@ incompatible_pair_downgrade_rate=0.7692 (10/13)
 | PAIR-12 | R7 | False | False | True | False |
 | PAIR-13 | R7 | False | False | True | False |
 
-## PM REVIEW #2 -- complete boundary-plan results (TX-01..05)
+## PM REVIEW #2 -- complete boundary-plan results (TX-01..08)
 
 | Transition | Expected winner | Selected winner | Matches |
 |---|---|---|---|
@@ -59,6 +59,7 @@ incompatible_pair_downgrade_rate=0.7692 (10/13)
 | TX-05 | TX05-OUT-1 + TX05-IN-B | TX05-OUT-1 + TX05-IN-B | True |
 | TX-06 | TX06-OUT-1 + TX06-IN-ZERO-ANCHORED | TX06-OUT-1 + TX06-IN-ZERO-ANCHORED | True |
 | TX-07 | TX07-OUT-B + TX07-IN-1 | TX07-OUT-B + TX07-IN-1 | True |
+| TX-08 | TX08-OUT-1 + TX08-IN-ZERO-SEPARATE-ANCHOR | TX08-OUT-1 + TX08-IN-ZERO-SEPARATE-ANCHOR | True |
 
 TX-01 order invariance (exit array x entry array, 5 orderings): order_invariant=True
 
