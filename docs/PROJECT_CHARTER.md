@@ -37,7 +37,7 @@ This is the *only* product/engineering scope authorized to begin as "P1." It is:
 
 - local / DRM-free audio only (no streaming-provider integration);
 - preservation-first, consumer listening (not DJ/highlight playback);
-- limited to three transition classes by default: `PLAY_THROUGH`/`NO_SPECIAL_TRANSITION`, `GAPLESS` at genuine natural/continuous-work boundaries, and `SIMPLE_CROSSFADE` at a preservation-safe near-end boundary;
+- limited to three observable/rendered transition classes by default: `NO_SPECIAL_TRANSITION`, `GAPLESS` at genuine natural/continuous-work boundaries, and `SIMPLE_CROSSFADE` at a preservation-safe near-end boundary; the planner may additionally answer an intermediate query with the non-render decision `PLAY_THROUGH` (a `PlannerDecision.decision_type`, never itself a rendered/observed class — see `docs/research/P0-M4-R1-PRESERVATION-FIRST-RESCOPE-CONTRACT.md` §7);
 - fail-closed: when evidence for a more complex transition is missing or low-confidence, the engine degrades to a simpler class rather than forcing a blend.
 
 **Not authorized in the first production prototype:** `FULL_DJ_BLEND`, tempo/time-stretch automation, pitch/key shifting, beat/downbeat-synchronized overlap as a product promise, automatic song-shortening/highlight playback, and automatic non-natural `CUT` as default behavior. `SHORT_EQ_BLEND` is research-only, off by default, and does not become a production default merely because research code for it already exists.
@@ -68,7 +68,7 @@ Normalizes provider-specific track identity and metadata without assuming that t
 
 Target analysis schema (full long-term target; see per-item P1 markers):
 
-- tempo/BPM with confidence — **[FUTURE / RESEARCH for P1]** (not required to choose among `PLAY_THROUGH`/`GAPLESS`/`SIMPLE_CROSSFADE`)
+- tempo/BPM with confidence — **[FUTURE / RESEARCH for P1]** (not required to choose among the narrow scope's rendered classes `NO_SPECIAL_TRANSITION`/`GAPLESS`/`SIMPLE_CROSSFADE`, or the planner's non-render `PLAY_THROUGH` decision)
 - beat timestamps — **[FUTURE / RESEARCH for P1]**
 - downbeats and bar grid — **[FUTURE / RESEARCH for P1]**
 - musical key/chroma with confidence — **[FUTURE / RESEARCH for P1]**
@@ -95,7 +95,7 @@ Candidate scoring should eventually consider (full long-term target):
 - harmonic compatibility — **[FUTURE / RESEARCH for P1]**
 - loudness continuity — **[P1-REQUIRED]**
 - energy continuity — **[FUTURE / RESEARCH for P1]**
-- vocal collision risk — **[FUTURE / RESEARCH for P1]** (not required when the only candidate classes are `PLAY_THROUGH`/`GAPLESS`/`SIMPLE_CROSSFADE`, none of which claim vocal-collision mitigation)
+- vocal collision risk — **[FUTURE / RESEARCH for P1]** (not required when the only candidate rendered classes are `NO_SPECIAL_TRANSITION`/`GAPLESS`/`SIMPLE_CROSSFADE`, none of which claim vocal-collision mitigation; a machine-confirmation gap for the C4/C5 catastrophic codes is tracked, not silently assumed safe — `docs/research/P0-M2-AUTOMIX-QUALITY-BENCHMARK-CONTRACT.md` §16.9)
 - transition length — **[P1-REQUIRED]**
 - analysis confidence — **[FUTURE / RESEARCH for P1]** as a model-derived value; **[P1-REQUIRED]** only in the narrow sense of "fail closed to a simpler class when structural evidence is missing," which does not require a calibrated ML confidence score
 
@@ -163,7 +163,7 @@ The project must stop or materially re-scope if commercial benchmarks already sa
 
 ### P1 — Local AutoMix Engine (authorized scope: `PRESERVATION_FIRST_LOCAL_AUTOMIX`)
 
-**Authorized first production scope, per the P0-M4 rescope decision above:** build and validate a **preservation-first**, local/DRM-free transition engine limited to `PLAY_THROUGH`/`NO_SPECIAL_TRANSITION`, `GAPLESS` at genuine natural/continuous-work boundaries, and `SIMPLE_CROSSFADE` at a preservation-safe near-end boundary. Full requirements, exclusions, and entry conditions are defined in `docs/research/P0-M4-R1-PRESERVATION-FIRST-RESCOPE-CONTRACT.md`. This phase may not start until that contract's preregistered real-music validation independently passes.
+**Authorized first production scope, per the P0-M4 rescope decision above:** build and validate a **preservation-first**, local/DRM-free transition engine limited to three rendered/observed classes — `NO_SPECIAL_TRANSITION`, `GAPLESS` at genuine natural/continuous-work boundaries, and `SIMPLE_CROSSFADE` at a preservation-safe near-end boundary — plus the planner's non-render `PLAY_THROUGH` decision at intermediate query points. Full requirements, exclusions, and entry conditions are defined in `docs/research/P0-M4-R1-PRESERVATION-FIRST-RESCOPE-CONTRACT.md`. This phase may not start until that contract's preregistered real-music validation independently passes.
 
 **P1-BROAD (long-term research target, not currently authorized):** the originally-described "build and validate the provider-independent analysis/planning/DSP core against local/DRM-free fixtures" — i.e. a `FULL_DJ`-capable engine using the full Architecture Boundaries §3–§5 analysis/DSP schema — remains the project's long-term research direction. It does not inherit authorization from the narrow P1 above and requires a separate, explicit, PM-approved evidence gate before any production implementation begins (see `docs/research/P0-M2-AUTOMIX-QUALITY-BENCHMARK-CONTRACT.md`'s NG1–NG8 narrow-scope appendix for the human gate that governs re-expanding scope).
 

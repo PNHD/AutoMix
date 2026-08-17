@@ -394,6 +394,8 @@ Preregistered for the one bounded real-music narrow validation defined in `docs/
 
 **Risk flag (recorded honestly, not hidden):** the 50-pair combined figure has **zero decisive-trial margin** above `NG1`'s `n ≥ 40` requirement at the maximum allowed tie rate. If the realized tie rate lands at exactly 20% (10 of 50 pairs), the combined gate is met exactly, not comfortably. Any additional invalid/excluded pair beyond the preregistered 50 would drop below the required 40 decisive trials. This is accepted as correct per this task's explicit arithmetic requirement, not adjusted upward for convenience (per the anti-overfitting/no-threshold-relaxation discipline, §11/§13).
 
+**Pair selection (repair R2, superseding any earlier under-specified description):** which specific tracks fill the 50/28/22 slots, and which of them additionally fall into the `NG2` (30/21/9) and `NG4` (23/16-dev+7-holdout) subsets, is fixed by the one, unique, deterministic hash-ranking algorithm defined in `docs/research/P0-M4-R1-PRESERVATION-FIRST-RESCOPE-CONTRACT.md` §12. No discretionary/human-chosen seed, no render/listening/planner-result feedback, and no duration/loudness/silence/energy criterion may influence pair membership, direction, or split assignment — those signals may only be *reported* afterward as coverage diagnostics.
+
 ### 16.4 NG1 — Fixed-crossfade human-preference gate (retains `G1`'s statistical standard)
 
 - Candidate: `PRESERVATION_FIRST_LOCAL_AUTOMIX`.
@@ -405,14 +407,37 @@ Preregistered for the one bounded real-music narrow validation defined in `docs/
 - Holdout: `n ≥ 18` decisive, candidate win rate `≥ 60%`.
 - These are the exact `G1` numeric values (§12 `G1`), applied to the narrow 50-pair corpus instead of the broad 74-pair corpus. **No value is lowered.**
 
-### 16.5 NG2 — SimpMusic-class baseline (retains `G2`'s quality bar, unchanged numbers)
+### 16.5 NG2 — SimpMusic-class baseline (retains `G2`'s quality bar, unchanged numbers; repair R1 makes it executable)
 
-- Subset: **30** distinct pairs — dev **21** / holdout **9** (identical to `G2`, §12/manifest schema `g2_simpmusic_comparison_subset_min`/`_holdout_min`).
+- Subset: **30** distinct pairs — dev **21** / holdout **9** (identical to `G2`, §12/manifest schema `g2_simpmusic_comparison_subset_min`/`_holdout_min`), selected as a subset of the frozen 50 by the deterministic algorithm in `docs/research/P0-M4-R1-PRESERVATION-FIRST-RESCOPE-CONTRACT.md` §12.
 - Comparison path (unchanged from §6.3): actual SimpMusic where `IDENTICAL_AUDIO_COMPARISON` is genuinely possible; otherwise clean-room `SIMPMUSIC_CLASS_REFERENCE` exactly as already defined by P0-M2/P0-M1.
 - Required: mean overall-preference score (dimension 15, §9.2) `≥` SimpMusic-class score `+0.5`.
 - Combined `n ≥ 30`, holdout `n ≥ 9`.
 - No GPL source copying (unchanged, §6.3).
 - `CATALOG_EQUIVALENT` playback is never treated as identical-audio quantitative evidence (unchanged, §6.1 binding rule).
+
+**R1 repair — dimension 15 is now actually collected.** `NG7`'s compact owner UX (§16.10) collects only `A preferred`/`B preferred`/`Tie` plus a veto control; it never collects a 1–5 score, so as originally written `NG2`'s `+0.5` mean-score requirement had no data to compute against. This is fixed narrowly, for the `NG2` 30-pair subset only, by adding exactly one additional scalar collection — **dimension 15, `OVERALL_MUSICAL_INTENTIONALITY`**, the existing P0-M2 dimension (§9.2, item 15), on the existing anchored 1–5 scale (1 = clearly broken, 2 = poor, 3 = acceptable, 4 = good, 5 = excellent). Dimensions 1–14 are **not** restored; only dimension 15 is added, and only for the 30 `NG2` pairs.
+
+For every `NG2` pair, the blinded listener performs one additional session (candidate vs. the `NG2` comparator, distinct from `NG1`'s candidate-vs-fixed-crossfade session for the same pair when it also happens to be an `NG1` pair) and records all four of:
+
+1. Candidate `OVERALL_MUSICAL_INTENTIONALITY`: integer 1–5.
+2. `NG2` comparator (actual SimpMusic or `SIMPMUSIC_CLASS_REFERENCE`, per §6.3) `OVERALL_MUSICAL_INTENTIONALITY`: integer 1–5.
+3. `A preferred` / `B preferred` / `Tie` for this specific comparison (the `NG2`-session preference; diagnostic and veto-context only — it does not itself feed any `NG2` numeric threshold, which is computed from the dimension-15 means alone, not from a win-rate).
+4. `VETO / unacceptable` + optional short reason, scoped to this `NG2` session.
+
+`N/A` is **not** permitted for dimension 15 on an otherwise-valid `NG2` observation. If either side (candidate or comparator) cannot actually be rendered/played under the accepted `IDENTICAL_AUDIO_COMPARISON`/clean-room baseline path (§6.3), that pair is **not** a valid completed `NG2` observation and must not be silently scored — it is logged `NG2_EXCLUDED_UNRENDERABLE` in the run manifest and excluded from both the numerator and denominator, never treated as a `0`, a tie, or an `N/A`.
+
+**Backfill rule (keeps `NG2`'s `n` at exactly 30/21/9 without loosening selection discretion):** an excluded pair is replaced within its own `dev`/`holdout` partition by continuing down the same deterministic `NG2` hash-sort order (`docs/research/P0-M4-R1-PRESERVATION-FIRST-RESCOPE-CONTRACT.md` §12) past the initial cutoff, taking the next-lowest-hash pair from that partition not already selected for `NG2`, checking it for renderability, and repeating as needed. If an entire partition is exhausted without reaching the required count, the validation task must **stop before scoring `NG2`** rather than loosen what counts as a valid observation.
+
+**Exact aggregation (no averaging across repeated ratings of the same pair — a pair contributes exactly one candidate dimension-15 value and one comparator dimension-15 value, from its single completed `NG2` session):**
+
+- Combined: `mean(candidate dim15, all 30) ≥ mean(comparator dim15, same 30) + 0.5`.
+- Holdout, independently: `mean(candidate dim15, holdout 9) ≥ mean(comparator dim15, same 9) + 0.5`.
+- `n` remains exactly `30` combined / `9` holdout in both the candidate and comparator series (paired, same pairs on both sides).
+
+`NG1`'s `A`/`B`/`Tie` gate (§16.4) and `NG2`'s dimension-15 gate remain fully separate numeric tests; a pair's `NG1` session and (where applicable) `NG2` session are independent observations of the same underlying rendered candidate audio against two different baselines.
+
+**Veto counting across sessions (binds `NG7`, §16.10):** vetoes are per-*pair*, not per-*session*. A pair counts once toward `NG7`'s `HUMAN_VETO` ceiling if a veto is recorded in *either* its `NG1` session or (for the 30 pairs that are also `NG2` pairs) its `NG2` session — never counted twice if both sessions independently veto the same pair.
 
 ### 16.6 NG3 — Preservation / boundary safety (replaces `G3`'s beat/downbeat/cue/phrase production requirement)
 
@@ -434,17 +459,21 @@ Transition onset itself may occur before 95% of `effective_content_end_ms` **if 
 
 Incoming audible content must start at the natural beginning (`t = 0`) unless a preregistered, deterministic rule proves the skipped region is clearly non-musical. The only such rule in accepted code is R2's own authored-annotation gate (`docs/research/P0-M3-R2-TRANSITION-POLICY-PLANNER.md` §18: an entry candidate flagged `is_authored_silence_skip`, falling within `leading_silence_ms`, is eligible only when `leading_silence_is_authored_non_musical: true` is explicitly authored on the fixture). No accepted process currently populates that explicit annotation for real, non-fixture audio without introducing a new content analyzer, which this task does not authorize. **Therefore the narrow real-music validation defaults every incoming candidate's source start to `0`** — no lead-in skip is applied to real corpus tracks, per this document's own binding instruction not to create a new music-content analyzer.
 
-### 16.7 NG4 — Simple-class / fallback correctness (retains `G4`'s mechanism and numbers)
+### 16.7 NG4 — Simple-class / fallback correctness (retains `G4`'s mechanism and numbers; repair R3 fixes a `PLAY_THROUGH` category error)
 
-The narrow candidate may output **only**: `PLAY_THROUGH` / `NO_SPECIAL_TRANSITION`, `GAPLESS`, `SIMPLE_CROSSFADE`.
+**R3 repair — `PLAY_THROUGH` is not an observed/rendered class.** The prior wording of this section listed `PLAY_THROUGH` alongside `NO_SPECIAL_TRANSITION`/`GAPLESS`/`SIMPLE_CROSSFADE` as if all four were members of the same rendered-output taxonomy. They are not. `PLAY_THROUGH` is a `PlannerDecision.decision_type` (`tools/p0m3/transition_policy/policy/contract.py` — `decision_type ∈ {"TRANSITION", "PLAY_THROUGH", "NO_SPECIAL_TRANSITION"}`), never a P0-M2 `observed_class` value (§9 `observed_class` enum: `FULL_DJ_BLEND | SHORT_EQ_BLEND | SIMPLE_CROSSFADE | GAPLESS | CUT | NO_SPECIAL_TRANSITION | UNCLASSIFIED_ANOMALY` — `PLAY_THROUGH` does not appear in it and never will).
 
-Forbidden narrow-production outputs: `FULL_DJ_BLEND`, `SHORT_EQ_BLEND`, `CUT` as automatic default behavior, tempo/pitch automated transition.
+**Semantics, stated precisely:** when the planner is queried at some boundary and returns `PLAY_THROUGH`, no transition render occurs at that boundary and current-track playback simply continues — this is a "nothing eligible yet" non-render decision, not a rendered outcome. When playback later reaches the pair's actual natural boundary, the real audio join at that boundary is rendered and classified using the ordinary observable taxonomy: it becomes `observed_class = NO_SPECIAL_TRANSITION` in the ordinary case, or `observed_class = GAPLESS` only when genuine continuous-work conditions are independently satisfied (§5.1/§5.2). `PLAY_THROUGH` itself is never scored, never enters the transition-class confusion matrix, and is never counted in any forbidden-class or class-match tally.
 
-Forbidden-class rate required: **0 / 50** overall and **0 / 22** holdout — enforced via the existing `C11_FORCED_WRONG_TRANSITION_STYLE` mechanism (§10, unchanged definition), applied against a `transition_class_policy` whose `rejected` list names every forbidden class for every narrow-validation pair.
+**Authorized OBSERVABLE rendered classes for the narrow scope (exactly three):** `NO_SPECIAL_TRANSITION`, `GAPLESS`, `SIMPLE_CROSSFADE`. The planner may additionally return `PLAY_THROUGH` as a non-render decision at an intermediate query point; this is expected, first-class planner behavior, not a fourth rendered class and not itself subject to `NG4`'s class-match/forbidden-class arithmetic.
 
-Preregistered policy/fallback subset: **≥ 23** pairs total, **≥ 7** holdout — the identical `lane_e_holdout_min`/per-lane-E-minimum numbers from the original corpus minimums (manifest schema §2), reused unchanged because the underlying class-correctness mechanism is unchanged.
+Forbidden narrow-production **observed_class** outputs: `FULL_DJ_BLEND`, `SHORT_EQ_BLEND`, `CUT` as automatic default behavior, tempo/pitch automated transition.
 
-Required class-match rate: **≥ 80%** overall, and independently **≥ 6 of 7** holdout (`ceil(0.8 × 7) = 5.6 → 6`, the identical `G4` derivation, §12).
+Forbidden-class rate required: **0 / 50** overall and **0 / 22** holdout, computed over each pair's final rendered `observed_class` (never over any intermediate `PLAY_THROUGH` planner query) — enforced via the existing `C11_FORCED_WRONG_TRANSITION_STYLE` mechanism (§10, unchanged definition), applied against a `transition_class_policy` whose `rejected` list names every forbidden class for every narrow-validation pair.
+
+Preregistered policy/fallback subset: **23** pairs total — **16** dev / **7** holdout — selected by the deterministic `NG4` hash-sort rule in `docs/research/P0-M4-R1-PRESERVATION-FIRST-RESCOPE-CONTRACT.md` §12 (the same `≥23`/`≥7` minimums as the original `lane_e_holdout_min`/per-lane-E numbers, manifest schema §2, now with an exact, non-discretionary selection procedure rather than a size-only minimum).
+
+Required class-match rate: **≥ 80%** overall, and independently **≥ 6 of 7** holdout (`ceil(0.8 × 7) = 5.6 → 6`, the identical `G4` derivation, §12), computed exclusively over final rendered `observed_class` against each pair's `transition_class_policy` — `PLAY_THROUGH` decisions are excluded from both the numerator and the denominator of this rate, since they are not rendered outcomes to match or mismatch.
 
 "Correct class" is never inferred from BPM/key strength (unchanged rule, §12 `G4` intent) and a complex transition is never required merely because two tracks appear BPM/key-compatible, since the narrow scope forbids offering a complex transition regardless of compatibility.
 
@@ -452,7 +481,7 @@ Required class-match rate: **≥ 80%** overall, and independently **≥ 6 of 7**
 
 Holdout is frozen before listening/tuning begins. Every applicable `NG` threshold (`NG1`, `NG2`, `NG3`, `NG4`, `NG6`, `NG7`) must pass independently on its own explicitly-defined holdout component. No pair-specific holdout tuning. No moving a difficult holdout pair back into `dev`. No post-result boundary editing (identical rule to §11/§12 `G5`).
 
-### 16.9 NG6 — Catastrophic failures (retains `G6`'s ceiling; narrows the `C1`–`C11` applicability set)
+### 16.9 NG6 — Catastrophic failures (retains `G6`'s ceiling; narrows the `C1`–`C11` applicability set; repair R4 corrects C4/C5's evidence claim)
 
 The original taxonomy (§10, `C1`–`C11`) is not modified. For the narrow simple-transition scope, each code maps to:
 
@@ -461,21 +490,27 @@ The original taxonomy (§10, `C1`–`C11`) is not modified. For the narrow simpl
 | `C1_BEAT_TRAINWRECK` | `NOT_APPLICABLE` | Requires a beat-synced pair; the narrow scope claims no beat-sync behavior for any authorized class. |
 | `C2_BAR_PHASE_ERROR` | `NOT_APPLICABLE` | Requires a bar-synced pair; same reason as `C1`. |
 | `C3_WRONG_PHRASE_LOCATION` | `NOT_APPLICABLE` | Literally fires only when `observed_class ∈ {FULL_DJ_BLEND, SHORT_EQ_BLEND}` (§10); those classes are forbidden outputs under `NG4`, so `C3`'s trigger condition is structurally unreachable. Near-end selection/boundary quality is governed separately by `NG3`. |
-| `C4_SEVERE_VOCAL_COLLISION` | `CONDITIONAL` — `APPLICABLE` whenever `observed_class = SIMPLE_CROSSFADE` (nonzero overlap); `NOT_APPLICABLE` for zero-overlap classes (`PLAY_THROUGH`/`NO_SPECIAL_TRANSITION`/`GAPLESS`) | A rendered volume-only crossfade can still produce a severe vocal-on-vocal collision; this is a real, measurable risk independent of DSP sophistication. |
-| `C5_SEVERE_BASS_MASKING` | `CONDITIONAL` — same rule as `C4` | Bass-on-bass collision can occur in a plain overlapping crossfade exactly as it can in a complex blend. |
+| `C4_SEVERE_VOCAL_COLLISION` | `CONDITIONAL_WHERE_PREEXISTING_ACCEPTED_EVIDENCE_EXISTS` — see repair note below | Real risk on any nonzero-overlap render (`SIMPLE_CROSSFADE`), but no accepted rendered-audio measurement path currently exists (see below); `NOT_APPLICABLE` for zero-overlap classes (`NO_SPECIAL_TRANSITION`/`GAPLESS`, and `PLAY_THROUGH` — which never renders at all, §16.7 R3 repair). |
+| `C5_SEVERE_BASS_MASKING` | `CONDITIONAL_WHERE_PREEXISTING_ACCEPTED_EVIDENCE_EXISTS` — same repair note as `C4` | Bass-on-bass collision can occur in a plain overlapping crossfade exactly as it can in a complex blend; same machine-evidence gap as `C4`. |
 | `C6_GROSS_LOUDNESS_DISCONTINUITY` | `APPLICABLE` | Loudness jumps can occur at any splice/overlap boundary regardless of transition class; explicitly retained per this task's binding instruction. |
 | `C7_STRETCH_ARTIFACT` | `NOT_APPLICABLE` | Requires tempo correction; tempo/pitch automation is forbidden entirely in the narrow scope. |
 | `C8_PITCH_ARTIFACT` | `NOT_APPLICABLE` | Requires pitch correction; forbidden entirely, same reason as `C7`. |
 | `C9_CLICK_POP_DROPOUT` | `APPLICABLE` | An audible discontinuity/dropout at any splice boundary (including `GAPLESS`/`CUT`-adjacent joins) is a real DSP-execution risk independent of transition complexity; explicitly retained per this task's binding instruction. |
-| `C10_WRONG_METADATA_POISONING` | `NOT_APPLICABLE` | Requires the engine's BPM/key input to measurably drive a bad *class* decision; the narrow-scope class decision (`PLAY_THROUGH`/`GAPLESS`/`SIMPLE_CROSSFADE`) is driven by R2's structure/preservation/confidence eligibility guards (`docs/research/P0-M3-R2-TRANSITION-POLICY-PLANNER.md` §5), never by BPM/key, per `NG4`'s own "never infer correct class from BPM/key" rule. |
+| `C10_WRONG_METADATA_POISONING` | `NOT_APPLICABLE` | Requires the engine's BPM/key input to measurably drive a bad *class* decision; the narrow-scope class decision (`NO_SPECIAL_TRANSITION`/`GAPLESS`/`SIMPLE_CROSSFADE`, or the non-render `PLAY_THROUGH`) is driven by R2's structure/preservation/confidence eligibility guards (`docs/research/P0-M3-R2-TRANSITION-POLICY-PLANNER.md` §5), never by BPM/key, per `NG4`'s own "never infer correct class from BPM/key" rule. |
 | `C11_FORCED_WRONG_TRANSITION_STYLE` | `APPLICABLE` | This is the direct enforcement mechanism for `NG4`'s forbidden-class zero-tolerance check (§16.7) — remains fully load-bearing. |
 | `HUMAN_VETO` | `APPLICABLE` | Retained unconditionally; see `NG7`. |
+
+**R4 repair — `C4`/`C5` machine-evidence honesty.** The prior version of this table marked `C4`/`C5` unconditionally `APPLICABLE`, implying every `SIMPLE_CROSSFADE` render has machine-confirmable vocal/bass-collision evidence per P0-M2's own definitions (§8/§10: measured on *rendered, post-mix* audio). It does not. A read-only inspection of the existing R3 harness (`tools/p0m3/audio_render_shootout/dsp/safety_metrics.py`, `scripts/compute_metrics.py`) found no vocal-overlap or bass-co-activity detector operating on rendered/post-mix audio anywhere in accepted code — only a generic click/discontinuity proxy, an RMS loudness proxy, and diagnostic-marker detection. The only pre-existing `vocal_collision_risk`/`bass_percussion_collision_risk` fields (`tools/p0m3/audio_render_shootout/scripts/select_real_music_pairs.py`) are computed from each *source* track's own cached candidate analysis for **pair-selection** purposes and explicitly do not satisfy P0-M2 §8's binding rule that these metrics must be computed on rendered/post-mix output, never on raw source data.
+
+**Binding status, therefore:** for every `SIMPLE_CROSSFADE` pair in the narrow validation, `C4`/`C5` machine-confirmation status is `UNKNOWN_NOT_MACHINE_CONFIRMED` unless and until a future task binds an exact, pre-existing, accepted rendered-audio implementation of P0-M2's `C4`/`C5` definitions (none currently exists; this repair does not add one — no new analyzer may be installed or run to improve this coverage). `UNKNOWN_NOT_MACHINE_CONFIRMED` is never converted to a zero-event count, and absence of machine evidence is never reported or treated as "the transition is safe." The next validation task must report machine-confirmation coverage explicitly, as two fractions: `C4_confirmable_pairs / SIMPLE_CROSSFADE_pairs` and `C5_confirmable_pairs / SIMPLE_CROSSFADE_pairs` (both expected to be `0 / N` under current accepted code, unless a future task legitimately changes this).
+
+**Human listening remains the load-bearing safety net for `C4`/`C5`.** The mandatory blinded listening session (`NG1`, and where applicable `NG2`, §16.10) is not merely a preference gate — any audible vocal-on-vocal or bass-on-bass collision the listener finds unacceptable is recorded via the `VETO / unacceptable` control, which independently feeds `NG7`'s catastrophic-failure-adjacent veto ceiling regardless of `C4`/`C5`'s machine-confirmation status.
 
 Narrow overall catastrophic ceiling: **≤ 1** confirmed catastrophic pair out of **50** (identical ratio-scale to `G6`'s `≤2%`/74-pair ceiling: `floor(0.02 × 50) = 1`).
 
 Safety-critical events on holdout: **ZERO** out of **22** (identical rule to `G6`).
 
-The existing distinction between a proxy-detector hit and a *confirmed* catastrophe (§10's two-stage `C9_CANDIDATE`/`C9_CONFIRMED` pattern, and the general "confirmed code" language throughout §10) is preserved unchanged for every `APPLICABLE`/`CONDITIONAL` code above.
+The existing distinction between a proxy-detector hit and a *confirmed* catastrophe (§10's two-stage `C9_CANDIDATE`/`C9_CONFIRMED` pattern, and the general "confirmed code" language throughout §10) is preserved unchanged for every `APPLICABLE`/`CONDITIONAL_WHERE_PREEXISTING_ACCEPTED_EVIDENCE_EXISTS` code above.
 
 ### 16.10 NG7 — Human veto (retains `G7`'s ceiling; simplifies rubric collection)
 
@@ -490,7 +525,11 @@ Rubric collection for the narrow validation uses a **compact owner UX**, not the
 - Preference: `A preferred` / `B preferred` / `Tie` (this is `NG1`'s own dimension-16 shape, §16.4).
 - A separate, explicit `VETO / unacceptable` control with a short optional reason.
 
+For the 30 pairs that are also `NG2` pairs (§16.5, repair R1), the `NG2` session additionally collects dimension 15 (`OVERALL_MUSICAL_INTENTIONALITY`, 1–5) for both the candidate and the comparator — this is the one narrow, named exception to "compact UX collects no 1–5 score," added specifically because `NG2`'s own threshold cannot otherwise be computed (§16.5). Dimensions 1–14 remain uncollected everywhere in the narrow validation.
+
 This is a narrower rubric-collection mechanism than §9's full matrix, applied only to the narrow validation; it does not alter §9's rubric as the binding mechanism for the historical broad `G1`–`G8` gate.
+
+**Veto counting (repair R1 cross-reference):** a pair's `HUMAN_VETO` status for this gate is per-*pair*: it is `true` if a veto was recorded in *either* the pair's `NG1` session or (when the pair is also an `NG2` pair) its `NG2` session, counted once, never twice, per §16.5's veto-counting rule.
 
 ### 16.11 NG8 — Reproducibility (retains `G8` unchanged)
 
