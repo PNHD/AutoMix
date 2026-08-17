@@ -1,7 +1,8 @@
 {
-  "total": 129,
-  "passed": 129,
+  "total": 164,
+  "passed": 164,
   "failed": [],
+  "real_sentinel_scan_status": "SKIPPED_NO_SENTINEL_SUPPLIED",
   "checks": [
     {
       "check": "intro_clusters_file_exists",
@@ -236,6 +237,10 @@
       "passed": true
     },
     {
+      "check": "no_privacy_leak[build_pm_pack.py][linux_home_absolute_path]",
+      "passed": true
+    },
+    {
       "check": "no_privacy_leak[build_pm_pack.py][mp3_extension]",
       "passed": true
     },
@@ -281,6 +286,10 @@
     },
     {
       "check": "no_privacy_leak[content_preservation_analysis.py][wsl_mount_absolute_path]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[content_preservation_analysis.py][linux_home_absolute_path]",
       "passed": true
     },
     {
@@ -332,6 +341,10 @@
       "passed": true
     },
     {
+      "check": "no_privacy_leak[derive_intro_clusters.py][linux_home_absolute_path]",
+      "passed": true
+    },
+    {
       "check": "no_privacy_leak[derive_intro_clusters.py][mp3_extension]",
       "passed": true
     },
@@ -380,6 +393,10 @@
       "passed": true
     },
     {
+      "check": "no_privacy_leak[harmonic_reeval_candidates.py][linux_home_absolute_path]",
+      "passed": true
+    },
+    {
       "check": "no_privacy_leak[harmonic_reeval_candidates.py][mp3_extension]",
       "passed": true
     },
@@ -392,6 +409,86 @@
       "passed": true
     },
     {
+      "check": "exact_commands_file_exists",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[EXACT_COMMANDS.md][windows_absolute_path]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[EXACT_COMMANDS.md][wsl_mount_absolute_path]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[EXACT_COMMANDS.md][linux_home_absolute_path]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[EXACT_COMMANDS.md][mp3_extension]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[EXACT_COMMANDS.md][wav_extension]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[EXACT_COMMANDS.md][flac_extension]",
+      "passed": true
+    },
+    {
+      "check": "research_report_exists",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[P0-M3-R3-RM014-ENTRY-ANCHOR-FEASIBILITY.md][windows_absolute_path]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[P0-M3-R3-RM014-ENTRY-ANCHOR-FEASIBILITY.md][wsl_mount_absolute_path]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[P0-M3-R3-RM014-ENTRY-ANCHOR-FEASIBILITY.md][linux_home_absolute_path]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[P0-M3-R3-RM014-ENTRY-ANCHOR-FEASIBILITY.md][mp3_extension]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[P0-M3-R3-RM014-ENTRY-ANCHOR-FEASIBILITY.md][wav_extension]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[P0-M3-R3-RM014-ENTRY-ANCHOR-FEASIBILITY.md][flac_extension]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[HANDOFF_TO_PM.md][windows_absolute_path]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[HANDOFF_TO_PM.md][wsl_mount_absolute_path]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[HANDOFF_TO_PM.md][linux_home_absolute_path]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[HANDOFF_TO_PM.md][mp3_extension]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[HANDOFF_TO_PM.md][wav_extension]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[HANDOFF_TO_PM.md][flac_extension]",
+      "passed": true
+    },
+    {
       "check": "entry_anchor_results_present",
       "passed": true
     },
@@ -401,6 +498,10 @@
     },
     {
       "check": "no_privacy_leak[content_preservation.json][wsl_mount_absolute_path]",
+      "passed": true
+    },
+    {
+      "check": "no_privacy_leak[content_preservation.json][linux_home_absolute_path]",
       "passed": true
     },
     {
@@ -444,6 +545,10 @@
       "passed": true
     },
     {
+      "check": "no_privacy_leak[harmonic_reeval.json][linux_home_absolute_path]",
+      "passed": true
+    },
+    {
       "check": "no_privacy_leak[harmonic_reeval.json][mp3_extension]",
       "passed": true
     },
@@ -484,6 +589,10 @@
       "passed": true
     },
     {
+      "check": "no_privacy_leak[intro_clusters.json][linux_home_absolute_path]",
+      "passed": true
+    },
+    {
       "check": "no_privacy_leak[intro_clusters.json][mp3_extension]",
       "passed": true
     },
@@ -517,6 +626,38 @@
     },
     {
       "check": "no_audio_render_output_present",
+      "passed": true
+    },
+    {
+      "check": "selftest_clean_blob_detected_as_absent[windows_absolute_path]",
+      "passed": true
+    },
+    {
+      "check": "selftest_injected_dummy_detected_as_present_fails_closed[windows_absolute_path]",
+      "passed": true
+    },
+    {
+      "check": "selftest_clean_blob_detected_as_absent[wsl_mount_absolute_path]",
+      "passed": true
+    },
+    {
+      "check": "selftest_injected_dummy_detected_as_present_fails_closed[wsl_mount_absolute_path]",
+      "passed": true
+    },
+    {
+      "check": "selftest_clean_blob_detected_as_absent[linux_home_absolute_path]",
+      "passed": true
+    },
+    {
+      "check": "selftest_injected_dummy_detected_as_present_fails_closed[linux_home_absolute_path]",
+      "passed": true
+    },
+    {
+      "check": "selftest_sentinel_clean_blob_detected_as_absent",
+      "passed": true
+    },
+    {
+      "check": "selftest_sentinel_injected_dummy_detected_as_present_fails_closed",
       "passed": true
     }
   ]
