@@ -1,0 +1,17 @@
+# P0-M4-R2 narrow validation -- local-only private artifacts.
+# Selection/adapter/verifier SOURCE and sanitized (opaque-ID-only) evidence
+# JSON ARE committed; anything that could contain owner audio, real local
+# paths, blind keys, or the private corpus itself is NOT.
+
+# Entire local working area: decoded/rendered audio, the NG4 owner
+# annotation pack (clips + blind key + filled response template), and any
+# other scratch output this task's scripts produce.
+work_local/
+work_local*/
+
+# Belt-and-braces (root .gitignore already covers *.wav/*.flac/etc. and
+# *.local.json is not a root pattern, so the private id_map/corpus files
+# and this task's own blind_key.local.json/response_template are covered
+# here explicitly too).
+*.local.json
+blind_key*.json

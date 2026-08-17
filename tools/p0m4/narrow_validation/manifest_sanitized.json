@@ -1,0 +1,367 @@
+{
+  "status": "FROZEN",
+  "selection_salt": "P0-M4-R1-NARROW-VALIDATION-v1",
+  "algorithm_ref": "docs/research/P0-M4-R1-PRESERVATION-FIRST-RESCOPE-CONTRACT.md SS12",
+  "input_id_count": 100,
+  "total_pairs": 50,
+  "dev_count": 28,
+  "holdout_count": 22,
+  "ng2_count": 30,
+  "ng2_dev_count": 21,
+  "ng2_holdout_count": 9,
+  "ng4_count": 23,
+  "ng4_dev_count": 16,
+  "ng4_holdout_count": 7,
+  "pairs": [
+    {
+      "out_id": "RM038",
+      "in_id": "RM074",
+      "split": "holdout",
+      "ng2_member": true,
+      "ng4_member": false
+    },
+    {
+      "out_id": "RM070",
+      "in_id": "RM005",
+      "split": "dev",
+      "ng2_member": true,
+      "ng4_member": true
+    },
+    {
+      "out_id": "RM007",
+      "in_id": "RM059",
+      "split": "dev",
+      "ng2_member": false,
+      "ng4_member": false
+    },
+    {
+      "out_id": "RM030",
+      "in_id": "RM035",
+      "split": "holdout",
+      "ng2_member": false,
+      "ng4_member": false
+    },
+    {
+      "out_id": "RM002",
+      "in_id": "RM076",
+      "split": "holdout",
+      "ng2_member": false,
+      "ng4_member": false
+    },
+    {
+      "out_id": "RM047",
+      "in_id": "RM079",
+      "split": "holdout",
+      "ng2_member": false,
+      "ng4_member": false
+    },
+    {
+      "out_id": "RM011",
+      "in_id": "RM053",
+      "split": "dev",
+      "ng2_member": true,
+      "ng4_member": false
+    },
+    {
+      "out_id": "RM081",
+      "in_id": "RM033",
+      "split": "holdout",
+      "ng2_member": false,
+      "ng4_member": true
+    },
+    {
+      "out_id": "RM048",
+      "in_id": "RM011",
+      "split": "holdout",
+      "ng2_member": false,
+      "ng4_member": true
+    },
+    {
+      "out_id": "RM088",
+      "in_id": "RM068",
+      "split": "dev",
+      "ng2_member": true,
+      "ng4_member": false
+    },
+    {
+      "out_id": "RM057",
+      "in_id": "RM053",
+      "split": "holdout",
+      "ng2_member": true,
+      "ng4_member": false
+    },
+    {
+      "out_id": "RM008",
+      "in_id": "RM014",
+      "split": "holdout",
+      "ng2_member": false,
+      "ng4_member": true
+    },
+    {
+      "out_id": "RM097",
+      "in_id": "RM017",
+      "split": "dev",
+      "ng2_member": false,
+      "ng4_member": false
+    },
+    {
+      "out_id": "RM046",
+      "in_id": "RM021",
+      "split": "dev",
+      "ng2_member": false,
+      "ng4_member": false
+    },
+    {
+      "out_id": "RM096",
+      "in_id": "RM004",
+      "split": "dev",
+      "ng2_member": false,
+      "ng4_member": true
+    },
+    {
+      "out_id": "RM050",
+      "in_id": "RM023",
+      "split": "holdout",
+      "ng2_member": true,
+      "ng4_member": true
+    },
+    {
+      "out_id": "RM043",
+      "in_id": "RM062",
+      "split": "holdout",
+      "ng2_member": false,
+      "ng4_member": false
+    },
+    {
+      "out_id": "RM096",
+      "in_id": "RM073",
+      "split": "holdout",
+      "ng2_member": false,
+      "ng4_member": false
+    },
+    {
+      "out_id": "RM087",
+      "in_id": "RM094",
+      "split": "holdout",
+      "ng2_member": true,
+      "ng4_member": true
+    },
+    {
+      "out_id": "RM097",
+      "in_id": "RM006",
+      "split": "dev",
+      "ng2_member": false,
+      "ng4_member": true
+    },
+    {
+      "out_id": "RM069",
+      "in_id": "RM059",
+      "split": "dev",
+      "ng2_member": true,
+      "ng4_member": true
+    },
+    {
+      "out_id": "RM090",
+      "in_id": "RM025",
+      "split": "dev",
+      "ng2_member": true,
+      "ng4_member": true
+    },
+    {
+      "out_id": "RM027",
+      "in_id": "RM012",
+      "split": "dev",
+      "ng2_member": true,
+      "ng4_member": true
+    },
+    {
+      "out_id": "RM086",
+      "in_id": "RM044",
+      "split": "dev",
+      "ng2_member": true,
+      "ng4_member": false
+    },
+    {
+      "out_id": "RM042",
+      "in_id": "RM002",
+      "split": "dev",
+      "ng2_member": false,
+      "ng4_member": true
+    },
+    {
+      "out_id": "RM068",
+      "in_id": "RM034",
+      "split": "dev",
+      "ng2_member": true,
+      "ng4_member": false
+    },
+    {
+      "out_id": "RM100",
+      "in_id": "RM005",
+      "split": "dev",
+      "ng2_member": true,
+      "ng4_member": true
+    },
+    {
+      "out_id": "RM001",
+      "in_id": "RM050",
+      "split": "dev",
+      "ng2_member": true,
+      "ng4_member": true
+    },
+    {
+      "out_id": "RM075",
+      "in_id": "RM021",
+      "split": "holdout",
+      "ng2_member": true,
+      "ng4_member": false
+    },
+    {
+      "out_id": "RM049",
+      "in_id": "RM084",
+      "split": "dev",
+      "ng2_member": true,
+      "ng4_member": false
+    },
+    {
+      "out_id": "RM027",
+      "in_id": "RM085",
+      "split": "dev",
+      "ng2_member": true,
+      "ng4_member": true
+    },
+    {
+      "out_id": "RM040",
+      "in_id": "RM093",
+      "split": "holdout",
+      "ng2_member": true,
+      "ng4_member": true
+    },
+    {
+      "out_id": "RM072",
+      "in_id": "RM081",
+      "split": "dev",
+      "ng2_member": true,
+      "ng4_member": true
+    },
+    {
+      "out_id": "RM046",
+      "in_id": "RM010",
+      "split": "dev",
+      "ng2_member": true,
+      "ng4_member": false
+    },
+    {
+      "out_id": "RM074",
+      "in_id": "RM008",
+      "split": "dev",
+      "ng2_member": true,
+      "ng4_member": true
+    },
+    {
+      "out_id": "RM022",
+      "in_id": "RM080",
+      "split": "dev",
+      "ng2_member": true,
+      "ng4_member": false
+    },
+    {
+      "out_id": "RM023",
+      "in_id": "RM090",
+      "split": "dev",
+      "ng2_member": true,
+      "ng4_member": true
+    },
+    {
+      "out_id": "RM007",
+      "in_id": "RM019",
+      "split": "holdout",
+      "ng2_member": true,
+      "ng4_member": false
+    },
+    {
+      "out_id": "RM071",
+      "in_id": "RM095",
+      "split": "holdout",
+      "ng2_member": false,
+      "ng4_member": false
+    },
+    {
+      "out_id": "RM054",
+      "in_id": "RM029",
+      "split": "dev",
+      "ng2_member": true,
+      "ng4_member": true
+    },
+    {
+      "out_id": "RM048",
+      "in_id": "RM015",
+      "split": "dev",
+      "ng2_member": true,
+      "ng4_member": false
+    },
+    {
+      "out_id": "RM056",
+      "in_id": "RM015",
+      "split": "holdout",
+      "ng2_member": true,
+      "ng4_member": false
+    },
+    {
+      "out_id": "RM064",
+      "in_id": "RM089",
+      "split": "holdout",
+      "ng2_member": false,
+      "ng4_member": false
+    },
+    {
+      "out_id": "RM057",
+      "in_id": "RM062",
+      "split": "dev",
+      "ng2_member": true,
+      "ng4_member": true
+    },
+    {
+      "out_id": "RM058",
+      "in_id": "RM010",
+      "split": "holdout",
+      "ng2_member": false,
+      "ng4_member": false
+    },
+    {
+      "out_id": "RM025",
+      "in_id": "RM040",
+      "split": "holdout",
+      "ng2_member": false,
+      "ng4_member": false
+    },
+    {
+      "out_id": "RM075",
+      "in_id": "RM076",
+      "split": "holdout",
+      "ng2_member": true,
+      "ng4_member": false
+    },
+    {
+      "out_id": "RM094",
+      "in_id": "RM078",
+      "split": "dev",
+      "ng2_member": true,
+      "ng4_member": false
+    },
+    {
+      "out_id": "RM065",
+      "in_id": "RM032",
+      "split": "dev",
+      "ng2_member": false,
+      "ng4_member": true
+    },
+    {
+      "out_id": "RM085",
+      "in_id": "RM058",
+      "split": "holdout",
+      "ng2_member": false,
+      "ng4_member": true
+    }
+  ]
+}

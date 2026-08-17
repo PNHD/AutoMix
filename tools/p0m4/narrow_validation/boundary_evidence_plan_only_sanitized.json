@@ -1,0 +1,1305 @@
+{
+  "mode": "PLAN_ONLY",
+  "pair_attempted_count": 50,
+  "pair_success_count": 50,
+  "pair_failure_count": 0,
+  "forbidden_class_hit_count": 0,
+  "rendered_class_counts": {
+    "NO_SPECIAL_TRANSITION": 47,
+    "SIMPLE_CROSSFADE": 3,
+    "GAPLESS": 0
+  },
+  "pairs": [
+    {
+      "out_id": "RM038",
+      "in_id": "RM074",
+      "split": "holdout",
+      "ng2_member": true,
+      "ng4_member": false,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 191994.2,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "LOW",
+      "exit_structure_evidence_method": "NO_INDEPENDENT_STRUCTURE_EVIDENCE_FOUND",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM070",
+      "in_id": "RM005",
+      "split": "dev",
+      "ng2_member": true,
+      "ng4_member": true,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 166719.3,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "LOW",
+      "exit_structure_evidence_method": "NO_INDEPENDENT_STRUCTURE_EVIDENCE_FOUND",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM007",
+      "in_id": "RM059",
+      "split": "dev",
+      "ng2_member": false,
+      "ng4_member": false,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 188662.2,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "LOW",
+      "exit_structure_evidence_method": "NO_INDEPENDENT_STRUCTURE_EVIDENCE_FOUND",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM030",
+      "in_id": "RM035",
+      "split": "holdout",
+      "ng2_member": false,
+      "ng4_member": false,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 181882.0,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "LOW",
+      "exit_structure_evidence_method": "NO_INDEPENDENT_STRUCTURE_EVIDENCE_FOUND",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM002",
+      "in_id": "RM076",
+      "split": "holdout",
+      "ng2_member": false,
+      "ng4_member": false,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 191253.3,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "LOW",
+      "exit_structure_evidence_method": "NO_INDEPENDENT_STRUCTURE_EVIDENCE_FOUND",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM047",
+      "in_id": "RM079",
+      "split": "holdout",
+      "ng2_member": false,
+      "ng4_member": false,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 203871.2,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "LOW",
+      "exit_structure_evidence_method": "NO_INDEPENDENT_STRUCTURE_EVIDENCE_FOUND",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM011",
+      "in_id": "RM053",
+      "split": "dev",
+      "ng2_member": true,
+      "ng4_member": false,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 222354.3,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "LOW",
+      "exit_structure_evidence_method": "NO_INDEPENDENT_STRUCTURE_EVIDENCE_FOUND",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM081",
+      "in_id": "RM033",
+      "split": "holdout",
+      "ng2_member": false,
+      "ng4_member": true,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 205833.3,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "LOW",
+      "exit_structure_evidence_method": "NO_INDEPENDENT_STRUCTURE_EVIDENCE_FOUND",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM048",
+      "in_id": "RM011",
+      "split": "holdout",
+      "ng2_member": false,
+      "ng4_member": true,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 204544.6,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "LOW",
+      "exit_structure_evidence_method": "NO_INDEPENDENT_STRUCTURE_EVIDENCE_FOUND",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM088",
+      "in_id": "RM068",
+      "split": "dev",
+      "ng2_member": true,
+      "ng4_member": false,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 193364.2,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "LOW",
+      "exit_structure_evidence_method": "NO_INDEPENDENT_STRUCTURE_EVIDENCE_FOUND",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM057",
+      "in_id": "RM053",
+      "split": "holdout",
+      "ng2_member": true,
+      "ng4_member": false,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 215968.8,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "MEDIUM",
+      "exit_structure_evidence_method": "BAR_SYNCHRONOUS_NOVELTY_PEAK",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM008",
+      "in_id": "RM014",
+      "split": "holdout",
+      "ng2_member": false,
+      "ng4_member": true,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 146773.3,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "LOW",
+      "exit_structure_evidence_method": "NO_INDEPENDENT_STRUCTURE_EVIDENCE_FOUND",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM097",
+      "in_id": "RM017",
+      "split": "dev",
+      "ng2_member": false,
+      "ng4_member": false,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 209258.3,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "LOW",
+      "exit_structure_evidence_method": "NO_INDEPENDENT_STRUCTURE_EVIDENCE_FOUND",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM046",
+      "in_id": "RM021",
+      "split": "dev",
+      "ng2_member": false,
+      "ng4_member": false,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 136846.8,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "LOW",
+      "exit_structure_evidence_method": "NO_INDEPENDENT_STRUCTURE_EVIDENCE_FOUND",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM096",
+      "in_id": "RM004",
+      "split": "dev",
+      "ng2_member": false,
+      "ng4_member": true,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 259308.9,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "LOW",
+      "exit_structure_evidence_method": "NO_INDEPENDENT_STRUCTURE_EVIDENCE_FOUND",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM050",
+      "in_id": "RM023",
+      "split": "holdout",
+      "ng2_member": true,
+      "ng4_member": true,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 160461.5,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "LOW",
+      "exit_structure_evidence_method": "NO_INDEPENDENT_STRUCTURE_EVIDENCE_FOUND",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM043",
+      "in_id": "RM062",
+      "split": "holdout",
+      "ng2_member": false,
+      "ng4_member": false,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 180906.7,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "LOW",
+      "exit_structure_evidence_method": "NO_INDEPENDENT_STRUCTURE_EVIDENCE_FOUND",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM096",
+      "in_id": "RM073",
+      "split": "holdout",
+      "ng2_member": false,
+      "ng4_member": false,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 259308.9,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "LOW",
+      "exit_structure_evidence_method": "NO_INDEPENDENT_STRUCTURE_EVIDENCE_FOUND",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM087",
+      "in_id": "RM094",
+      "split": "holdout",
+      "ng2_member": true,
+      "ng4_member": true,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 190949.3,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "LOW",
+      "exit_structure_evidence_method": "NO_INDEPENDENT_STRUCTURE_EVIDENCE_FOUND",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM097",
+      "in_id": "RM006",
+      "split": "dev",
+      "ng2_member": false,
+      "ng4_member": true,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 209258.3,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "LOW",
+      "exit_structure_evidence_method": "NO_INDEPENDENT_STRUCTURE_EVIDENCE_FOUND",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM069",
+      "in_id": "RM059",
+      "split": "dev",
+      "ng2_member": true,
+      "ng4_member": true,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 164803.7,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "LOW",
+      "exit_structure_evidence_method": "NO_INDEPENDENT_STRUCTURE_EVIDENCE_FOUND",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM090",
+      "in_id": "RM025",
+      "split": "dev",
+      "ng2_member": true,
+      "ng4_member": true,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 226081.1,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "LOW",
+      "exit_structure_evidence_method": "NO_INDEPENDENT_STRUCTURE_EVIDENCE_FOUND",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM027",
+      "in_id": "RM012",
+      "split": "dev",
+      "ng2_member": true,
+      "ng4_member": true,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 189525.4,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "LOW",
+      "exit_structure_evidence_method": "NO_INDEPENDENT_STRUCTURE_EVIDENCE_FOUND",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM086",
+      "in_id": "RM044",
+      "split": "dev",
+      "ng2_member": true,
+      "ng4_member": false,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 177191.5,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "LOW",
+      "exit_structure_evidence_method": "NO_INDEPENDENT_STRUCTURE_EVIDENCE_FOUND",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM042",
+      "in_id": "RM002",
+      "split": "dev",
+      "ng2_member": false,
+      "ng4_member": true,
+      "decision_type": "TRANSITION",
+      "allowed_transition_class_set": [
+        "SIMPLE_CROSSFADE"
+      ],
+      "rendered_class": "SIMPLE_CROSSFADE",
+      "forbidden_class_hit": false,
+      "overlap_ms": 14000.399999999994,
+      "outgoing_content_preservation_target": 1.0,
+      "current_track_effective_content_end_ms": 260821.4,
+      "boundary_source": "CACHED_STAGE_B_EXIT_CANDIDATE",
+      "exit_structure_confidence": "HIGH",
+      "exit_structure_evidence_method": "BAR_SYNCHRONOUS_NOVELTY_PEAK",
+      "reason_codes": [
+        "STRUCTURAL_EVIDENCE_PRESENT",
+        "BEST_RANKED_COMPLETE_BOUNDARY_PLAN"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM068",
+      "in_id": "RM034",
+      "split": "dev",
+      "ng2_member": true,
+      "ng4_member": false,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 198461.0,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "HIGH",
+      "exit_structure_evidence_method": "BAR_SYNCHRONOUS_NOVELTY_PEAK",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM100",
+      "in_id": "RM005",
+      "split": "dev",
+      "ng2_member": true,
+      "ng4_member": true,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 232280.9,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "LOW",
+      "exit_structure_evidence_method": "NO_INDEPENDENT_STRUCTURE_EVIDENCE_FOUND",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM001",
+      "in_id": "RM050",
+      "split": "dev",
+      "ng2_member": true,
+      "ng4_member": true,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 186986.7,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "LOW",
+      "exit_structure_evidence_method": "NO_INDEPENDENT_STRUCTURE_EVIDENCE_FOUND",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM075",
+      "in_id": "RM021",
+      "split": "holdout",
+      "ng2_member": true,
+      "ng4_member": false,
+      "decision_type": "TRANSITION",
+      "allowed_transition_class_set": [
+        "SIMPLE_CROSSFADE"
+      ],
+      "rendered_class": "SIMPLE_CROSSFADE",
+      "forbidden_class_hit": false,
+      "overlap_ms": 15488.0,
+      "outgoing_content_preservation_target": 1.0,
+      "current_track_effective_content_end_ms": 207540.0,
+      "boundary_source": "CACHED_STAGE_B_EXIT_CANDIDATE",
+      "exit_structure_confidence": "HIGH",
+      "exit_structure_evidence_method": "INSTRUMENTAL_TAIL_DETECTED",
+      "reason_codes": [
+        "STRUCTURAL_EVIDENCE_PRESENT",
+        "BEST_RANKED_COMPLETE_BOUNDARY_PLAN"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM049",
+      "in_id": "RM084",
+      "split": "dev",
+      "ng2_member": true,
+      "ng4_member": false,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 188569.3,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "LOW",
+      "exit_structure_evidence_method": "NO_INDEPENDENT_STRUCTURE_EVIDENCE_FOUND",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM027",
+      "in_id": "RM085",
+      "split": "dev",
+      "ng2_member": true,
+      "ng4_member": true,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 189525.4,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "LOW",
+      "exit_structure_evidence_method": "NO_INDEPENDENT_STRUCTURE_EVIDENCE_FOUND",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM040",
+      "in_id": "RM093",
+      "split": "holdout",
+      "ng2_member": true,
+      "ng4_member": true,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 184018.2,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "LOW",
+      "exit_structure_evidence_method": "NO_INDEPENDENT_STRUCTURE_EVIDENCE_FOUND",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM072",
+      "in_id": "RM081",
+      "split": "dev",
+      "ng2_member": true,
+      "ng4_member": true,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 199076.3,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "LOW",
+      "exit_structure_evidence_method": "NO_INDEPENDENT_STRUCTURE_EVIDENCE_FOUND",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM046",
+      "in_id": "RM010",
+      "split": "dev",
+      "ng2_member": true,
+      "ng4_member": false,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 136846.8,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "LOW",
+      "exit_structure_evidence_method": "NO_INDEPENDENT_STRUCTURE_EVIDENCE_FOUND",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM074",
+      "in_id": "RM008",
+      "split": "dev",
+      "ng2_member": true,
+      "ng4_member": true,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 182230.2,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "LOW",
+      "exit_structure_evidence_method": "NO_INDEPENDENT_STRUCTURE_EVIDENCE_FOUND",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM022",
+      "in_id": "RM080",
+      "split": "dev",
+      "ng2_member": true,
+      "ng4_member": false,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 183820.8,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "LOW",
+      "exit_structure_evidence_method": "NO_INDEPENDENT_STRUCTURE_EVIDENCE_FOUND",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM023",
+      "in_id": "RM090",
+      "split": "dev",
+      "ng2_member": true,
+      "ng4_member": true,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 243961.0,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "LOW",
+      "exit_structure_evidence_method": "NO_INDEPENDENT_STRUCTURE_EVIDENCE_FOUND",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM007",
+      "in_id": "RM019",
+      "split": "holdout",
+      "ng2_member": true,
+      "ng4_member": false,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 188662.2,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "LOW",
+      "exit_structure_evidence_method": "NO_INDEPENDENT_STRUCTURE_EVIDENCE_FOUND",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM071",
+      "in_id": "RM095",
+      "split": "holdout",
+      "ng2_member": false,
+      "ng4_member": false,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 163387.3,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "LOW",
+      "exit_structure_evidence_method": "NO_INDEPENDENT_STRUCTURE_EVIDENCE_FOUND",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM054",
+      "in_id": "RM029",
+      "split": "dev",
+      "ng2_member": true,
+      "ng4_member": true,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 154946.8,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "LOW",
+      "exit_structure_evidence_method": "NO_INDEPENDENT_STRUCTURE_EVIDENCE_FOUND",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM048",
+      "in_id": "RM015",
+      "split": "dev",
+      "ng2_member": true,
+      "ng4_member": false,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 204544.6,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "LOW",
+      "exit_structure_evidence_method": "NO_INDEPENDENT_STRUCTURE_EVIDENCE_FOUND",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM056",
+      "in_id": "RM015",
+      "split": "holdout",
+      "ng2_member": true,
+      "ng4_member": false,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 180895.1,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "LOW",
+      "exit_structure_evidence_method": "NO_INDEPENDENT_STRUCTURE_EVIDENCE_FOUND",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM064",
+      "in_id": "RM089",
+      "split": "holdout",
+      "ng2_member": false,
+      "ng4_member": false,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 155457.6,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "LOW",
+      "exit_structure_evidence_method": "NO_INDEPENDENT_STRUCTURE_EVIDENCE_FOUND",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM057",
+      "in_id": "RM062",
+      "split": "dev",
+      "ng2_member": true,
+      "ng4_member": true,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 215968.8,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "MEDIUM",
+      "exit_structure_evidence_method": "BAR_SYNCHRONOUS_NOVELTY_PEAK",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM058",
+      "in_id": "RM010",
+      "split": "holdout",
+      "ng2_member": false,
+      "ng4_member": false,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 201584.1,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "LOW",
+      "exit_structure_evidence_method": "NO_INDEPENDENT_STRUCTURE_EVIDENCE_FOUND",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM025",
+      "in_id": "RM040",
+      "split": "holdout",
+      "ng2_member": false,
+      "ng4_member": false,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 199594.7,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "LOW",
+      "exit_structure_evidence_method": "NO_INDEPENDENT_STRUCTURE_EVIDENCE_FOUND",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM075",
+      "in_id": "RM076",
+      "split": "holdout",
+      "ng2_member": true,
+      "ng4_member": false,
+      "decision_type": "TRANSITION",
+      "allowed_transition_class_set": [
+        "SIMPLE_CROSSFADE"
+      ],
+      "rendered_class": "SIMPLE_CROSSFADE",
+      "forbidden_class_hit": false,
+      "overlap_ms": 15488.0,
+      "outgoing_content_preservation_target": 1.0,
+      "current_track_effective_content_end_ms": 207540.0,
+      "boundary_source": "CACHED_STAGE_B_EXIT_CANDIDATE",
+      "exit_structure_confidence": "HIGH",
+      "exit_structure_evidence_method": "INSTRUMENTAL_TAIL_DETECTED",
+      "reason_codes": [
+        "STRUCTURAL_EVIDENCE_PRESENT",
+        "BEST_RANKED_COMPLETE_BOUNDARY_PLAN"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM094",
+      "in_id": "RM078",
+      "split": "dev",
+      "ng2_member": true,
+      "ng4_member": false,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 204045.4,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "LOW",
+      "exit_structure_evidence_method": "NO_INDEPENDENT_STRUCTURE_EVIDENCE_FOUND",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM065",
+      "in_id": "RM032",
+      "split": "dev",
+      "ng2_member": false,
+      "ng4_member": true,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 194176.9,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "LOW",
+      "exit_structure_evidence_method": "NO_INDEPENDENT_STRUCTURE_EVIDENCE_FOUND",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    },
+    {
+      "out_id": "RM085",
+      "in_id": "RM058",
+      "split": "holdout",
+      "ng2_member": false,
+      "ng4_member": true,
+      "decision_type": "NO_SPECIAL_TRANSITION",
+      "allowed_transition_class_set": [
+        "NO_SPECIAL_TRANSITION"
+      ],
+      "rendered_class": "NO_SPECIAL_TRANSITION",
+      "forbidden_class_hit": false,
+      "overlap_ms": null,
+      "outgoing_content_preservation_target": null,
+      "current_track_effective_content_end_ms": 187002.0,
+      "boundary_source": "FAIL_CLOSED_NO_SUFFICIENT_CACHED_EVIDENCE",
+      "exit_structure_confidence": "LOW",
+      "exit_structure_evidence_method": "NO_INDEPENDENT_STRUCTURE_EVIDENCE_FOUND",
+      "reason_codes": [
+        "END_OF_TRACK_NATURAL_HANDOFF",
+        "NO_SAFE_OUTGOING_EXIT",
+        "LOW_CONFIDENCE_NO_FABRICATED_CERTAINTY",
+        "STRUCTURAL_EVIDENCE_PRESENT"
+      ],
+      "render_status": "PLAN_ONLY"
+    }
+  ]
+}

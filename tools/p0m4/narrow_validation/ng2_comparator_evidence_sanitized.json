@@ -1,0 +1,459 @@
+{
+  "ng2_total": 30,
+  "ng2_success": 30,
+  "ng2_excluded_unrenderable": 0,
+  "ng2_holdout_success": 9,
+  "ng2_dev_success": 21,
+  "pairs": [
+    {
+      "crossfade_duration_ms": 41237.113402061856,
+      "exit_ms": 150757.08659793815,
+      "entry_ms": 0.0,
+      "overlap_ms": 41237.097505668935,
+      "safety": {
+        "nan_inf_sample_count": 0,
+        "clipped_sample_count": 0,
+        "post_peak_dbfs": -0.9999999999999997
+      },
+      "out_id": "RM038",
+      "in_id": "RM074",
+      "split": "holdout",
+      "status": "SUCCESS"
+    },
+    {
+      "crossfade_duration_ms": 42723.631508678234,
+      "exit_ms": 123995.66849132176,
+      "entry_ms": 0.0,
+      "overlap_ms": 42723.62811791383,
+      "safety": {
+        "nan_inf_sample_count": 0,
+        "clipped_sample_count": 0,
+        "post_peak_dbfs": -0.9999999999999997
+      },
+      "out_id": "RM070",
+      "in_id": "RM005",
+      "split": "dev",
+      "status": "SUCCESS"
+    },
+    {
+      "crossfade_duration_ms": 41237.113402061856,
+      "exit_ms": 181117.18659793813,
+      "entry_ms": 0.0,
+      "overlap_ms": 41237.1201814059,
+      "safety": {
+        "nan_inf_sample_count": 0,
+        "clipped_sample_count": 0,
+        "post_peak_dbfs": -0.9999999999999997
+      },
+      "out_id": "RM011",
+      "in_id": "RM053",
+      "split": "dev",
+      "status": "SUCCESS"
+    },
+    {
+      "crossfade_duration_ms": 32694.763729246486,
+      "exit_ms": 160669.43627075353,
+      "entry_ms": 0.0,
+      "overlap_ms": 32694.761904761905,
+      "safety": {
+        "nan_inf_sample_count": 0,
+        "clipped_sample_count": 0,
+        "post_peak_dbfs": -1.0000000000000007
+      },
+      "out_id": "RM088",
+      "in_id": "RM068",
+      "split": "dev",
+      "status": "SUCCESS"
+    },
+    {
+      "crossfade_duration_ms": 22291.021671826627,
+      "exit_ms": 193677.77832817336,
+      "entry_ms": 0.0,
+      "overlap_ms": 22291.020408163266,
+      "safety": {
+        "nan_inf_sample_count": 0,
+        "clipped_sample_count": 0,
+        "post_peak_dbfs": -0.9999999999999987
+      },
+      "out_id": "RM057",
+      "in_id": "RM053",
+      "split": "holdout",
+      "status": "SUCCESS"
+    },
+    {
+      "crossfade_duration_ms": 24521.072796934866,
+      "exit_ms": 135940.42720306513,
+      "entry_ms": 0.0,
+      "overlap_ms": 24521.06575963719,
+      "safety": {
+        "nan_inf_sample_count": 0,
+        "clipped_sample_count": 0,
+        "post_peak_dbfs": -0.9999999999999997
+      },
+      "out_id": "RM050",
+      "in_id": "RM023",
+      "split": "holdout",
+      "status": "SUCCESS"
+    },
+    {
+      "crossfade_duration_ms": 44580.663137364165,
+      "exit_ms": 146368.63686263582,
+      "entry_ms": 0.0,
+      "overlap_ms": 44580.657596371886,
+      "safety": {
+        "nan_inf_sample_count": 0,
+        "clipped_sample_count": 0,
+        "post_peak_dbfs": -0.9999999999999997
+      },
+      "out_id": "RM087",
+      "in_id": "RM094",
+      "split": "holdout",
+      "status": "SUCCESS"
+    },
+    {
+      "crossfade_duration_ms": 45000,
+      "exit_ms": 119803.70000000001,
+      "entry_ms": 0.0,
+      "overlap_ms": 44999.95464852608,
+      "safety": {
+        "nan_inf_sample_count": 0,
+        "clipped_sample_count": 0,
+        "post_peak_dbfs": -0.9999999999999997
+      },
+      "out_id": "RM069",
+      "in_id": "RM059",
+      "split": "dev",
+      "status": "SUCCESS"
+    },
+    {
+      "crossfade_duration_ms": 44580.663137364165,
+      "exit_ms": 181500.43686263583,
+      "entry_ms": 0.0,
+      "overlap_ms": 44580.680272108846,
+      "safety": {
+        "nan_inf_sample_count": 0,
+        "clipped_sample_count": 0,
+        "post_peak_dbfs": -1.0000000000000007
+      },
+      "out_id": "RM090",
+      "in_id": "RM025",
+      "split": "dev",
+      "status": "SUCCESS"
+    },
+    {
+      "crossfade_duration_ms": 40125.39184952978,
+      "exit_ms": 149400.0081504702,
+      "entry_ms": 0.0,
+      "overlap_ms": 40125.35147392291,
+      "safety": {
+        "nan_inf_sample_count": 0,
+        "clipped_sample_count": 0,
+        "post_peak_dbfs": -0.9999999999999997
+      },
+      "out_id": "RM027",
+      "in_id": "RM012",
+      "split": "dev",
+      "status": "SUCCESS"
+    },
+    {
+      "crossfade_duration_ms": 45000,
+      "exit_ms": 132191.5,
+      "entry_ms": 0.0,
+      "overlap_ms": 45000.0,
+      "safety": {
+        "nan_inf_sample_count": 0,
+        "clipped_sample_count": 0,
+        "post_peak_dbfs": -0.9999999999999987
+      },
+      "out_id": "RM086",
+      "in_id": "RM044",
+      "split": "dev",
+      "status": "SUCCESS"
+    },
+    {
+      "crossfade_duration_ms": 45000,
+      "exit_ms": 153461.0,
+      "entry_ms": 0.0,
+      "overlap_ms": 44999.97732426303,
+      "safety": {
+        "nan_inf_sample_count": 0,
+        "clipped_sample_count": 0,
+        "post_peak_dbfs": -0.9999999999999997
+      },
+      "out_id": "RM068",
+      "in_id": "RM034",
+      "split": "dev",
+      "status": "SUCCESS"
+    },
+    {
+      "crossfade_duration_ms": 45000,
+      "exit_ms": 187280.9,
+      "entry_ms": 0.0,
+      "overlap_ms": 44999.93197278911,
+      "safety": {
+        "nan_inf_sample_count": 0,
+        "clipped_sample_count": 0,
+        "post_peak_dbfs": -1.0000000000000007
+      },
+      "out_id": "RM100",
+      "in_id": "RM005",
+      "split": "dev",
+      "status": "SUCCESS"
+    },
+    {
+      "crossfade_duration_ms": 21176.470588235294,
+      "exit_ms": 165810.2294117647,
+      "entry_ms": 0.0,
+      "overlap_ms": 21176.439909297053,
+      "safety": {
+        "nan_inf_sample_count": 0,
+        "clipped_sample_count": 0,
+        "post_peak_dbfs": -0.9999999999999997
+      },
+      "out_id": "RM001",
+      "in_id": "RM050",
+      "split": "dev",
+      "status": "SUCCESS"
+    },
+    {
+      "crossfade_duration_ms": 40868.454661558106,
+      "exit_ms": 166671.5453384419,
+      "entry_ms": 0.0,
+      "overlap_ms": 40868.43537414966,
+      "safety": {
+        "nan_inf_sample_count": 0,
+        "clipped_sample_count": 0,
+        "post_peak_dbfs": -0.9999999999999997
+      },
+      "out_id": "RM075",
+      "in_id": "RM021",
+      "split": "holdout",
+      "status": "SUCCESS"
+    },
+    {
+      "crossfade_duration_ms": 20000,
+      "exit_ms": 168569.3,
+      "entry_ms": 0.0,
+      "overlap_ms": 19999.97732426304,
+      "safety": {
+        "nan_inf_sample_count": 0,
+        "clipped_sample_count": 0,
+        "post_peak_dbfs": -0.9999999999999987
+      },
+      "out_id": "RM049",
+      "in_id": "RM084",
+      "split": "dev",
+      "status": "SUCCESS"
+    },
+    {
+      "crossfade_duration_ms": 40125.39184952978,
+      "exit_ms": 149400.0081504702,
+      "entry_ms": 0.0,
+      "overlap_ms": 40125.35147392291,
+      "safety": {
+        "nan_inf_sample_count": 0,
+        "clipped_sample_count": 0,
+        "post_peak_dbfs": -1.0000000000000007
+      },
+      "out_id": "RM027",
+      "in_id": "RM085",
+      "split": "dev",
+      "status": "SUCCESS"
+    },
+    {
+      "crossfade_duration_ms": 45000,
+      "exit_ms": 139018.2,
+      "entry_ms": 0.0,
+      "overlap_ms": 44999.95464852608,
+      "safety": {
+        "nan_inf_sample_count": 0,
+        "clipped_sample_count": 0,
+        "post_peak_dbfs": -0.9999999999999997
+      },
+      "out_id": "RM040",
+      "in_id": "RM093",
+      "split": "holdout",
+      "status": "SUCCESS"
+    },
+    {
+      "crossfade_duration_ms": 20000,
+      "exit_ms": 179076.3,
+      "entry_ms": 0.0,
+      "overlap_ms": 20000.0,
+      "safety": {
+        "nan_inf_sample_count": 0,
+        "clipped_sample_count": 0,
+        "post_peak_dbfs": -0.9999999999999987
+      },
+      "out_id": "RM072",
+      "in_id": "RM081",
+      "split": "dev",
+      "status": "SUCCESS"
+    },
+    {
+      "crossfade_duration_ms": 31206.826493295408,
+      "exit_ms": 105639.97350670458,
+      "entry_ms": 0.0,
+      "overlap_ms": 31206.8253968254,
+      "safety": {
+        "nan_inf_sample_count": 0,
+        "clipped_sample_count": 0,
+        "post_peak_dbfs": -0.9999999999999997
+      },
+      "out_id": "RM046",
+      "in_id": "RM010",
+      "split": "dev",
+      "status": "SUCCESS"
+    },
+    {
+      "crossfade_duration_ms": 29721.36222910217,
+      "exit_ms": 152508.83777089784,
+      "entry_ms": 0.0,
+      "overlap_ms": 29721.36054421769,
+      "safety": {
+        "nan_inf_sample_count": 0,
+        "clipped_sample_count": 0,
+        "post_peak_dbfs": -0.9999999999999987
+      },
+      "out_id": "RM074",
+      "in_id": "RM008",
+      "split": "dev",
+      "status": "SUCCESS"
+    },
+    {
+      "crossfade_duration_ms": 20000,
+      "exit_ms": 163820.8,
+      "entry_ms": 0.0,
+      "overlap_ms": 20000.0,
+      "safety": {
+        "nan_inf_sample_count": 0,
+        "clipped_sample_count": 0,
+        "post_peak_dbfs": -1.0000000000000007
+      },
+      "out_id": "RM022",
+      "in_id": "RM080",
+      "split": "dev",
+      "status": "SUCCESS"
+    },
+    {
+      "crossfade_duration_ms": 28235.29411764706,
+      "exit_ms": 215725.70588235295,
+      "entry_ms": 0.0,
+      "overlap_ms": 28235.28344671202,
+      "safety": {
+        "nan_inf_sample_count": 0,
+        "clipped_sample_count": 0,
+        "post_peak_dbfs": -0.9999999999999997
+      },
+      "out_id": "RM023",
+      "in_id": "RM090",
+      "split": "dev",
+      "status": "SUCCESS"
+    },
+    {
+      "crossfade_duration_ms": 28235.29411764706,
+      "exit_ms": 160426.90588235296,
+      "entry_ms": 0.0,
+      "overlap_ms": 28235.238095238095,
+      "safety": {
+        "nan_inf_sample_count": 0,
+        "clipped_sample_count": 0,
+        "post_peak_dbfs": -0.9999999999999997
+      },
+      "out_id": "RM007",
+      "in_id": "RM019",
+      "split": "holdout",
+      "status": "SUCCESS"
+    },
+    {
+      "crossfade_duration_ms": 43097.6430976431,
+      "exit_ms": 111849.15690235689,
+      "entry_ms": 0.0,
+      "overlap_ms": 43097.596371882086,
+      "safety": {
+        "nan_inf_sample_count": 0,
+        "clipped_sample_count": 0,
+        "post_peak_dbfs": -0.9999999999999997
+      },
+      "out_id": "RM054",
+      "in_id": "RM029",
+      "split": "dev",
+      "status": "SUCCESS"
+    },
+    {
+      "crossfade_duration_ms": 41237.113402061856,
+      "exit_ms": 163307.48659793814,
+      "entry_ms": 0.0,
+      "overlap_ms": 41237.1201814059,
+      "safety": {
+        "nan_inf_sample_count": 0,
+        "clipped_sample_count": 0,
+        "post_peak_dbfs": -0.9999999999999997
+      },
+      "out_id": "RM048",
+      "in_id": "RM015",
+      "split": "dev",
+      "status": "SUCCESS"
+    },
+    {
+      "crossfade_duration_ms": 45000,
+      "exit_ms": 135895.1,
+      "entry_ms": 0.0,
+      "overlap_ms": 44999.97732426303,
+      "safety": {
+        "nan_inf_sample_count": 0,
+        "clipped_sample_count": 0,
+        "post_peak_dbfs": -0.9999999999999997
+      },
+      "out_id": "RM056",
+      "in_id": "RM015",
+      "split": "holdout",
+      "status": "SUCCESS"
+    },
+    {
+      "crossfade_duration_ms": 29721.36222910217,
+      "exit_ms": 186247.4377708978,
+      "entry_ms": 0.0,
+      "overlap_ms": 29721.36054421769,
+      "safety": {
+        "nan_inf_sample_count": 0,
+        "clipped_sample_count": 0,
+        "post_peak_dbfs": -0.9999999999999997
+      },
+      "out_id": "RM057",
+      "in_id": "RM062",
+      "split": "dev",
+      "status": "SUCCESS"
+    },
+    {
+      "crossfade_duration_ms": 24521.072796934866,
+      "exit_ms": 183018.92720306513,
+      "entry_ms": 0.0,
+      "overlap_ms": 24521.04308390023,
+      "safety": {
+        "nan_inf_sample_count": 0,
+        "clipped_sample_count": 0,
+        "post_peak_dbfs": -0.9999999999999997
+      },
+      "out_id": "RM075",
+      "in_id": "RM076",
+      "split": "holdout",
+      "status": "SUCCESS"
+    },
+    {
+      "crossfade_duration_ms": 45000,
+      "exit_ms": 159045.4,
+      "entry_ms": 0.0,
+      "overlap_ms": 44999.97732426303,
+      "safety": {
+        "nan_inf_sample_count": 0,
+        "clipped_sample_count": 0,
+        "post_peak_dbfs": -0.9999999999999997
+      },
+      "out_id": "RM094",
+      "in_id": "RM078",
+      "split": "dev",
+      "status": "SUCCESS"
+    }
+  ]
+}
