@@ -276,7 +276,7 @@ anchor) and is unaffected by this choice either way.
 ## Validation
 
 `tools/p0m3/all_in_one_runtime_probe/entry_anchor_feasibility/verify_entry_anchor_feasibility.py`:
-**117/117 PASS.** Covers: intro interval unanimity, deterministic ranking
+**129/129 PASS.** Covers: intro interval unanimity, deterministic ranking
 order, required fields on every cluster, content-preservation region
 coverage (top-2 candidates + full-intro context) and classification-enum
 validity, the "disposable label requires both RMS and onset <=10th
