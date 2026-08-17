@@ -349,6 +349,34 @@ def build_pair_compat_input(out_a: dict, in_a: dict) -> dict:
     }
 
 
+def alignment_anchor_fields(t_ms: int, beat_conf: str, downbeat_conf: str) -> dict:
+    """P0-M3-R3 FINAL REAL-CORPUS REPLAY: consumes the accepted
+    alignment-anchor contract separation (`policy.contract.resolve_alignment_targets`
+    EXPLICIT mode) generically -- beat and downbeat evidence are exposed as
+    INDEPENDENT candidate-level fields, never coupled into one
+    both-required boolean the way the legacy `beat_downbeat_aligned` flag
+    below still is. Sourced from the SAME real per-track beat/downbeat
+    confidence measurements this module already reads elsewhere (never
+    fabricated, never keyed off any specific opaque RM id -- this applies
+    identically to every candidate in the corpus). A side whose own
+    confidence is below HIGH is left absent (never backfilled from the
+    other side or from `t_ms`), so a genuinely partial boundary is reported
+    honestly instead of being hidden behind a single false "not aligned"
+    flag. This is a REPRESENTATION-ONLY change: for any boundary where both
+    beat AND downbeat are independently HIGH on both sides, the resolved
+    targets are numerically identical to the prior LEGACY_T_MS resolution
+    (both equal `t_ms`) -- FULL_DJ_BLEND authorization is unaffected either
+    way, since `policy.boundary.plan_transition_boundary`'s
+    `boundary_alignable` gate already required all four independent
+    presence checks to be true simultaneously."""
+    fields = {}
+    if beat_conf == "HIGH":
+        fields["beat_alignment_target_ms"] = t_ms
+    if downbeat_conf == "HIGH":
+        fields["downbeat_alignment_target_ms"] = t_ms
+    return fields
+
+
 def build_manifest_pair(pair_id: str, category: str, out_id: str, in_id: str, out_a: dict, in_a: dict, compat_input: dict):
     exit_conf = out_a["candidates"]["exit_structure_confidence"]
     both_grid_strong_in = in_a["beat"]["confidence"] == "HIGH" and in_a["downbeat"]["confidence"] == "HIGH"
@@ -358,12 +386,18 @@ def build_manifest_pair(pair_id: str, category: str, out_id: str, in_id: str, ou
     # from beat/downbeat confidence alone.
     musical_unit_complete = bool(compat_input["_out_structure_evidence"] and exit_conf != "LOW")
 
+    exit_t_ms = int(round(out_a["candidates"]["exit_candidate_t_ms"]))
+    entry_t_ms = int(round(in_a["candidates"]["entry_candidate_t_ms"]))
+
     outgoing = {
         "path": None,
         "duration_ms": out_a["duration_ms"],
         "bpm": out_a["tempo"]["bpm"],
         "genre_tags": out_a.get("genre_tags", []),
-        "exit_candidate_t_ms": int(round(out_a["candidates"]["exit_candidate_t_ms"])),
+        "exit_candidate_t_ms": exit_t_ms,
+        # Retained for diagnostic/backward-compat trace visibility only --
+        # resolve_alignment_targets prefers the EXPLICIT fields below
+        # whenever either is present (see alignment_anchor_fields above).
         "beat_downbeat_aligned": bool(out_a["beat"]["confidence"] == "HIGH" and out_a["downbeat"]["confidence"] == "HIGH"),
         "in_acceptable_exit_region": bool(out_a["candidates"]["exit_candidate_t_ms"] / max(out_a["duration_ms"], 1.0) >= 0.5),
         "musical_unit_complete": musical_unit_complete,
@@ -372,15 +406,19 @@ def build_manifest_pair(pair_id: str, category: str, out_id: str, in_id: str, ou
         "structure_confidence": exit_conf,
         "energy_continuity_hint": out_a["energy_continuity_hint"],
     }
+    outgoing.update(alignment_anchor_fields(exit_t_ms, out_a["beat"]["confidence"], out_a["downbeat"]["confidence"]))
     incoming = {
         "path": None,
         "bpm": in_a["tempo"]["bpm"],
         "genre_tags": in_a.get("genre_tags", []),
-        "entry_candidate_t_ms": int(round(in_a["candidates"]["entry_candidate_t_ms"])),
+        "entry_candidate_t_ms": entry_t_ms,
+        # Retained for diagnostic/backward-compat trace visibility only --
+        # see outgoing["beat_downbeat_aligned"] comment above.
         "beat_downbeat_aligned": bool(both_grid_strong_in),
         "phrase_section_evidence": bool(in_a["candidates"]["entry_has_detected_intro"]),
         "is_authored_silence_skip": bool(in_a["candidates"]["entry_is_authored_silence_skip"]),
     }
+    incoming.update(alignment_anchor_fields(entry_t_ms, in_a["beat"]["confidence"], in_a["downbeat"]["confidence"]))
     # R4 repair: wire the real detected leading-silence evidence through so
     # real_music_pipeline.py::build_tx_fixture() can actually get a nonzero
     # entry accepted by the real R2 planner instead of forcing 0ms.

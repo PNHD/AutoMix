@@ -581,6 +581,117 @@ def main():
     print("10. Preservation safety is unchanged by this repair")
     check("TX-08 preservation target still respects the existing SEAMLESS_FULL_TRACK_DEFAULT floor (>=0.95)", d08.outgoing_content_preservation_target is not None and d08.outgoing_content_preservation_target >= 0.95)
 
+    print("\n=== PM REVIEW -- PRE-FLIGHT CONSISTENCY FIX: beat vs bar/downbeat action fields are independently derived ===")
+    print("(defect: build_boundary_transition_decision() previously derived BOTH beat_phase_relation/")
+    print(" beat_alignment_action AND bar_phase_relation/bar_alignment_action from a single")
+    print(" both_beat_targets_known flag, so a boundary with a known beat target but a MISSING")
+    print(" downbeat target could still incorrectly emit a downbeat/bar alignment action.)")
+
+    print("\nMutation 1: beat present + downbeat missing (reuses TX-08 PARTIAL EXPLICIT fixture above)")
+    check("mutation 1: beat action MAY be applicable (both beat targets known)", d08_partial.beat_alignment_action == "ALIGN_OUTGOING_BEAT_TARGET_TO_INCOMING_BEAT_TARGET")
+    check("mutation 1: beat_phase_relation is NOT_MEASURED (both beat targets known)", d08_partial.beat_phase_relation == "NOT_MEASURED")
+    check("mutation 1: bar action MUST be NOT_APPLICABLE (downbeat target missing)", d08_partial.bar_alignment_action == "NOT_APPLICABLE")
+    check("mutation 1: bar_phase_relation MUST be NOT_APPLICABLE (downbeat target missing)", d08_partial.bar_phase_relation == "NOT_APPLICABLE")
+
+    print("\nMutation 2: downbeat present + beat missing (symmetric case)")
+    tx_downbeat_only = json.loads(json.dumps(tx08))
+    tx_downbeat_only["transition_id"] = "TX-08-DOWNBEAT-ONLY-TEST"
+    del tx_downbeat_only["incoming_track"]["candidates"][0]["beat_alignment_target_ms"]
+    d_downbeat_only = plan_transition_boundary(tx_downbeat_only, "SEAMLESS_FULL_TRACK_DEFAULT")
+    check("mutation 2: incoming_downbeat_alignment_target_ms still resolves (8000)", d_downbeat_only.incoming_downbeat_alignment_target_ms == 8000)
+    check("mutation 2: incoming_beat_alignment_target_ms is None (never backfilled from t_ms)", d_downbeat_only.incoming_beat_alignment_target_ms is None)
+    check("mutation 2: bar action MAY be applicable (both downbeat targets known)", d_downbeat_only.bar_alignment_action == "ALIGN_OUTGOING_DOWNBEAT_TARGET_TO_INCOMING_DOWNBEAT_TARGET")
+    check("mutation 2: bar_phase_relation is NOT_MEASURED (both downbeat targets known)", d_downbeat_only.bar_phase_relation == "NOT_MEASURED")
+    check("mutation 2: beat action MUST be NOT_APPLICABLE (beat target missing)", d_downbeat_only.beat_alignment_action == "NOT_APPLICABLE")
+    check("mutation 2: beat_phase_relation MUST be NOT_APPLICABLE (beat target missing)", d_downbeat_only.beat_phase_relation == "NOT_APPLICABLE")
+    check("mutation 2: FULL_DJ_BLEND still withheld (only one side's evidence pair is complete)", "FULL_DJ_BLEND" not in d_downbeat_only.allowed_transition_class_set)
+
+    print("\nMutation 3: incoming beat target precedes its own audible entry (downbeat target stays valid)")
+    tx_invalid_beat = json.loads(json.dumps(tx08))
+    tx_invalid_beat["transition_id"] = "TX-08-INVALID-BEAT-TEST"
+    tx_invalid_beat["incoming_track"]["candidates"] = [{
+        "candidate_id": "TX08-IN-INVALID-BEAT",
+        "t_ms": 5000,
+        "phrase_section_evidence": True,
+        "beat_downbeat_aligned": False,
+        "is_authored_silence_skip": False,
+        "beat_alignment_target_ms": 1000,      # invalid: precedes entry (5000)
+        "downbeat_alignment_target_ms": 8000,  # valid: after entry
+    }]
+    d_invalid_beat = plan_transition_boundary(tx_invalid_beat, "SEAMLESS_FULL_TRACK_DEFAULT")
+    check("mutation 3: entry candidate is still selected (entry itself is independently valid via phrase evidence)", d_invalid_beat.selected_incoming_entry_candidate_id == "TX08-IN-INVALID-BEAT")
+    check("mutation 3: beat action MUST be NOT_APPLICABLE (invalid incoming beat target)", d_invalid_beat.beat_alignment_action == "NOT_APPLICABLE")
+    check("mutation 3: beat_phase_relation MUST be NOT_APPLICABLE (invalid incoming beat target)", d_invalid_beat.beat_phase_relation == "NOT_APPLICABLE")
+    check("mutation 3: bar action MAY still be applicable (downbeat target is independently valid)", d_invalid_beat.bar_alignment_action == "ALIGN_OUTGOING_DOWNBEAT_TARGET_TO_INCOMING_DOWNBEAT_TARGET")
+
+    print("\nMutation 4: incoming downbeat target precedes its own audible entry (beat target stays valid)")
+    tx_invalid_downbeat = json.loads(json.dumps(tx08))
+    tx_invalid_downbeat["transition_id"] = "TX-08-INVALID-DOWNBEAT-TEST"
+    tx_invalid_downbeat["incoming_track"]["candidates"] = [{
+        "candidate_id": "TX08-IN-INVALID-DOWNBEAT",
+        "t_ms": 5000,
+        "phrase_section_evidence": True,
+        "beat_downbeat_aligned": False,
+        "is_authored_silence_skip": False,
+        "beat_alignment_target_ms": 8000,      # valid: after entry
+        "downbeat_alignment_target_ms": 1000,  # invalid: precedes entry (5000)
+    }]
+    d_invalid_downbeat = plan_transition_boundary(tx_invalid_downbeat, "SEAMLESS_FULL_TRACK_DEFAULT")
+    check("mutation 4: entry candidate is still selected", d_invalid_downbeat.selected_incoming_entry_candidate_id == "TX08-IN-INVALID-DOWNBEAT")
+    check("mutation 4: bar action MUST be NOT_APPLICABLE (invalid incoming downbeat target)", d_invalid_downbeat.bar_alignment_action == "NOT_APPLICABLE")
+    check("mutation 4: bar_phase_relation MUST be NOT_APPLICABLE (invalid incoming downbeat target)", d_invalid_downbeat.bar_phase_relation == "NOT_APPLICABLE")
+    check("mutation 4: beat action MAY still be applicable (beat target is independently valid)", d_invalid_downbeat.beat_alignment_action == "ALIGN_OUTGOING_BEAT_TARGET_TO_INCOMING_BEAT_TARGET")
+
+    print("\nMutation 5: both incoming beat AND downbeat targets precede entry -> both actions withheld")
+    tx_invalid_both = json.loads(json.dumps(tx08))
+    tx_invalid_both["transition_id"] = "TX-08-INVALID-BOTH-TEST"
+    tx_invalid_both["incoming_track"]["candidates"] = [{
+        "candidate_id": "TX08-IN-INVALID-BOTH",
+        "t_ms": 5000,
+        "phrase_section_evidence": True,
+        "beat_downbeat_aligned": False,
+        "is_authored_silence_skip": False,
+        "beat_alignment_target_ms": 1000,      # invalid
+        "downbeat_alignment_target_ms": 2000,  # invalid
+    }]
+    d_invalid_both = plan_transition_boundary(tx_invalid_both, "SEAMLESS_FULL_TRACK_DEFAULT")
+    check("mutation 5: entry candidate is still selected", d_invalid_both.selected_incoming_entry_candidate_id == "TX08-IN-INVALID-BOTH")
+    check("mutation 5: beat action MUST be NOT_APPLICABLE (both invalid)", d_invalid_both.beat_alignment_action == "NOT_APPLICABLE")
+    check("mutation 5: bar action MUST be NOT_APPLICABLE (both invalid)", d_invalid_both.bar_alignment_action == "NOT_APPLICABLE")
+    check("mutation 5: beat_phase_relation MUST be NOT_APPLICABLE (both invalid)", d_invalid_both.beat_phase_relation == "NOT_APPLICABLE")
+    check("mutation 5: bar_phase_relation MUST be NOT_APPLICABLE (both invalid)", d_invalid_both.bar_phase_relation == "NOT_APPLICABLE")
+    check("mutation 5: FULL_DJ_BLEND is withheld (no valid alignment evidence on either side)", "FULL_DJ_BLEND" not in d_invalid_both.allowed_transition_class_set)
+
+    print("\nMutation 6: raw invalid timestamps remain visible in diagnostic fields -- never clamped/rewritten")
+    check("mutation 6 (mutation 3 case): raw invalid incoming_beat_alignment_target_ms == 1000 (not clamped to entry t_ms 5000, not None)", d_invalid_beat.incoming_beat_alignment_target_ms == 1000)
+    check("mutation 6 (mutation 3 case): raw incoming_downbeat_alignment_target_ms == 8000 (valid side unaffected)", d_invalid_beat.incoming_downbeat_alignment_target_ms == 8000)
+    check("mutation 6 (mutation 4 case): raw invalid incoming_downbeat_alignment_target_ms == 1000 (not clamped, not None)", d_invalid_downbeat.incoming_downbeat_alignment_target_ms == 1000)
+    check("mutation 6 (mutation 5 case): raw invalid incoming_beat_alignment_target_ms == 1000 (not clamped, not None)", d_invalid_both.incoming_beat_alignment_target_ms == 1000)
+    check("mutation 6 (mutation 5 case): raw invalid incoming_downbeat_alignment_target_ms == 2000 (not clamped, not None)", d_invalid_both.incoming_downbeat_alignment_target_ms == 2000)
+
+    print("\nMutation 7: TX-01..08 valid behavior is unchanged by this repair (independent re-derivation, not cached results)")
+    for tid, tx in tx_by_id.items():
+        d_re = plan_transition_boundary(tx, "SEAMLESS_FULL_TRACK_DEFAULT")
+        expected = tx.get("expected_winner")
+        if expected:
+            check(
+                f"mutation 7: {tid} winner unchanged ({expected['outgoing']} + {expected['incoming']})",
+                d_re.selected_outgoing_exit_candidate_id == expected["outgoing"] and d_re.selected_incoming_entry_candidate_id == expected["incoming"],
+            )
+        if tx.get("expect_full_dj_blend") is not None:
+            check(
+                f"mutation 7: {tid} FULL_DJ_BLEND authorization unchanged (expected={tx['expect_full_dj_blend']})",
+                ("FULL_DJ_BLEND" in d_re.allowed_transition_class_set) == tx["expect_full_dj_blend"],
+            )
+    check(
+        "mutation 7: no TX-01..08 fixture has a beat/downbeat target split (this repair is a no-op for all real fixtures -- the split only shows up in the synthetic mutations above)",
+        all(
+            (d.outgoing_beat_alignment_target_ms is not None) == (d.outgoing_downbeat_alignment_target_ms is not None)
+            and (d.incoming_beat_alignment_target_ms is not None) == (d.incoming_downbeat_alignment_target_ms is not None)
+            for d in all_tx_decisions
+        ),
+    )
+
     print("\n=== PM REVIEW #3: full prior 111 assertions + preservation/highlight/dead-air/order-invariance gates re-verified below ===")
 
     print("\n=== Retained AC coverage ===")

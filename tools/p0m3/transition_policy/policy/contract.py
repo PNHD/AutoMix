@@ -290,11 +290,35 @@ def build_boundary_transition_decision(
     # eligible_for_dynamic_mix, not measured. beat_alignment_action/
     # bar_alignment_action are the separate, explicit RENDER-PLAN
     # instruction for the DSP engine.
-    both_beat_targets_known = outgoing_beat_target is not None and incoming_beat_target is not None
+    #
+    # PM REVIEW (pre-flight consistency fix, folded into final real-corpus
+    # replay): beat and bar/downbeat are INDEPENDENT presence checks -- the
+    # PARTIAL EXPLICIT alignment mode (A1/A10) means a boundary can have a
+    # known beat target with no downbeat target, or vice versa. Deriving
+    # both pairs of fields from a single both_beat_targets_known flag let a
+    # bar/downbeat action leak out when only the beat side was actually
+    # known. validated/actionable per-side status is read from
+    # winner_entry (computed once in policy/boundary.py, not recomputed
+    # here) so an incoming target that precedes its own audible entry
+    # forces NOT_APPLICABLE on exactly the affected action -- the raw
+    # (unclamped) target values above remain visible for diagnostic
+    # provenance regardless.
+    incoming_beat_invalid = winner_entry.get("incoming_beat_alignment_invalid", False)
+    incoming_downbeat_invalid = winner_entry.get("incoming_downbeat_alignment_invalid", False)
+    both_beat_targets_known = (
+        outgoing_beat_target is not None
+        and incoming_beat_target is not None
+        and not incoming_beat_invalid
+    )
+    both_downbeat_targets_known = (
+        outgoing_downbeat_target is not None
+        and incoming_downbeat_target is not None
+        and not incoming_downbeat_invalid
+    )
     beat_phase_relation = "NOT_MEASURED" if both_beat_targets_known else "NOT_APPLICABLE"
-    bar_phase_relation = "NOT_MEASURED" if both_beat_targets_known else "NOT_APPLICABLE"
+    bar_phase_relation = "NOT_MEASURED" if both_downbeat_targets_known else "NOT_APPLICABLE"
     beat_alignment_action = "ALIGN_OUTGOING_BEAT_TARGET_TO_INCOMING_BEAT_TARGET" if both_beat_targets_known else "NOT_APPLICABLE"
-    bar_alignment_action = "ALIGN_OUTGOING_DOWNBEAT_TARGET_TO_INCOMING_DOWNBEAT_TARGET" if both_beat_targets_known else "NOT_APPLICABLE"
+    bar_alignment_action = "ALIGN_OUTGOING_DOWNBEAT_TARGET_TO_INCOMING_DOWNBEAT_TARGET" if both_downbeat_targets_known else "NOT_APPLICABLE"
 
     required_tempo_ratio = None
     required_pitch_shift = None

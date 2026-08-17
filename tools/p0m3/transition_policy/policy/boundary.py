@@ -161,11 +161,14 @@ def plan_transition_boundary(tx_fixture: dict, intent: str, floor_override=None,
 
             # A4: an incoming alignment target must never precede the
             # candidate's own audible entry -- fail closed (withhold),
-            # never clamp/rewrite the timestamp.
-            invalid_incoming_alignment = (
-                (entry_beat_target is not None and entry_beat_target < entry_t_ms)
-                or (entry_downbeat_target is not None and entry_downbeat_target < entry_t_ms)
-            )
+            # never clamp/rewrite the timestamp. Tracked PER SIDE (not only
+            # combined) so the decision builder can withhold exactly the
+            # affected action (beat vs bar) instead of both (PM REVIEW --
+            # pre-flight consistency fix folded into final real-corpus
+            # replay).
+            incoming_beat_alignment_invalid = entry_beat_target is not None and entry_beat_target < entry_t_ms
+            incoming_downbeat_alignment_invalid = entry_downbeat_target is not None and entry_downbeat_target < entry_t_ms
+            invalid_incoming_alignment = incoming_beat_alignment_invalid or incoming_downbeat_alignment_invalid
             # A7 provenance: does the resolved alignment target genuinely
             # differ from the candidate's own entry t_ms? (Independent of
             # validity -- an invalid target still "differs".)
@@ -246,6 +249,8 @@ def plan_transition_boundary(tx_fixture: dict, intent: str, floor_override=None,
                 "incoming_entry_t_ms": entry_t_ms,
                 "incoming_beat_alignment_target_ms": entry_beat_target,
                 "incoming_downbeat_alignment_target_ms": entry_downbeat_target,
+                "incoming_beat_alignment_invalid": incoming_beat_alignment_invalid,
+                "incoming_downbeat_alignment_invalid": incoming_downbeat_alignment_invalid,
                 "incoming_alignment_target_source": entry_alignment_source,
                 "incoming_alignment_separate_from_entry": incoming_alignment_separate_from_entry,
                 "outgoing_beat_alignment_target_ms": exit_beat_target,
