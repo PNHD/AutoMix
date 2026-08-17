@@ -1,0 +1,1193 @@
+{
+  "schema_version": 1,
+  "scope": "RM014 entry ONLY (RM041 exit audio not re-decoded; accepted RM041 exit cells reused verbatim)",
+  "methodology_source": "wsl_bounded_audio_oracles.py::cqt_key_at/_profile_key via pair_stability/analyze_harmonic_sensitivity.py (unmodified methodology)",
+  "pair_relation_function_source": "select_real_music_pairs.harmonic_relationship (imported unmodified)",
+  "window_lengths_s_tested": [
+    10.0,
+    15.0,
+    20.0,
+    30.0
+  ],
+  "boundary_perturbations_ms_tested": [
+    -1000,
+    -500,
+    0,
+    500,
+    1000
+  ],
+  "accepted_0ms_entry_cells": [
+    {
+      "role": "entry",
+      "window_length_s": 10.0,
+      "boundary_perturbation_ms": -1000,
+      "status": "OUT_OF_AVAILABLE_AUDIO_RANGE"
+    },
+    {
+      "role": "entry",
+      "window_length_s": 10.0,
+      "boundary_perturbation_ms": -500,
+      "status": "OUT_OF_AVAILABLE_AUDIO_RANGE"
+    },
+    {
+      "role": "entry",
+      "window_length_s": 10.0,
+      "boundary_perturbation_ms": 0,
+      "status": "MEASURED",
+      "window_start_ms": 0.0,
+      "window_end_ms": 10000.0,
+      "root": "D#",
+      "mode": "major",
+      "top_score": 0.659114,
+      "second_score": 0.650896,
+      "margin": 0.008219,
+      "confidence": "LOW"
+    },
+    {
+      "role": "entry",
+      "window_length_s": 10.0,
+      "boundary_perturbation_ms": 500,
+      "status": "MEASURED",
+      "window_start_ms": 500.0,
+      "window_end_ms": 10500.0,
+      "root": "D#",
+      "mode": "major",
+      "top_score": 0.652597,
+      "second_score": 0.592755,
+      "margin": 0.059842,
+      "confidence": "MEDIUM"
+    },
+    {
+      "role": "entry",
+      "window_length_s": 10.0,
+      "boundary_perturbation_ms": 1000,
+      "status": "MEASURED",
+      "window_start_ms": 1000.0,
+      "window_end_ms": 11000.0,
+      "root": "D#",
+      "mode": "major",
+      "top_score": 0.634792,
+      "second_score": 0.575536,
+      "margin": 0.059256,
+      "confidence": "MEDIUM"
+    },
+    {
+      "role": "entry",
+      "window_length_s": 15.0,
+      "boundary_perturbation_ms": -1000,
+      "status": "OUT_OF_AVAILABLE_AUDIO_RANGE"
+    },
+    {
+      "role": "entry",
+      "window_length_s": 15.0,
+      "boundary_perturbation_ms": -500,
+      "status": "OUT_OF_AVAILABLE_AUDIO_RANGE"
+    },
+    {
+      "role": "entry",
+      "window_length_s": 15.0,
+      "boundary_perturbation_ms": 0,
+      "status": "MEASURED",
+      "window_start_ms": 0.0,
+      "window_end_ms": 15000.0,
+      "root": "F#",
+      "mode": "major",
+      "top_score": 0.485455,
+      "second_score": 0.48384,
+      "margin": 0.001615,
+      "confidence": "LOW"
+    },
+    {
+      "role": "entry",
+      "window_length_s": 15.0,
+      "boundary_perturbation_ms": 500,
+      "status": "MEASURED",
+      "window_start_ms": 500.0,
+      "window_end_ms": 15500.0,
+      "root": "D#",
+      "mode": "major",
+      "top_score": 0.534919,
+      "second_score": 0.532602,
+      "margin": 0.002317,
+      "confidence": "LOW"
+    },
+    {
+      "role": "entry",
+      "window_length_s": 15.0,
+      "boundary_perturbation_ms": 1000,
+      "status": "MEASURED",
+      "window_start_ms": 1000.0,
+      "window_end_ms": 16000.0,
+      "root": "D#",
+      "mode": "major",
+      "top_score": 0.523236,
+      "second_score": 0.505466,
+      "margin": 0.01777,
+      "confidence": "LOW"
+    },
+    {
+      "role": "entry",
+      "window_length_s": 20.0,
+      "boundary_perturbation_ms": -1000,
+      "status": "OUT_OF_AVAILABLE_AUDIO_RANGE"
+    },
+    {
+      "role": "entry",
+      "window_length_s": 20.0,
+      "boundary_perturbation_ms": -500,
+      "status": "OUT_OF_AVAILABLE_AUDIO_RANGE"
+    },
+    {
+      "role": "entry",
+      "window_length_s": 20.0,
+      "boundary_perturbation_ms": 0,
+      "status": "MEASURED",
+      "window_start_ms": 0.0,
+      "window_end_ms": 20000.0,
+      "root": "F#",
+      "mode": "major",
+      "top_score": 0.453405,
+      "second_score": 0.386244,
+      "margin": 0.067161,
+      "confidence": "MEDIUM"
+    },
+    {
+      "role": "entry",
+      "window_length_s": 20.0,
+      "boundary_perturbation_ms": 500,
+      "status": "MEASURED",
+      "window_start_ms": 500.0,
+      "window_end_ms": 20500.0,
+      "root": "G",
+      "mode": "minor",
+      "top_score": 0.489036,
+      "second_score": 0.48086,
+      "margin": 0.008176,
+      "confidence": "LOW"
+    },
+    {
+      "role": "entry",
+      "window_length_s": 20.0,
+      "boundary_perturbation_ms": 1000,
+      "status": "MEASURED",
+      "window_start_ms": 1000.0,
+      "window_end_ms": 21000.0,
+      "root": "C",
+      "mode": "minor",
+      "top_score": 0.470399,
+      "second_score": 0.45271,
+      "margin": 0.017689,
+      "confidence": "LOW"
+    },
+    {
+      "role": "entry",
+      "window_length_s": 30.0,
+      "boundary_perturbation_ms": -1000,
+      "status": "OUT_OF_AVAILABLE_AUDIO_RANGE"
+    },
+    {
+      "role": "entry",
+      "window_length_s": 30.0,
+      "boundary_perturbation_ms": -500,
+      "status": "OUT_OF_AVAILABLE_AUDIO_RANGE"
+    },
+    {
+      "role": "entry",
+      "window_length_s": 30.0,
+      "boundary_perturbation_ms": 0,
+      "status": "MEASURED",
+      "window_start_ms": 0.0,
+      "window_end_ms": 30000.0,
+      "root": "G",
+      "mode": "minor",
+      "top_score": 0.60753,
+      "second_score": 0.331103,
+      "margin": 0.276427,
+      "confidence": "HIGH"
+    },
+    {
+      "role": "entry",
+      "window_length_s": 30.0,
+      "boundary_perturbation_ms": 500,
+      "status": "MEASURED",
+      "window_start_ms": 500.0,
+      "window_end_ms": 30500.0,
+      "root": "G",
+      "mode": "minor",
+      "top_score": 0.657229,
+      "second_score": 0.420527,
+      "margin": 0.236703,
+      "confidence": "HIGH"
+    },
+    {
+      "role": "entry",
+      "window_length_s": 30.0,
+      "boundary_perturbation_ms": 1000,
+      "status": "MEASURED",
+      "window_start_ms": 1000.0,
+      "window_end_ms": 31000.0,
+      "root": "G",
+      "mode": "minor",
+      "top_score": 0.650559,
+      "second_score": 0.425009,
+      "margin": 0.22555,
+      "confidence": "HIGH"
+    }
+  ],
+  "accepted_0ms_stability_summary": {
+    "n_measured": 12,
+    "n_total_cells": 20,
+    "distinct_root_mode_count": 4,
+    "root_mode_counts": {
+      "C minor": 1,
+      "D# major": 5,
+      "F# major": 2,
+      "G minor": 4
+    },
+    "modal_agreement_fraction": 0.4167,
+    "high_confidence_cell_count": 3,
+    "root_mode_100pct_agreement": false
+  },
+  "candidates": {
+    "rank1_center_18650.0ms": {
+      "candidate_center_ms": 18650.0,
+      "candidate_diagnostic_rank": 1,
+      "candidate_support_count": 5,
+      "entry_cells": [
+        {
+          "role": "entry",
+          "window_length_s": 10.0,
+          "boundary_perturbation_ms": -1000,
+          "status": "MEASURED",
+          "window_start_ms": 17650.0,
+          "window_end_ms": 27650.0,
+          "root": "G",
+          "mode": "minor",
+          "top_score": 0.485675,
+          "second_score": 0.398614,
+          "margin": 0.087061,
+          "confidence": "HIGH"
+        },
+        {
+          "role": "entry",
+          "window_length_s": 10.0,
+          "boundary_perturbation_ms": -500,
+          "status": "MEASURED",
+          "window_start_ms": 18150.0,
+          "window_end_ms": 28150.0,
+          "root": "G",
+          "mode": "minor",
+          "top_score": 0.517903,
+          "second_score": 0.472406,
+          "margin": 0.045497,
+          "confidence": "MEDIUM"
+        },
+        {
+          "role": "entry",
+          "window_length_s": 10.0,
+          "boundary_perturbation_ms": 0,
+          "status": "MEASURED",
+          "window_start_ms": 18650.0,
+          "window_end_ms": 28650.0,
+          "root": "G",
+          "mode": "minor",
+          "top_score": 0.561288,
+          "second_score": 0.491112,
+          "margin": 0.070175,
+          "confidence": "MEDIUM"
+        },
+        {
+          "role": "entry",
+          "window_length_s": 10.0,
+          "boundary_perturbation_ms": 500,
+          "status": "MEASURED",
+          "window_start_ms": 19150.0,
+          "window_end_ms": 29150.0,
+          "root": "G",
+          "mode": "minor",
+          "top_score": 0.570585,
+          "second_score": 0.554103,
+          "margin": 0.016482,
+          "confidence": "LOW"
+        },
+        {
+          "role": "entry",
+          "window_length_s": 10.0,
+          "boundary_perturbation_ms": 1000,
+          "status": "MEASURED",
+          "window_start_ms": 19650.0,
+          "window_end_ms": 29650.0,
+          "root": "G",
+          "mode": "minor",
+          "top_score": 0.575213,
+          "second_score": 0.519846,
+          "margin": 0.055367,
+          "confidence": "MEDIUM"
+        },
+        {
+          "role": "entry",
+          "window_length_s": 15.0,
+          "boundary_perturbation_ms": -1000,
+          "status": "MEASURED",
+          "window_start_ms": 17650.0,
+          "window_end_ms": 32650.0,
+          "root": "G",
+          "mode": "major",
+          "top_score": 0.587382,
+          "second_score": 0.523084,
+          "margin": 0.064298,
+          "confidence": "MEDIUM"
+        },
+        {
+          "role": "entry",
+          "window_length_s": 15.0,
+          "boundary_perturbation_ms": -500,
+          "status": "MEASURED",
+          "window_start_ms": 18150.0,
+          "window_end_ms": 33150.0,
+          "root": "G",
+          "mode": "major",
+          "top_score": 0.659928,
+          "second_score": 0.496337,
+          "margin": 0.163591,
+          "confidence": "HIGH"
+        },
+        {
+          "role": "entry",
+          "window_length_s": 15.0,
+          "boundary_perturbation_ms": 0,
+          "status": "MEASURED",
+          "window_start_ms": 18650.0,
+          "window_end_ms": 33650.0,
+          "root": "G",
+          "mode": "major",
+          "top_score": 0.665159,
+          "second_score": 0.550842,
+          "margin": 0.114317,
+          "confidence": "HIGH"
+        },
+        {
+          "role": "entry",
+          "window_length_s": 15.0,
+          "boundary_perturbation_ms": 500,
+          "status": "MEASURED",
+          "window_start_ms": 19150.0,
+          "window_end_ms": 34150.0,
+          "root": "G",
+          "mode": "major",
+          "top_score": 0.731492,
+          "second_score": 0.491352,
+          "margin": 0.240139,
+          "confidence": "HIGH"
+        },
+        {
+          "role": "entry",
+          "window_length_s": 15.0,
+          "boundary_perturbation_ms": 1000,
+          "status": "MEASURED",
+          "window_start_ms": 19650.0,
+          "window_end_ms": 34650.0,
+          "root": "G",
+          "mode": "major",
+          "top_score": 0.672453,
+          "second_score": 0.506502,
+          "margin": 0.165951,
+          "confidence": "HIGH"
+        },
+        {
+          "role": "entry",
+          "window_length_s": 20.0,
+          "boundary_perturbation_ms": -1000,
+          "status": "MEASURED",
+          "window_start_ms": 17650.0,
+          "window_end_ms": 37650.0,
+          "root": "G",
+          "mode": "major",
+          "top_score": 0.711644,
+          "second_score": 0.496643,
+          "margin": 0.215002,
+          "confidence": "HIGH"
+        },
+        {
+          "role": "entry",
+          "window_length_s": 20.0,
+          "boundary_perturbation_ms": -500,
+          "status": "MEASURED",
+          "window_start_ms": 18150.0,
+          "window_end_ms": 38150.0,
+          "root": "G",
+          "mode": "major",
+          "top_score": 0.723901,
+          "second_score": 0.51034,
+          "margin": 0.213561,
+          "confidence": "HIGH"
+        },
+        {
+          "role": "entry",
+          "window_length_s": 20.0,
+          "boundary_perturbation_ms": 0,
+          "status": "MEASURED",
+          "window_start_ms": 18650.0,
+          "window_end_ms": 38650.0,
+          "root": "G",
+          "mode": "major",
+          "top_score": 0.734217,
+          "second_score": 0.535403,
+          "margin": 0.198814,
+          "confidence": "HIGH"
+        },
+        {
+          "role": "entry",
+          "window_length_s": 20.0,
+          "boundary_perturbation_ms": 500,
+          "status": "MEASURED",
+          "window_start_ms": 19150.0,
+          "window_end_ms": 39150.0,
+          "root": "G",
+          "mode": "major",
+          "top_score": 0.728359,
+          "second_score": 0.575783,
+          "margin": 0.152576,
+          "confidence": "HIGH"
+        },
+        {
+          "role": "entry",
+          "window_length_s": 20.0,
+          "boundary_perturbation_ms": 1000,
+          "status": "MEASURED",
+          "window_start_ms": 19650.0,
+          "window_end_ms": 39650.0,
+          "root": "G",
+          "mode": "major",
+          "top_score": 0.733498,
+          "second_score": 0.559218,
+          "margin": 0.17428,
+          "confidence": "HIGH"
+        },
+        {
+          "role": "entry",
+          "window_length_s": 30.0,
+          "boundary_perturbation_ms": -1000,
+          "status": "MEASURED",
+          "window_start_ms": 17650.0,
+          "window_end_ms": 47650.0,
+          "root": "G",
+          "mode": "major",
+          "top_score": 0.642929,
+          "second_score": 0.539309,
+          "margin": 0.103621,
+          "confidence": "HIGH"
+        },
+        {
+          "role": "entry",
+          "window_length_s": 30.0,
+          "boundary_perturbation_ms": -500,
+          "status": "MEASURED",
+          "window_start_ms": 18150.0,
+          "window_end_ms": 48150.0,
+          "root": "G",
+          "mode": "major",
+          "top_score": 0.628446,
+          "second_score": 0.476579,
+          "margin": 0.151867,
+          "confidence": "HIGH"
+        },
+        {
+          "role": "entry",
+          "window_length_s": 30.0,
+          "boundary_perturbation_ms": 0,
+          "status": "MEASURED",
+          "window_start_ms": 18650.0,
+          "window_end_ms": 48650.0,
+          "root": "G",
+          "mode": "major",
+          "top_score": 0.638718,
+          "second_score": 0.538521,
+          "margin": 0.100197,
+          "confidence": "HIGH"
+        },
+        {
+          "role": "entry",
+          "window_length_s": 30.0,
+          "boundary_perturbation_ms": 500,
+          "status": "MEASURED",
+          "window_start_ms": 19150.0,
+          "window_end_ms": 49150.0,
+          "root": "G",
+          "mode": "major",
+          "top_score": 0.618927,
+          "second_score": 0.482371,
+          "margin": 0.136556,
+          "confidence": "HIGH"
+        },
+        {
+          "role": "entry",
+          "window_length_s": 30.0,
+          "boundary_perturbation_ms": 1000,
+          "status": "MEASURED",
+          "window_start_ms": 19650.0,
+          "window_end_ms": 49650.0,
+          "root": "G",
+          "mode": "major",
+          "top_score": 0.620673,
+          "second_score": 0.490959,
+          "margin": 0.129714,
+          "confidence": "HIGH"
+        }
+      ],
+      "stability_summary": {
+        "n_measured": 20,
+        "n_total_cells": 20,
+        "distinct_root_mode_count": 2,
+        "root_mode_counts": {
+          "G major": 15,
+          "G minor": 5
+        },
+        "modal_agreement_fraction": 0.75,
+        "high_confidence_cell_count": 15,
+        "root_mode_100pct_agreement": false
+      },
+      "pair_relation_vs_accepted_rm041_exit_cells": [
+        {
+          "window_length_s": 10.0,
+          "boundary_perturbation_ms": -1000,
+          "status": "MEASURED",
+          "exit_root_mode": "D minor",
+          "entry_root_mode": "G minor",
+          "relation": "COMPATIBLE"
+        },
+        {
+          "window_length_s": 10.0,
+          "boundary_perturbation_ms": -500,
+          "status": "MEASURED",
+          "exit_root_mode": "D minor",
+          "entry_root_mode": "G minor",
+          "relation": "COMPATIBLE"
+        },
+        {
+          "window_length_s": 10.0,
+          "boundary_perturbation_ms": 0,
+          "status": "MEASURED",
+          "exit_root_mode": "D minor",
+          "entry_root_mode": "G minor",
+          "relation": "COMPATIBLE"
+        },
+        {
+          "window_length_s": 10.0,
+          "boundary_perturbation_ms": 500,
+          "status": "MEASURED",
+          "exit_root_mode": "D minor",
+          "entry_root_mode": "G minor",
+          "relation": "UNKNOWN"
+        },
+        {
+          "window_length_s": 10.0,
+          "boundary_perturbation_ms": 1000,
+          "status": "MEASURED",
+          "exit_root_mode": "D minor",
+          "entry_root_mode": "G minor",
+          "relation": "COMPATIBLE"
+        },
+        {
+          "window_length_s": 15.0,
+          "boundary_perturbation_ms": -1000,
+          "status": "MEASURED",
+          "exit_root_mode": "D minor",
+          "entry_root_mode": "G major",
+          "relation": "INCOMPATIBLE"
+        },
+        {
+          "window_length_s": 15.0,
+          "boundary_perturbation_ms": -500,
+          "status": "MEASURED",
+          "exit_root_mode": "D minor",
+          "entry_root_mode": "G major",
+          "relation": "INCOMPATIBLE"
+        },
+        {
+          "window_length_s": 15.0,
+          "boundary_perturbation_ms": 0,
+          "status": "MEASURED",
+          "exit_root_mode": "D minor",
+          "entry_root_mode": "G major",
+          "relation": "INCOMPATIBLE"
+        },
+        {
+          "window_length_s": 15.0,
+          "boundary_perturbation_ms": 500,
+          "status": "MEASURED",
+          "exit_root_mode": "D minor",
+          "entry_root_mode": "G major",
+          "relation": "UNKNOWN"
+        },
+        {
+          "window_length_s": 15.0,
+          "boundary_perturbation_ms": 1000,
+          "status": "MEASURED",
+          "exit_root_mode": "D minor",
+          "entry_root_mode": "G major",
+          "relation": "INCOMPATIBLE"
+        },
+        {
+          "window_length_s": 20.0,
+          "boundary_perturbation_ms": -1000,
+          "status": "MEASURED",
+          "exit_root_mode": "D minor",
+          "entry_root_mode": "G major",
+          "relation": "INCOMPATIBLE"
+        },
+        {
+          "window_length_s": 20.0,
+          "boundary_perturbation_ms": -500,
+          "status": "MEASURED",
+          "exit_root_mode": "D minor",
+          "entry_root_mode": "G major",
+          "relation": "INCOMPATIBLE"
+        },
+        {
+          "window_length_s": 20.0,
+          "boundary_perturbation_ms": 0,
+          "status": "MEASURED",
+          "exit_root_mode": "D minor",
+          "entry_root_mode": "G major",
+          "relation": "INCOMPATIBLE"
+        },
+        {
+          "window_length_s": 20.0,
+          "boundary_perturbation_ms": 500,
+          "status": "MEASURED",
+          "exit_root_mode": "D minor",
+          "entry_root_mode": "G major",
+          "relation": "INCOMPATIBLE"
+        },
+        {
+          "window_length_s": 20.0,
+          "boundary_perturbation_ms": 1000,
+          "status": "MEASURED",
+          "exit_root_mode": "D minor",
+          "entry_root_mode": "G major",
+          "relation": "INCOMPATIBLE"
+        },
+        {
+          "window_length_s": 30.0,
+          "boundary_perturbation_ms": -1000,
+          "status": "MEASURED",
+          "exit_root_mode": "D minor",
+          "entry_root_mode": "G major",
+          "relation": "INCOMPATIBLE"
+        },
+        {
+          "window_length_s": 30.0,
+          "boundary_perturbation_ms": -500,
+          "status": "MEASURED",
+          "exit_root_mode": "D minor",
+          "entry_root_mode": "G major",
+          "relation": "INCOMPATIBLE"
+        },
+        {
+          "window_length_s": 30.0,
+          "boundary_perturbation_ms": 0,
+          "status": "MEASURED",
+          "exit_root_mode": "D minor",
+          "entry_root_mode": "G major",
+          "relation": "INCOMPATIBLE"
+        },
+        {
+          "window_length_s": 30.0,
+          "boundary_perturbation_ms": 500,
+          "status": "MEASURED",
+          "exit_root_mode": "D minor",
+          "entry_root_mode": "G major",
+          "relation": "INCOMPATIBLE"
+        },
+        {
+          "window_length_s": 30.0,
+          "boundary_perturbation_ms": 1000,
+          "status": "MEASURED",
+          "exit_root_mode": "D minor",
+          "entry_root_mode": "G major",
+          "relation": "INCOMPATIBLE"
+        }
+      ],
+      "vs_accepted_0ms_result": {
+        "0ms_modal_agreement_fraction": 0.4167,
+        "candidate_modal_agreement_fraction": 0.75,
+        "0ms_high_confidence_cell_count": 3,
+        "candidate_high_confidence_cell_count": 15,
+        "0ms_distinct_root_mode_count": 4,
+        "candidate_distinct_root_mode_count": 2,
+        "materially_improves_stability": true
+      }
+    },
+    "rank2_center_7374.0ms": {
+      "candidate_center_ms": 7374.0,
+      "candidate_diagnostic_rank": 2,
+      "candidate_support_count": 5,
+      "entry_cells": [
+        {
+          "role": "entry",
+          "window_length_s": 10.0,
+          "boundary_perturbation_ms": -1000,
+          "status": "MEASURED",
+          "window_start_ms": 6374.0,
+          "window_end_ms": 16374.0,
+          "root": "C",
+          "mode": "minor",
+          "top_score": 0.681684,
+          "second_score": 0.366214,
+          "margin": 0.31547,
+          "confidence": "HIGH"
+        },
+        {
+          "role": "entry",
+          "window_length_s": 10.0,
+          "boundary_perturbation_ms": -500,
+          "status": "MEASURED",
+          "window_start_ms": 6874.0,
+          "window_end_ms": 16874.0,
+          "root": "C",
+          "mode": "minor",
+          "top_score": 0.586127,
+          "second_score": 0.322439,
+          "margin": 0.263688,
+          "confidence": "HIGH"
+        },
+        {
+          "role": "entry",
+          "window_length_s": 10.0,
+          "boundary_perturbation_ms": 0,
+          "status": "MEASURED",
+          "window_start_ms": 7374.0,
+          "window_end_ms": 17374.0,
+          "root": "C",
+          "mode": "minor",
+          "top_score": 0.541022,
+          "second_score": 0.307652,
+          "margin": 0.23337,
+          "confidence": "HIGH"
+        },
+        {
+          "role": "entry",
+          "window_length_s": 10.0,
+          "boundary_perturbation_ms": 500,
+          "status": "MEASURED",
+          "window_start_ms": 7874.0,
+          "window_end_ms": 17874.0,
+          "root": "C",
+          "mode": "minor",
+          "top_score": 0.506561,
+          "second_score": 0.298027,
+          "margin": 0.208533,
+          "confidence": "HIGH"
+        },
+        {
+          "role": "entry",
+          "window_length_s": 10.0,
+          "boundary_perturbation_ms": 1000,
+          "status": "MEASURED",
+          "window_start_ms": 8374.0,
+          "window_end_ms": 18374.0,
+          "root": "C",
+          "mode": "minor",
+          "top_score": 0.495072,
+          "second_score": 0.348603,
+          "margin": 0.146469,
+          "confidence": "HIGH"
+        },
+        {
+          "role": "entry",
+          "window_length_s": 15.0,
+          "boundary_perturbation_ms": -1000,
+          "status": "MEASURED",
+          "window_start_ms": 6374.0,
+          "window_end_ms": 21374.0,
+          "root": "C",
+          "mode": "minor",
+          "top_score": 0.637073,
+          "second_score": 0.345278,
+          "margin": 0.291795,
+          "confidence": "HIGH"
+        },
+        {
+          "role": "entry",
+          "window_length_s": 15.0,
+          "boundary_perturbation_ms": -500,
+          "status": "MEASURED",
+          "window_start_ms": 6874.0,
+          "window_end_ms": 21874.0,
+          "root": "C",
+          "mode": "minor",
+          "top_score": 0.637577,
+          "second_score": 0.38567,
+          "margin": 0.251908,
+          "confidence": "HIGH"
+        },
+        {
+          "role": "entry",
+          "window_length_s": 15.0,
+          "boundary_perturbation_ms": 0,
+          "status": "MEASURED",
+          "window_start_ms": 7374.0,
+          "window_end_ms": 22374.0,
+          "root": "C",
+          "mode": "minor",
+          "top_score": 0.599628,
+          "second_score": 0.403322,
+          "margin": 0.196306,
+          "confidence": "HIGH"
+        },
+        {
+          "role": "entry",
+          "window_length_s": 15.0,
+          "boundary_perturbation_ms": 500,
+          "status": "MEASURED",
+          "window_start_ms": 7874.0,
+          "window_end_ms": 22874.0,
+          "root": "C",
+          "mode": "minor",
+          "top_score": 0.552891,
+          "second_score": 0.369969,
+          "margin": 0.182922,
+          "confidence": "HIGH"
+        },
+        {
+          "role": "entry",
+          "window_length_s": 15.0,
+          "boundary_perturbation_ms": 1000,
+          "status": "MEASURED",
+          "window_start_ms": 8374.0,
+          "window_end_ms": 23374.0,
+          "root": "C",
+          "mode": "minor",
+          "top_score": 0.526808,
+          "second_score": 0.393324,
+          "margin": 0.133483,
+          "confidence": "HIGH"
+        },
+        {
+          "role": "entry",
+          "window_length_s": 20.0,
+          "boundary_perturbation_ms": -1000,
+          "status": "MEASURED",
+          "window_start_ms": 6374.0,
+          "window_end_ms": 26374.0,
+          "root": "C",
+          "mode": "minor",
+          "top_score": 0.567497,
+          "second_score": 0.370881,
+          "margin": 0.196616,
+          "confidence": "HIGH"
+        },
+        {
+          "role": "entry",
+          "window_length_s": 20.0,
+          "boundary_perturbation_ms": -500,
+          "status": "MEASURED",
+          "window_start_ms": 6874.0,
+          "window_end_ms": 26874.0,
+          "root": "C",
+          "mode": "minor",
+          "top_score": 0.550544,
+          "second_score": 0.37947,
+          "margin": 0.171074,
+          "confidence": "HIGH"
+        },
+        {
+          "role": "entry",
+          "window_length_s": 20.0,
+          "boundary_perturbation_ms": 0,
+          "status": "MEASURED",
+          "window_start_ms": 7374.0,
+          "window_end_ms": 27374.0,
+          "root": "C",
+          "mode": "minor",
+          "top_score": 0.513586,
+          "second_score": 0.360885,
+          "margin": 0.152701,
+          "confidence": "HIGH"
+        },
+        {
+          "role": "entry",
+          "window_length_s": 20.0,
+          "boundary_perturbation_ms": 500,
+          "status": "MEASURED",
+          "window_start_ms": 7874.0,
+          "window_end_ms": 27874.0,
+          "root": "C",
+          "mode": "minor",
+          "top_score": 0.479416,
+          "second_score": 0.349524,
+          "margin": 0.129892,
+          "confidence": "HIGH"
+        },
+        {
+          "role": "entry",
+          "window_length_s": 20.0,
+          "boundary_perturbation_ms": 1000,
+          "status": "MEASURED",
+          "window_start_ms": 8374.0,
+          "window_end_ms": 28374.0,
+          "root": "C",
+          "mode": "minor",
+          "top_score": 0.445035,
+          "second_score": 0.397697,
+          "margin": 0.047337,
+          "confidence": "MEDIUM"
+        },
+        {
+          "role": "entry",
+          "window_length_s": 30.0,
+          "boundary_perturbation_ms": -1000,
+          "status": "MEASURED",
+          "window_start_ms": 6374.0,
+          "window_end_ms": 36374.0,
+          "root": "G",
+          "mode": "major",
+          "top_score": 0.58608,
+          "second_score": 0.557011,
+          "margin": 0.029069,
+          "confidence": "LOW"
+        },
+        {
+          "role": "entry",
+          "window_length_s": 30.0,
+          "boundary_perturbation_ms": -500,
+          "status": "MEASURED",
+          "window_start_ms": 6874.0,
+          "window_end_ms": 36874.0,
+          "root": "G",
+          "mode": "major",
+          "top_score": 0.636593,
+          "second_score": 0.553753,
+          "margin": 0.08284,
+          "confidence": "HIGH"
+        },
+        {
+          "role": "entry",
+          "window_length_s": 30.0,
+          "boundary_perturbation_ms": 0,
+          "status": "MEASURED",
+          "window_start_ms": 7374.0,
+          "window_end_ms": 37374.0,
+          "root": "G",
+          "mode": "major",
+          "top_score": 0.670789,
+          "second_score": 0.523778,
+          "margin": 0.147011,
+          "confidence": "HIGH"
+        },
+        {
+          "role": "entry",
+          "window_length_s": 30.0,
+          "boundary_perturbation_ms": 500,
+          "status": "MEASURED",
+          "window_start_ms": 7874.0,
+          "window_end_ms": 37874.0,
+          "root": "G",
+          "mode": "major",
+          "top_score": 0.710922,
+          "second_score": 0.483478,
+          "margin": 0.227445,
+          "confidence": "HIGH"
+        },
+        {
+          "role": "entry",
+          "window_length_s": 30.0,
+          "boundary_perturbation_ms": 1000,
+          "status": "MEASURED",
+          "window_start_ms": 8374.0,
+          "window_end_ms": 38374.0,
+          "root": "G",
+          "mode": "major",
+          "top_score": 0.685039,
+          "second_score": 0.375741,
+          "margin": 0.309298,
+          "confidence": "HIGH"
+        }
+      ],
+      "stability_summary": {
+        "n_measured": 20,
+        "n_total_cells": 20,
+        "distinct_root_mode_count": 2,
+        "root_mode_counts": {
+          "C minor": 15,
+          "G major": 5
+        },
+        "modal_agreement_fraction": 0.75,
+        "high_confidence_cell_count": 18,
+        "root_mode_100pct_agreement": false
+      },
+      "pair_relation_vs_accepted_rm041_exit_cells": [
+        {
+          "window_length_s": 10.0,
+          "boundary_perturbation_ms": -1000,
+          "status": "MEASURED",
+          "exit_root_mode": "D minor",
+          "entry_root_mode": "C minor",
+          "relation": "INCOMPATIBLE"
+        },
+        {
+          "window_length_s": 10.0,
+          "boundary_perturbation_ms": -500,
+          "status": "MEASURED",
+          "exit_root_mode": "D minor",
+          "entry_root_mode": "C minor",
+          "relation": "INCOMPATIBLE"
+        },
+        {
+          "window_length_s": 10.0,
+          "boundary_perturbation_ms": 0,
+          "status": "MEASURED",
+          "exit_root_mode": "D minor",
+          "entry_root_mode": "C minor",
+          "relation": "INCOMPATIBLE"
+        },
+        {
+          "window_length_s": 10.0,
+          "boundary_perturbation_ms": 500,
+          "status": "MEASURED",
+          "exit_root_mode": "D minor",
+          "entry_root_mode": "C minor",
+          "relation": "INCOMPATIBLE"
+        },
+        {
+          "window_length_s": 10.0,
+          "boundary_perturbation_ms": 1000,
+          "status": "MEASURED",
+          "exit_root_mode": "D minor",
+          "entry_root_mode": "C minor",
+          "relation": "INCOMPATIBLE"
+        },
+        {
+          "window_length_s": 15.0,
+          "boundary_perturbation_ms": -1000,
+          "status": "MEASURED",
+          "exit_root_mode": "D minor",
+          "entry_root_mode": "C minor",
+          "relation": "INCOMPATIBLE"
+        },
+        {
+          "window_length_s": 15.0,
+          "boundary_perturbation_ms": -500,
+          "status": "MEASURED",
+          "exit_root_mode": "D minor",
+          "entry_root_mode": "C minor",
+          "relation": "INCOMPATIBLE"
+        },
+        {
+          "window_length_s": 15.0,
+          "boundary_perturbation_ms": 0,
+          "status": "MEASURED",
+          "exit_root_mode": "D minor",
+          "entry_root_mode": "C minor",
+          "relation": "INCOMPATIBLE"
+        },
+        {
+          "window_length_s": 15.0,
+          "boundary_perturbation_ms": 500,
+          "status": "MEASURED",
+          "exit_root_mode": "D minor",
+          "entry_root_mode": "C minor",
+          "relation": "UNKNOWN"
+        },
+        {
+          "window_length_s": 15.0,
+          "boundary_perturbation_ms": 1000,
+          "status": "MEASURED",
+          "exit_root_mode": "D minor",
+          "entry_root_mode": "C minor",
+          "relation": "INCOMPATIBLE"
+        },
+        {
+          "window_length_s": 20.0,
+          "boundary_perturbation_ms": -1000,
+          "status": "MEASURED",
+          "exit_root_mode": "D minor",
+          "entry_root_mode": "C minor",
+          "relation": "INCOMPATIBLE"
+        },
+        {
+          "window_length_s": 20.0,
+          "boundary_perturbation_ms": -500,
+          "status": "MEASURED",
+          "exit_root_mode": "D minor",
+          "entry_root_mode": "C minor",
+          "relation": "INCOMPATIBLE"
+        },
+        {
+          "window_length_s": 20.0,
+          "boundary_perturbation_ms": 0,
+          "status": "MEASURED",
+          "exit_root_mode": "D minor",
+          "entry_root_mode": "C minor",
+          "relation": "INCOMPATIBLE"
+        },
+        {
+          "window_length_s": 20.0,
+          "boundary_perturbation_ms": 500,
+          "status": "MEASURED",
+          "exit_root_mode": "D minor",
+          "entry_root_mode": "C minor",
+          "relation": "INCOMPATIBLE"
+        },
+        {
+          "window_length_s": 20.0,
+          "boundary_perturbation_ms": 1000,
+          "status": "MEASURED",
+          "exit_root_mode": "D minor",
+          "entry_root_mode": "C minor",
+          "relation": "INCOMPATIBLE"
+        },
+        {
+          "window_length_s": 30.0,
+          "boundary_perturbation_ms": -1000,
+          "status": "MEASURED",
+          "exit_root_mode": "D minor",
+          "entry_root_mode": "G major",
+          "relation": "UNKNOWN"
+        },
+        {
+          "window_length_s": 30.0,
+          "boundary_perturbation_ms": -500,
+          "status": "MEASURED",
+          "exit_root_mode": "D minor",
+          "entry_root_mode": "G major",
+          "relation": "INCOMPATIBLE"
+        },
+        {
+          "window_length_s": 30.0,
+          "boundary_perturbation_ms": 0,
+          "status": "MEASURED",
+          "exit_root_mode": "D minor",
+          "entry_root_mode": "G major",
+          "relation": "INCOMPATIBLE"
+        },
+        {
+          "window_length_s": 30.0,
+          "boundary_perturbation_ms": 500,
+          "status": "MEASURED",
+          "exit_root_mode": "D minor",
+          "entry_root_mode": "G major",
+          "relation": "INCOMPATIBLE"
+        },
+        {
+          "window_length_s": 30.0,
+          "boundary_perturbation_ms": 1000,
+          "status": "MEASURED",
+          "exit_root_mode": "D minor",
+          "entry_root_mode": "G major",
+          "relation": "INCOMPATIBLE"
+        }
+      ],
+      "vs_accepted_0ms_result": {
+        "0ms_modal_agreement_fraction": 0.4167,
+        "candidate_modal_agreement_fraction": 0.75,
+        "0ms_high_confidence_cell_count": 3,
+        "candidate_high_confidence_cell_count": 18,
+        "0ms_distinct_root_mode_count": 4,
+        "candidate_distinct_root_mode_count": 2,
+        "materially_improves_stability": true
+      }
+    }
+  }
+}

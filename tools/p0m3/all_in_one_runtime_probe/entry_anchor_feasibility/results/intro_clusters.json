@@ -1,0 +1,488 @@
+{
+  "schema_version": 1,
+  "scope": "RM014 ONLY (incoming entry); diagnostic only; no write-back into R2",
+  "track": "RM014",
+  "seeds_used": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "cluster_merge_tolerance_ms": 100.0,
+  "cluster_merge_tolerance_rationale": "pair_stability baseline(seed0)-vs-other RM014 downbeat p90=10ms, coverage@100ms~=0.96 (accepted cross_seed_metrics.json); RM014 local downbeat interval ~1840-1950ms at seeds 2/3/4, >18x the tolerance",
+  "current_canonical_entry_ms": 0.0,
+  "intro_interval": {
+    "per_seed_leading_intro_segments": {
+      "0": [
+        {
+          "start_ms": 0.0,
+          "end_ms": 10.0,
+          "label": "intro"
+        },
+        {
+          "start_ms": 10.0,
+          "end_ms": 19860.0,
+          "label": "intro"
+        }
+      ],
+      "1": [
+        {
+          "start_ms": 0.0,
+          "end_ms": 10.0,
+          "label": "intro"
+        },
+        {
+          "start_ms": 10.0,
+          "end_ms": 19860.0,
+          "label": "intro"
+        }
+      ],
+      "2": [
+        {
+          "start_ms": 0.0,
+          "end_ms": 20.0,
+          "label": "intro"
+        },
+        {
+          "start_ms": 20.0,
+          "end_ms": 19860.0,
+          "label": "intro"
+        }
+      ],
+      "3": [
+        {
+          "start_ms": 0.0,
+          "end_ms": 10.0,
+          "label": "intro"
+        },
+        {
+          "start_ms": 10.0,
+          "end_ms": 19860.0,
+          "label": "intro"
+        }
+      ],
+      "4": [
+        {
+          "start_ms": 0.0,
+          "end_ms": 10.0,
+          "label": "intro"
+        },
+        {
+          "start_ms": 10.0,
+          "end_ms": 19860.0,
+          "label": "intro"
+        }
+      ]
+    },
+    "per_seed_intro_end_ms": {
+      "0": 19860.0,
+      "1": 19860.0,
+      "2": 19860.0,
+      "3": 19860.0,
+      "4": 19860.0
+    },
+    "unanimous": true,
+    "interval_start_ms": 0.0,
+    "interval_end_ms": 19860.0
+  },
+  "per_seed_downbeats_in_interval": {
+    "0": [
+      3580.0,
+      7370.0,
+      10940.0,
+      14100.0,
+      16380.0,
+      18650.0
+    ],
+    "1": [
+      3580.0,
+      7370.0,
+      10940.0,
+      14090.0,
+      16380.0,
+      18650.0
+    ],
+    "2": [
+      1840.0,
+      3790.0,
+      5630.0,
+      7370.0,
+      9550.0,
+      11850.0,
+      14140.0,
+      16380.0,
+      18650.0
+    ],
+    "3": [
+      1840.0,
+      3780.0,
+      5640.0,
+      7380.0,
+      9490.0,
+      11790.0,
+      14110.0,
+      16380.0,
+      18650.0
+    ],
+    "4": [
+      1850.0,
+      3790.0,
+      5640.0,
+      7380.0,
+      9140.0,
+      10940.0,
+      12790.0,
+      14680.0,
+      16550.0,
+      18650.0
+    ]
+  },
+  "madmom_downbeats_in_interval": [
+    3860.0,
+    7360.0,
+    10730.0,
+    13590.0,
+    16030.0,
+    18360.0
+  ],
+  "ranking_order": [
+    "1_five_of_five_seed_support_desc",
+    "2_smallest_spread_ms_asc",
+    "3_smallest_madmom_abs_error_ms_asc",
+    "4_earliest_center_ms_asc"
+  ],
+  "ranking_is_diagnostic_only_not_a_production_threshold": true,
+  "clusters_ranked": [
+    {
+      "support_count": 5,
+      "support_fraction": 1.0,
+      "per_seed_ms": {
+        "0": 18650.0,
+        "1": 18650.0,
+        "2": 18650.0,
+        "3": 18650.0,
+        "4": 18650.0
+      },
+      "center_ms": 18650.0,
+      "min_ms": 18650.0,
+      "max_ms": 18650.0,
+      "spread_ms": 0.0,
+      "max_deviation_from_center_ms": 0.0,
+      "nearest_madmom_downbeat_ms": 18360.0,
+      "madmom_signed_error_ms": -290.0,
+      "madmom_abs_error_ms": 290.0,
+      "candidate_time_relative_to_current_entry_ms": 18650.0,
+      "fraction_of_intro_preceding_candidate": 0.9391,
+      "diagnostic_rank": 1
+    },
+    {
+      "support_count": 5,
+      "support_fraction": 1.0,
+      "per_seed_ms": {
+        "0": 7370.0,
+        "1": 7370.0,
+        "2": 7370.0,
+        "3": 7380.0,
+        "4": 7380.0
+      },
+      "center_ms": 7374.0,
+      "min_ms": 7370.0,
+      "max_ms": 7380.0,
+      "spread_ms": 10.0,
+      "max_deviation_from_center_ms": 6.0,
+      "nearest_madmom_downbeat_ms": 7360.0,
+      "madmom_signed_error_ms": -14.0,
+      "madmom_abs_error_ms": 14.0,
+      "candidate_time_relative_to_current_entry_ms": 7374.0,
+      "fraction_of_intro_preceding_candidate": 0.3713,
+      "diagnostic_rank": 2
+    },
+    {
+      "support_count": 4,
+      "support_fraction": 0.8,
+      "per_seed_ms": {
+        "0": 16380.0,
+        "1": 16380.0,
+        "2": 16380.0,
+        "3": 16380.0,
+        "4": null
+      },
+      "center_ms": 16380.0,
+      "min_ms": 16380.0,
+      "max_ms": 16380.0,
+      "spread_ms": 0.0,
+      "max_deviation_from_center_ms": 0.0,
+      "nearest_madmom_downbeat_ms": 16030.0,
+      "madmom_signed_error_ms": -350.0,
+      "madmom_abs_error_ms": 350.0,
+      "candidate_time_relative_to_current_entry_ms": 16380.0,
+      "fraction_of_intro_preceding_candidate": 0.8248,
+      "diagnostic_rank": 3
+    },
+    {
+      "support_count": 4,
+      "support_fraction": 0.8,
+      "per_seed_ms": {
+        "0": 14100.0,
+        "1": 14090.0,
+        "2": 14140.0,
+        "3": 14110.0,
+        "4": null
+      },
+      "center_ms": 14110.0,
+      "min_ms": 14090.0,
+      "max_ms": 14140.0,
+      "spread_ms": 50.0,
+      "max_deviation_from_center_ms": 30.0,
+      "nearest_madmom_downbeat_ms": 13590.0,
+      "madmom_signed_error_ms": -520.0,
+      "madmom_abs_error_ms": 520.0,
+      "candidate_time_relative_to_current_entry_ms": 14110.0,
+      "fraction_of_intro_preceding_candidate": 0.7105,
+      "diagnostic_rank": 4
+    },
+    {
+      "support_count": 3,
+      "support_fraction": 0.6,
+      "per_seed_ms": {
+        "0": 10940.0,
+        "1": 10940.0,
+        "2": null,
+        "3": null,
+        "4": 10940.0
+      },
+      "center_ms": 10940.0,
+      "min_ms": 10940.0,
+      "max_ms": 10940.0,
+      "spread_ms": 0.0,
+      "max_deviation_from_center_ms": 0.0,
+      "nearest_madmom_downbeat_ms": 10730.0,
+      "madmom_signed_error_ms": -210.0,
+      "madmom_abs_error_ms": 210.0,
+      "candidate_time_relative_to_current_entry_ms": 10940.0,
+      "fraction_of_intro_preceding_candidate": 0.5509,
+      "diagnostic_rank": 5
+    },
+    {
+      "support_count": 3,
+      "support_fraction": 0.6,
+      "per_seed_ms": {
+        "0": null,
+        "1": null,
+        "2": 3790.0,
+        "3": 3780.0,
+        "4": 3790.0
+      },
+      "center_ms": 3786.667,
+      "min_ms": 3780.0,
+      "max_ms": 3790.0,
+      "spread_ms": 10.0,
+      "max_deviation_from_center_ms": 6.667,
+      "nearest_madmom_downbeat_ms": 3860.0,
+      "madmom_signed_error_ms": 73.333,
+      "madmom_abs_error_ms": 73.333,
+      "candidate_time_relative_to_current_entry_ms": 3786.667,
+      "fraction_of_intro_preceding_candidate": 0.1907,
+      "diagnostic_rank": 6
+    },
+    {
+      "support_count": 3,
+      "support_fraction": 0.6,
+      "per_seed_ms": {
+        "0": null,
+        "1": null,
+        "2": 5630.0,
+        "3": 5640.0,
+        "4": 5640.0
+      },
+      "center_ms": 5636.667,
+      "min_ms": 5630.0,
+      "max_ms": 5640.0,
+      "spread_ms": 10.0,
+      "max_deviation_from_center_ms": 6.667,
+      "nearest_madmom_downbeat_ms": 7360.0,
+      "madmom_signed_error_ms": 1723.333,
+      "madmom_abs_error_ms": 1723.333,
+      "candidate_time_relative_to_current_entry_ms": 5636.667,
+      "fraction_of_intro_preceding_candidate": 0.2838,
+      "diagnostic_rank": 7
+    },
+    {
+      "support_count": 3,
+      "support_fraction": 0.6,
+      "per_seed_ms": {
+        "0": null,
+        "1": null,
+        "2": 1840.0,
+        "3": 1840.0,
+        "4": 1850.0
+      },
+      "center_ms": 1843.333,
+      "min_ms": 1840.0,
+      "max_ms": 1850.0,
+      "spread_ms": 10.0,
+      "max_deviation_from_center_ms": 6.667,
+      "nearest_madmom_downbeat_ms": 3860.0,
+      "madmom_signed_error_ms": 2016.667,
+      "madmom_abs_error_ms": 2016.667,
+      "candidate_time_relative_to_current_entry_ms": 1843.333,
+      "fraction_of_intro_preceding_candidate": 0.0928,
+      "diagnostic_rank": 8
+    },
+    {
+      "support_count": 2,
+      "support_fraction": 0.4,
+      "per_seed_ms": {
+        "0": 3580.0,
+        "1": 3580.0,
+        "2": null,
+        "3": null,
+        "4": null
+      },
+      "center_ms": 3580.0,
+      "min_ms": 3580.0,
+      "max_ms": 3580.0,
+      "spread_ms": 0.0,
+      "max_deviation_from_center_ms": 0.0,
+      "nearest_madmom_downbeat_ms": 3860.0,
+      "madmom_signed_error_ms": 280.0,
+      "madmom_abs_error_ms": 280.0,
+      "candidate_time_relative_to_current_entry_ms": 3580.0,
+      "fraction_of_intro_preceding_candidate": 0.1803,
+      "diagnostic_rank": 9
+    },
+    {
+      "support_count": 2,
+      "support_fraction": 0.4,
+      "per_seed_ms": {
+        "0": null,
+        "1": null,
+        "2": 11850.0,
+        "3": 11790.0,
+        "4": null
+      },
+      "center_ms": 11820.0,
+      "min_ms": 11790.0,
+      "max_ms": 11850.0,
+      "spread_ms": 60.0,
+      "max_deviation_from_center_ms": 30.0,
+      "nearest_madmom_downbeat_ms": 10730.0,
+      "madmom_signed_error_ms": -1090.0,
+      "madmom_abs_error_ms": 1090.0,
+      "candidate_time_relative_to_current_entry_ms": 11820.0,
+      "fraction_of_intro_preceding_candidate": 0.5952,
+      "diagnostic_rank": 10
+    },
+    {
+      "support_count": 2,
+      "support_fraction": 0.4,
+      "per_seed_ms": {
+        "0": null,
+        "1": null,
+        "2": 9550.0,
+        "3": 9490.0,
+        "4": null
+      },
+      "center_ms": 9520.0,
+      "min_ms": 9490.0,
+      "max_ms": 9550.0,
+      "spread_ms": 60.0,
+      "max_deviation_from_center_ms": 30.0,
+      "nearest_madmom_downbeat_ms": 10730.0,
+      "madmom_signed_error_ms": 1210.0,
+      "madmom_abs_error_ms": 1210.0,
+      "candidate_time_relative_to_current_entry_ms": 9520.0,
+      "fraction_of_intro_preceding_candidate": 0.4794,
+      "diagnostic_rank": 11
+    },
+    {
+      "support_count": 1,
+      "support_fraction": 0.2,
+      "per_seed_ms": {
+        "0": null,
+        "1": null,
+        "2": null,
+        "3": null,
+        "4": 16550.0
+      },
+      "center_ms": 16550.0,
+      "min_ms": 16550.0,
+      "max_ms": 16550.0,
+      "spread_ms": 0.0,
+      "max_deviation_from_center_ms": 0.0,
+      "nearest_madmom_downbeat_ms": 16030.0,
+      "madmom_signed_error_ms": -520.0,
+      "madmom_abs_error_ms": 520.0,
+      "candidate_time_relative_to_current_entry_ms": 16550.0,
+      "fraction_of_intro_preceding_candidate": 0.8333,
+      "diagnostic_rank": 12
+    },
+    {
+      "support_count": 1,
+      "support_fraction": 0.2,
+      "per_seed_ms": {
+        "0": null,
+        "1": null,
+        "2": null,
+        "3": null,
+        "4": 12790.0
+      },
+      "center_ms": 12790.0,
+      "min_ms": 12790.0,
+      "max_ms": 12790.0,
+      "spread_ms": 0.0,
+      "max_deviation_from_center_ms": 0.0,
+      "nearest_madmom_downbeat_ms": 13590.0,
+      "madmom_signed_error_ms": 800.0,
+      "madmom_abs_error_ms": 800.0,
+      "candidate_time_relative_to_current_entry_ms": 12790.0,
+      "fraction_of_intro_preceding_candidate": 0.644,
+      "diagnostic_rank": 13
+    },
+    {
+      "support_count": 1,
+      "support_fraction": 0.2,
+      "per_seed_ms": {
+        "0": null,
+        "1": null,
+        "2": null,
+        "3": null,
+        "4": 14680.0
+      },
+      "center_ms": 14680.0,
+      "min_ms": 14680.0,
+      "max_ms": 14680.0,
+      "spread_ms": 0.0,
+      "max_deviation_from_center_ms": 0.0,
+      "nearest_madmom_downbeat_ms": 13590.0,
+      "madmom_signed_error_ms": -1090.0,
+      "madmom_abs_error_ms": 1090.0,
+      "candidate_time_relative_to_current_entry_ms": 14680.0,
+      "fraction_of_intro_preceding_candidate": 0.7392,
+      "diagnostic_rank": 14
+    },
+    {
+      "support_count": 1,
+      "support_fraction": 0.2,
+      "per_seed_ms": {
+        "0": null,
+        "1": null,
+        "2": null,
+        "3": null,
+        "4": 9140.0
+      },
+      "center_ms": 9140.0,
+      "min_ms": 9140.0,
+      "max_ms": 9140.0,
+      "spread_ms": 0.0,
+      "max_deviation_from_center_ms": 0.0,
+      "nearest_madmom_downbeat_ms": 10730.0,
+      "madmom_signed_error_ms": 1590.0,
+      "madmom_abs_error_ms": 1590.0,
+      "candidate_time_relative_to_current_entry_ms": 9140.0,
+      "fraction_of_intro_preceding_candidate": 0.4602,
+      "diagnostic_rank": 15
+    }
+  ]
+}

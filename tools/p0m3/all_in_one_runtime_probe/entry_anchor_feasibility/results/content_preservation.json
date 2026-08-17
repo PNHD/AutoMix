@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "scope": "RM014 ONLY; diagnostic content-preservation measurement; no render, no All-In-One rerun",
+  "track": "RM014",
+  "whole_track_duration_s": 208.256,
+  "bin_seconds": 1.0,
+  "current_canonical_entry_ms": 0.0,
+  "vocal_band_hz": [
+    300.0,
+    3400.0
+  ],
+  "sub_bass_band_hz": [
+    20.0,
+    150.0
+  ],
+  "methodology_note": "vocal-activity and bass/percussion 'activity' fields are spectral-band-energy and HPSS-percussive-RMS heuristics, not a vocal-separation model or dedicated drum/bass stem detector; reported as proxies only, matching this repository's existing structure/harmonic oracle honesty conventions.",
+  "regions": {
+    "rank1_center_18650.0ms": {
+      "candidate_center_ms": 18650.0,
+      "candidate_diagnostic_rank": 1,
+      "candidate_support_count": 5,
+      "status": "MEASURED",
+      "start_ms": 0.0,
+      "end_ms": 18650.0,
+      "duration_skipped_ms": 18650.0,
+      "n_bins_covered": 19,
+      "region_metrics": {
+        "rms_mean": 0.093349,
+        "onset_density_per_s_mean": 1.210526,
+        "vocal_band_energy_fraction_mean": 0.443926,
+        "sub_bass_energy_fraction_mean": 0.285787,
+        "percussive_rms_mean": 0.032802,
+        "spectral_centroid_hz_mean": 2434.791662
+      },
+      "region_metric_percentiles_in_whole_track": {
+        "rms_percentile_in_track": 15.31,
+        "onset_density_percentile_in_track": 15.79,
+        "vocal_band_energy_fraction_percentile_in_track": 87.08,
+        "sub_bass_energy_fraction_percentile_in_track": 15.31,
+        "percussive_rms_percentile_in_track": 16.75
+      },
+      "classification": "LOW_INFORMATION_MUSICAL_INTRO",
+      "classification_methodology": "CLEAR_NON_MUSICAL_LEAD_IN requires BOTH rms and onset-density region means at or below the 10th percentile of their own whole-track per-1s-bin distribution (near-silent AND no attacks); LOW_INFORMATION_MUSICAL_INTRO requires either metric below the track median; otherwise MEANINGFUL_AUTHORED_MUSICAL_INTRO. Diagnostic label only -- not wired into any production gate."
+    },
+    "rank2_center_7374.0ms": {
+      "candidate_center_ms": 7374.0,
+      "candidate_diagnostic_rank": 2,
+      "candidate_support_count": 5,
+      "status": "MEASURED",
+      "start_ms": 0.0,
+      "end_ms": 7374.0,
+      "duration_skipped_ms": 7374.0,
+      "n_bins_covered": 8,
+      "region_metrics": {
+        "rms_mean": 0.143893,
+        "onset_density_per_s_mean": 2.625,
+        "vocal_band_energy_fraction_mean": 0.585537,
+        "sub_bass_energy_fraction_mean": 0.136641,
+        "percussive_rms_mean": 0.053607,
+        "spectral_centroid_hz_mean": 2170.745743
+      },
+      "region_metric_percentiles_in_whole_track": {
+        "rms_percentile_in_track": 22.49,
+        "onset_density_percentile_in_track": 22.01,
+        "vocal_band_energy_fraction_percentile_in_track": 92.34,
+        "sub_bass_energy_fraction_percentile_in_track": 4.78,
+        "percussive_rms_percentile_in_track": 20.1
+      },
+      "classification": "LOW_INFORMATION_MUSICAL_INTRO",
+      "classification_methodology": "CLEAR_NON_MUSICAL_LEAD_IN requires BOTH rms and onset-density region means at or below the 10th percentile of their own whole-track per-1s-bin distribution (near-silent AND no attacks); LOW_INFORMATION_MUSICAL_INTRO requires either metric below the track median; otherwise MEANINGFUL_AUTHORED_MUSICAL_INTRO. Diagnostic label only -- not wired into any production gate."
+    },
+    "full_unanimous_intro_for_context": {
+      "candidate_center_ms": 19860.0,
+      "status": "MEASURED",
+      "start_ms": 0.0,
+      "end_ms": 19860.0,
+      "duration_skipped_ms": 19860.0,
+      "n_bins_covered": 20,
+      "region_metrics": {
+        "rms_mean": 0.102561,
+        "onset_density_per_s_mean": 1.15,
+        "vocal_band_energy_fraction_mean": 0.443639,
+        "sub_bass_energy_fraction_mean": 0.289376,
+        "percussive_rms_mean": 0.036129,
+        "spectral_centroid_hz_mean": 2471.126824
+      },
+      "region_metric_percentiles_in_whole_track": {
+        "rms_percentile_in_track": 15.79,
+        "onset_density_percentile_in_track": 15.79,
+        "vocal_band_energy_fraction_percentile_in_track": 87.08,
+        "sub_bass_energy_fraction_percentile_in_track": 15.31,
+        "percussive_rms_percentile_in_track": 16.75
+      },
+      "classification": "LOW_INFORMATION_MUSICAL_INTRO",
+      "classification_methodology": "CLEAR_NON_MUSICAL_LEAD_IN requires BOTH rms and onset-density region means at or below the 10th percentile of their own whole-track per-1s-bin distribution (near-silent AND no attacks); LOW_INFORMATION_MUSICAL_INTRO requires either metric below the track median; otherwise MEANINGFUL_AUTHORED_MUSICAL_INTRO. Diagnostic label only -- not wired into any production gate."
+    }
+  }
+}
