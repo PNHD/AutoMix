@@ -1,123 +1,133 @@
-## HANDOFF TO PM — P0-M6-R1 SPOTIFY-FIRST LIVE AUTOMIX PROTOTYPE
+## HANDOFF TO PM — P0-M6-R1 SPOTIFY SEED/AUTOPLAY LOOP REPAIR
 
 ### RESULT
 
-`OWNER_SPOTIFY_AUTH_REQUIRED` for the Spotify lane (app fully built and runnable; the only remaining blocker is a real Spotify Developer Client ID, which requires the owner's own account action). The Local DSP Live lane (mandatory, Lane S3) is **not** blocked -- it is fully built, runs, and is independently verified end-to-end in this same session (6 consecutive live transitions, real browser playback). The DJ-partner audit (Lane S2) is complete: `SPOTIFY_DJ_PARTNER_ACCESS_REQUIRED`.
+`OWNER_SPOTIFY_AUTH_REQUIRED` for the Spotify lane (app fully built, repaired per PM comment `5324307503`, and runnable; the only remaining blocker is a real Spotify Developer Client ID). The Local DSP Live lane (Lane S3) is **unchanged and not rerun this pass**, per the PM comment's own instruction -- its prior evidence (6 consecutive live transitions, real browser playback) still stands. The DJ-partner audit (Lane S2) is unchanged: `SPOTIFY_DJ_PARTNER_ACCESS_REQUIRED`.
 
 ### REPO / BRANCH / HEAD
 
 - Repository: `PNHD/AutoMix`
-- Branch: `prototype/live-automix-lab` (created this session from `research/p0-feasibility` at the verified expected HEAD)
-- Starting HEAD (matched Issue #11's expected HEAD exactly): `5139411c8d94d7407e5d9c244b4e9275f30a8221`
-- `main`: untouched at `2450d55c60601bcee5eb52a2c38ce5d6e87a76aa` (not touched this session)
-- Code/docs commit this session: `534db9097817e2243dc6b34e11c355d8e156ab69` ("research(p0-m6-r1): Spotify-first live AutoMix prototype ...") directly on top of `5139411`. This HANDOFF_TO_PM.md edit is a small follow-up commit on top of that (recording the exact SHA required self-reference); check `git log --oneline -3` for the exact final HEAD.
-- **Not pushed** (awaiting PM instruction on whether to push; `research/p0-feasibility` was also not touched).
+- Branch: `prototype/live-automix-lab` (local, created in the prior session from `research/p0-feasibility` at the verified expected HEAD)
+- Starting HEAD for this repair (verified live before starting): `70893d2b9683b219ff074a5904d79ad0b6f58ede`
+- `main`: untouched at `2450d55c60601bcee5eb52a2c38ce5d6e87a76aa`
+- `research/p0-feasibility`: untouched
+- **Exact final HEAD after this repair, pushed to `origin/prototype/live-automix-lab`: see the commit line appended immediately below this sentence once committed** -- filled in with the real SHA before this file is committed (not a self-referential placeholder; the repair commit is created first, then this exact SHA is copied in, then a final small doc-only commit records it, matching the same two-step pattern used in the prior handoff).
 
-### WHAT WAS BUILT
+**Exact final HEAD: `<FINAL_HEAD_SHA>`** (this line is replaced with the real SHA in the commit that includes it -- see PM_REVIEW_REQUEST item 1 for the independent check).
 
-`apps/automix-live-lab/` -- a single web prototype (vanilla ES modules, no build step) implementing the source-mode UI Issue #11 specified (Spotify Live / Local DSP Live switch, Queue panel, AutoMix status panel, Controls, debug panel), running via `python apps/automix-live-lab/server/server.py 5500` at `http://127.0.0.1:5500/`.
+### WHAT WAS REPAIRED (PM finding `P0_M6_R1_SPOTIFY_SEED_LOOP_REPAIR_REQUIRED`, Issue #11 comment `5324307503`, correcting for missed comment `5323258040`)
 
-**Provider abstraction:** `src/adapters/PlaybackAdapter.js` (interface) + `LocalDSPPlaybackAdapter.js` (`LOCAL_DSP_FULL`) + `SpotifyPublicControlAdapter.js` (`PUBLIC_CONTROL_ONLY`) + `SpotifyDJPartnerPlaybackAdapter.js` (`PARTNER_ACCESS_REQUIRED` stub). The AutoMix planner/DSP has zero dependency on any Spotify module (AGENTS.md rule 5).
+- **BLOCKER 1 (arbitrary seed track flow was missing):** the prior pass's Spotify lane called `GET /me/playlists` on every Connect and had no search/seed UX. Repaired: `searchTracks(query)` (`GET /search?type=track`, limit clamped to <=10), a minimal search-box-and-results UI, single-track selection, and `playSeedTrack(uri)` (`PUT /me/player/play?device_id=<sdk device>` with body `{"uris":[uri]}` -- exactly one track URI, never a playlist/context URI). `/me/playlists` is no longer called anywhere in `SpotifyPublicControlAdapter.js`. New pure request-shape module `apps/automix-live-lab/src/adapters/spotify-api-requests.js`.
+- **BLOCKER 2 (Autoplay/next-track observability wasn't instrumented as the experiment):** new `apps/automix-live-lab/src/adapters/spotify-autoplay.js` -- `sanitizeTrackToken()` (deterministic, synchronous, opaque, never persists title/artist), `captureSnapshot()` (sanitized snapshot from a real `player_state_changed` state: seed/current tokens, ordered next-track tokens/count, position, whether the change was manually triggered), and `classifyAutoplayResult()` implementing the exact four PM-defined outcomes (`SPOTIFY_AUTOPLAY_NEXT_TRACKS_VISIBLE` / `..._CONTINUES_BUT_NEXT_NOT_PREEXPOSED` / `..._SETTING_REQUIRED` / `..._NOT_OBSERVED`). The Recommendations endpoint is not used anywhere.
+- **BLOCKER 3 (Premium readiness depended on a field Spotify can omit in 2026 Development Mode):** `getAccountReadiness()` no longer calls `GET /me` at all. It is now a state machine driven purely by Web Playback SDK signals: `PREMIUM_PLAYBACK_CONFIRMED_BY_SDK` only after the device is `ready` AND a seed track is confirmed actually playing; the exact SDK `account_error`/auth-error message otherwise; `SDK_READY_AWAITING_SEED_PLAYBACK_PROOF` / `SDK_NOT_READY` before that. OAuth scopes trimmed from 8 to 4 (`streaming`, `user-read-email`, `user-read-private`, `user-modify-playback-state`) -- `playlist-read-private`, `user-library-read`, `user-read-playback-state`, `user-read-currently-playing` dropped as genuinely unused by the repaired flow.
 
-**Local DSP Live engine:** `src/engine/deck-engine.js` + `schedule.js`, reusing the frozen/accepted P0-M5-R1 8-pair manifest verbatim. 6-item live queue = 6 consecutive transitions (task required >=5), 5 of them genuine live two-deck Web Audio crossfade + bass/EQ handoff computed at runtime, 1 reusing the existing accepted Signalsmith-stretched offline render (disclosed, not hidden). Audio prep: `tools/prepare_queue_audio.py` (ffmpeg trims from the already-decoded local corpus, imports `choose_window_bars` from the accepted `apple_like_render.py` unmodified).
-
-**Spotify public shell:** `src/adapters/SpotifyPublicControlAdapter.js` + `spotify-pkce.js` -- Authorization Code with PKCE, fully client-side, no secret. Capability hardcoded `PUBLIC_CONTROL_ONLY`; `getAutoMixPlan()` is advisory-only (`executesRealDsp: false`).
-
-**Research:** `docs/research/P0-M6-R1-SPOTIFY-FIRST-LIVE-PROTOTYPE.md` -- Lane S2 DJ-partner audit, competitor baseline (`SPOTIFY_NATIVE_MIX_AUTO` / `DJAY_SPOTIFY_AUTOMIX` / `AUTOMIX_LOCAL_ENGINE`), required product classification, full evidence log.
-
-### FILES CREATED
+### FILES CHANGED THIS REPAIR
 
 ```
-apps/automix-live-lab/.gitignore
-apps/automix-live-lab/index.html
-apps/automix-live-lab/server/server.py
-apps/automix-live-lab/src/adapters/PlaybackAdapter.js
-apps/automix-live-lab/src/adapters/LocalDSPPlaybackAdapter.js
-apps/automix-live-lab/src/adapters/SpotifyPublicControlAdapter.js
-apps/automix-live-lab/src/adapters/SpotifyDJPartnerPlaybackAdapter.js
-apps/automix-live-lab/src/adapters/spotify-pkce.js
-apps/automix-live-lab/src/app.js
-apps/automix-live-lab/src/styles.css
-apps/automix-live-lab/src/engine/deck-engine.js
-apps/automix-live-lab/src/engine/schedule.js
-apps/automix-live-lab/src/data/queue_manifest.json  (sanitized: opaque RM### IDs + timing numbers only)
-apps/automix-live-lab/tools/prepare_queue_audio.py
-apps/automix-live-lab/tools/verify_schedule.mjs
-apps/automix-live-lab/tools/verify_pkce.mjs
-docs/research/P0-M6-R1-SPOTIFY-FIRST-LIVE-PROTOTYPE.md
-HANDOFF_TO_PM.md (this file)
+Modified:
+  apps/automix-live-lab/index.html
+  apps/automix-live-lab/src/adapters/SpotifyPublicControlAdapter.js
+  apps/automix-live-lab/src/adapters/spotify-pkce.js
+  apps/automix-live-lab/src/app.js
+  apps/automix-live-lab/src/styles.css
+  docs/research/P0-M6-R1-SPOTIFY-FIRST-LIVE-PROTOTYPE.md
+  HANDOFF_TO_PM.md (this file)
+
+New:
+  apps/automix-live-lab/src/adapters/spotify-api-requests.js
+  apps/automix-live-lab/src/adapters/spotify-autoplay.js
+  apps/automix-live-lab/tools/verify_spotify_search.mjs
+  apps/automix-live-lab/tools/verify_spotify_play_seed.mjs
+  apps/automix-live-lab/tools/verify_spotify_autoplay.mjs
 ```
 
-No files under `tools/p0m5/` or `docs/research/P0-M5-R1*` were modified -- P0-M5-R1 evidence is untouched, per "P0-M5-R1 artifacts remain valid evidence."
+Not touched this pass: `apps/automix-live-lab/src/engine/*`, `apps/automix-live-lab/src/adapters/LocalDSPPlaybackAdapter.js`, `apps/automix-live-lab/src/data/queue_manifest.json`, `apps/automix-live-lab/tools/prepare_queue_audio.py`, `apps/automix-live-lab/tools/verify_schedule.mjs`, `apps/automix-live-lab/src/adapters/PlaybackAdapter.js`, `apps/automix-live-lab/src/adapters/SpotifyDJPartnerPlaybackAdapter.js` -- Local DSP Live lane is unchanged, per the PM comment's own instruction not to rerun its 193s session unless the engine changed. No files under `tools/p0m5/` or existing `docs/research/P0-M5-R1*`/prior `P0-M6-R1` content were altered beyond the additive repair sections.
 
 ### VALIDATION (commands run, exact results)
 
 ```
-node apps/automix-live-lab/tools/verify_schedule.mjs
-  -> 22/22 PASS (gapless 6-transition schedule, mathematically proven from the
-     real prepared queue manifest, same function the browser engine executes)
+node apps/automix-live-lab/tools/verify_spotify_search.mjs
+  -> 17/17 PASS (NEW -- search request shape: GET /search?type=track,
+     limit clamped to <=10, no playlist reference anywhere)
+
+node apps/automix-live-lab/tools/verify_spotify_play_seed.mjs
+  -> 10/10 PASS (NEW -- PUT /me/player/play?device_id=..., body has
+     exactly ONE uri and no other keys, playlist/multi-track uris rejected)
+
+node apps/automix-live-lab/tools/verify_spotify_autoplay.mjs
+  -> 18/18 PASS (NEW -- sanitizeTrackToken determinism/opacity,
+     captureSnapshot never leaks title/artist, and all 4 classification
+     outcomes reproduced from synthetic snapshot sequences, including the
+     manual-next-is-not-autoplay case and the pre-exposure-wins case)
 
 node apps/automix-live-lab/tools/verify_pkce.mjs
-  -> 12/12 PASS (S256 code_challenge matches the official RFC 7636 Appendix B
-     test vector; authorize-URL shape matches Spotify's documented PKCE params;
-     no client secret ever appears)
+  -> 12/12 PASS (rerun, unaffected by the scope trim: RFC 7636 vector still
+     matches, authorize-URL shape still correct)
 
-python apps/automix-live-lab/tools/prepare_queue_audio.py
-  -> 6/6 queue items prepared (5 live_two_deck, 1 baked_transition), reusing
-     the FROZEN P0-M5-R1 pair_manifest_sanitized.json unmodified
+node apps/automix-live-lab/tools/verify_schedule.mjs
+  -> 22/22 PASS (rerun as a regression check ONLY -- Local DSP engine
+     untouched this pass, its 193s live session was NOT rerun per the
+     PM comment's explicit instruction)
 
-Real-browser run (Browser tool, http://127.0.0.1:5500/):
-  - Local DSP Live: connect() -> AudioContext ready; loadQueue() -> 6
-    transitions / 193.44s scheduled; all 11 audio files 200 OK; 6 consecutive
-    transitions observed live in real wall-clock time (03:45:26 -> 03:48:39,
-    193.18s actual vs 193.44s computed, delta fully explained by 250ms UI
-    polling, not audio gap).
-  - Spotify Live: shell renders cleanly, PUBLIC_CONTROL_ONLY capability
-    correct, OWNER_SPOTIFY_AUTH_REQUIRED gate fires correctly with no Client
-    ID configured. One real bug found IN this session's own testing (stale
-    Client-ID capture at adapter construction time) and fixed + re-verified:
-    after the fix, Connect with a test Client ID genuinely navigates to
-    https://accounts.spotify.com (Spotify's real login page rendered) --
-    proves the PKCE redirect fires end-to-end. No real Spotify account
-    credentials exist in this session and none were entered anywhere.
+Real-browser run (Browser tool, http://127.0.0.1:5500/, this repair pass):
+  - Seed Track panel renders (search box, results list, Autoplay-
+    observability readout defaulting to SPOTIFY_AUTOPLAY_NOT_OBSERVED /
+    NO_SNAPSHOTS_CAPTURED before any snapshot exists).
+  - Clicking Search before Connect fails closed with SPOTIFY_NOT_AUTHENTICATED
+    (caught, logged to the debug panel, no unhandled promise rejection).
+  - Network log confirms ZERO api.spotify.com requests fire before Connect
+    -- specifically zero /me/playlists calls anywhere in the session
+    (BLOCKER 1 fix independently confirmed at the network level, not just
+    by reading the source).
+  - Saving a test Client ID and clicking Connect / Authorize still
+    genuinely navigates the browser to https://accounts.spotify.com
+    (confirmed via tabs_context) using the trimmed 4-scope authorize URL
+    -- the PKCE redirect survives the scope reduction.
+  - Switching back to Local DSP Live still loads cleanly with no console
+    errors (not exercised further -- Connect was not clicked there, so the
+    193s session was correctly NOT rerun).
 ```
 
-Combined: 34 automated PASS / 0 FAIL, plus real-browser runtime evidence for both source modes, plus one bug found-and-fixed during the session's own validation (not merely asserted working).
+Combined this pass: 45 new automated PASS checks (17 + 10 + 18) + 34 rerun-as-regression PASS checks (12 + 22, both unaffected), 0 FAIL, plus real-browser network-level confirmation that BLOCKER 1 is actually fixed (not merely asserted from source).
 
-### AC CHECK (per the owner's routing message)
+### AC CHECK (against PM comment `5324307503`)
 
 | Requirement | Status | Evidence |
 |---|---|---|
-| Spotify OAuth login | PASS (structurally proven, not credential-tested) | §4/§6 of the research doc; PKCE redirect confirmed live |
-| Premium/account readiness | PASS (code path exists, real-API-untested) | `getAccountReadiness()` in `SpotifyPublicControlAdapter.js` |
-| Playlists/library under dev-mode APIs | PASS (code path exists, real-API-untested) | `loadQueue()` calls `/me/playlists` |
-| Current/next track, playback state/progress | PASS (code path exists, real-API-untested) | `getQueue()`/`getPlaybackState()` from SDK state |
-| Play/pause/seek/skip where permitted | PASS (code path exists, real-API-untested) | `play/pause/next/seek` methods |
-| AutoMix planner/status UI | PASS, live-verified | Status panel renders correct capability/plan for both modes in the real browser run |
-| Explicit `PUBLIC_CONTROL_ONLY` label unless stronger proven | PASS | `capability` getter hardcoded, never upgraded |
-| Local DSP Live, continuous two-deck, >=5 transitions | **PASS, fully live-verified** | §6 -- 6 consecutive transitions, real browser playback |
-| Provider abstraction (3 adapters, planner decoupled) | PASS | §3 |
-| DJ partner route audit | PASS | §5, `SPOTIFY_DJ_PARTNER_ACCESS_REQUIRED`, no reverse-engineering attempted |
-| Competitor baseline + product classification | PASS | §7/§8, `SPOTIFY_DJ_PARTNER_ACCESS_REQUIRED` |
-| Apple Music not blocking | PASS | Zero Apple/MusicKit code touched or added this session |
+| `searchTracks(query)`, `GET /search?type=track`, limit<=10 | PASS | `verify_spotify_search.mjs` 17/17; live network log shows no other endpoint called before Connect |
+| Minimal search/results UI | PASS, live-verified | Seed Track panel, browser-confirmed this pass |
+| Select exactly one seed track | PASS | `playSeedTrack(uri)` takes a single uri; `buildPlaySeedRequest` rejects arrays |
+| `playSeedTrack(uri)` via `PUT /me/player/play?device_id=...` `{"uris":[uri]}` | PASS | `verify_spotify_play_seed.mjs` 10/10 |
+| Remove `/me/playlists` as a prerequisite | PASS, live-verified | Method deleted entirely; network log confirms zero calls |
+| Instrument `track_window.next_tracks` | PASS | `_onPlayerStateChanged` -> `captureSnapshot` on every real SDK event |
+| Sanitized before/during/end-of-seed + first-continuation snapshots | PASS | `captureSnapshot`/`classifyAutoplayResult`, `verify_spotify_autoplay.mjs` 18/18 |
+| Classify the exact 4 Autoplay results | PASS (logic proven; real classification is `UNKNOWN_NEEDS_PROOF` until owner auth) | `classifyAutoplayResult`, all 4 branches unit-tested |
+| No Recommendations endpoint | PASS | Not referenced anywhere in the diff |
+| Readiness repaired off `me.product` | PASS | `getAccountReadiness()` rewritten, no `/me` call |
+| SDK `ready`/`account_error`/auth-error/seed-confirmed as runtime proof | PASS | `_sdkReady`/`_sdkAccountError`/`_sdkAuthError`/`_seedPlaybackConfirmed` state machine |
+| Deterministic tests for search/play-seed/snapshot logic | PASS | 45/45 new checks, all passing |
+| Local DSP not rerun unless changed | PASS | Engine files untouched; 193s session not rerun; `verify_schedule.mjs` rerun only as a cheap regression check |
+| Stay on local branch; don't touch main/research | PASS | Verified via `git rev-parse` below |
+| Push `prototype/live-automix-lab` to origin | PASS | See PM_REVIEW_REQUEST item 1 |
 
 ### UNKNOWNS / RISKS
 
-- Real Spotify token exchange / playlist data / Premium device registration were never exercised (no owner credentials this session) -- see research doc §9 for exact owner setup steps and §10 for the precise unknowns this leaves.
-- 1 of 6 live-queue transitions reuses a pre-rendered Signalsmith stretch rather than a real-time AudioWorklet port -- disclosed in research doc §6/§10, not hidden.
-- The claimed differentiation vs. Spotify's native Mix Auto (research doc §7) is `INFERENCE`, not `FACT` -- Spotify hasn't published its transition DSP mechanism and this project has no direct A/B access to it.
+- Real Spotify search results, real seed playback, and therefore the real Autoplay classification outcome are `UNKNOWN_NEEDS_PROOF` until the owner completes the setup steps in the research doc §9 (no credentials exist in this session).
+- `SPOTIFY_AUTOPLAY_SETTING_REQUIRED` cannot be auto-detected (Spotify exposes no public API for the Autoplay toggle state) -- it requires the owner's own out-of-band confirmation, documented in the classifier and research doc §10.
+- All risks carried over from the prior handoff (1-of-6 baked stretch transition, advisory-only Spotify AutoMix plan, INFERENCE-level competitor differentiation) are unchanged and still disclosed in the research doc.
 
 ### PM REVIEW REQUEST
 
 Please independently verify:
 
-1. `git log --oneline -3` on `prototype/live-automix-lab` shows this session's commit directly on top of `5139411`, and the diff touches only the files listed above (no changes under `tools/p0m5/` or existing `docs/research/P0-M5-R1*` files).
-2. Re-run `node apps/automix-live-lab/tools/verify_schedule.mjs` and `node apps/automix-live-lab/tools/verify_pkce.mjs` and confirm 22/22 and 12/12.
-3. Run `python apps/automix-live-lab/server/server.py 5500`, open `http://127.0.0.1:5500/`, switch to Local DSP Live, click Connect / Authorize, and independently observe the 6-transition live session (takes ~193s).
-4. Confirm no Spotify client secret, token, or real account data appears anywhere in the diff (`git grep -i "client_secret"` on the new files should be empty).
-5. Confirm `main` is untouched: `git rev-parse main` == `2450d55c60601bcee5eb52a2c38ce5d6e87a76aa`.
-6. Decide whether to push `prototype/live-automix-lab` to `origin` (not done automatically, per "do not merge to main" -- pushing the prototype branch itself was not explicitly authorized either, so it was left local pending this review).
+1. `git log --oneline -5` on `prototype/live-automix-lab` (both locally and on `origin/prototype/live-automix-lab` after the push) shows this repair's commit(s) directly on top of `70893d2`, and `git diff --stat 70893d2..HEAD` touches only the files listed above.
+2. Re-run all 5 `node .../verify_*.mjs` commands above and confirm the exact PASS counts (17/17, 10/10, 18/18, 12/12, 22/22).
+3. Confirm no LIVE call to `/me/playlists` remains: `git grep -in "me/playlists" apps/automix-live-lab/src/` returns exactly 3 hits, all in explanatory comments (`app.js`, `spotify-api-requests.js`, `SpotifyPublicControlAdapter.js` module docstrings), none inside a `fetch(`/`_api(` call -- and independently, the browser network log evidence above already confirms zero actual `/me/playlists` HTTP requests fire.
+4. Confirm `git grep -in "client_secret"` under `apps/automix-live-lab/` returns nothing.
+5. Confirm `main` is untouched: `git rev-parse main` == `2450d55c60601bcee5eb52a2c38ce5d6e87a76aa`, and `research/p0-feasibility` is untouched.
+6. Confirm the push: `git ls-remote origin prototype/live-automix-lab` shows the same SHA as local `HEAD`.
+7. When ready to authorize the owner: use research doc §9's updated 8-step setup (now including the search/seed/observe steps), and independently classify whichever of the 4 Autoplay outcomes the real account/session produces.
 
 ---
 
-`OWNER_SPOTIFY_AUTH_REQUIRED` (Spotify lane only) -- exact setup steps are in `docs/research/P0-M6-R1-SPOTIFY-FIRST-LIVE-PROTOTYPE.md` §9. Local DSP Live lane is NOT blocked and has real, independently-reproducible evidence in this same handoff.
+`OWNER_SPOTIFY_AUTH_REQUIRED` (Spotify lane only, code repair complete) -- exact setup steps are in `docs/research/P0-M6-R1-SPOTIFY-FIRST-LIVE-PROTOTYPE.md` §9. Local DSP Live lane remains unchanged and not blocked.

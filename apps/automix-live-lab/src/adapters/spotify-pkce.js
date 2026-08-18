@@ -77,13 +77,23 @@ export async function refreshAccessToken({ clientId, refreshToken }) {
   return res.json();
 }
 
-export const SPOTIFY_SCOPES = Object.freeze([
-  "user-read-private",
-  "user-read-email",
-  "user-read-playback-state",
-  "user-modify-playback-state",
-  "user-read-currently-playing",
-  "playlist-read-private",
-  "user-library-read",
-  "streaming",
-]);
+// Repair pass (Issue #11, PM comment `5324307503`, BLOCKER 1 remediation
+// note: "Remove scopes that are not required by the repaired core flow if
+// they are truly unused; do not broaden scopes."). The repaired core flow
+// is: PKCE login -> Web Playback SDK device registration -> search ->
+// play ONE seed track -> observe track_window via player_state_changed.
+// That requires exactly:
+//   - "streaming"               Web Playback SDK itself.
+//   - "user-read-email",
+//     "user-read-private"       both documented as required by the Web
+//                                Playback SDK's own device-registration
+//                                flow (independent of any `/me` profile
+//                                read this app performs -- this app makes
+//                                no `/me` call anymore, see BLOCKER 3).
+//   - "user-modify-playback-state"  PUT /me/player/play (playSeedTrack).
+// Dropped vs. the prior pass: "user-read-playback-state" and
+// "user-read-currently-playing" (playback state now comes from the SDK's
+// own `player_state_changed` event, no `/me/player` GET is made) and
+// "playlist-read-private" / "user-library-read" (playlist browsing is no
+// longer part of the core flow -- BLOCKER 1).
+export const SPOTIFY_SCOPES = Object.freeze(["streaming", "user-read-email", "user-read-private", "user-modify-playback-state"]);

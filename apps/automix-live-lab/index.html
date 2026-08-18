@@ -16,6 +16,21 @@
   </header>
 
   <main class="grid">
+    <section class="panel hidden" id="panel-seed">
+      <h2>Seed track (search &amp; play ONE arbitrary song)</h2>
+      <div class="controls-row">
+        <input id="seed-search-input" type="text" placeholder="search any track..." />
+        <button id="seed-search-btn">Search</button>
+      </div>
+      <ol id="seed-results" class="upcoming-list seed-results"></ol>
+      <hr />
+      <h3>Autoplay observability</h3>
+      <div class="status-row"><span class="label">Seed playing</span><span id="seed-status">no seed selected</span></div>
+      <div class="status-row"><span class="label">Snapshots captured</span><span id="autoplay-snapshot-count">0</span></div>
+      <div class="status-row"><span class="label">Classification</span><span id="autoplay-classification" class="badge">--</span></div>
+      <div class="status-row"><span class="label">Reason</span><span id="autoplay-classification-reason">--</span></div>
+    </section>
+
     <section class="panel" id="panel-queue">
       <h2>Queue</h2>
       <div id="queue-current" class="track-row track-current">No source connected</div>

@@ -24,6 +24,14 @@ const els = {
   spotifyClientIdInput: document.getElementById("spotify-client-id"),
   spotifySaveClientId: document.getElementById("spotify-save-client-id"),
   redirectUriHint: document.getElementById("redirect-uri-hint"),
+  panelSeed: document.getElementById("panel-seed"),
+  seedSearchInput: document.getElementById("seed-search-input"),
+  seedSearchBtn: document.getElementById("seed-search-btn"),
+  seedResults: document.getElementById("seed-results"),
+  seedStatus: document.getElementById("seed-status"),
+  autoplaySnapshotCount: document.getElementById("autoplay-snapshot-count"),
+  autoplayClassification: document.getElementById("autoplay-classification"),
+  autoplayClassificationReason: document.getElementById("autoplay-classification-reason"),
   ctlConnect: document.getElementById("ctl-connect"),
   ctlPlay: document.getElementById("ctl-play"),
   ctlPause: document.getElementById("ctl-pause"),
@@ -122,6 +130,50 @@ async function activateLocal() {
   renderQueue(adapter);
 }
 
+function renderAutoplayStatus(adapter) {
+  if (!(adapter instanceof SpotifyPublicControlAdapter)) return;
+  const count = adapter._autoplaySnapshots.length;
+  els.autoplaySnapshotCount.textContent = String(count);
+  els.seedStatus.textContent = adapter._seedToken
+    ? `${adapter._seedToken}${adapter._seedPlaybackConfirmed ? " (confirmed playing)" : " (play requested, awaiting confirmation)"}`
+    : "no seed selected";
+  const { result, reason } = adapter.getAutoplayClassification();
+  els.autoplayClassification.textContent = result;
+  els.autoplayClassificationReason.textContent = reason;
+}
+
+async function renderSeedResults(adapter, query) {
+  els.seedResults.innerHTML = "";
+  let results;
+  try {
+    results = await adapter.searchTracks(query);
+  } catch (e) {
+    logDebug(`searchTracks() -> ERROR: ${e.message}`);
+    return;
+  }
+  logDebug(`searchTracks("${query}") -> ${results.length} result(s) (GET /search?type=track, limit<=10)`);
+  for (const track of results) {
+    const li = document.createElement("li");
+    li.className = "seed-result-row";
+    const label = document.createElement("span");
+    label.textContent = `${track.name} -- ${track.artists} (${Math.round(track.durationMs / 1000)}s)`;
+    const btn = document.createElement("button");
+    btn.textContent = "Play as seed";
+    btn.onclick = async () => {
+      try {
+        await adapter.playSeedTrack(track.uri);
+        logDebug(`playSeedTrack(${track.uri}) -> PUT /me/player/play?device_id=... {"uris":["${track.uri}"]}`);
+        renderAutoplayStatus(adapter);
+      } catch (e) {
+        logDebug(`playSeedTrack() -> ERROR: ${e.message}`);
+      }
+    };
+    li.appendChild(label);
+    li.appendChild(btn);
+    els.seedResults.appendChild(li);
+  }
+}
+
 async function activateSpotify() {
   activeMode = "spotify";
   setModeUi();
@@ -129,10 +181,16 @@ async function activateSpotify() {
   const clientId = localStorage.getItem(CLIENT_ID_KEY) || "";
   els.spotifyClientIdInput.value = clientId;
   els.spotifySetup.classList.remove("hidden");
+  els.panelSeed.classList.remove("hidden");
 
   const adapter = new SpotifyPublicControlAdapter({ clientId, redirectUri: REDIRECT_URI });
   activeAdapter = adapter;
-  adapter.onStateChange((evt) => logDebug(`[spotify-public] ${JSON.stringify(evt)}`));
+  adapter.onStateChange((evt) => {
+    logDebug(`[spotify-public] ${JSON.stringify(evt.type === "state_changed" ? { type: evt.type } : evt)}`);
+    if (evt.type === "autoplay_snapshot" || evt.type === "seed_playback_confirmed" || evt.type === "seed_track_played") {
+      renderAutoplayStatus(adapter);
+    }
+  });
 
   try {
     const loggedInJustNow = await adapter.completeLoginIfRedirected();
@@ -153,18 +211,29 @@ async function activateSpotify() {
       await adapter.beginLogin();
       return;
     }
+    // BLOCKER 1 repair: no /me/playlists call anywhere in this flow --
+    // readiness/status polling starts immediately; the seed search/select
+    // panel (not a playlist) is how playback actually starts.
     const readiness = await adapter.getAccountReadiness();
     adapter._lastReadiness = readiness;
-    await adapter.loadQueue();
     startStatusLoop(adapter);
     renderStatus(adapter, readiness);
     renderQueue(adapter);
+    renderAutoplayStatus(adapter);
   };
   els.ctlPlay.onclick = () => adapter.play().catch((e) => logDebug(`play() -> ${e.message}`));
   els.ctlPause.onclick = () => adapter.pause().catch((e) => logDebug(`pause() -> ${e.message}`));
   els.ctlNext.onclick = () => adapter.next().catch((e) => logDebug(`next() -> ${e.message}`));
+  els.seedSearchBtn.onclick = () => {
+    const q = els.seedSearchInput.value.trim();
+    if (q) renderSeedResults(adapter, q);
+  };
+  els.seedSearchInput.onkeydown = (ev) => {
+    if (ev.key === "Enter") els.seedSearchBtn.click();
+  };
   renderStatus(adapter, null);
   renderQueue(adapter);
+  renderAutoplayStatus(adapter);
 }
 
 els.spotifySaveClientId.onclick = () => {
@@ -176,6 +245,7 @@ function setModeUi() {
   els.modeSpotify.setAttribute("aria-selected", String(activeMode === "spotify"));
   els.modeLocal.setAttribute("aria-selected", String(activeMode === "local"));
   els.spotifySetup.classList.toggle("hidden", activeMode !== "spotify");
+  els.panelSeed.classList.toggle("hidden", activeMode !== "spotify");
   stopStatusLoop();
 }
 

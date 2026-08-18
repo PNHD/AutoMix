@@ -7,6 +7,8 @@ import {
   refreshAccessToken,
   SPOTIFY_SCOPES,
 } from "./spotify-pkce.js";
+import { buildSearchRequest, buildPlaySeedRequest, toSeedCandidate, MAX_SEARCH_LIMIT } from "./spotify-api-requests.js";
+import { sanitizeTrackToken, captureSnapshot, classifyAutoplayResult } from "./spotify-autoplay.js";
 
 const TOKEN_STORAGE_KEY = "automix_spotify_token_v1";
 const VERIFIER_STORAGE_KEY = "automix_spotify_pkce_verifier_v1";
@@ -15,7 +17,20 @@ export const CLIENT_ID_STORAGE_KEY = "automix_spotify_client_id_v1";
 
 /**
  * SpotifyPublicControlAdapter -- Lane S1 (Issue #11 PM comments
- * 5323227813 / 5323231023).
+ * 5323227813 / 5323231023 / 5323258040 / 5324307503).
+ *
+ * REPAIR PASS (`5324307503`, `P0_M6_R1_SPOTIFY_SEED_LOOP_REPAIR_REQUIRED`):
+ * the prior pass centered `/me/playlists` and existing-playback resume.
+ * The actual product loop is: search ONE arbitrary track -> play that ONE
+ * track as a seed (`PUT /me/player/play` with a single-track `uris`
+ * array, never a playlist context) -> observe whether Spotify's own
+ * Autoplay supplies a continuation via the Web Playback SDK's
+ * `track_window.next_tracks`. No playlist call is made anywhere in this
+ * file anymore (BLOCKER 1). Premium/readiness no longer depends on
+ * `GET /me` -> `product`, which Spotify's Feb-2026 Development Mode
+ * migration can omit for affected apps (BLOCKER 3) -- readiness is
+ * derived purely from Web Playback SDK `ready`/`account_error`/auth-error
+ * events plus actual confirmed seed playback.
  *
  * Capability is ALWAYS `PUBLIC_CONTROL_ONLY` in this adapter. It never
  * claims to execute real AutoMix DSP against Spotify audio: per the PM
@@ -27,7 +42,9 @@ export const CLIENT_ID_STORAGE_KEY = "automix_spotify_client_id_v1";
  * for new apps 2024-11-27. `getAutoMixPlan()` here is ADVISORY ONLY: it
  * shows what a transition WOULD look like using only the metadata public
  * apps can still read (duration/progress), and explicitly reports
- * `executesRealDsp: false`.
+ * `executesRealDsp: false`. The Recommendations endpoint is never used
+ * (deprecated for new Development Mode Client IDs; BLOCKER 2 explicitly
+ * forbids fabricating recommendations ourselves).
  *
  * Auth: Authorization Code with PKCE, fully client-side (no client
  * secret is ever requested or stored) -- see spotify-pkce.js.
@@ -43,6 +60,18 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
     this._latestState = null;
     this._listeners = new Set();
     this._connected = false;
+
+    // BLOCKER 3: readiness state machine, no `/me`.product dependency.
+    this._sdkReady = false;
+    this._sdkAccountError = null;
+    this._sdkAuthError = null;
+    this._seedPlaybackConfirmed = false;
+
+    // BLOCKER 2: seed/autoplay observability.
+    this._seedUri = null;
+    this._seedToken = null;
+    this._autoplaySnapshots = [];
+    this._manualActionPending = false; // set true just before next()/seek() so the resulting snapshot isn't mistaken for autoplay continuation
   }
 
   /**
@@ -184,18 +213,34 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
     return this._connected;
   }
 
+  /**
+   * BLOCKER 3 repair: no `GET /me` -> `product` dependency (removed for
+   * affected apps by Spotify's Feb-2026 Development Mode migration, which
+   * could make this adapter falsely report a Premium account as
+   * unknown/non-Premium). Readiness is derived entirely from Web Playback
+   * SDK signals plus actual confirmed seed playback:
+   *   - `PREMIUM_PLAYBACK_CONFIRMED_BY_SDK` only once the SDK device is
+   *     `ready` AND a seed track has actually started playing;
+   *   - the exact SDK `account_error`/auth-error message otherwise, never
+   *     a fabricated tier;
+   *   - `SDK_READY_AWAITING_SEED_PLAYBACK_PROOF` once the device is
+   *     registered but no seed has been confirmed playing yet;
+   *   - `SDK_NOT_READY` before device registration completes.
+   */
   async getAccountReadiness() {
-    try {
-      const me = await this._api("/me");
-      const premium = me.product === "premium";
-      return {
-        premium,
-        ready: premium,
-        reason: premium ? "PREMIUM_ACCOUNT_CONFIRMED" : `ACCOUNT_PRODUCT_TIER_${(me.product || "unknown").toUpperCase()}_WEB_PLAYBACK_SDK_REQUIRES_PREMIUM`,
-      };
-    } catch (e) {
-      return { premium: false, ready: false, reason: `ACCOUNT_CHECK_FAILED: ${e.message}` };
+    if (this._seedPlaybackConfirmed) {
+      return { premium: true, ready: true, reason: "PREMIUM_PLAYBACK_CONFIRMED_BY_SDK" };
     }
+    if (this._sdkAccountError) {
+      return { premium: false, ready: false, reason: `ACCOUNT_ERROR: ${this._sdkAccountError}` };
+    }
+    if (this._sdkAuthError) {
+      return { premium: false, ready: false, reason: `AUTH_ERROR: ${this._sdkAuthError}` };
+    }
+    if (this._sdkReady) {
+      return { premium: null, ready: false, reason: "SDK_READY_AWAITING_SEED_PLAYBACK_PROOF" };
+    }
+    return { premium: null, ready: false, reason: "SDK_NOT_READY" };
   }
 
   async _initWebPlaybackSdk() {
@@ -220,22 +265,85 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
     });
     this._player.addListener("ready", ({ device_id }) => {
       this._deviceId = device_id;
+      this._sdkReady = true;
       this._emit({ type: "device_ready", deviceId: device_id });
     });
     this._player.addListener("player_state_changed", (state) => {
       this._latestState = state;
+      this._onPlayerStateChanged(state);
       this._emit({ type: "state_changed", state });
     });
-    this._player.addListener("initialization_error", ({ message }) => this._emit({ type: "sdk_error", stage: "initialization_error", message }));
-    this._player.addListener("authentication_error", ({ message }) => this._emit({ type: "sdk_error", stage: "authentication_error", message }));
-    this._player.addListener("account_error", ({ message }) => this._emit({ type: "sdk_error", stage: "account_error", message: `${message} (Web Playback SDK requires Spotify Premium)` }));
+    this._player.addListener("initialization_error", ({ message }) => {
+      this._emit({ type: "sdk_error", stage: "initialization_error", message });
+    });
+    this._player.addListener("authentication_error", ({ message }) => {
+      this._sdkAuthError = message;
+      this._emit({ type: "sdk_error", stage: "authentication_error", message });
+    });
+    this._player.addListener("account_error", ({ message }) => {
+      this._sdkAccountError = `${message} (Web Playback SDK requires Spotify Premium)`;
+      this._emit({ type: "sdk_error", stage: "account_error", message: this._sdkAccountError });
+    });
     await this._player.connect();
   }
 
-  async loadQueue() {
-    // Public control only: we read the user's existing playlists/queue,
-    // we do not construct/own a queue the way the Local DSP adapter does.
-    this._playlists = await this._api("/me/playlists?limit=20");
+  /**
+   * BLOCKER 2: instrumentation point. Every real `player_state_changed`
+   * event is turned into a sanitized snapshot (opaque tokens only) and
+   * appended to `_autoplaySnapshots`. If the currently-playing track is
+   * the seed and this is the first time we see actual playback of it,
+   * that also confirms Premium playback readiness (BLOCKER 3).
+   */
+  _onPlayerStateChanged(state) {
+    if (!this._seedToken) return; // no seed selected yet -- nothing to instrument
+    const currentTrack = state?.track_window?.current_track;
+    if (!this._seedPlaybackConfirmed && currentTrack && sanitizeTrackToken(currentTrack.id) === this._seedToken && !state.paused) {
+      this._seedPlaybackConfirmed = true;
+      this._emit({ type: "seed_playback_confirmed", seedToken: this._seedToken });
+    }
+    const snapshot = captureSnapshot({
+      state,
+      seedToken: this._seedToken,
+      capturedAtMs: Date.now(),
+      manuallyTriggered: this._manualActionPending,
+    });
+    this._manualActionPending = false;
+    this._autoplaySnapshots.push(snapshot);
+    this._emit({ type: "autoplay_snapshot", snapshot });
+  }
+
+  /**
+   * BLOCKER 1: `GET /search?type=track`, Development Mode limit clamped
+   * to <=10. Returns UI-facing candidates (title/artist ARE needed here
+   * so the owner can actually pick a song -- this is ephemeral runtime
+   * UI state, never written to tracked evidence; tracked snapshots use
+   * `spotify-autoplay.js`'s opaque tokens instead, see `_onPlayerStateChanged`).
+   */
+  async searchTracks(query, limit = MAX_SEARCH_LIMIT) {
+    const req = buildSearchRequest(query, limit);
+    const resp = await this._api(req.url);
+    const items = resp?.tracks?.items ?? [];
+    return items.map(toSeedCandidate);
+  }
+
+  /**
+   * BLOCKER 1: plays exactly ONE seed track on the SDK's own device.
+   * Never a playlist context, never more than one uri.
+   */
+  async playSeedTrack(uri) {
+    if (!this._deviceId) throw new Error("SPOTIFY_DEVICE_NOT_READY");
+    const req = buildPlaySeedRequest(this._deviceId, uri);
+    await this._api(req.url, { method: req.method, body: JSON.stringify(req.body) });
+    this._seedUri = uri;
+    this._seedToken = sanitizeTrackToken(uri);
+    this._autoplaySnapshots = [];
+    this._seedPlaybackConfirmed = false;
+    this._emit({ type: "seed_track_played", seedToken: this._seedToken });
+  }
+
+  /** Current Autoplay-observability classification from snapshots captured so far (BLOCKER 2). */
+  getAutoplayClassification(opts) {
+    return classifyAutoplayResult(this._autoplaySnapshots, opts);
   }
 
   getQueue() {
@@ -272,10 +380,12 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
   }
 
   async next() {
+    this._manualActionPending = true;
     await this._player?.nextTrack();
   }
 
   async seek(ms) {
+    this._manualActionPending = true;
     await this._player?.seek(ms);
   }
 
@@ -284,7 +394,7 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
    * read post-2024-11-27 (track duration + live playback progress).
    * Audio Features / Audio Analysis (tempo, key, section boundaries) are
    * NOT available to new Spotify apps -- see
-   * docs/research/P0-M6-R1-SPOTIFY-COMPETITIVE-BASELINE.md. This method
+   * docs/research/P0-M6-R1-SPOTIFY-FIRST-LIVE-PROTOTYPE.md. This method
    * therefore always returns `executesRealDsp: false` and never touches
    * Spotify playback beyond what play/pause/next/seek already do.
    */
