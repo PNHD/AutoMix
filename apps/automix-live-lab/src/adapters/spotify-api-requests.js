@@ -83,6 +83,67 @@ export function buildTransferPlaybackRequest(deviceId, play = false) {
   };
 }
 
+// P0-M6-R2 Phase C: bounded candidate-pool page sizes. Spotify's own max
+// `limit` for both of these endpoints is 50; the planner only ever needs
+// a small pool, so this stays well under that ceiling by default.
+export const MAX_CANDIDATE_PAGE_LIMIT = 50;
+const DEFAULT_CANDIDATE_PAGE_LIMIT = 20;
+
+function clampCandidateLimit(limit) {
+  return Math.max(1, Math.min(MAX_CANDIDATE_PAGE_LIMIT, Math.trunc(Number.isFinite(limit) ? limit : DEFAULT_CANDIDATE_PAGE_LIMIT)));
+}
+
+/**
+ * GET /v1/me/player/queue
+ * P0-M6-R2 Phase B: the only public surface that can truthfully answer
+ * "does a real queued successor exist" -- requires `user-read-playback-state`.
+ */
+export function buildGetQueueRequest() {
+  return { method: "GET", path: "/me/player/queue", url: "/me/player/queue" };
+}
+
+/**
+ * POST /v1/me/player/queue?uri=<uri>&device_id=<id>
+ * P0-M6-R2 Phase E: adds exactly ONE track to the live Spotify queue.
+ * `uri` and `device_id` are query parameters on this endpoint, not a
+ * JSON body -- there is no body at all. Responds 204 on success (must be
+ * treated as success by the Phase A repair).
+ */
+export function buildQueueTrackRequest(uri, deviceId) {
+  if (typeof uri !== "string" || !uri.startsWith("spotify:track:")) {
+    throw new Error("SPOTIFY_QUEUE_URI_MUST_BE_A_SINGLE_TRACK_URI");
+  }
+  const params = new URLSearchParams({ uri });
+  if (deviceId) params.set("device_id", deviceId);
+  return {
+    method: "POST",
+    path: "/me/player/queue",
+    query: params,
+    url: `/me/player/queue?${params.toString()}`,
+  };
+}
+
+/**
+ * GET /v1/me/top/tracks?limit=<=50
+ * P0-M6-R2 Phase C: one of two user-affinity candidate-pool sources.
+ * Requires `user-top-read`. Never the deprecated Recommendations
+ * endpoint and never Audio Features/Audio Analysis.
+ */
+export function buildTopTracksRequest(limit = DEFAULT_CANDIDATE_PAGE_LIMIT) {
+  const params = new URLSearchParams({ limit: String(clampCandidateLimit(limit)) });
+  return { method: "GET", path: "/me/top/tracks", query: params, url: `/me/top/tracks?${params.toString()}` };
+}
+
+/**
+ * GET /v1/me/player/recently-played?limit=<=50
+ * P0-M6-R2 Phase C: the second user-affinity candidate-pool source.
+ * Requires `user-read-recently-played`.
+ */
+export function buildRecentlyPlayedRequest(limit = DEFAULT_CANDIDATE_PAGE_LIMIT) {
+  const params = new URLSearchParams({ limit: String(clampCandidateLimit(limit)) });
+  return { method: "GET", path: "/me/player/recently-played", query: params, url: `/me/player/recently-played?${params.toString()}` };
+}
+
 /** Maps one raw Spotify search-result track object to the minimal shape the seed-picker UI needs. */
 export function toSeedCandidate(track) {
   return {
@@ -91,5 +152,28 @@ export function toSeedCandidate(track) {
     name: track.name,
     artists: (track.artists || []).map((a) => a.name).join(", "),
     durationMs: track.duration_ms,
+  };
+}
+
+/**
+ * Maps one raw Spotify track object (from top-tracks, recently-played, or
+ * search) into the minimal, planner-facing shape `spotify-planner.js`
+ * needs -- primary artist id (for same-artist exclusion), duration (for
+ * duration-continuity ranking), explicit flag, and playability. Never
+ * includes name/title text -- the planner's own diagnostics stay
+ * opaque-token-only (BLOCKER 2 precedent, spotify-autoplay.js).
+ * `affinitySource` is stamped by the caller (spotify-candidate-pool.js)
+ * since the same raw shape is reused across different source endpoints.
+ */
+export function toPlannerCandidate(track, affinitySource) {
+  if (!track || typeof track !== "object" || !track.id || !track.uri) return null;
+  return {
+    id: track.id,
+    uri: track.uri,
+    primaryArtistId: track.artists?.[0]?.id ?? null,
+    durationMs: typeof track.duration_ms === "number" ? track.duration_ms : null,
+    explicit: track.explicit === true,
+    isPlayable: track.is_playable !== false, // absent field (search/top-tracks without market) defaults to playable
+    affinitySource,
   };
 }

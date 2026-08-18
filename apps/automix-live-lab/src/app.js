@@ -26,6 +26,16 @@ const els = {
   spotifySaveClientId: document.getElementById("spotify-save-client-id"),
   redirectUriHint: document.getElementById("redirect-uri-hint"),
   panelSeed: document.getElementById("panel-seed"),
+  panelLookahead: document.getElementById("panel-lookahead"),
+  nextControlState: document.getElementById("next-control-state"),
+  playNaturalEndHint: document.getElementById("play-natural-end-hint"),
+  lookaheadState: document.getElementById("lookahead-state"),
+  lookaheadPoolSize: document.getElementById("lookahead-pool-size"),
+  lookaheadSelectedToken: document.getElementById("lookahead-selected-token"),
+  lookaheadSelectionReason: document.getElementById("lookahead-selection-reason"),
+  lookaheadSuccessorConfirmed: document.getElementById("lookahead-successor-confirmed"),
+  lookaheadRefillCount: document.getElementById("lookahead-refill-count"),
+  lookaheadConsecutiveCount: document.getElementById("lookahead-consecutive-count"),
   seedSearchInput: document.getElementById("seed-search-input"),
   seedSearchBtn: document.getElementById("seed-search-btn"),
   seedResults: document.getElementById("seed-results"),
@@ -52,6 +62,8 @@ els.redirectUriHint.textContent = REDIRECT_URI;
 let activeAdapter = null;
 let activeMode = null; // "spotify" | "local"
 let refreshHandle = null;
+let lookaheadHandle = null; // P0-M6-R2 Phase F: separate, slower poll loop driving Phase B/C/D/E
+let lookaheadCycleInFlight = false;
 const debugLines = [];
 
 function logDebug(line) {
@@ -115,6 +127,56 @@ function stopStatusLoop() {
   refreshHandle = null;
 }
 
+/**
+ * P0-M6-R2 Phase F: the loop that actually makes the product flow
+ * "automatic" -- polls real queue truth (Phase B), and whenever the
+ * lookahead controller is idle (no successor queued yet, or the prior
+ * successor just became current), runs one full select-and-queue cycle
+ * (Phases C/D/E) with no owner interaction. Runs on its own slower
+ * interval (real Web API calls, not local SDK state) so it doesn't fire
+ * every 500ms alongside the local status-render loop.
+ */
+function startLookaheadOrchestration(adapter) {
+  stopLookaheadOrchestration();
+  lookaheadHandle = setInterval(async () => {
+    if (!(adapter instanceof SpotifyPublicControlAdapter)) return;
+    try {
+      await adapter.getRealQueueTruth();
+    } catch (e) {
+      logDebug(`getRealQueueTruth() -> ERROR: ${e.message}`);
+    }
+    renderNextControlState(adapter);
+
+    if (!adapter._seedObserved) return; // nothing to plan until the seed itself is confirmed active
+
+    const lookaheadState = adapter._lookaheadController?.state;
+    if (!lookaheadCycleInFlight && (!lookaheadState || lookaheadState === "NO_SUCCESSOR_QUEUED" || lookaheadState === "SELECTING_NEXT_SUCCESSOR")) {
+      lookaheadCycleInFlight = true;
+      try {
+        const result = await adapter.runLookaheadCycle();
+        logDebug(`runLookaheadCycle() -> queued=${result.queued} reason=${result.reason || result.selectionReason || "--"} poolSize=${result.candidatePoolSize ?? "--"}`);
+      } catch (e) {
+        logDebug(`runLookaheadCycle() -> ERROR: ${e.message}`);
+      } finally {
+        lookaheadCycleInFlight = false;
+      }
+    } else if (lookaheadState === "SUCCESSOR_QUEUE_REQUESTED") {
+      try {
+        const confirmResult = await adapter.confirmLookaheadSuccessor();
+        if (confirmResult.confirmed) logDebug(`confirmLookaheadSuccessor() -> confirmed token=${confirmResult.token}`);
+      } catch (e) {
+        logDebug(`confirmLookaheadSuccessor() -> ERROR: ${e.message}`);
+      }
+    }
+    renderLookaheadStatus(adapter);
+  }, 2000);
+}
+function stopLookaheadOrchestration() {
+  if (lookaheadHandle) clearInterval(lookaheadHandle);
+  lookaheadHandle = null;
+  lookaheadCycleInFlight = false;
+}
+
 async function activateLocal() {
   activeMode = "local";
   setModeUi();
@@ -174,6 +236,27 @@ function renderSeekUI(adapter, seekController) {
   }
 }
 
+/** P0-M6-R2 Phase B: Next control must never claim a successor exists that isn't real, and Play's natural-end behavior must be described truthfully. */
+function renderNextControlState(adapter) {
+  if (!(adapter instanceof SpotifyPublicControlAdapter)) return;
+  els.ctlNext.disabled = !adapter.isNextControlEnabled();
+  els.nextControlState.textContent = adapter.getNextControlState();
+  els.playNaturalEndHint.textContent = adapter.getPlayAtNaturalEndDescription().message;
+}
+
+/** P0-M6-R2 Phase F: visible status for the app-controlled continuation queue -- opaque token only, no raw Spotify IDs. */
+function renderLookaheadStatus(adapter) {
+  if (!(adapter instanceof SpotifyPublicControlAdapter)) return;
+  const s = adapter.getLookaheadStatus();
+  els.lookaheadState.textContent = s.state || (adapter._seedObserved ? "SEED_ACTIVE" : "--");
+  els.lookaheadPoolSize.textContent = String(s.candidatePoolSize);
+  els.lookaheadSelectedToken.textContent = s.selectedToken || "--";
+  els.lookaheadSelectionReason.textContent = s.selectionReason || "--";
+  els.lookaheadSuccessorConfirmed.textContent = s.successorConfirmed ? "yes" : "no";
+  els.lookaheadRefillCount.textContent = String(s.refillCount);
+  els.lookaheadConsecutiveCount.textContent = String(s.consecutiveAutoTrackCount);
+}
+
 async function renderSeedResults(adapter, query) {
   els.seedResults.innerHTML = "";
   let results;
@@ -214,6 +297,7 @@ async function activateSpotify() {
   els.spotifyClientIdInput.value = clientId;
   els.spotifySetup.classList.remove("hidden");
   els.panelSeed.classList.remove("hidden");
+  els.panelLookahead.classList.remove("hidden");
 
   const adapter = new SpotifyPublicControlAdapter({ clientId, redirectUri: REDIRECT_URI });
   activeAdapter = adapter;
@@ -253,14 +337,23 @@ async function activateSpotify() {
     const readiness = await adapter.getAccountReadiness();
     adapter._lastReadiness = readiness;
     startStatusLoop(adapter, () => renderSeekUI(adapter, seekController));
+    startLookaheadOrchestration(adapter);
     renderStatus(adapter, readiness);
     renderQueue(adapter);
     renderAutoplayStatus(adapter);
     renderSeekUI(adapter, seekController);
+    renderNextControlState(adapter);
+    renderLookaheadStatus(adapter);
   };
   els.ctlPlay.onclick = () => adapter.play().catch((e) => logDebug(`play() -> ${e.message}`));
   els.ctlPause.onclick = () => adapter.pause().catch((e) => logDebug(`pause() -> ${e.message}`));
-  els.ctlNext.onclick = () => adapter.next().catch((e) => logDebug(`next() -> ${e.message}`));
+  els.ctlNext.onclick = () =>
+    adapter
+      .next()
+      .then((res) => {
+        if (res && res.ok === false) logDebug(`next() -> BLOCKED: ${res.reason} (no real queued successor -- Next cannot fabricate one)`);
+      })
+      .catch((e) => logDebug(`next() -> ${e.message}`));
   els.seedSearchBtn.onclick = () => {
     const q = els.seedSearchInput.value.trim();
     if (q) renderSeedResults(adapter, q);
@@ -296,6 +389,8 @@ async function activateSpotify() {
   renderQueue(adapter);
   renderAutoplayStatus(adapter);
   renderSeekUI(adapter, seekController);
+  renderNextControlState(adapter);
+  renderLookaheadStatus(adapter);
 }
 
 els.spotifySaveClientId.onclick = () => {
@@ -308,7 +403,9 @@ function setModeUi() {
   els.modeLocal.setAttribute("aria-selected", String(activeMode === "local"));
   els.spotifySetup.classList.toggle("hidden", activeMode !== "spotify");
   els.panelSeed.classList.toggle("hidden", activeMode !== "spotify");
+  els.panelLookahead.classList.toggle("hidden", activeMode !== "spotify");
   stopStatusLoop();
+  stopLookaheadOrchestration();
 }
 
 els.modeSpotify.onclick = () => activateSpotify();

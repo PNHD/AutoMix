@@ -48,6 +48,7 @@ body {
 .panel h2 { margin: 0 0 10px; font-size: 14px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
 #panel-seed { grid-column: 1 / -1; }
 #panel-seed.hidden { display: none; }
+#panel-lookahead.hidden { display: none; }
 .seed-results { max-height: 220px; overflow-y: auto; }
 .seed-result-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 4px 0; }
 .seed-result-row button { flex-shrink: 0; }

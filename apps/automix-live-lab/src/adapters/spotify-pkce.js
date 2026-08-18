@@ -91,9 +91,33 @@ export async function refreshAccessToken({ clientId, refreshToken }) {
 //                                read this app performs -- this app makes
 //                                no `/me` call anymore, see BLOCKER 3).
 //   - "user-modify-playback-state"  PUT /me/player/play (playSeedTrack).
-// Dropped vs. the prior pass: "user-read-playback-state" and
-// "user-read-currently-playing" (playback state now comes from the SDK's
-// own `player_state_changed` event, no `/me/player` GET is made) and
+// Dropped vs. the prior pass: "user-read-currently-playing" (playback
+// state comes from the SDK's own `player_state_changed` event) and
 // "playlist-read-private" / "user-library-read" (playlist browsing is no
 // longer part of the core flow -- BLOCKER 1).
-export const SPOTIFY_SCOPES = Object.freeze(["streaming", "user-read-email", "user-read-private", "user-modify-playback-state"]);
+//
+// P0-M6-R2 additions (minimum new scopes required, per task, for the
+// app-controlled continuation queue -- each maps to exactly one new
+// endpoint actually called):
+//   - "user-read-playback-state"    GET /me/player/queue (Phase B queue
+//                                    truthfulness) -- the precise scope
+//                                    Spotify's docs require for that
+//                                    endpoint; re-added deliberately (it
+//                                    was dropped above because nothing
+//                                    used it -- now something does).
+//   - "user-top-read"                GET /me/top/tracks (Phase C candidate
+//                                    pool, user-affinity source).
+//   - "user-read-recently-played"    GET /me/player/recently-played
+//                                    (Phase C candidate pool, second
+//                                    user-affinity source).
+// A clean reauthorization is required after this change so the new
+// consent is actually granted -- see HANDOFF_TO_PM.md.
+export const SPOTIFY_SCOPES = Object.freeze([
+  "streaming",
+  "user-read-email",
+  "user-read-private",
+  "user-modify-playback-state",
+  "user-read-playback-state",
+  "user-top-read",
+  "user-read-recently-played",
+]);

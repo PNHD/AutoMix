@@ -7,7 +7,18 @@ import {
   refreshAccessToken,
   SPOTIFY_SCOPES,
 } from "./spotify-pkce.js";
-import { buildSearchRequest, buildPlaySeedRequest, buildTransferPlaybackRequest, toSeedCandidate, MAX_SEARCH_LIMIT } from "./spotify-api-requests.js";
+import {
+  buildSearchRequest,
+  buildPlaySeedRequest,
+  buildTransferPlaybackRequest,
+  buildGetQueueRequest,
+  buildQueueTrackRequest,
+  buildTopTracksRequest,
+  buildRecentlyPlayedRequest,
+  toSeedCandidate,
+  MAX_SEARCH_LIMIT,
+} from "./spotify-api-requests.js";
+import { deriveQueueTruth, isNextControlEnabled, nextControlState, describePlayAtNaturalEnd, NO_QUEUED_NEXT_TRACK, EMPTY_QUEUE_TRUTH } from "./spotify-queue-truth.js";
 import {
   sanitizeTrackToken,
   captureSnapshot,
@@ -17,6 +28,18 @@ import {
   NO_PENDING_MANUAL_ACTION,
 } from "./spotify-autoplay.js";
 import { clampSeekTargetMs, computeNearEndProbeTargetMs } from "./spotify-seek.js";
+import { parseSpotifyApiResponse, SpotifyApiError } from "./spotify-api-response.js";
+import { candidatesFromTopTracks, candidatesFromRecentlyPlayed, candidatesFromSearch, assembleCandidatePool, needsSearchFallback } from "./spotify-candidate-pool.js";
+import { selectNextTrack } from "./spotify-planner.js";
+import { LookaheadQueueController, QueueState } from "./spotify-lookahead-queue.js";
+
+// P0-M6-R2 Phase D: how many of the most-recently-auto-played tracks (in
+// this AutoMix session) stay in the recent-repeat exclusion window, on
+// top of the unconditional "already played this session" exclusion.
+// Currently equal to the full session history -- kept as a separate,
+// named constant because the planner treats "recent repeat" and
+// "already played this session" as two distinct hard-exclusion reasons.
+const RECENT_REPEAT_WINDOW_SIZE = 20;
 
 const TOKEN_STORAGE_KEY = "automix_spotify_token_v1";
 const VERIFIER_STORAGE_KEY = "automix_spotify_pkce_verifier_v1";
@@ -156,6 +179,22 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
     // Seek deliberately does NOT use this mechanism (Section B) -- see
     // seek() below.
     this._manualAction = NO_PENDING_MANUAL_ACTION;
+
+    // P0-M6-R2 Phase B: last-known real-queue truth from
+    // GET /me/player/queue (see getRealQueueTruth()). null until the
+    // first successful poll; the Next control and Play-at-natural-end
+    // messaging must never claim a successor exists before this is known.
+    this._lastQueueTruth = null;
+
+    // P0-M6-R2 Phases C/D/E: app-controlled continuation queue state.
+    // Reset per seed (see playSeedTrack()) -- this is per-AutoMix-session
+    // state, not persisted across seeds.
+    this._sessionPlayedIds = []; // raw track ids observed as current this session (seed + every confirmed successor)
+    this._usedArtistIds = []; // primary artist ids of every track observed as current this session
+    this._lastCandidatePoolSize = 0;
+    this._lastCandidatePoolBreakdown = { topCount: 0, recentCount: 0, searchFallbackUsed: false };
+    this._lastSelectionResult = null; // most recent selectNextTrack() result (see runLookaheadCycle())
+    this._lookaheadController = null; // created lazily on the first runLookaheadCycle() call for this seed
   }
 
   /**
@@ -266,16 +305,26 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
     return this._token.access_token;
   }
 
+  /**
+   * P0-M6-R2 Phase A repair: response handling is delegated entirely to
+   * `parseSpotifyApiResponse` (spotify-api-response.js) so every
+   * successful-but-non-JSON shape (204, empty 200, plain-text 200 --
+   * common for Player write endpoints) is an explicit branch instead of
+   * one unconditional `JSON.parse(text)` that threw `Unexpected token ...
+   * is not valid JSON` on the real live API. Never includes the token or
+   * the query string (only `path`) in a thrown error.
+   */
   async _api(path, opts = {}) {
     const token = await this._ensureFreshToken();
     const res = await fetch(`https://api.spotify.com/v1${path}`, {
       ...opts,
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json", ...(opts.headers || {}) },
     });
-    if (res.status === 204) return null;
-    if (!res.ok) throw new Error(`SPOTIFY_API_ERROR: ${opts.method || "GET"} ${path} -> ${res.status}`);
-    const text = await res.text();
-    return text ? JSON.parse(text) : null;
+    const parsed = await parseSpotifyApiResponse(res);
+    if (!parsed.ok) {
+      throw new SpotifyApiError({ method: opts.method || "GET", path, status: parsed.status, body: parsed.body, bodyType: parsed.bodyType });
+    }
+    return parsed.body;
   }
 
   async connect() {
@@ -425,6 +474,23 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
     }
     this._autoplaySnapshots.push(snapshot);
     this._emit({ type: "autoplay_snapshot", snapshot });
+
+    // P0-M6-R2 Phase E: every genuine (non-stale) current-track
+    // observation is fed to the lookahead controller. The controller
+    // itself is the single source of idempotency (a repeat observation
+    // of the same current track is a no-op there, see
+    // spotify-lookahead-queue.js's onTrackAdvanced) -- this call site
+    // does not need its own duplicate guard. Also grows the session's
+    // played-id/used-artist-id history, which the planner's hard
+    // exclusions and diversity ranking read on the NEXT cycle.
+    if (currentTrack?.id && !this._sessionPlayedIds.includes(currentTrack.id)) {
+      this._sessionPlayedIds.push(currentTrack.id);
+    }
+    const artistId = currentTrack?.artists?.[0]?.id;
+    if (artistId && !this._usedArtistIds.includes(artistId)) {
+      this._usedArtistIds.push(artistId);
+    }
+    this._lookaheadController?.onTrackAdvanced(currentToken);
   }
 
   /**
@@ -471,12 +537,161 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
     this._autoplaySnapshots = [];
     this._seedPlaybackConfirmed = false;
     this._seedObserved = false; // enter AWAITING_SEED_OBSERVATION for this new seed epoch
+
+    // P0-M6-R2 Phases C/D/E: a new seed starts a fresh AutoMix
+    // continuation session -- prior session history/lookahead state must
+    // never leak into a different seed's planning.
+    this._sessionPlayedIds = [];
+    this._usedArtistIds = [];
+    this._lastCandidatePoolSize = 0;
+    this._lastCandidatePoolBreakdown = { topCount: 0, recentCount: 0, searchFallbackUsed: false };
+    this._lastSelectionResult = null;
+    this._lookaheadController = null;
+
     this._emit({ type: "seed_track_played", seedToken: this._seedToken });
   }
 
   /** Current Autoplay-observability classification from snapshots captured so far (BLOCKER 2). */
   getAutoplayClassification(opts) {
     return classifyAutoplayResult(this._autoplaySnapshots, opts);
+  }
+
+  /**
+   * P0-M6-R2 Phase C: builds one bounded, deduplicated candidate pool
+   * from ONLY the two user-affinity sources plus a bounded `GET /search`
+   * fallback (used only when the affinity sources alone are too small,
+   * per `needsSearchFallback`). Never calls Recommendations, Audio
+   * Features, Audio Analysis, or the deprecated artist-top-tracks
+   * endpoint -- see spotify-candidate-pool.js. A source failing (e.g. a
+   * transient 500) degrades that source to zero candidates rather than
+   * failing the whole pool.
+   */
+  async _fetchCandidatePool({ fallbackSearchQuery } = {}) {
+    const [topRaw, recentRaw] = await Promise.all([
+      this._api(buildTopTracksRequest().url).catch(() => null),
+      this._api(buildRecentlyPlayedRequest().url).catch(() => null),
+    ]);
+    const topCandidates = candidatesFromTopTracks(topRaw);
+    const recentCandidates = candidatesFromRecentlyPlayed(recentRaw);
+
+    let searchCandidates = [];
+    const searchFallbackUsed = needsSearchFallback(topCandidates.length + recentCandidates.length) && !!fallbackSearchQuery;
+    if (searchFallbackUsed) {
+      try {
+        const searchReq = buildSearchRequest(fallbackSearchQuery, MAX_SEARCH_LIMIT);
+        const searchRaw = await this._api(searchReq.url);
+        searchCandidates = candidatesFromSearch(searchRaw);
+      } catch (e) {
+        this._emit({ type: "candidate_pool_search_fallback_failed", message: e.message });
+        searchCandidates = [];
+      }
+    }
+
+    const pool = assembleCandidatePool([topCandidates, recentCandidates, searchCandidates]);
+    this._lastCandidatePoolSize = pool.length;
+    this._lastCandidatePoolBreakdown = { topCount: topCandidates.length, recentCount: recentCandidates.length, searchFallbackUsed: searchCandidates.length > 0 };
+    this._emit({ type: "candidate_pool_built", size: pool.length, ...this._lastCandidatePoolBreakdown });
+    return pool;
+  }
+
+  /**
+   * P0-M6-R2 Phase E orchestration: builds the candidate pool (Phase C),
+   * runs the planner (Phase D), and enqueues exactly one chosen successor
+   * (Phase E) via the one-track lookahead queue state machine. Lazily
+   * creates the `LookaheadQueueController` (once per seed -- see
+   * playSeedTrack()'s reset) wired to this adapter's own `_api()` (so it
+   * automatically inherits the Phase A response-parsing repair) and
+   * `getRealQueueTruth()` (Phase B) for confirmation.
+   */
+  async runLookaheadCycle() {
+    if (!this._seedObserved) throw new Error("SEED_NOT_YET_ACTIVE_FOR_LOOKAHEAD");
+    if (!this._lookaheadController) {
+      this._lookaheadController = new LookaheadQueueController({
+        queueTrackFn: async (uri) => {
+          const req = buildQueueTrackRequest(uri, this._deviceId);
+          await this._api(req.url, { method: req.method });
+        },
+        verifyQueueFn: async () => (await this.getRealQueueTruth()).tokens,
+        selectNextFn: (ctx) => selectNextTrack(ctx),
+        onStateChange: (s) => this._emit({ type: "lookahead_state_changed", state: s }),
+      });
+    }
+
+    const currentTrackRaw = this._latestState?.track_window?.current_track;
+    const currentTrack = currentTrackRaw
+      ? { id: currentTrackRaw.id, primaryArtistId: currentTrackRaw.artists?.[0]?.id ?? null, durationMs: currentTrackRaw.duration_ms }
+      : null;
+    const fallbackSearchQuery = currentTrackRaw?.artists?.[0]?.name || null;
+
+    const pool = await this._fetchCandidatePool({ fallbackSearchQuery });
+    const result = await this._lookaheadController.selectAndQueueSuccessor({
+      candidates: pool,
+      currentTrack,
+      sessionPlayedIds: this._sessionPlayedIds,
+      recentRepeatWindowIds: this._sessionPlayedIds.slice(-RECENT_REPEAT_WINDOW_SIZE),
+      usedArtistIdsThisSession: this._usedArtistIds,
+    });
+    this._lastSelectionResult = result;
+    this._emit({ type: "successor_selection_result", token: result.token ?? null, queued: result.queued, reason: result.reason ?? result.selectionReason ?? null });
+    return result;
+  }
+
+  /** P0-M6-R2 Phase E: confirms the pending successor is actually visible in the real queue (GET /me/player/queue) before trusting it. */
+  async confirmLookaheadSuccessor() {
+    if (!this._lookaheadController) return { confirmed: false, reason: "NO_LOOKAHEAD_CYCLE_STARTED" };
+    return this._lookaheadController.confirmSuccessor();
+  }
+
+  /** Sanitized status snapshot for Phase F live-validation UX -- opaque token only, never a raw Spotify id. */
+  getLookaheadStatus() {
+    const c = this._lookaheadController;
+    return {
+      state: c?.state ?? null,
+      candidatePoolSize: this._lastCandidatePoolSize,
+      candidatePoolBreakdown: this._lastCandidatePoolBreakdown,
+      selectedToken: this._lastSelectionResult?.token ?? null,
+      selectionReason: this._lastSelectionResult?.selectionReason ?? this._lastSelectionResult?.reason ?? null,
+      refillCount: c?.refillCount ?? 0,
+      consecutiveAutoTrackCount: c?.consecutiveAutoTrackCount ?? 1,
+      successorConfirmed: c ? c.state === QueueState.SUCCESSOR_CONFIRMED || c.state === QueueState.SUCCESSOR_BECOMES_CURRENT || c.state === QueueState.SELECTING_NEXT_SUCCESSOR : false,
+    };
+  }
+
+  /**
+   * P0-M6-R2 Phase B: the ONLY truthful source for "does a real queued
+   * successor exist" -- `GET /me/player/queue` (requires
+   * `user-read-playback-state`). Caches the result on `_lastQueueTruth`
+   * so `next()`/UI can consult it synchronously between polls. Never
+   * throws on a malformed/empty response -- `deriveQueueTruth` treats
+   * that as "no successor" rather than crashing the poll loop.
+   */
+  async getRealQueueTruth() {
+    let raw = null;
+    try {
+      raw = await this._api(buildGetQueueRequest().url);
+    } catch (e) {
+      this._emit({ type: "queue_truth_poll_failed", message: e.message });
+      raw = null;
+    }
+    const truth = deriveQueueTruth(raw);
+    this._lastQueueTruth = truth;
+    this._emit({ type: "queue_truth_updated", queueSize: truth.queueSize, hasQueuedSuccessor: truth.hasQueuedSuccessor });
+    return truth;
+  }
+
+  /** UI-facing: whether the manual Next control should be enabled right now, per the last known real-queue truth. */
+  isNextControlEnabled() {
+    return isNextControlEnabled(this._lastQueueTruth || EMPTY_QUEUE_TRUTH);
+  }
+
+  /** UI-facing state label ("NEXT_TRACK_QUEUED" | "NO_QUEUED_NEXT_TRACK") -- never implies Next creates a recommendation. */
+  getNextControlState() {
+    return nextControlState(this._lastQueueTruth || EMPTY_QUEUE_TRUTH);
+  }
+
+  /** Truthful description of what Play does right now at natural end (restart same seed vs. advance to a real successor). */
+  getPlayAtNaturalEndDescription() {
+    return describePlayAtNaturalEnd(this._lastQueueTruth || EMPTY_QUEUE_TRUTH);
   }
 
   getQueue() {
@@ -523,10 +738,24 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
    * Manual Next: creates pending track-change attribution (BLOCKER 2,
    * `5324583196`) so the resulting changed current track is correctly
    * judged manual, not Autoplay.
+   *
+   * P0-M6-R2 Phase B truthfulness gate: once `_lastQueueTruth` has been
+   * populated at least once (via `getRealQueueTruth()`) and it shows no
+   * real queued successor, this refuses to call the SDK's `nextTrack()`
+   * at all -- calling it anyway would either no-op or surface a
+   * misleading Spotify-side error, and would falsely suggest Next can
+   * conjure a recommendation. Before the first poll (`_lastQueueTruth ===
+   * null`) this is permissive, preserving all pre-existing manual-Next
+   * attribution tests that never populate queue truth.
    */
   async next() {
+    if (this._lastQueueTruth && !this._lastQueueTruth.hasQueuedSuccessor) {
+      this._emit({ type: "next_blocked", reason: NO_QUEUED_NEXT_TRACK });
+      return { ok: false, reason: NO_QUEUED_NEXT_TRACK };
+    }
     this._manualAction = beginManualAction(Date.now(), this._currentTokenFromLatestState(), "next");
     await this._player?.nextTrack();
+    return { ok: true };
   }
 
   /**

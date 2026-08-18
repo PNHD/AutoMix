@@ -46,6 +46,21 @@
       <div id="queue-current" class="track-row track-current">No source connected</div>
       <div id="queue-next" class="track-row track-next"></div>
       <ol id="queue-upcoming" class="upcoming-list"></ol>
+      <hr />
+      <h3>Real queue truthfulness</h3>
+      <div class="status-row"><span class="label">Next control state</span><span id="next-control-state" class="badge">--</span></div>
+      <div class="status-row"><span class="label">Play at natural end</span><span id="play-natural-end-hint">--</span></div>
+    </section>
+
+    <section class="panel hidden" id="panel-lookahead">
+      <h2>App-controlled continuation queue</h2>
+      <div class="status-row"><span class="label">Lookahead state</span><span id="lookahead-state" class="badge">--</span></div>
+      <div class="status-row"><span class="label">Candidate pool size</span><span id="lookahead-pool-size">0</span></div>
+      <div class="status-row"><span class="label">Selected successor</span><span id="lookahead-selected-token">--</span></div>
+      <div class="status-row"><span class="label">Selection reason</span><span id="lookahead-selection-reason">--</span></div>
+      <div class="status-row"><span class="label">Successor confirmed</span><span id="lookahead-successor-confirmed">no</span></div>
+      <div class="status-row"><span class="label">Refill count</span><span id="lookahead-refill-count">0</span></div>
+      <div class="status-row"><span class="label">Consecutive automatic tracks</span><span id="lookahead-consecutive-count">1</span></div>
     </section>
 
     <section class="panel" id="panel-status">
