@@ -18,6 +18,13 @@
  *                             simply not known, NOT assumed empty.
  */
 import { sanitizeTrackToken } from "./spotify-autoplay.js";
+import { toPlannerCandidate } from "./spotify-api-requests.js";
+
+// P0-M6-R3 Part B: label for the head-of-real-queue candidate, so
+// downstream selection-source reporting can distinguish a track Spotify
+// itself already placed as play-next from anything this app's own
+// account-affinity planner picked.
+export const PROVIDER_NEXT_UP_AFFINITY_SOURCE = "SPOTIFY_PROVIDER_NEXT_UP";
 
 export const QueueTruthState = Object.freeze({
   KNOWN_EMPTY: "KNOWN_EMPTY",
@@ -45,6 +52,16 @@ export function deriveQueueTruth(rawQueueResponse) {
   const tokens = rawQueue.map((t) => (t && typeof t === "object" && t.id ? sanitizeTrackToken(t.id) : null)).filter(Boolean);
   const currentlyPlaying = rawQueueResponse?.currently_playing;
   const currentToken = currentlyPlaying && typeof currentlyPlaying === "object" && currentlyPlaying.id ? sanitizeTrackToken(currentlyPlaying.id) : null;
+  // P0-M6-R3 Part B: the real queue's head item, in planner-candidate
+  // shape (id/uri/primaryArtistId/durationMs/explicit/isPlayable), tagged
+  // SPOTIFY_PROVIDER_NEXT_UP -- this is what lets the lookahead cycle
+  // treat Spotify's own provider-generated Next Up as the PRIMARY
+  // continuation signal instead of only this app's account-affinity
+  // planner. `toPlannerCandidate` already returns null for a
+  // malformed/URI-less raw item, so a head item lacking a real track uri
+  // safely yields no provider head rather than a broken one.
+  const rawHeadItem = rawQueue.find((t) => t && typeof t === "object" && t.id);
+  const headCandidate = rawHeadItem ? toPlannerCandidate(rawHeadItem, PROVIDER_NEXT_UP_AFFINITY_SOURCE) : null;
   return {
     state: tokens.length > 0 ? QueueTruthState.KNOWN_NONEMPTY : QueueTruthState.KNOWN_EMPTY,
     hasQueuedSuccessor: tokens.length > 0,
@@ -52,6 +69,7 @@ export function deriveQueueTruth(rawQueueResponse) {
     nextToken: tokens[0] || null,
     tokens,
     currentToken,
+    headCandidate,
     error: null,
   };
 }
@@ -65,6 +83,7 @@ export function unknownNotPolledQueueTruth() {
     nextToken: null,
     tokens: [],
     currentToken: null,
+    headCandidate: null,
     error: null,
   };
 }
@@ -83,6 +102,7 @@ export function unknownApiErrorQueueTruth({ path, status, bodyType, sanitizedMes
     nextToken: null,
     tokens: [],
     currentToken: null,
+    headCandidate: null,
     error: { path: path ?? null, status: status ?? null, bodyType: bodyType ?? null, sanitizedMessage: sanitizedMessage ?? null },
   };
 }

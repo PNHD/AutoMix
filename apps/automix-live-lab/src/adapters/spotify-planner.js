@@ -40,6 +40,16 @@ export const SELECTION_REASON = Object.freeze({
   DETERMINISTIC_TIE_BREAK: "DETERMINISTIC_TIE_BREAK",
 });
 
+// P0-M6-R3 Part B: which signal actually produced the successor --
+// Spotify's own provider-generated Next Up (the real queue's head item,
+// adopted as-is, never re-POSTed) versus this app's account-affinity
+// planner (SELECTION_REASON above), used only when the provider signal is
+// absent or ineligible.
+export const SELECTION_SOURCE = Object.freeze({
+  SPOTIFY_PROVIDER_NEXT_UP: "SPOTIFY_PROVIDER_NEXT_UP",
+  ACCOUNT_AFFINITY_FALLBACK: "ACCOUNT_AFFINITY_FALLBACK",
+});
+
 function isMalformedCandidate(c) {
   return !c || typeof c !== "object" || typeof c.id !== "string" || c.id.length === 0;
 }
@@ -70,6 +80,23 @@ export function evaluateHardExclusion(candidate, ctx = {}) {
   }
   if (ctx.excludeExplicit && candidate.explicit === true) return EXCLUSION_REASON.EXPLICIT_CONTENT_RESTRICTED;
   return null;
+}
+
+/**
+ * P0-M6-R3 Part B: eligibility check for Spotify's own provider Next Up
+ * (the real queue's head item) as the PRIMARY continuation signal.
+ * Applies the SAME hard exclusions as the account-affinity planner --
+ * malformed/unplayable, already played this session, is the current
+ * track, immediate same-artist repetition -- EXCEPT the recent-repeat
+ * exclusion WINDOW, which stays a soft guard only for a real
+ * Spotify-supplied successor (task requirement: actual recently-played
+ * history must never veto an otherwise-valid provider Next Up). Passing
+ * `ctx.recentRepeatWindowTokens` here has no effect by design; callers
+ * should simply omit it.
+ */
+export function evaluateProviderHeadExclusion(headCandidate, ctx = {}) {
+  const { recentRepeatWindowTokens: _ignoredSoftGuardOnly, ...rest } = ctx;
+  return evaluateHardExclusion(headCandidate, rest);
 }
 
 function affinityRankFor(source) {

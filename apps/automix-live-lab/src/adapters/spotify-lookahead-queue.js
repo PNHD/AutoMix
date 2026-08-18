@@ -150,6 +150,37 @@ export class LookaheadQueueController {
   }
 
   /**
+   * P0-M6-R3 Part B: Spotify's own provider-generated "Next Up" (the real
+   * queue's head item) is the PRIMARY continuation signal. When the
+   * caller has already determined the head item is eligible, this adopts
+   * it directly as the confirmed successor WITHOUT posting anything --
+   * Spotify already has it queued as play-next, so a
+   * `POST /me/player/queue` here would only exist to "claim ownership,"
+   * which the task explicitly forbids. Skips SUCCESSOR_QUEUE_REQUESTED
+   * entirely (there is nothing to await confirmation of -- occupying the
+   * head position IS the confirmation) and goes straight to
+   * SUCCESSOR_CONFIRMED, so `onTrackAdvanced()` refills/advances exactly
+   * as it would for an app-queued successor. Same idempotency guards as
+   * `selectAndQueueSuccessor`: refuses to run outside a selectable state,
+   * and never re-adopts a token already claimed this session.
+   */
+  adoptProviderNextUp({ token, uri, selectionSource }) {
+    if (!SELECTABLE_STATES.has(this._state)) {
+      return { queued: false, adopted: false, skipped: true, reason: "ALREADY_IN_PROGRESS", state: this._state };
+    }
+    if (this._enqueuedTokens.has(token)) {
+      return { queued: false, adopted: false, reason: "DUPLICATE_SKIPPED", token };
+    }
+    this._setState(QueueState.SELECTING_SUCCESSOR);
+    this._pendingToken = token;
+    this._pendingSelection = { token, uri, selectionSource };
+    this._enqueuedTokens.add(token);
+    this._confirmedToken = token;
+    this._setState(QueueState.SUCCESSOR_CONFIRMED);
+    return { queued: true, posted: false, confirmed: true, adopted: true, token, selectionReason: selectionSource, selectionSource };
+  }
+
+  /**
    * P0-M6-R2 repair pass 2, Blocker 1: PURE confirmation decision -- no
    * network I/O of its own. Takes an ALREADY-FETCHED array of sanitized
    * queue tokens (one fresh `GET /me/player/queue` snapshot, fetched

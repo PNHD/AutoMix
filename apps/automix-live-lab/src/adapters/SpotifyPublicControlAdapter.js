@@ -41,7 +41,7 @@ import { sanitizeDeviceToken } from "./spotify-privacy.js";
 import { clampSeekTargetMs, computeNearEndProbeTargetMs } from "./spotify-seek.js";
 import { parseSpotifyApiResponse, SpotifyApiError, extractSanitizedSpotifyErrorMessage } from "./spotify-api-response.js";
 import { candidatesFromTopTracks, candidatesFromRecentlyPlayed, candidatesFromSearch, assembleCandidatePool, needsSearchFallback } from "./spotify-candidate-pool.js";
-import { selectNextTrack } from "./spotify-planner.js";
+import { selectNextTrack, evaluateProviderHeadExclusion, SELECTION_SOURCE } from "./spotify-planner.js";
 import { LookaheadQueueController, QueueState } from "./spotify-lookahead-queue.js";
 import { hasAllRequiredScopes, parseScopeString } from "./spotify-scope.js";
 import { classifyQueueFailure, isBlockerActive, QueueBlockerType } from "./spotify-queue-error-policy.js";
@@ -857,6 +857,53 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
       : null;
     const fallbackSearchQuery = currentTrackRaw?.artists?.[0]?.name || null;
 
+    // P0-M6-R3 Part B: Spotify's own provider Next Up -- the head of the
+    // real queue this cycle already polled above -- is the PRIMARY
+    // continuation signal. Only fall back to the account-affinity planner
+    // (below) when it is absent or ineligible. The same hard exclusions
+    // apply (already played this session / malformed / unplayable /
+    // duplicate current track / immediate same-artist repeat) EXCEPT the
+    // recent-repeat-history window, which stays a soft guard only for a
+    // real Spotify-supplied successor -- see evaluateProviderHeadExclusion.
+    // When eligible, the head is ADOPTED directly (no POST -- it is
+    // already play-next; re-posting it would only "claim ownership,"
+    // which the task forbids).
+    const headCandidate = queueTruth.headCandidate;
+    if (headCandidate) {
+      const currentTrackToken = currentTrack?.id ? sanitizeTrackToken(currentTrack.id) : null;
+      const exclusionReason = evaluateProviderHeadExclusion(headCandidate, {
+        currentTrackToken,
+        sessionPlayedTokens: new Set(this._sessionPlayedIds.map((id) => sanitizeTrackToken(id))),
+        currentPrimaryArtistId: currentTrack?.primaryArtistId ?? null,
+        failedCandidateTokens: this._failedCandidateTokens,
+      });
+      if (!exclusionReason) {
+        const headToken = sanitizeTrackToken(headCandidate.id);
+        const adoptResult = controller.adoptProviderNextUp({ token: headToken, uri: headCandidate.uri, selectionSource: SELECTION_SOURCE.SPOTIFY_PROVIDER_NEXT_UP });
+        if (adoptResult.adopted) {
+          this._lastSelectionResult = {
+            token: adoptResult.token,
+            selectionReason: SELECTION_SOURCE.SPOTIFY_PROVIDER_NEXT_UP,
+            selectionSource: SELECTION_SOURCE.SPOTIFY_PROVIDER_NEXT_UP,
+            candidatePoolSize: 1,
+            queued: true,
+          };
+          this._emit({
+            type: "successor_selection_result",
+            token: adoptResult.token,
+            queued: true,
+            reason: SELECTION_SOURCE.SPOTIFY_PROVIDER_NEXT_UP,
+            selectionSource: SELECTION_SOURCE.SPOTIFY_PROVIDER_NEXT_UP,
+          });
+          return { queued: true, confirmed: true, token: adoptResult.token, reason: SELECTION_SOURCE.SPOTIFY_PROVIDER_NEXT_UP, selectionSource: SELECTION_SOURCE.SPOTIFY_PROVIDER_NEXT_UP };
+        }
+        // ALREADY_IN_PROGRESS / DUPLICATE_SKIPPED -- fall through; the
+        // account-affinity path below will correctly no-op/skip too.
+      } else {
+        this._emit({ type: "provider_next_up_rejected", reason: exclusionReason });
+      }
+    }
+
     const pool = await this._fetchCandidatePool({ fallbackSearchQuery });
     const result = await controller.selectAndQueueSuccessor({
       candidates: pool,
@@ -870,6 +917,7 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
       usedArtistIdsThisSession: this._usedArtistIds,
       failedCandidateTokens: this._failedCandidateTokens,
     });
+    result.selectionSource = SELECTION_SOURCE.ACCOUNT_AFFINITY_FALLBACK;
     this._lastSelectionResult = result;
 
     if (!result.queued && result.reason === "QUEUE_REQUEST_FAILED_AFTER_RETRIES") {
@@ -921,6 +969,10 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
       candidatePoolBreakdown: this._lastCandidatePoolBreakdown,
       selectedToken: this._lastSelectionResult?.token ?? null,
       selectionReason: this._lastSelectionResult?.selectionReason ?? this._lastSelectionResult?.reason ?? null,
+      // P0-M6-R3 Part B: distinguishes Spotify's own provider Next Up
+      // (adopted as-is) from this app's account-affinity planner
+      // (used only when the provider signal is absent/ineligible).
+      selectionSource: this._lastSelectionResult?.selectionSource ?? null,
       refillCount: c?.refillCount ?? 0,
       consecutiveAutoTrackCount: c?.consecutiveAutoTrackCount ?? 1,
       successorConfirmed: c ? c.state === QueueState.SUCCESSOR_CONFIRMED || c.state === QueueState.SUCCESSOR_BECOMES_CURRENT || c.state === QueueState.SELECTING_NEXT_SUCCESSOR : false,

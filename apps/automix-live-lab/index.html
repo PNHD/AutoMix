@@ -8,88 +8,63 @@
 </head>
 <body>
   <header class="topbar">
-    <h1>AutoMix Live Lab</h1>
-    <div class="source-switch" role="tablist" aria-label="Source mode">
-      <button id="mode-spotify" class="mode-btn" role="tab" aria-selected="false">Spotify Live</button>
-      <button id="mode-local" class="mode-btn" role="tab" aria-selected="false">Local DSP Live</button>
+    <div class="topbar-left">
+      <h1>AutoMix Live</h1>
+      <span id="header-readiness-badge" class="badge badge-muted">--</span>
+    </div>
+    <div class="topbar-right">
+      <div class="source-switch" role="tablist" aria-label="Source mode">
+        <button id="mode-spotify" class="mode-btn" role="tab" aria-selected="false">Spotify Live</button>
+        <button id="mode-local" class="mode-btn" role="tab" aria-selected="false">Local DSP Live</button>
+      </div>
+      <button id="ctl-automix-toggle" aria-pressed="true">AutoMix: ON</button>
     </div>
   </header>
 
-  <main class="grid">
-    <section class="panel hidden" id="panel-seed">
-      <h2>Seed track (search &amp; play ONE arbitrary song)</h2>
-      <div class="controls-row">
-        <input id="seed-search-input" type="text" placeholder="search any track..." />
-        <button id="seed-search-btn">Search</button>
-      </div>
-      <ol id="seed-results" class="upcoming-list seed-results"></ol>
-      <hr />
-      <h3>Progress</h3>
-      <div class="seek-row">
-        <span id="seek-current-label" class="seek-time">0:00</span>
-        <input id="seek-slider" type="range" min="0" max="0" value="0" step="1000" disabled />
-        <span id="seek-duration-label" class="seek-time">0:00</span>
-      </div>
-      <div class="controls-row">
-        <button id="seek-jump-near-end" disabled>Jump to last 15s</button>
-      </div>
-      <hr />
-      <h3>Autoplay observability</h3>
-      <div class="status-row"><span class="label">Seed playing</span><span id="seed-status">no seed selected</span></div>
-      <div class="status-row"><span class="label">Snapshots captured</span><span id="autoplay-snapshot-count">0</span></div>
-      <div class="status-row"><span class="label">Classification</span><span id="autoplay-classification" class="badge">--</span></div>
-      <div class="status-row"><span class="label">Reason</span><span id="autoplay-classification-reason">--</span></div>
-    </section>
+  <main class="page">
+    <section class="grid-primary">
+      <section class="panel panel-now-playing" id="panel-now-playing">
+        <h2>Now Playing</h2>
+        <div id="panel-seed" class="subsection hidden">
+          <div class="controls-row">
+            <input id="seed-search-input" type="text" placeholder="search any track..." />
+            <button id="seed-search-btn">Search</button>
+          </div>
+          <ol id="seed-results" class="upcoming-list seed-results"></ol>
+        </div>
+        <div id="queue-current" class="track-row track-current">No source connected</div>
+        <div class="seek-row">
+          <span id="seek-current-label" class="seek-time">0:00</span>
+          <input id="seek-slider" type="range" min="0" max="0" value="0" step="1000" disabled />
+          <span id="seek-duration-label" class="seek-time">0:00</span>
+        </div>
+        <div class="controls-row">
+          <button id="seek-jump-near-end" disabled>Jump to last 15s</button>
+        </div>
+      </section>
 
-    <section class="panel" id="panel-queue">
-      <h2>Queue</h2>
-      <div id="queue-current" class="track-row track-current">No source connected</div>
-      <div id="queue-next" class="track-row track-next"></div>
-      <ol id="queue-upcoming" class="upcoming-list"></ol>
-      <hr />
-      <h3>Real queue truthfulness</h3>
-      <div class="status-row"><span class="label">Next control state</span><span id="next-control-state" class="badge">--</span></div>
-      <div class="status-row"><span class="label">Play at natural end</span><span id="play-natural-end-hint">--</span></div>
-    </section>
+      <section class="panel" id="panel-next">
+        <h2>Next</h2>
+        <div id="queue-next" class="track-row track-next">--</div>
+        <ol id="queue-upcoming" class="upcoming-list"></ol>
+        <div id="next-automix-meta" class="hidden">
+          <div class="status-row"><span class="label">Source</span><span id="next-source">--</span></div>
+          <div class="status-row"><span class="label">Status</span><span id="next-ready-badge" class="badge">--</span></div>
+        </div>
+      </section>
 
-    <section class="panel hidden" id="panel-lookahead">
-      <h2>App-controlled continuation queue</h2>
-      <div class="status-row"><span class="label">Lookahead state</span><span id="lookahead-state" class="badge">--</span></div>
-      <div class="status-row"><span class="label">Candidate pool size</span><span id="lookahead-pool-size">0</span></div>
-      <div class="status-row"><span class="label">Selected successor</span><span id="lookahead-selected-token">--</span></div>
-      <div class="status-row"><span class="label">Selection reason</span><span id="lookahead-selection-reason">--</span></div>
-      <div class="status-row"><span class="label">Successor confirmed</span><span id="lookahead-successor-confirmed">no</span></div>
-      <div class="status-row"><span class="label">Refill count</span><span id="lookahead-refill-count">0</span></div>
-      <div class="status-row"><span class="label">Consecutive automatic tracks</span><span id="lookahead-consecutive-count">1</span></div>
-      <div class="status-row"><span class="label">AutoMix queueing</span><span id="lookahead-automix-state" class="badge">--</span></div>
-      <div class="status-row"><span class="label">Queue blocker</span><span id="lookahead-blocker">none</span></div>
-      <div class="status-row"><span class="label">Successor is play-next</span><span id="lookahead-play-next" class="badge">--</span></div>
-      <div class="status-row"><span class="label">Provider queue size (Spotify's own)</span><span id="lookahead-provider-queue-size">0</span></div>
-    </section>
+      <section class="panel" id="panel-session">
+        <h2>AutoMix Session</h2>
+        <div class="status-row"><span class="label">Consecutive tracks</span><span id="lookahead-consecutive-count">1</span></div>
+        <div class="status-row"><span class="label">Refill count</span><span id="lookahead-refill-count">0</span></div>
+        <div class="status-row"><span class="label">Provider queue size (Spotify's own)</span><span id="lookahead-provider-queue-size">0</span></div>
+      </section>
 
-    <section class="panel" id="panel-status">
-      <h2>AutoMix status</h2>
-      <div class="status-row">
-        <span class="label">Provider</span>
-        <span id="status-provider">--</span>
-      </div>
-      <div class="status-row">
-        <span class="label">Capability</span>
-        <span id="status-capability" class="badge">--</span>
-      </div>
-      <div class="status-row">
-        <span class="label">Account readiness</span>
-        <span id="status-readiness">--</span>
-      </div>
-      <hr />
-      <h3>Next transition plan</h3>
-      <div class="status-row"><span class="label">Exit anchor</span><span id="plan-exit">--</span></div>
-      <div class="status-row"><span class="label">Entry anchor</span><span id="plan-entry">--</span></div>
-      <div class="status-row"><span class="label">Tempo correction</span><span id="plan-tempo">--</span></div>
-      <div class="status-row"><span class="label">Bass/EQ handoff</span><span id="plan-eq">--</span></div>
-      <div class="status-row"><span class="label">Beat/downbeat sync</span><span id="plan-beat">--</span></div>
-      <div class="status-row"><span class="label">Executes real DSP</span><span id="plan-real">--</span></div>
-      <div class="status-row"><span class="label">Reason</span><span id="plan-reason">--</span></div>
+      <section class="panel panel-capability" id="panel-capability">
+        <h2>Transition Capability</h2>
+        <p id="capability-statement" class="capability-statement">--</p>
+        <div class="status-row"><span class="label">Capability</span><span id="status-capability" class="badge">--</span></div>
+      </section>
     </section>
 
     <section class="panel" id="panel-controls">
@@ -105,11 +80,52 @@
         <button id="ctl-play">Play</button>
         <button id="ctl-pause">Pause</button>
         <button id="ctl-next">Next</button>
-        <button id="ctl-automix-toggle" aria-pressed="true">AutoMix: ON</button>
       </div>
+    </section>
+
+    <details class="panel panel-advanced" id="panel-advanced">
+      <summary>Advanced</summary>
+
+      <div id="advanced-spotify-only" class="hidden">
+        <h3>App-controlled continuation queue</h3>
+        <div class="status-row"><span class="label">Lookahead state</span><span id="lookahead-state" class="badge">--</span></div>
+        <div class="status-row"><span class="label">Candidate pool size</span><span id="lookahead-pool-size">0</span></div>
+        <div class="status-row"><span class="label">Selected successor</span><span id="lookahead-selected-token">--</span></div>
+        <div class="status-row"><span class="label">Selection reason</span><span id="lookahead-selection-reason">--</span></div>
+        <div class="status-row"><span class="label">Selection source</span><span id="lookahead-selection-source">--</span></div>
+        <div class="status-row"><span class="label">Successor confirmed</span><span id="lookahead-successor-confirmed">no</span></div>
+        <div class="status-row"><span class="label">AutoMix queueing</span><span id="lookahead-automix-state" class="badge">--</span></div>
+        <div class="status-row"><span class="label">Queue blocker</span><span id="lookahead-blocker">none</span></div>
+        <div class="status-row"><span class="label">Successor is play-next</span><span id="lookahead-play-next" class="badge">--</span></div>
+
+        <h3>Provider / capability identifiers</h3>
+        <div class="status-row"><span class="label">Provider</span><span id="status-provider">--</span></div>
+        <div class="status-row"><span class="label">Account readiness (raw)</span><span id="status-readiness">--</span></div>
+
+        <h3>Autoplay observability</h3>
+        <div class="status-row"><span class="label">Seed playing</span><span id="seed-status">no seed selected</span></div>
+        <div class="status-row"><span class="label">Snapshots captured</span><span id="autoplay-snapshot-count">0</span></div>
+        <div class="status-row"><span class="label">Classification</span><span id="autoplay-classification" class="badge">--</span></div>
+        <div class="status-row"><span class="label">Reason</span><span id="autoplay-classification-reason">--</span></div>
+
+        <h3>Real queue truthfulness</h3>
+        <div class="status-row"><span class="label">Next control state</span><span id="next-control-state" class="badge">--</span></div>
+        <div class="status-row"><span class="label">Play at natural end</span><span id="play-natural-end-hint">--</span></div>
+      </div>
+
+      <h3>Next transition plan (advisory only -- never executed)</h3>
+      <div class="status-row"><span class="label">Exit anchor</span><span id="plan-exit">--</span></div>
+      <div class="status-row"><span class="label">Entry anchor</span><span id="plan-entry">--</span></div>
+      <div class="status-row"><span class="label">Tempo correction</span><span id="plan-tempo">--</span></div>
+      <div class="status-row"><span class="label">Bass/EQ handoff</span><span id="plan-eq">--</span></div>
+      <div class="status-row"><span class="label">Beat/downbeat sync</span><span id="plan-beat">--</span></div>
+      <div class="status-row"><span class="label">Executes real DSP</span><span id="plan-real">--</span></div>
+      <div class="status-row"><span class="label">Reason</span><span id="plan-reason">--</span></div>
+
+      <h3>Debug log</h3>
       <button id="ctl-debug-toggle" class="link-btn">Show debug panel</button>
       <pre id="debug-panel" class="debug-panel hidden"></pre>
-    </section>
+    </details>
   </main>
 
   <script type="module" src="/src/app.js"></script>

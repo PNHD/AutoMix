@@ -9,9 +9,15 @@ const CLIENT_ID_KEY = CLIENT_ID_STORAGE_KEY;
 const els = {
   modeSpotify: document.getElementById("mode-spotify"),
   modeLocal: document.getElementById("mode-local"),
+  headerReadinessBadge: document.getElementById("header-readiness-badge"),
+  capabilityStatement: document.getElementById("capability-statement"),
   queueCurrent: document.getElementById("queue-current"),
   queueNext: document.getElementById("queue-next"),
   queueUpcoming: document.getElementById("queue-upcoming"),
+  nextAutomixMeta: document.getElementById("next-automix-meta"),
+  nextSource: document.getElementById("next-source"),
+  nextReadyBadge: document.getElementById("next-ready-badge"),
+  panelSession: document.getElementById("panel-session"),
   statusProvider: document.getElementById("status-provider"),
   statusCapability: document.getElementById("status-capability"),
   statusReadiness: document.getElementById("status-readiness"),
@@ -27,13 +33,14 @@ const els = {
   spotifySaveClientId: document.getElementById("spotify-save-client-id"),
   redirectUriHint: document.getElementById("redirect-uri-hint"),
   panelSeed: document.getElementById("panel-seed"),
-  panelLookahead: document.getElementById("panel-lookahead"),
+  advancedSpotifyOnly: document.getElementById("advanced-spotify-only"),
   nextControlState: document.getElementById("next-control-state"),
   playNaturalEndHint: document.getElementById("play-natural-end-hint"),
   lookaheadState: document.getElementById("lookahead-state"),
   lookaheadPoolSize: document.getElementById("lookahead-pool-size"),
   lookaheadSelectedToken: document.getElementById("lookahead-selected-token"),
   lookaheadSelectionReason: document.getElementById("lookahead-selection-reason"),
+  lookaheadSelectionSource: document.getElementById("lookahead-selection-source"),
   lookaheadSuccessorConfirmed: document.getElementById("lookahead-successor-confirmed"),
   lookaheadRefillCount: document.getElementById("lookahead-refill-count"),
   lookaheadConsecutiveCount: document.getElementById("lookahead-consecutive-count"),
@@ -104,10 +111,58 @@ function renderQueue(adapter) {
   }
 }
 
+/**
+ * P0-M6-R3 Part A: the header readiness badge is driven by whatever
+ * `readiness` the caller just computed -- never a value cached once at
+ * Connect time. See the fixed readiness-truth bug in `startStatusLoop()`
+ * below: `getAccountReadiness()` is now called fresh on every tick, so
+ * once the SDK actually reports `device_ready` (and, later, confirmed
+ * seed playback), this badge advances past `SDK_NOT_READY` within one
+ * tick instead of being frozen at whatever was true when Connect was
+ * clicked.
+ */
+function renderReadinessBadge(adapter, readiness) {
+  const badge = els.headerReadinessBadge;
+  if (!adapter.isConnected()) {
+    badge.textContent = "NOT CONNECTED";
+    badge.className = "badge badge-muted";
+    return;
+  }
+  if (!readiness) {
+    badge.textContent = "--";
+    badge.className = "badge badge-muted";
+    return;
+  }
+  if (readiness.ready) {
+    badge.textContent = "READY";
+    badge.className = "badge badge-ready";
+  } else {
+    badge.textContent = `NOT READY (${readiness.reason})`;
+    badge.className = "badge badge-not-ready";
+  }
+}
+
+/**
+ * P0-M6-R3 Part C: the primary Transition Capability card must never
+ * imply real Spotify-audio DSP executes. Spotify's public capability is
+ * always exactly these two truthful lines, regardless of session state --
+ * Local DSP is a genuinely different, unaffected lane (real beat-matched
+ * DSP in this browser tab, not Spotify audio) and is described
+ * separately, truthfully.
+ */
+function renderCapabilityStatement(adapter) {
+  els.capabilityStatement.textContent =
+    adapter instanceof SpotifyPublicControlAdapter
+      ? "Playback continuity only.\nNo custom beat-matched DSP on Spotify Public API."
+      : "CONTINUATION: WORKING. CUSTOM SPOTIFY MIXING: REQUIRES PARTNER/AUDIO ENTITLEMENT (not applicable here -- this is the Local DSP lane, which runs its own real beat-matched crossfade DSP in this browser tab).";
+}
+
 function renderStatus(adapter, readiness) {
   els.statusProvider.textContent = adapter.providerId;
   els.statusCapability.textContent = adapter.capability;
   els.statusReadiness.textContent = readiness ? `${readiness.ready ? "READY" : "NOT READY"} (${readiness.reason})` : "--";
+  renderReadinessBadge(adapter, readiness);
+  renderCapabilityStatement(adapter);
 
   const plan = adapter.getAutoMixPlan();
   els.planExit.textContent = plan.exitAnchorS !== null ? `${plan.exitAnchorS.toFixed(2)}s` : "--";
@@ -119,11 +174,25 @@ function renderStatus(adapter, readiness) {
   els.planReason.textContent = plan.reason;
 }
 
+/**
+ * P0-M6-R3 Part A repair: readiness-truth bug. `getAccountReadiness()` was
+ * previously called ONCE at Connect time and cached on `adapter._lastReadiness`
+ * forever after -- but `device_ready` (and later, confirmed seed playback)
+ * arrive asynchronously from the Web Playback SDK, often AFTER that single
+ * snapshot was taken. The owner-observed defect ("Account readiness UI
+ * showed SDK_NOT_READY while real SDK playback was already functioning")
+ * was this exact staleness, not a logic error in `getAccountReadiness()`
+ * itself. Fixed by recomputing readiness fresh on every tick -- cheap
+ * (no network I/O; pure boolean/state checks) -- instead of ever trusting
+ * a value captured earlier.
+ */
 function startStatusLoop(adapter, extraRenderFn) {
   stopStatusLoop();
-  refreshHandle = setInterval(() => {
+  refreshHandle = setInterval(async () => {
+    const readiness = await adapter.getAccountReadiness();
+    adapter._lastReadiness = readiness;
     renderQueue(adapter);
-    renderStatus(adapter, adapter._lastReadiness);
+    renderStatus(adapter, readiness);
     extraRenderFn?.();
   }, 500);
 }
@@ -248,6 +317,7 @@ function renderLookaheadStatus(adapter) {
   els.lookaheadPoolSize.textContent = String(s.candidatePoolSize);
   els.lookaheadSelectedToken.textContent = s.selectedToken || "--";
   els.lookaheadSelectionReason.textContent = s.selectionReason || "--";
+  els.lookaheadSelectionSource.textContent = s.selectionSource || "--";
   els.lookaheadSuccessorConfirmed.textContent = s.successorConfirmed ? "yes" : "no";
   els.lookaheadRefillCount.textContent = String(s.refillCount);
   els.lookaheadConsecutiveCount.textContent = String(s.consecutiveAutoTrackCount);
@@ -268,6 +338,16 @@ function renderLookaheadStatus(adapter) {
   // informational, sanitized (count only), never a blocker.
   els.lookaheadPlayNext.textContent = s.successorConfirmed ? (s.successorIsPlayNext ? "yes" : "no (unexpected -- see debug panel)") : "--";
   els.lookaheadProviderQueueSize.textContent = String(s.providerQueueSize);
+
+  // P0-M6-R3 Part A/B: primary "Next" card -- friendly selection-source
+  // label (never claims BPM/key/genre similarity, just names the real
+  // signal) plus a Ready/Waiting badge driven by the same successor
+  // confirmation state as the Advanced diagnostics above.
+  const sourceLabel =
+    s.selectionSource === "SPOTIFY_PROVIDER_NEXT_UP" ? "Spotify Next Up" : s.selectionSource === "ACCOUNT_AFFINITY_FALLBACK" ? "AutoMix fallback pick" : "--";
+  els.nextSource.textContent = sourceLabel;
+  els.nextReadyBadge.textContent = s.successorConfirmed ? "Ready" : s.state ? "Waiting" : "--";
+  els.nextReadyBadge.className = s.successorConfirmed ? "badge badge-ready" : "badge badge-muted";
 }
 
 /**
@@ -322,7 +402,9 @@ async function activateSpotify() {
   els.spotifyClientIdInput.value = clientId;
   els.spotifySetup.classList.remove("hidden");
   els.panelSeed.classList.remove("hidden");
-  els.panelLookahead.classList.remove("hidden");
+  els.advancedSpotifyOnly.classList.remove("hidden");
+  els.nextAutomixMeta.classList.remove("hidden");
+  els.panelSession.classList.remove("hidden");
 
   const adapter = new SpotifyPublicControlAdapter({ clientId, redirectUri: REDIRECT_URI });
   activeAdapter = adapter;
@@ -438,7 +520,9 @@ function setModeUi() {
   els.modeLocal.setAttribute("aria-selected", String(activeMode === "local"));
   els.spotifySetup.classList.toggle("hidden", activeMode !== "spotify");
   els.panelSeed.classList.toggle("hidden", activeMode !== "spotify");
-  els.panelLookahead.classList.toggle("hidden", activeMode !== "spotify");
+  els.advancedSpotifyOnly.classList.toggle("hidden", activeMode !== "spotify");
+  els.nextAutomixMeta.classList.toggle("hidden", activeMode !== "spotify");
+  els.panelSession.classList.toggle("hidden", activeMode !== "spotify");
   stopStatusLoop();
   stopLookaheadOrchestration();
 }
