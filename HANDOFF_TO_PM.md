@@ -115,6 +115,15 @@ Combined this pass: 45 new automated PASS checks (17 + 10 + 18) + 34 rerun-as-re
 - `SPOTIFY_AUTOPLAY_SETTING_REQUIRED` cannot be auto-detected (Spotify exposes no public API for the Autoplay toggle state) -- it requires the owner's own out-of-band confirmation, documented in the classifier and research doc §10.
 - All risks carried over from the prior handoff (1-of-6 baked stretch transition, advisory-only Spotify AutoMix plan, INFERENCE-level competitor differentiation) are unchanged and still disclosed in the research doc.
 
+### PM REVIEW ZIP
+
+`P0-M6-R1-PM-REVIEW.zip` (repo root, local-only, never committed to git):
+
+- **SHA-256:** `f623f8224b3ab907fb9026ab0c4480259f05c40295366c0d4af84899ccf5c873` (computed independently via both PowerShell `Get-FileHash` and Python `hashlib.sha256` -- both agree)
+- **Size:** `58,273` bytes
+- **Members:** 25 (built from `apps/automix-live-lab/{index.html,server/,src/,tools/}` + `docs/research/P0-M6-R1-SPOTIFY-FIRST-LIVE-PROTOTYPE.md` + `HANDOFF_TO_PM.md` (the version at commit `95bdcc1`, one commit before this SHA-recording commit) + `VALIDATION_ALL.txt`, a fresh capture of all 5 `verify_*.mjs` reruns: 79/79 PASS, 0 FAIL). No secrets, tokens, or credentials present (independently grepped).
+- Built from pushed HEAD `95bdcc1355e6dac93643ff82fef0b029281e2993`; this repo's own `HANDOFF_TO_PM.md` has since advanced one more small doc commit to record this exact hash, which is why the two won't be byte-identical -- the code/tests inside the zip are unaffected.
+
 ### PM REVIEW REQUEST
 
 Please independently verify:
