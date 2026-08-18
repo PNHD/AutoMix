@@ -1,39 +1,61 @@
 {
   "clip_count": 16,
-  "failure_count": 9,
-  "failures": [
-    "S01_M1: EDGE_DISCONTINUITY_PROXY_HIT count=14",
-    "S02_M1: EDGE_DISCONTINUITY_PROXY_HIT count=1",
-    "S03_M1: EDGE_DISCONTINUITY_PROXY_HIT count=1",
-    "S04_M0: EDGE_DISCONTINUITY_PROXY_HIT count=13",
-    "S05_M1: EDGE_DISCONTINUITY_PROXY_HIT count=16",
-    "S06_M0: EDGE_DISCONTINUITY_PROXY_HIT count=8",
-    "S06_M1: EDGE_DISCONTINUITY_PROXY_HIT count=30",
-    "S08_M0: EDGE_DISCONTINUITY_PROXY_HIT count=3",
-    "S08_M1: EDGE_DISCONTINUITY_PROXY_HIT count=27"
+  "failure_count": 0,
+  "failures": [],
+  "warning_count": 11,
+  "warnings": [
+    "S01_M0: diagnostic windowed-edge-proxy hit count=28 (NOT a hard failure -- heuristic proxy, see module docstring)",
+    "S01_M1: diagnostic windowed-edge-proxy hit count=3 (NOT a hard failure -- heuristic proxy, see module docstring)",
+    "S02_M0: diagnostic windowed-edge-proxy hit count=2 (NOT a hard failure -- heuristic proxy, see module docstring)",
+    "S02_M1: diagnostic windowed-edge-proxy hit count=1 (NOT a hard failure -- heuristic proxy, see module docstring)",
+    "S04_M1: diagnostic windowed-edge-proxy hit count=1 (NOT a hard failure -- heuristic proxy, see module docstring)",
+    "S05_M0: diagnostic windowed-edge-proxy hit count=1 (NOT a hard failure -- heuristic proxy, see module docstring)",
+    "S05_M1: diagnostic windowed-edge-proxy hit count=1 (NOT a hard failure -- heuristic proxy, see module docstring)",
+    "S06_M0: diagnostic windowed-edge-proxy hit count=6 (NOT a hard failure -- heuristic proxy, see module docstring)",
+    "S07_M1: diagnostic windowed-edge-proxy hit count=8 (NOT a hard failure -- heuristic proxy, see module docstring)",
+    "S08_M0: diagnostic windowed-edge-proxy hit count=30 (NOT a hard failure -- heuristic proxy, see module docstring)",
+    "S08_M1: diagnostic windowed-edge-proxy hit count=636 (NOT a hard failure -- heuristic proxy, see module docstring)"
   ],
   "checks": [
     {
       "sample_rate": 44100,
       "channels": 2,
-      "duration_s": 33.198,
+      "duration_s": 34.2,
       "nan_inf_count": 0,
       "peak_dbfs": -1.0,
       "clipped_sample_count": 0,
-      "edge_discontinuity_check": {
+      "diagnostic_windowed_edge_proxy": {
         "per_edge": [
           {
             "edge_sample": 441000,
-            "discontinuity_count": 0,
-            "max_abs_delta": 0.012407351285219193
+            "discontinuity_count": 2,
+            "max_abs_delta": 0.16416998207569122
           },
           {
-            "edge_sample": 934841,
-            "discontinuity_count": 0,
-            "max_abs_delta": 0.07662264257669449
+            "edge_sample": 979020,
+            "discontinuity_count": 26,
+            "max_abs_delta": 0.17611736059188843
           }
         ],
-        "total_discontinuity_count": 0
+        "total_discontinuity_count": 28
+      },
+      "exact_splice_check": {
+        "edge1": {
+          "edge_sample": 441000,
+          "splice_delta": 0.03529670834541321,
+          "baseline_median": 0.015780042856931686,
+          "z_score": 1.249,
+          "is_discontinuity": false,
+          "note": null
+        },
+        "edge2": {
+          "edge_sample": 979020,
+          "splice_delta": 0.011580139398574829,
+          "baseline_median": 0.010111354291439056,
+          "z_score": 0.158,
+          "is_discontinuity": false,
+          "note": null
+        }
       },
       "scenario": "S01",
       "method": "M0"
@@ -41,24 +63,42 @@
     {
       "sample_rate": 44100,
       "channels": 2,
-      "duration_s": 33.698,
+      "duration_s": 34.593,
       "nan_inf_count": 0,
       "peak_dbfs": -1.0,
       "clipped_sample_count": 0,
-      "edge_discontinuity_check": {
+      "diagnostic_windowed_edge_proxy": {
         "per_edge": [
           {
             "edge_sample": 441000,
-            "discontinuity_count": 14,
-            "max_abs_delta": 0.31388038396835327
+            "discontinuity_count": 1,
+            "max_abs_delta": 0.28291550278663635
           },
           {
-            "edge_sample": 956891,
-            "discontinuity_count": 0,
-            "max_abs_delta": 0.05177925527095795
+            "edge_sample": 996347,
+            "discontinuity_count": 2,
+            "max_abs_delta": 0.2862088978290558
           }
         ],
-        "total_discontinuity_count": 14
+        "total_discontinuity_count": 3
+      },
+      "exact_splice_check": {
+        "edge1": {
+          "edge_sample": 441000,
+          "splice_delta": 0.07394826412200928,
+          "baseline_median": 0.031288307160139084,
+          "z_score": 1.422,
+          "is_discontinuity": false,
+          "note": null
+        },
+        "edge2": {
+          "edge_sample": 996347,
+          "splice_delta": 0.044811688363552094,
+          "baseline_median": 0.027403919026255608,
+          "z_score": 0.673,
+          "is_discontinuity": false,
+          "note": null
+        }
       },
       "scenario": "S01",
       "method": "M1"
@@ -66,24 +106,42 @@
     {
       "sample_rate": 44100,
       "channels": 2,
-      "duration_s": 33.52,
+      "duration_s": 34.2,
       "nan_inf_count": 0,
       "peak_dbfs": -1.0,
       "clipped_sample_count": 0,
-      "edge_discontinuity_check": {
+      "diagnostic_windowed_edge_proxy": {
         "per_edge": [
           {
             "edge_sample": 441000,
-            "discontinuity_count": 0,
-            "max_abs_delta": 0.05828090012073517
+            "discontinuity_count": 2,
+            "max_abs_delta": 0.16605523228645325
           },
           {
-            "edge_sample": 949032,
+            "edge_sample": 979020,
             "discontinuity_count": 0,
-            "max_abs_delta": 0.01880725845694542
+            "max_abs_delta": 0.07152491807937622
           }
         ],
-        "total_discontinuity_count": 0
+        "total_discontinuity_count": 2
+      },
+      "exact_splice_check": {
+        "edge1": {
+          "edge_sample": 441000,
+          "splice_delta": 0.0357007160782814,
+          "baseline_median": 0.015960656106472015,
+          "z_score": 1.249,
+          "is_discontinuity": false,
+          "note": null
+        },
+        "edge2": {
+          "edge_sample": 979020,
+          "splice_delta": 0.01162528246641159,
+          "baseline_median": 0.011438289657235146,
+          "z_score": 0.019,
+          "is_discontinuity": false,
+          "note": null
+        }
       },
       "scenario": "S02",
       "method": "M0"
@@ -91,24 +149,42 @@
     {
       "sample_rate": 44100,
       "channels": 2,
-      "duration_s": 34.02,
+      "duration_s": 34.593,
       "nan_inf_count": 0,
       "peak_dbfs": -1.0,
       "clipped_sample_count": 0,
-      "edge_discontinuity_check": {
+      "diagnostic_windowed_edge_proxy": {
         "per_edge": [
           {
             "edge_sample": 441000,
             "discontinuity_count": 1,
-            "max_abs_delta": 0.09655933827161789
+            "max_abs_delta": 0.28615373373031616
           },
           {
-            "edge_sample": 971082,
+            "edge_sample": 996347,
             "discontinuity_count": 0,
-            "max_abs_delta": 0.02772374078631401
+            "max_abs_delta": 0.06377226114273071
           }
         ],
         "total_discontinuity_count": 1
+      },
+      "exact_splice_check": {
+        "edge1": {
+          "edge_sample": 441000,
+          "splice_delta": 0.07479465007781982,
+          "baseline_median": 0.03165065869688988,
+          "z_score": 1.423,
+          "is_discontinuity": false,
+          "note": null
+        },
+        "edge2": {
+          "edge_sample": 996347,
+          "splice_delta": 0.008231792598962784,
+          "baseline_median": 0.008555788546800613,
+          "z_score": 0.042,
+          "is_discontinuity": false,
+          "note": null
+        }
       },
       "scenario": "S02",
       "method": "M1"
@@ -116,24 +192,42 @@
     {
       "sample_rate": 44100,
       "channels": 2,
-      "duration_s": 33.52,
+      "duration_s": 34.6,
       "nan_inf_count": 0,
       "peak_dbfs": -1.0,
       "clipped_sample_count": 0,
-      "edge_discontinuity_check": {
+      "diagnostic_windowed_edge_proxy": {
         "per_edge": [
           {
             "edge_sample": 441000,
             "discontinuity_count": 0,
-            "max_abs_delta": 0.058057889342308044
+            "max_abs_delta": 0.009410016238689423
           },
           {
-            "edge_sample": 949032,
+            "edge_sample": 996660,
             "discontinuity_count": 0,
-            "max_abs_delta": 0.004250572063028812
+            "max_abs_delta": 0.08077207207679749
           }
         ],
         "total_discontinuity_count": 0
+      },
+      "exact_splice_check": {
+        "edge1": {
+          "edge_sample": 441000,
+          "splice_delta": 0.00554426945745945,
+          "baseline_median": 0.0019430317915976048,
+          "z_score": 2.093,
+          "is_discontinuity": false,
+          "note": null
+        },
+        "edge2": {
+          "edge_sample": 996660,
+          "splice_delta": 0.01820019632577896,
+          "baseline_median": 0.010981927625834942,
+          "z_score": 0.752,
+          "is_discontinuity": false,
+          "note": null
+        }
       },
       "scenario": "S03",
       "method": "M0"
@@ -141,74 +235,128 @@
     {
       "sample_rate": 44100,
       "channels": 2,
-      "duration_s": 34.02,
+      "duration_s": 32.96,
       "nan_inf_count": 0,
       "peak_dbfs": -1.0,
       "clipped_sample_count": 0,
-      "edge_discontinuity_check": {
+      "diagnostic_windowed_edge_proxy": {
+        "per_edge": [
+          {
+            "edge_sample": 441000,
+            "discontinuity_count": 0,
+            "max_abs_delta": 0.12053555250167847
+          },
+          {
+            "edge_sample": 924335,
+            "discontinuity_count": 0,
+            "max_abs_delta": 0.08064039796590805
+          }
+        ],
+        "total_discontinuity_count": 0
+      },
+      "exact_splice_check": {
+        "edge1": {
+          "edge_sample": 441000,
+          "splice_delta": 0.018579572439193726,
+          "baseline_median": 0.03393012657761574,
+          "z_score": 0.63,
+          "is_discontinuity": false,
+          "note": null
+        },
+        "edge2": {
+          "edge_sample": 924335,
+          "splice_delta": 0.023312494158744812,
+          "baseline_median": 0.0134345144033432,
+          "z_score": 0.792,
+          "is_discontinuity": false,
+          "note": null
+        }
+      },
+      "scenario": "S03",
+      "method": "M1"
+    },
+    {
+      "sample_rate": 44100,
+      "channels": 2,
+      "duration_s": 33.64,
+      "nan_inf_count": 0,
+      "peak_dbfs": -1.0,
+      "clipped_sample_count": 0,
+      "diagnostic_windowed_edge_proxy": {
+        "per_edge": [
+          {
+            "edge_sample": 441000,
+            "discontinuity_count": 0,
+            "max_abs_delta": 0.020093560218811035
+          },
+          {
+            "edge_sample": 954324,
+            "discontinuity_count": 0,
+            "max_abs_delta": 0.04135553538799286
+          }
+        ],
+        "total_discontinuity_count": 0
+      },
+      "exact_splice_check": {
+        "edge1": {
+          "edge_sample": 441000,
+          "splice_delta": 0.00032326579093933105,
+          "baseline_median": 0.003261793404817581,
+          "z_score": 1.032,
+          "is_discontinuity": false,
+          "note": null
+        },
+        "edge2": {
+          "edge_sample": 954324,
+          "splice_delta": 0.012900352478027344,
+          "baseline_median": 0.006390966475009918,
+          "z_score": 1.036,
+          "is_discontinuity": false,
+          "note": null
+        }
+      },
+      "scenario": "S04",
+      "method": "M0"
+    },
+    {
+      "sample_rate": 44100,
+      "channels": 2,
+      "duration_s": 33.64,
+      "nan_inf_count": 0,
+      "peak_dbfs": -1.0,
+      "clipped_sample_count": 0,
+      "diagnostic_windowed_edge_proxy": {
         "per_edge": [
           {
             "edge_sample": 441000,
             "discontinuity_count": 1,
-            "max_abs_delta": 0.0904911458492279
+            "max_abs_delta": 0.02684788405895233
           },
           {
-            "edge_sample": 971082,
+            "edge_sample": 954324,
             "discontinuity_count": 0,
-            "max_abs_delta": 0.3745047450065613
+            "max_abs_delta": 0.05152861773967743
           }
         ],
         "total_discontinuity_count": 1
       },
-      "scenario": "S03",
-      "method": "M1"
-    },
-    {
-      "sample_rate": 44100,
-      "channels": 2,
-      "duration_s": 34.601,
-      "nan_inf_count": 0,
-      "peak_dbfs": -1.0,
-      "clipped_sample_count": 0,
-      "edge_discontinuity_check": {
-        "per_edge": [
-          {
-            "edge_sample": 441000,
-            "discontinuity_count": 0,
-            "max_abs_delta": 0.006698478013277054
-          },
-          {
-            "edge_sample": 996688,
-            "discontinuity_count": 13,
-            "max_abs_delta": 0.15778809785842896
-          }
-        ],
-        "total_discontinuity_count": 13
-      },
-      "scenario": "S04",
-      "method": "M0"
-    },
-    {
-      "sample_rate": 44100,
-      "channels": 2,
-      "duration_s": 33.46,
-      "nan_inf_count": 0,
-      "peak_dbfs": -1.0,
-      "clipped_sample_count": 0,
-      "edge_discontinuity_check": {
-        "per_edge": [
-          {
-            "edge_sample": 441000,
-            "discontinuity_count": 0,
-            "max_abs_delta": 0.08268583565950394
-          },
-          {
-            "edge_sample": 946385,
-            "discontinuity_count": 0,
-            "max_abs_delta": 0.5361188054084778
-          }
-        ],
-        "total_discontinuity_count": 0
+      "exact_splice_check": {
+        "edge1": {
+          "edge_sample": 441000,
+          "splice_delta": 0.002979496493935585,
+          "baseline_median": 0.0028851814568042755,
+          "z_score": 0.036,
+          "is_discontinuity": false,
+          "note": null
+        },
+        "edge2": {
+          "edge_sample": 954324,
+          "splice_delta": 0.00415724515914917,
+          "baseline_median": 0.006854236125946045,
+          "z_score": 0.355,
+          "is_discontinuity": false,
+          "note": null
+        }
       },
       "scenario": "S04",
       "method": "M1"
@@ -216,24 +364,42 @@
     {
       "sample_rate": 44100,
       "channels": 2,
-      "duration_s": 35.081,
+      "duration_s": 33.64,
       "nan_inf_count": 0,
       "peak_dbfs": -1.0,
       "clipped_sample_count": 0,
-      "edge_discontinuity_check": {
+      "diagnostic_windowed_edge_proxy": {
         "per_edge": [
           {
             "edge_sample": 441000,
             "discontinuity_count": 0,
-            "max_abs_delta": 0.00041281036101281643
+            "max_abs_delta": 0.02175736427307129
           },
           {
-            "edge_sample": 1017890,
-            "discontinuity_count": 0,
-            "max_abs_delta": 0.06624408066272736
+            "edge_sample": 954324,
+            "discontinuity_count": 1,
+            "max_abs_delta": 0.32909244298934937
           }
         ],
-        "total_discontinuity_count": 0
+        "total_discontinuity_count": 1
+      },
+      "exact_splice_check": {
+        "edge1": {
+          "edge_sample": 441000,
+          "splice_delta": 0.00035003572702407837,
+          "baseline_median": 0.0035318806767463684,
+          "z_score": 1.032,
+          "is_discontinuity": false,
+          "note": null
+        },
+        "edge2": {
+          "edge_sample": 954324,
+          "splice_delta": 0.0180196613073349,
+          "baseline_median": 0.03229795768857002,
+          "z_score": 0.399,
+          "is_discontinuity": false,
+          "note": null
+        }
       },
       "scenario": "S05",
       "method": "M0"
@@ -241,24 +407,42 @@
     {
       "sample_rate": 44100,
       "channels": 2,
-      "duration_s": 35.581,
+      "duration_s": 33.64,
       "nan_inf_count": 0,
       "peak_dbfs": -1.0,
       "clipped_sample_count": 0,
-      "edge_discontinuity_check": {
+      "diagnostic_windowed_edge_proxy": {
         "per_edge": [
           {
             "edge_sample": 441000,
-            "discontinuity_count": 16,
-            "max_abs_delta": 0.16037243604660034
+            "discontinuity_count": 1,
+            "max_abs_delta": 0.024835973978042603
           },
           {
-            "edge_sample": 1039940,
+            "edge_sample": 954324,
             "discontinuity_count": 0,
-            "max_abs_delta": 0.009191915392875671
+            "max_abs_delta": 0.4281686246395111
           }
         ],
-        "total_discontinuity_count": 16
+        "total_discontinuity_count": 1
+      },
+      "exact_splice_check": {
+        "edge1": {
+          "edge_sample": 441000,
+          "splice_delta": 0.0027560368180274963,
+          "baseline_median": 0.0026658251881599426,
+          "z_score": 0.037,
+          "is_discontinuity": false,
+          "note": null
+        },
+        "edge2": {
+          "edge_sample": 954324,
+          "splice_delta": 0.00918780267238617,
+          "baseline_median": 0.054927852004766464,
+          "z_score": 0.868,
+          "is_discontinuity": false,
+          "note": null
+        }
       },
       "scenario": "S05",
       "method": "M1"
@@ -266,124 +450,214 @@
     {
       "sample_rate": 44100,
       "channels": 2,
-      "duration_s": 33.198,
+      "duration_s": 34.6,
       "nan_inf_count": 0,
       "peak_dbfs": -1.0,
       "clipped_sample_count": 0,
-      "edge_discontinuity_check": {
+      "diagnostic_windowed_edge_proxy": {
         "per_edge": [
           {
             "edge_sample": 441000,
             "discontinuity_count": 0,
-            "max_abs_delta": 0.012518703937530518
+            "max_abs_delta": 0.007030367851257324
           },
           {
-            "edge_sample": 934841,
+            "edge_sample": 996660,
+            "discontinuity_count": 6,
+            "max_abs_delta": 0.07375802099704742
+          }
+        ],
+        "total_discontinuity_count": 6
+      },
+      "exact_splice_check": {
+        "edge1": {
+          "edge_sample": 441000,
+          "splice_delta": 0.004142208024859428,
+          "baseline_median": 0.001451665535569191,
+          "z_score": 2.093,
+          "is_discontinuity": false,
+          "note": null
+        },
+        "edge2": {
+          "edge_sample": 996660,
+          "splice_delta": 0.007608027197420597,
+          "baseline_median": 0.005011707544326782,
+          "z_score": 0.579,
+          "is_discontinuity": false,
+          "note": null
+        }
+      },
+      "scenario": "S06",
+      "method": "M0"
+    },
+    {
+      "sample_rate": 44100,
+      "channels": 2,
+      "duration_s": 32.96,
+      "nan_inf_count": 0,
+      "peak_dbfs": -1.0,
+      "clipped_sample_count": 0,
+      "diagnostic_windowed_edge_proxy": {
+        "per_edge": [
+          {
+            "edge_sample": 441000,
+            "discontinuity_count": 0,
+            "max_abs_delta": 0.09005391597747803
+          },
+          {
+            "edge_sample": 924335,
+            "discontinuity_count": 0,
+            "max_abs_delta": 0.12771770358085632
+          }
+        ],
+        "total_discontinuity_count": 0
+      },
+      "exact_splice_check": {
+        "edge1": {
+          "edge_sample": 441000,
+          "splice_delta": 0.01388106495141983,
+          "baseline_median": 0.0253668874502182,
+          "z_score": 0.631,
+          "is_discontinuity": false,
+          "note": null
+        },
+        "edge2": {
+          "edge_sample": 924335,
+          "splice_delta": 0.025302544236183167,
+          "baseline_median": 0.017722032964229584,
+          "z_score": 0.467,
+          "is_discontinuity": false,
+          "note": null
+        }
+      },
+      "scenario": "S06",
+      "method": "M1"
+    },
+    {
+      "sample_rate": 44100,
+      "channels": 2,
+      "duration_s": 33.2,
+      "nan_inf_count": 0,
+      "peak_dbfs": -1.0,
+      "clipped_sample_count": 0,
+      "diagnostic_windowed_edge_proxy": {
+        "per_edge": [
+          {
+            "edge_sample": 441000,
+            "discontinuity_count": 0,
+            "max_abs_delta": 0.012407263740897179
+          },
+          {
+            "edge_sample": 934920,
+            "discontinuity_count": 0,
+            "max_abs_delta": 0.08852904289960861
+          }
+        ],
+        "total_discontinuity_count": 0
+      },
+      "exact_splice_check": {
+        "edge1": {
+          "edge_sample": 441000,
+          "splice_delta": 0.004751414060592651,
+          "baseline_median": 0.002519860863685608,
+          "z_score": 1.024,
+          "is_discontinuity": false,
+          "note": null
+        },
+        "edge2": {
+          "edge_sample": 934920,
+          "splice_delta": 0.014252237975597382,
+          "baseline_median": 0.01722663640975952,
+          "z_score": 0.199,
+          "is_discontinuity": false,
+          "note": null
+        }
+      },
+      "scenario": "S07",
+      "method": "M0"
+    },
+    {
+      "sample_rate": 44100,
+      "channels": 2,
+      "duration_s": 33.2,
+      "nan_inf_count": 0,
+      "peak_dbfs": -1.0,
+      "clipped_sample_count": 0,
+      "diagnostic_windowed_edge_proxy": {
+        "per_edge": [
+          {
+            "edge_sample": 441000,
             "discontinuity_count": 8,
-            "max_abs_delta": 0.08245347440242767
+            "max_abs_delta": 0.3094337284564972
+          },
+          {
+            "edge_sample": 934920,
+            "discontinuity_count": 0,
+            "max_abs_delta": 0.07885390520095825
           }
         ],
         "total_discontinuity_count": 8
       },
-      "scenario": "S06",
-      "method": "M0"
+      "exact_splice_check": {
+        "edge1": {
+          "edge_sample": 441000,
+          "splice_delta": 0.0031594038009643555,
+          "baseline_median": 0.022603364661335945,
+          "z_score": 0.615,
+          "is_discontinuity": false,
+          "note": null
+        },
+        "edge2": {
+          "edge_sample": 934920,
+          "splice_delta": 0.042126744985580444,
+          "baseline_median": 0.015256837010383606,
+          "z_score": 1.96,
+          "is_discontinuity": false,
+          "note": null
+        }
+      },
+      "scenario": "S07",
+      "method": "M1"
     },
     {
       "sample_rate": 44100,
       "channels": 2,
-      "duration_s": 33.698,
+      "duration_s": 33.4,
       "nan_inf_count": 0,
       "peak_dbfs": -1.0,
       "clipped_sample_count": 0,
-      "edge_discontinuity_check": {
+      "diagnostic_windowed_edge_proxy": {
         "per_edge": [
           {
             "edge_sample": 441000,
-            "discontinuity_count": 16,
-            "max_abs_delta": 0.30546608567237854
+            "discontinuity_count": 0,
+            "max_abs_delta": 0.0008598240092396736
           },
           {
-            "edge_sample": 956891,
-            "discontinuity_count": 14,
-            "max_abs_delta": 0.17283335328102112
+            "edge_sample": 943740,
+            "discontinuity_count": 30,
+            "max_abs_delta": 0.04770265519618988
           }
         ],
         "total_discontinuity_count": 30
       },
-      "scenario": "S06",
-      "method": "M1"
-    },
-    {
-      "sample_rate": 44100,
-      "channels": 2,
-      "duration_s": 33.639,
-      "nan_inf_count": 0,
-      "peak_dbfs": -1.0,
-      "clipped_sample_count": 0,
-      "edge_discontinuity_check": {
-        "per_edge": [
-          {
-            "edge_sample": 441000,
-            "discontinuity_count": 0,
-            "max_abs_delta": 0.02483430504798889
-          },
-          {
-            "edge_sample": 954288,
-            "discontinuity_count": 0,
-            "max_abs_delta": 0.009218866936862469
-          }
-        ],
-        "total_discontinuity_count": 0
-      },
-      "scenario": "S07",
-      "method": "M0"
-    },
-    {
-      "sample_rate": 44100,
-      "channels": 2,
-      "duration_s": 34.139,
-      "nan_inf_count": 0,
-      "peak_dbfs": -1.0,
-      "clipped_sample_count": 0,
-      "edge_discontinuity_check": {
-        "per_edge": [
-          {
-            "edge_sample": 441000,
-            "discontinuity_count": 0,
-            "max_abs_delta": 0.019521355628967285
-          },
-          {
-            "edge_sample": 976338,
-            "discontinuity_count": 0,
-            "max_abs_delta": 0.00732840970158577
-          }
-        ],
-        "total_discontinuity_count": 0
-      },
-      "scenario": "S07",
-      "method": "M1"
-    },
-    {
-      "sample_rate": 44100,
-      "channels": 2,
-      "duration_s": 34.0,
-      "nan_inf_count": 0,
-      "peak_dbfs": -1.0,
-      "clipped_sample_count": 0,
-      "edge_discontinuity_check": {
-        "per_edge": [
-          {
-            "edge_sample": 441000,
-            "discontinuity_count": 1,
-            "max_abs_delta": 0.08416873216629028
-          },
-          {
-            "edge_sample": 970200,
-            "discontinuity_count": 2,
-            "max_abs_delta": 0.2566031217575073
-          }
-        ],
-        "total_discontinuity_count": 3
+      "exact_splice_check": {
+        "edge1": {
+          "edge_sample": 441000,
+          "splice_delta": 8.207559585571289e-05,
+          "baseline_median": 0.00020205415785312653,
+          "z_score": 0.745,
+          "is_discontinuity": false,
+          "note": null
+        },
+        "edge2": {
+          "edge_sample": 943740,
+          "splice_delta": 1.9536353647708893e-05,
+          "baseline_median": 0.0007158358348533511,
+          "z_score": 1.065,
+          "is_discontinuity": false,
+          "note": null
+        }
       },
       "scenario": "S08",
       "method": "M0"
@@ -391,24 +665,42 @@
     {
       "sample_rate": 44100,
       "channels": 2,
-      "duration_s": 34.5,
+      "duration_s": 33.4,
       "nan_inf_count": 0,
       "peak_dbfs": -1.0,
       "clipped_sample_count": 0,
-      "edge_discontinuity_check": {
+      "diagnostic_windowed_edge_proxy": {
         "per_edge": [
           {
             "edge_sample": 441000,
             "discontinuity_count": 0,
-            "max_abs_delta": 0.14042632281780243
+            "max_abs_delta": 0.027302905917167664
           },
           {
-            "edge_sample": 992250,
-            "discontinuity_count": 27,
-            "max_abs_delta": 0.3750094175338745
+            "edge_sample": 943740,
+            "discontinuity_count": 636,
+            "max_abs_delta": 0.20260773599147797
           }
         ],
-        "total_discontinuity_count": 27
+        "total_discontinuity_count": 636
+      },
+      "exact_splice_check": {
+        "edge1": {
+          "edge_sample": 441000,
+          "splice_delta": 0.011828407645225525,
+          "baseline_median": 0.0036222022026777267,
+          "z_score": 2.322,
+          "is_discontinuity": false,
+          "note": null
+        },
+        "edge2": {
+          "edge_sample": 943740,
+          "splice_delta": 0.00012441747821867466,
+          "baseline_median": 0.0005381535738706589,
+          "z_score": 0.626,
+          "is_discontinuity": false,
+          "note": null
+        }
       },
       "scenario": "S08",
       "method": "M1"

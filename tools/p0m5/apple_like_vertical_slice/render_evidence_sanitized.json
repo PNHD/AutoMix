@@ -1,325 +1,352 @@
 {
   "scenario_count": 8,
   "success_count": 8,
+  "stretch_applied_count": 2,
   "scenarios": [
     {
       "scenario": "S01",
       "status": "SUCCESS",
-      "out_id": "RM010",
-      "in_id": "RM099",
+      "out_id": "RM055",
+      "in_id": "RM052",
       "split": "dev",
+      "is_stretch_cover_candidate": true,
       "window_bars": 5,
-      "requested_window_s": 11.198,
+      "requested_window_s": 12.2,
       "m0": {
-        "overlap_ms": 11198.208616780044,
+        "overlap_ms": 12200.0,
         "applied_tempo_ratio": 1.0,
         "beat_alignment_applied": false,
         "bass_eq_handoff_applied": false,
         "safety": {
-          "pre_peak_dbfs": 2.8410675563550027,
+          "pre_peak_dbfs": 1.8953901274023979,
           "post_peak_dbfs": -0.9999999999999997,
-          "applied_headroom_gain_db": -3.8410675563550027,
+          "applied_headroom_gain_db": -2.895390127402397,
           "nan_inf_sample_count": 0,
           "clipped_sample_count": 0
         },
-        "output_duration_s": 33.19820861678004
+        "output_duration_s": 34.2
       },
       "m1": {
-        "overlap_ms": 11698.208616780044,
-        "applied_tempo_ratio": 1.0,
+        "overlap_ms": 12592.902494331065,
+        "applied_tempo_ratio": 0.9688,
         "beat_alignment_applied": true,
         "bass_eq_handoff_applied": true,
-        "stretch_engine_latency_s": 0.12,
-        "stretch_requested_rate": 1,
-        "stretch_sample_rate_assertions_passed": true,
+        "stretch_bypassed": false,
+        "duration_contract_ok": true,
+        "duration_contract_detail": {
+          "expected_window_out_samples": 555347,
+          "retained_samples": 555347,
+          "deviation_s": 0.0,
+          "tolerance_s": 0.01,
+          "latency_compensation_s": 0.12
+        },
         "safety": {
-          "pre_peak_dbfs": 5.543776353511065,
+          "pre_peak_dbfs": 1.8953901274023979,
           "post_peak_dbfs": -0.9999999999999997,
-          "applied_headroom_gain_db": -6.543776353511063,
+          "applied_headroom_gain_db": -2.895390127402397,
           "nan_inf_sample_count": 0,
           "clipped_sample_count": 0
         },
-        "output_duration_s": 33.69820861678004
+        "output_duration_s": 34.592902494331064,
+        "stretch_engine_latency_s": 0.12,
+        "stretch_requested_rate": 0.9688,
+        "stretch_sample_rate_assertions_passed": true
       }
     },
     {
       "scenario": "S02",
       "status": "SUCCESS",
-      "out_id": "RM089",
-      "in_id": "RM018",
-      "split": "dev",
-      "window_bars": 6,
-      "requested_window_s": 11.52,
+      "out_id": "RM055",
+      "in_id": "RM047",
+      "split": "holdout",
+      "is_stretch_cover_candidate": true,
+      "window_bars": 5,
+      "requested_window_s": 12.2,
       "m0": {
-        "overlap_ms": 11520.0,
+        "overlap_ms": 12200.0,
         "applied_tempo_ratio": 1.0,
         "beat_alignment_applied": false,
         "bass_eq_handoff_applied": false,
         "safety": {
-          "pre_peak_dbfs": 1.4291089970973982,
+          "pre_peak_dbfs": 1.7965364369552996,
           "post_peak_dbfs": -0.9999999999999997,
-          "applied_headroom_gain_db": -2.4291089970973974,
+          "applied_headroom_gain_db": -2.7965364369552987,
           "nan_inf_sample_count": 0,
           "clipped_sample_count": 0
         },
-        "output_duration_s": 33.52
+        "output_duration_s": 34.2
       },
       "m1": {
-        "overlap_ms": 12020.0,
-        "applied_tempo_ratio": 1.0,
+        "overlap_ms": 12592.902494331065,
+        "applied_tempo_ratio": 0.9688,
         "beat_alignment_applied": true,
         "bass_eq_handoff_applied": true,
-        "stretch_engine_latency_s": 0.12,
-        "stretch_requested_rate": 1,
-        "stretch_sample_rate_assertions_passed": true,
+        "stretch_bypassed": false,
+        "duration_contract_ok": true,
+        "duration_contract_detail": {
+          "expected_window_out_samples": 555347,
+          "retained_samples": 555347,
+          "deviation_s": 0.0,
+          "tolerance_s": 0.01,
+          "latency_compensation_s": 0.12
+        },
         "safety": {
-          "pre_peak_dbfs": 1.4291089970973982,
+          "pre_peak_dbfs": 1.7965364369552996,
           "post_peak_dbfs": -0.9999999999999997,
-          "applied_headroom_gain_db": -2.4291089970973974,
+          "applied_headroom_gain_db": -2.7965364369552987,
           "nan_inf_sample_count": 0,
           "clipped_sample_count": 0
         },
-        "output_duration_s": 34.02
+        "output_duration_s": 34.592902494331064,
+        "stretch_engine_latency_s": 0.12,
+        "stretch_requested_rate": 0.9688,
+        "stretch_sample_rate_assertions_passed": true
       }
     },
     {
       "scenario": "S03",
       "status": "SUCCESS",
-      "out_id": "RM089",
-      "in_id": "RM084",
+      "out_id": "RM075",
+      "in_id": "RM033",
       "split": "holdout",
+      "is_stretch_cover_candidate": false,
       "window_bars": 6,
-      "requested_window_s": 11.52,
+      "requested_window_s": 12.6,
       "m0": {
-        "overlap_ms": 11520.0,
+        "overlap_ms": 12600.0,
         "applied_tempo_ratio": 1.0,
         "beat_alignment_applied": false,
         "bass_eq_handoff_applied": false,
         "safety": {
-          "pre_peak_dbfs": 1.4624434345682846,
+          "pre_peak_dbfs": -0.5484073427666053,
           "post_peak_dbfs": -0.9999999999999997,
-          "applied_headroom_gain_db": -2.462443434568284,
+          "applied_headroom_gain_db": -0.45159265723339476,
           "nan_inf_sample_count": 0,
           "clipped_sample_count": 0
         },
-        "output_duration_s": 33.52
+        "output_duration_s": 34.6
       },
       "m1": {
-        "overlap_ms": 12020.0,
+        "overlap_ms": 10959.977324263038,
         "applied_tempo_ratio": 1.0,
         "beat_alignment_applied": true,
         "bass_eq_handoff_applied": true,
-        "stretch_engine_latency_s": 0.12,
-        "stretch_requested_rate": 1,
-        "stretch_sample_rate_assertions_passed": true,
+        "stretch_bypassed": true,
+        "duration_contract_ok": true,
+        "duration_contract_detail": null,
         "safety": {
-          "pre_peak_dbfs": 1.992872127615504,
-          "post_peak_dbfs": -0.9999999999999987,
-          "applied_headroom_gain_db": -2.992872127615503,
+          "pre_peak_dbfs": -0.5484073427666053,
+          "post_peak_dbfs": -0.9999999999999997,
+          "applied_headroom_gain_db": -0.45159265723339476,
           "nan_inf_sample_count": 0,
           "clipped_sample_count": 0
         },
-        "output_duration_s": 34.02
+        "output_duration_s": 32.959977324263036
       }
     },
     {
       "scenario": "S04",
       "status": "SUCCESS",
-      "out_id": "RM075",
-      "in_id": "RM091",
+      "out_id": "RM042",
+      "in_id": "RM051",
       "split": "dev",
+      "is_stretch_cover_candidate": false,
       "window_bars": 6,
-      "requested_window_s": 12.601,
+      "requested_window_s": 11.64,
       "m0": {
-        "overlap_ms": 12600.63492063492,
+        "overlap_ms": 11640.0,
         "applied_tempo_ratio": 1.0,
         "beat_alignment_applied": false,
         "bass_eq_handoff_applied": false,
         "safety": {
-          "pre_peak_dbfs": 2.4038706546025015,
+          "pre_peak_dbfs": 2.4451490374852853,
           "post_peak_dbfs": -0.9999999999999997,
-          "applied_headroom_gain_db": -3.4038706546025006,
+          "applied_headroom_gain_db": -3.4451490374852844,
           "nan_inf_sample_count": 0,
           "clipped_sample_count": 0
         },
-        "output_duration_s": 34.600634920634924
+        "output_duration_s": 33.64
       },
       "m1": {
-        "overlap_ms": 11459.977324263038,
+        "overlap_ms": 11640.0,
         "applied_tempo_ratio": 1.0,
         "beat_alignment_applied": true,
         "bass_eq_handoff_applied": true,
-        "stretch_engine_latency_s": 0.12,
-        "stretch_requested_rate": 1,
-        "stretch_sample_rate_assertions_passed": true,
+        "stretch_bypassed": true,
+        "duration_contract_ok": true,
+        "duration_contract_detail": null,
         "safety": {
-          "pre_peak_dbfs": 2.7252727887451673,
+          "pre_peak_dbfs": 1.0459676498229944,
           "post_peak_dbfs": -0.9999999999999997,
-          "applied_headroom_gain_db": -3.7252727887451664,
+          "applied_headroom_gain_db": -2.045967649822994,
           "nan_inf_sample_count": 0,
           "clipped_sample_count": 0
         },
-        "output_duration_s": 33.459977324263036
+        "output_duration_s": 33.64
       }
     },
     {
       "scenario": "S05",
       "status": "SUCCESS",
-      "out_id": "RM082",
-      "in_id": "RM097",
+      "out_id": "RM042",
+      "in_id": "RM002",
       "split": "dev",
+      "is_stretch_cover_candidate": false,
       "window_bars": 6,
-      "requested_window_s": 13.081,
+      "requested_window_s": 11.64,
       "m0": {
-        "overlap_ms": 13081.40589569161,
+        "overlap_ms": 11640.0,
         "applied_tempo_ratio": 1.0,
         "beat_alignment_applied": false,
         "bass_eq_handoff_applied": false,
         "safety": {
-          "pre_peak_dbfs": 2.0217669113724264,
-          "post_peak_dbfs": -0.9999999999999987,
-          "applied_headroom_gain_db": -3.0217669113724255,
+          "pre_peak_dbfs": 1.7541530483569734,
+          "post_peak_dbfs": -0.9999999999999997,
+          "applied_headroom_gain_db": -2.754153048356973,
           "nan_inf_sample_count": 0,
           "clipped_sample_count": 0
         },
-        "output_duration_s": 35.08140589569161
+        "output_duration_s": 33.64
       },
       "m1": {
-        "overlap_ms": 13581.40589569161,
+        "overlap_ms": 11640.0,
         "applied_tempo_ratio": 1.0,
         "beat_alignment_applied": true,
         "bass_eq_handoff_applied": true,
-        "stretch_engine_latency_s": 0.12,
-        "stretch_requested_rate": 1,
-        "stretch_sample_rate_assertions_passed": true,
+        "stretch_bypassed": true,
+        "duration_contract_ok": true,
+        "duration_contract_detail": null,
         "safety": {
-          "pre_peak_dbfs": 2.1098356398888707,
+          "pre_peak_dbfs": 1.723121155195785,
           "post_peak_dbfs": -0.9999999999999997,
-          "applied_headroom_gain_db": -3.109835639888871,
+          "applied_headroom_gain_db": -2.7231211551957846,
           "nan_inf_sample_count": 0,
           "clipped_sample_count": 0
         },
-        "output_duration_s": 35.58140589569161
+        "output_duration_s": 33.64
       }
     },
     {
       "scenario": "S06",
       "status": "SUCCESS",
-      "out_id": "RM010",
-      "in_id": "RM012",
-      "split": "holdout",
-      "window_bars": 5,
-      "requested_window_s": 11.198,
+      "out_id": "RM075",
+      "in_id": "RM087",
+      "split": "dev",
+      "is_stretch_cover_candidate": false,
+      "window_bars": 6,
+      "requested_window_s": 12.6,
       "m0": {
-        "overlap_ms": 11198.208616780044,
+        "overlap_ms": 12600.0,
         "applied_tempo_ratio": 1.0,
         "beat_alignment_applied": false,
         "bass_eq_handoff_applied": false,
         "safety": {
-          "pre_peak_dbfs": 2.76346008442395,
+          "pre_peak_dbfs": 1.9838440292775017,
           "post_peak_dbfs": -0.9999999999999997,
-          "applied_headroom_gain_db": -3.7634600844239503,
+          "applied_headroom_gain_db": -2.9838440292775017,
           "nan_inf_sample_count": 0,
           "clipped_sample_count": 0
         },
-        "output_duration_s": 33.19820861678004
+        "output_duration_s": 34.6
       },
       "m1": {
-        "overlap_ms": 11698.208616780044,
+        "overlap_ms": 10959.977324263038,
         "applied_tempo_ratio": 1.0,
         "beat_alignment_applied": true,
         "bass_eq_handoff_applied": true,
-        "stretch_engine_latency_s": 0.12,
-        "stretch_requested_rate": 1,
-        "stretch_sample_rate_assertions_passed": true,
+        "stretch_bypassed": true,
+        "duration_contract_ok": true,
+        "duration_contract_detail": null,
         "safety": {
-          "pre_peak_dbfs": 5.779280246917558,
+          "pre_peak_dbfs": 1.9838440292775017,
           "post_peak_dbfs": -0.9999999999999997,
-          "applied_headroom_gain_db": -6.779280246917558,
+          "applied_headroom_gain_db": -2.9838440292775017,
           "nan_inf_sample_count": 0,
           "clipped_sample_count": 0
         },
-        "output_duration_s": 33.69820861678004
+        "output_duration_s": 32.959977324263036
       }
     },
     {
       "scenario": "S07",
       "status": "SUCCESS",
-      "out_id": "RM042",
-      "in_id": "RM053",
+      "out_id": "RM010",
+      "in_id": "RM099",
       "split": "dev",
-      "window_bars": 6,
-      "requested_window_s": 11.639,
+      "is_stretch_cover_candidate": false,
+      "window_bars": 5,
+      "requested_window_s": 11.2,
       "m0": {
-        "overlap_ms": 11639.183673469388,
+        "overlap_ms": 11200.0,
         "applied_tempo_ratio": 1.0,
         "beat_alignment_applied": false,
         "bass_eq_handoff_applied": false,
         "safety": {
-          "pre_peak_dbfs": 0.6051399062896319,
+          "pre_peak_dbfs": 2.8411302989332183,
           "post_peak_dbfs": -0.9999999999999997,
-          "applied_headroom_gain_db": -1.6051399062896319,
+          "applied_headroom_gain_db": -3.8411302989332183,
           "nan_inf_sample_count": 0,
           "clipped_sample_count": 0
         },
-        "output_duration_s": 33.63918367346939
+        "output_duration_s": 33.2
       },
       "m1": {
-        "overlap_ms": 12139.183673469388,
+        "overlap_ms": 11200.0,
         "applied_tempo_ratio": 1.0,
         "beat_alignment_applied": true,
         "bass_eq_handoff_applied": true,
-        "stretch_engine_latency_s": 0.12,
-        "stretch_requested_rate": 1,
-        "stretch_sample_rate_assertions_passed": true,
+        "stretch_bypassed": true,
+        "duration_contract_ok": true,
+        "duration_contract_detail": null,
         "safety": {
-          "pre_peak_dbfs": 0.6051399062896319,
-          "post_peak_dbfs": -0.9999999999999997,
-          "applied_headroom_gain_db": -1.6051399062896319,
+          "pre_peak_dbfs": 3.30601063343859,
+          "post_peak_dbfs": -0.9999999999999987,
+          "applied_headroom_gain_db": -4.306010633438589,
           "nan_inf_sample_count": 0,
           "clipped_sample_count": 0
         },
-        "output_duration_s": 34.13918367346939
+        "output_duration_s": 33.2
       }
     },
     {
       "scenario": "S08",
       "status": "SUCCESS",
-      "out_id": "RM076",
-      "in_id": "RM085",
+      "out_id": "RM099",
+      "in_id": "RM071",
       "split": "dev",
-      "window_bars": 6,
-      "requested_window_s": 12.0,
+      "is_stretch_cover_candidate": false,
+      "window_bars": 5,
+      "requested_window_s": 11.4,
       "m0": {
-        "overlap_ms": 12000.0,
+        "overlap_ms": 11400.0,
         "applied_tempo_ratio": 1.0,
         "beat_alignment_applied": false,
         "bass_eq_handoff_applied": false,
         "safety": {
-          "pre_peak_dbfs": 2.385483499893972,
+          "pre_peak_dbfs": 0.961907775676094,
           "post_peak_dbfs": -0.9999999999999997,
-          "applied_headroom_gain_db": -3.3854834998939713,
+          "applied_headroom_gain_db": -1.9619077756760936,
           "nan_inf_sample_count": 0,
           "clipped_sample_count": 0
         },
-        "output_duration_s": 34.0
+        "output_duration_s": 33.4
       },
       "m1": {
-        "overlap_ms": 12500.0,
+        "overlap_ms": 11400.0,
         "applied_tempo_ratio": 1.0,
         "beat_alignment_applied": true,
         "bass_eq_handoff_applied": true,
-        "stretch_engine_latency_s": 0.12,
-        "stretch_requested_rate": 1,
-        "stretch_sample_rate_assertions_passed": true,
+        "stretch_bypassed": true,
+        "duration_contract_ok": true,
+        "duration_contract_detail": null,
         "safety": {
-          "pre_peak_dbfs": 3.0605374870647273,
-          "post_peak_dbfs": -0.9999999999999997,
-          "applied_headroom_gain_db": -4.060537487064727,
+          "pre_peak_dbfs": 3.4849995216452045,
+          "post_peak_dbfs": -0.9999999999999987,
+          "applied_headroom_gain_db": -4.484999521645204,
           "nan_inf_sample_count": 0,
           "clipped_sample_count": 0
         },
-        "output_duration_s": 34.5
+        "output_duration_s": 33.4
       }
     }
   ]
