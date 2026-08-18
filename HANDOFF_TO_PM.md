@@ -11,9 +11,8 @@
 - Starting HEAD for this repair (verified live before starting): `70893d2b9683b219ff074a5904d79ad0b6f58ede`
 - `main`: untouched at `2450d55c60601bcee5eb52a2c38ce5d6e87a76aa`
 - `research/p0-feasibility`: untouched
-- **Exact final HEAD after this repair, pushed to `origin/prototype/live-automix-lab`: see the commit line appended immediately below this sentence once committed** -- filled in with the real SHA before this file is committed (not a self-referential placeholder; the repair commit is created first, then this exact SHA is copied in, then a final small doc-only commit records it, matching the same two-step pattern used in the prior handoff).
-
-**Exact final HEAD: `<FINAL_HEAD_SHA>`** (this line is replaced with the real SHA in the commit that includes it -- see PM_REVIEW_REQUEST item 1 for the independent check).
+- Repair commit: `95bdcc1355e6dac93643ff82fef0b029281e2993` ("fix(app): P0-M6-R1 Spotify seed/autoplay loop repair ...") directly on top of `70893d2`. This is the commit containing the actual code repair.
+- **Exact final HEAD after push:** recorded in a small follow-up doc-only commit on top of `95bdcc1` (this file cannot self-embed its own post-commit hash); its SHA is stated in the standalone commit message and independently confirmable via `git log --oneline -3` on `prototype/live-automix-lab`.
 
 ### WHAT WAS REPAIRED (PM finding `P0_M6_R1_SPOTIFY_SEED_LOOP_REPAIR_REQUIRED`, Issue #11 comment `5324307503`, correcting for missed comment `5323258040`)
 
