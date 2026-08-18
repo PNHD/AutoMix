@@ -73,8 +73,16 @@ check("GET /me/player/queue -- path/url has no query string", req.path === "/me/
 
   check("isNextControlEnabled: true ONLY for KNOWN_NONEMPTY", isNextControlEnabled(known_nonempty) === true && isNextControlEnabled(known_empty) === false && isNextControlEnabled(not_polled) === false && isNextControlEnabled(api_error) === false);
 
-  check("canInjectToQueue: true ONLY for KNOWN_EMPTY (Blocker 3)", canInjectToQueue(known_empty) === true);
-  check("canInjectToQueue: false for KNOWN_NONEMPTY", canInjectToQueue(known_nonempty) === false);
+  // Real owner finding (provider-queue coexistence repair): Spotify's
+  // own client keeps a provider-generated queue (e.g. "Next Up")
+  // populated after any track plays -- a KNOWN_NONEMPTY real queue is
+  // normal, not an owner conflict, and must NOT block injection.
+  // POST /me/player/queue is documented to add an item to be played
+  // NEXT, so this app's successor is injected ahead of whatever
+  // provider items already exist, which are left untouched. Injection
+  // remains forbidden only when the real state is genuinely unknown.
+  check("canInjectToQueue: true for KNOWN_EMPTY", canInjectToQueue(known_empty) === true);
+  check("canInjectToQueue: true for KNOWN_NONEMPTY too (a provider queue is not a blocker)", canInjectToQueue(known_nonempty) === true);
   check("canInjectToQueue: false for UNKNOWN_NOT_POLLED (never inject on an unconfirmed state)", canInjectToQueue(not_polled) === false);
   check("canInjectToQueue: false for UNKNOWN_API_ERROR (queue injection forbidden on API error)", canInjectToQueue(api_error) === false);
 

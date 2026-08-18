@@ -89,7 +89,11 @@ function rawTrack(id, artistId = "ART_X") {
 }
 
 // ============================================================
-// Test: unknown external token -> EXTERNAL_QUEUE_OCCUPIED, zero POST
+// Test: a pre-existing provider-generated queue (e.g. Spotify's own
+// "Next Up") does NOT block selection -- see
+// verify_spotify_provider_queue_coexistence.mjs for the full repair
+// this behavior change is part of (real owner finding: a non-empty
+// real queue after any track plays is normal, not an owner conflict).
 // ============================================================
 {
   const adapter = newActiveSeedAdapter();
@@ -98,13 +102,13 @@ function rawTrack(id, artistId = "ART_X") {
     calls.push({ url, method: opts.method || "GET" });
     if (url.startsWith("/me/top/tracks")) return topTracksRaw([rawTrack("A")]);
     if (url.startsWith("/me/player/recently-played")) return { items: [] };
-    if (url === "/me/player/queue") return { currently_playing: { id: "SEED123" }, queue: [{ id: "SOMEONE_ELSE_ADDED_THIS" }] }; // KNOWN_NONEMPTY, not ours
+    if (url.startsWith("/me/player/queue?")) return null;
+    if (url === "/me/player/queue") return { currently_playing: { id: "SEED123" }, queue: [{ id: "PROVIDER_NEXT_UP_ITEM" }] }; // KNOWN_NONEMPTY, provider-generated, not ours
     return null;
   };
   const result = await adapter.runLookaheadCycle();
-  check("an external (not-ours) item in the real queue -> EXTERNAL_QUEUE_OCCUPIED", result.reason === "EXTERNAL_QUEUE_OCCUPIED");
-  check("zero POSTs issued when the queue is externally occupied", calls.filter((c) => c.method === "POST").length === 0);
-  check("top-tracks/recently-played were never even fetched (fails fast before pool-building)", !calls.some((c) => c.url.startsWith("/me/top/tracks")));
+  check("a pre-existing provider-generated queue item does not block selection", result.queued === true);
+  check("exactly one POST is issued despite the provider queue already having an item", calls.filter((c) => c.method === "POST").length === 1);
 }
 
 // ============================================================

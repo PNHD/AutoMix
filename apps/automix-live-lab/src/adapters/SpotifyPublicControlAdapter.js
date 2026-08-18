@@ -217,6 +217,14 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
     // session itself has played.
     this._lastRecentlyPlayedIds = [];
 
+    // Real owner finding (provider-queue coexistence repair): the real
+    // queue snapshot captured immediately before the most recent
+    // injection attempt -- Spotify's own provider-generated items
+    // (e.g. "Next Up"), never touched, kept only so
+    // `getLookaheadStatus().providerQueueSize` can report a truthful
+    // count without re-deriving it from stale state.
+    this._lastBaselineQueueTokens = [];
+
     // P0-M6-R2 repair, Blocker 4: candidate/endpoint failure bookkeeping
     // that spans MULTIPLE orchestration ticks, so a failing queue-write
     // can never be retried every ~2s forever. See
@@ -661,6 +669,7 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
     this._lastRecentlyPlayedIds = [];
     this._failedCandidateTokens = new Set();
     this._queueBlocker = null;
+    this._lastBaselineQueueTokens = [];
 
     this._emit({ type: "seed_track_played", seedToken: this._seedToken });
   }
@@ -714,8 +723,9 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
   }
 
   /**
-   * P0-M6-R2 Phase E orchestration, REPAIRED (Blockers 3/4/5/6): a single
-   * entry point safe to call on every orchestration tick. Always:
+   * P0-M6-R2 Phase E orchestration, REPAIRED (Blockers 3/4/5/6, plus the
+   * real-owner provider-queue-coexistence repair): a single entry point
+   * safe to call on every orchestration tick. Always:
    *
    *   1. Polls REAL queue truth fresh (never acts on a stale cached
    *      value from a prior tick) -- Blocker 3.
@@ -723,13 +733,23 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
    *      confirmation), this tick's job is ONLY to try confirming it --
    *      it never starts a second selection cycle, regardless of what
    *      the real queue currently shows (Blocker 3's
-   *      "duplicate orchestration ticks -> one POST total").
-   *   3. Otherwise, a NEW selection/enqueue cycle is only attempted when
-   *      the real queue is `KNOWN_EMPTY` (`canInjectToQueue`). A
-   *      `KNOWN_NONEMPTY` queue that isn't ours yields
-   *      `EXTERNAL_QUEUE_OCCUPIED` with zero POSTs; any `UNKNOWN_*` state
-   *      yields `QUEUE_STATE_UNKNOWN_CANNOT_INJECT` with zero POSTs --
-   *      Blocker 3.
+   *      "duplicate orchestration ticks -> one POST total"). Confirmation
+   *      itself requires the pending token to occupy the PLAY-NEXT (head)
+   *      position of the real queue, not merely appear anywhere in it --
+   *      see `confirmSuccessorFromTokens`.
+   *   3. Otherwise, a NEW selection/enqueue cycle is attempted whenever
+   *      the real queue state is KNOWN -- `KNOWN_EMPTY` OR
+   *      `KNOWN_NONEMPTY` (`canInjectToQueue`). A real owner finding:
+   *      Spotify's own client keeps a provider-generated "Next Up" queue
+   *      populated after any track starts playing, so a non-empty real
+   *      queue is normal, NOT an owner conflict -- it is never treated as
+   *      a blocker. `POST /me/player/queue` is documented to add an item
+   *      to be played NEXT, so this app's one successor is injected
+   *      ahead of whatever provider items are already there, which are
+   *      left completely untouched (never cleared, never reordered).
+   *      Only a genuinely UNKNOWN queue state (never polled, or the last
+   *      poll errored) yields `QUEUE_STATE_UNKNOWN_CANNOT_INJECT` with
+   *      zero POSTs -- Blocker 3.
    *   4. AutoMix OFF (`_autoMixEnabled`) blocks only this NEW-selection
    *      path, never an already-in-flight confirmation -- Blocker 6.
    *   5. A standing systemic blocker (`_queueBlocker` -- terminal auth or
@@ -801,13 +821,11 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
       return { queued: false, reason: "AWAITING_CONFIRMED_SUCCESSOR_PLAYBACK" };
     }
 
-    if (queueTruth.state === QueueTruthState.KNOWN_NONEMPTY) {
-      this._emit({ type: "external_queue_occupied", queueSize: queueTruth.queueSize });
-      return { queued: false, reason: "EXTERNAL_QUEUE_OCCUPIED" };
-    }
     if (!canInjectToQueue(queueTruth)) {
       // UNKNOWN_NOT_POLLED or UNKNOWN_API_ERROR -- never inject on an
-      // unconfirmed queue state (Blocker 2/3).
+      // unconfirmed queue state (Blocker 2/3). A KNOWN_NONEMPTY queue
+      // (Spotify's own provider-generated Next Up, most commonly) is NOT
+      // blocked here -- see the big doc comment above.
       return { queued: false, reason: "QUEUE_STATE_UNKNOWN_CANNOT_INJECT", queueTruthError: queueTruth.error };
     }
 
@@ -823,6 +841,15 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
       return { queued: false, reason: this._queueBlocker.type === QueueBlockerType.TERMINAL_AUTH ? "TERMINAL_AUTH_BLOCKER" : "IN_COOLDOWN", blocker: this._queueBlocker };
     }
     this._queueBlocker = null; // any cooldown that WAS active has now expired
+
+    // Real owner finding: capture the pre-injection real-queue snapshot
+    // as the "baseline" (provider-owned) tokens -- purely for sanitized
+    // diagnostics (`getLookaheadStatus().providerQueueSize`); this app
+    // never attempts to clear, reorder, or otherwise touch these items.
+    this._lastBaselineQueueTokens = queueTruth.tokens;
+    if (queueTruth.state === QueueTruthState.KNOWN_NONEMPTY) {
+      this._emit({ type: "provider_queue_present", providerQueueSize: queueTruth.queueSize });
+    }
 
     const currentTrackRaw = this._latestState?.track_window?.current_track;
     const currentTrack = currentTrackRaw
@@ -869,9 +896,25 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
     return this._lookaheadController.confirmSuccessor();
   }
 
-  /** Sanitized status snapshot for Phase F live-validation UX -- opaque token only, never a raw Spotify id. */
+  /**
+   * Sanitized status snapshot for Phase F live-validation UX -- opaque
+   * token only, never a raw Spotify id.
+   *
+   * Real owner finding (provider-queue coexistence repair): Spotify's
+   * own client keeps a provider-generated queue (e.g. "Next Up")
+   * populated after any track plays. That queue is truthfully reported
+   * here as `providerQueueSize` -- it is informational, NOT a blocker
+   * (see `runLookaheadCycle()`). `pendingAutoMixSuccessor` /
+   * `successorIsPlayNext` describe ONLY this app's own one chosen
+   * successor and whether it currently occupies the real queue's
+   * play-next (head) position -- the actual confirmation criterion.
+   */
   getLookaheadStatus() {
     const c = this._lookaheadController;
+    const pendingAutoMixSuccessor = c?.pendingToken ?? c?.confirmedToken ?? null;
+    const queueTruth = this._lastQueueTruth;
+    const successorIsPlayNext = !!(pendingAutoMixSuccessor && queueTruth?.tokens?.[0] === pendingAutoMixSuccessor);
+    const providerQueueSize = Math.max(0, (queueTruth?.queueSize ?? 0) - (successorIsPlayNext ? 1 : 0));
     return {
       state: c?.state ?? null,
       candidatePoolSize: this._lastCandidatePoolSize,
@@ -884,6 +927,9 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
       autoMixEnabled: this._autoMixEnabled,
       queueBlocker: this._queueBlocker,
       failedCandidateCount: this._failedCandidateTokens.size,
+      providerQueueSize,
+      pendingAutoMixSuccessor,
+      successorIsPlayNext,
     };
   }
 

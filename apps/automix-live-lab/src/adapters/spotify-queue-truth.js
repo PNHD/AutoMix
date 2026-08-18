@@ -94,9 +94,22 @@ export function isNextControlEnabled(queueTruth) {
   return queueTruth?.state === QueueTruthState.KNOWN_NONEMPTY;
 }
 
-/** Queue injection (Blocker 3) is allowed ONLY when the real queue is confirmed genuinely empty -- never on EMPTY-by-error-fallback, never on unknown. */
+/**
+ * Queue injection (Blocker 3, repaired per real owner finding): allowed
+ * whenever the real queue state is KNOWN -- either genuinely empty OR
+ * genuinely non-empty. A non-empty queue is NOT automatically an owner
+ * conflict: Spotify's own client keeps a provider-generated "Next Up"
+ * queue populated after any track starts playing, and the public API
+ * offers no trustworthy way to distinguish that from anything else the
+ * owner might have queued. `POST /me/player/queue` is documented to add
+ * an item to be played NEXT, so injecting over a provider queue is safe
+ * -- it does not clear or reorder whatever is already there, it only
+ * asks Spotify to play our one chosen successor immediately after the
+ * current track. Injection remains forbidden only when the real state is
+ * genuinely unknown -- never polled yet, or the last poll errored.
+ */
 export function canInjectToQueue(queueTruth) {
-  return queueTruth?.state === QueueTruthState.KNOWN_EMPTY;
+  return queueTruth?.state === QueueTruthState.KNOWN_EMPTY || queueTruth?.state === QueueTruthState.KNOWN_NONEMPTY;
 }
 
 /** UI-facing state label for the Next control / queue panel -- distinguishes "confirmed empty" from "we don't actually know" so the owner sees the real blocker, not a false negative. */

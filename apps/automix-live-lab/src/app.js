@@ -39,6 +39,8 @@ const els = {
   lookaheadConsecutiveCount: document.getElementById("lookahead-consecutive-count"),
   lookaheadAutoMixState: document.getElementById("lookahead-automix-state"),
   lookaheadBlocker: document.getElementById("lookahead-blocker"),
+  lookaheadPlayNext: document.getElementById("lookahead-play-next"),
+  lookaheadProviderQueueSize: document.getElementById("lookahead-provider-queue-size"),
   seedSearchInput: document.getElementById("seed-search-input"),
   seedSearchBtn: document.getElementById("seed-search-btn"),
   seedResults: document.getElementById("seed-results"),
@@ -261,6 +263,11 @@ function renderLookaheadStatus(adapter) {
   } else {
     els.lookaheadBlocker.textContent = s.failedCandidateCount > 0 ? `none (${s.failedCandidateCount} candidate(s) excluded this session)` : "none";
   }
+  // Real owner finding (provider-queue coexistence repair): Spotify's
+  // own "Next Up" queue is normal and expected -- shown here as
+  // informational, sanitized (count only), never a blocker.
+  els.lookaheadPlayNext.textContent = s.successorConfirmed ? (s.successorIsPlayNext ? "yes" : "no (unexpected -- see debug panel)") : "--";
+  els.lookaheadProviderQueueSize.textContent = String(s.providerQueueSize);
 }
 
 /**

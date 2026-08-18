@@ -170,12 +170,26 @@ export class LookaheadQueueController {
    * The fix is architectural: ONE orchestration decision must use ONE
    * fresh snapshot. `runLookaheadCycle()` now calls this method directly
    * with the tokens from its own single poll.
+   *
+   * Repair round 3 (real owner finding): Spotify's own client keeps a
+   * provider-generated "Next Up" queue populated after any track starts
+   * playing -- `GET /me/player/queue` can legitimately return several
+   * items that were never added by this app or the owner. Merely
+   * checking `tokens.includes(pendingToken)` would have confirmed our
+   * successor even if Spotify placed it BEHIND that provider queue,
+   * which is not what "queued as the next thing to play" actually means.
+   * Per Spotify's own documented semantics for `POST /me/player/queue`
+   * ("Add an item to be played next"), confirmation now requires the
+   * pending token to occupy the PLAY-NEXT (head, index 0) position --
+   * `tokens[0] === pendingToken` -- not merely appear anywhere in the
+   * list. A provider queue behind our confirmed successor is expected
+   * and untouched; this method never attempts to clear or reorder it.
    */
   confirmSuccessorFromTokens(tokens) {
     if (this._state !== QueueState.SUCCESSOR_QUEUE_REQUESTED) {
       return { confirmed: false, reason: "NOT_AWAITING_CONFIRMATION", state: this._state };
     }
-    if (Array.isArray(tokens) && tokens.includes(this._pendingToken)) {
+    if (Array.isArray(tokens) && tokens.length > 0 && tokens[0] === this._pendingToken) {
       this._confirmedToken = this._pendingToken;
       this._setState(QueueState.SUCCESSOR_CONFIRMED);
       return { confirmed: true, token: this._confirmedToken };
