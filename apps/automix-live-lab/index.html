@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AutoMix Live Lab</title>
+  <link rel="stylesheet" href="/src/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>AutoMix Live Lab</h1>
+    <div class="source-switch" role="tablist" aria-label="Source mode">
+      <button id="mode-spotify" class="mode-btn" role="tab" aria-selected="false">Spotify Live</button>
+      <button id="mode-local" class="mode-btn" role="tab" aria-selected="false">Local DSP Live</button>
+    </div>
+  </header>
+
+  <main class="grid">
+    <section class="panel" id="panel-queue">
+      <h2>Queue</h2>
+      <div id="queue-current" class="track-row track-current">No source connected</div>
+      <div id="queue-next" class="track-row track-next"></div>
+      <ol id="queue-upcoming" class="upcoming-list"></ol>
+    </section>
+
+    <section class="panel" id="panel-status">
+      <h2>AutoMix status</h2>
+      <div class="status-row">
+        <span class="label">Provider</span>
+        <span id="status-provider">--</span>
+      </div>
+      <div class="status-row">
+        <span class="label">Capability</span>
+        <span id="status-capability" class="badge">--</span>
+      </div>
+      <div class="status-row">
+        <span class="label">Account readiness</span>
+        <span id="status-readiness">--</span>
+      </div>
+      <hr />
+      <h3>Next transition plan</h3>
+      <div class="status-row"><span class="label">Exit anchor</span><span id="plan-exit">--</span></div>
+      <div class="status-row"><span class="label">Entry anchor</span><span id="plan-entry">--</span></div>
+      <div class="status-row"><span class="label">Tempo correction</span><span id="plan-tempo">--</span></div>
+      <div class="status-row"><span class="label">Bass/EQ handoff</span><span id="plan-eq">--</span></div>
+      <div class="status-row"><span class="label">Beat/downbeat sync</span><span id="plan-beat">--</span></div>
+      <div class="status-row"><span class="label">Executes real DSP</span><span id="plan-real">--</span></div>
+      <div class="status-row"><span class="label">Reason</span><span id="plan-reason">--</span></div>
+    </section>
+
+    <section class="panel" id="panel-controls">
+      <h2>Controls</h2>
+      <div id="spotify-setup" class="setup-box hidden">
+        <label for="spotify-client-id">Spotify Client ID</label>
+        <input id="spotify-client-id" type="text" placeholder="paste your Spotify Developer Client ID" />
+        <button id="spotify-save-client-id">Save</button>
+        <p class="hint">Redirect URI to register in the Spotify dashboard: <code id="redirect-uri-hint"></code></p>
+      </div>
+      <div class="controls-row">
+        <button id="ctl-connect">Connect / Authorize</button>
+        <button id="ctl-play">Play</button>
+        <button id="ctl-pause">Pause</button>
+        <button id="ctl-next">Next</button>
+        <button id="ctl-automix-toggle" aria-pressed="true">AutoMix: ON</button>
+      </div>
+      <button id="ctl-debug-toggle" class="link-btn">Show debug panel</button>
+      <pre id="debug-panel" class="debug-panel hidden"></pre>
+    </section>
+  </main>
+
+  <script type="module" src="/src/app.js"></script>
+</body>
+</html>
