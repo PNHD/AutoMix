@@ -150,21 +150,55 @@ export class LookaheadQueueController {
   }
 
   /**
-   * Verifies the pending successor is actually visible in the real
-   * Spotify queue (GET /me/player/queue and/or SDK next_tracks) before
-   * trusting it -- SUCCESSOR_QUEUE_REQUESTED -> SUCCESSOR_CONFIRMED.
+   * P0-M6-R2 repair pass 2, Blocker 1: PURE confirmation decision -- no
+   * network I/O of its own. Takes an ALREADY-FETCHED array of sanitized
+   * queue tokens (one fresh `GET /me/player/queue` snapshot, fetched
+   * exactly once by the caller) and decides whether the pending
+   * successor is visible in THAT SAME snapshot.
+   *
+   * This exists because the previous double-poll design had a real
+   * race: `SpotifyPublicControlAdapter.runLookaheadCycle()` would poll
+   * queue truth once to decide what to do, then (for the "awaiting
+   * confirmation" branch) call the OLD async `confirmSuccessor()`, which
+   * polled AGAIN internally. Between those two polls, Spotify could
+   * legitimately advance the pending successor to `current` -- so poll
+   * #2 would see an EMPTY queue (the item was consumed, not never
+   * visible) and wrongly report `NOT_YET_VISIBLE_IN_QUEUE`, leaving the
+   * controller stuck in `SUCCESSOR_QUEUE_REQUESTED` forever (it can
+   * never reach `SUCCESSOR_CONFIRMED`, so the later
+   * `player_state_changed` for that same track can't advance it either).
+   * The fix is architectural: ONE orchestration decision must use ONE
+   * fresh snapshot. `runLookaheadCycle()` now calls this method directly
+   * with the tokens from its own single poll.
    */
-  async confirmSuccessor() {
+  confirmSuccessorFromTokens(tokens) {
     if (this._state !== QueueState.SUCCESSOR_QUEUE_REQUESTED) {
       return { confirmed: false, reason: "NOT_AWAITING_CONFIRMATION", state: this._state };
     }
-    const tokens = await this._verifyQueueFn();
     if (Array.isArray(tokens) && tokens.includes(this._pendingToken)) {
       this._confirmedToken = this._pendingToken;
       this._setState(QueueState.SUCCESSOR_CONFIRMED);
       return { confirmed: true, token: this._confirmedToken };
     }
     return { confirmed: false, reason: "NOT_YET_VISIBLE_IN_QUEUE" };
+  }
+
+  /**
+   * Convenience wrapper that performs its OWN `GET /me/player/queue`
+   * fetch via `verifyQueueFn` before delegating to
+   * `confirmSuccessorFromTokens`. Kept for standalone/manual use (e.g.
+   * `SpotifyPublicControlAdapter.confirmLookaheadSuccessor()`) where a
+   * fresh, dedicated poll is actually wanted -- the normal orchestration
+   * path (`runLookaheadCycle()`) MUST NOT use this; it already has a
+   * fresh snapshot from its own single poll and must call
+   * `confirmSuccessorFromTokens` directly instead.
+   */
+  async confirmSuccessor() {
+    if (this._state !== QueueState.SUCCESSOR_QUEUE_REQUESTED) {
+      return { confirmed: false, reason: "NOT_AWAITING_CONFIRMATION", state: this._state };
+    }
+    const tokens = await this._verifyQueueFn();
+    return this.confirmSuccessorFromTokens(tokens);
   }
 
   /**

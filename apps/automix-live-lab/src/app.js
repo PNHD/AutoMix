@@ -2,6 +2,7 @@ import { LocalDSPPlaybackAdapter } from "./adapters/LocalDSPPlaybackAdapter.js";
 import { SpotifyPublicControlAdapter, CLIENT_ID_STORAGE_KEY } from "./adapters/SpotifyPublicControlAdapter.js";
 import { SpotifyDJPartnerPlaybackAdapter } from "./adapters/SpotifyDJPartnerPlaybackAdapter.js"; // eslint-disable-line no-unused-vars -- wired for future partner access, see Lane S2 doc
 import { isSeekControlEnabled, createSeekDragController } from "./adapters/spotify-seek.js";
+import { sanitizeTrackToken } from "./adapters/spotify-autoplay.js";
 
 const CLIENT_ID_KEY = CLIENT_ID_STORAGE_KEY;
 
@@ -130,11 +131,18 @@ function stopStatusLoop() {
 }
 
 /**
- * P0-M6-R2 Phase F: the loop that actually makes the product flow
- * "automatic" -- polls real queue truth (Phase B), and whenever the
- * lookahead controller is idle (no successor queued yet, or the prior
- * successor just became current), runs one full select-and-queue cycle
- * (Phases C/D/E) with no owner interaction. Runs on its own slower
+ * P0-M6-R2 Phase F, repaired (repair pass 2, Blocker 1, item C): the
+ * loop that actually makes the product flow "automatic." Calls
+ * `adapter.runLookaheadCycle()` as the SINGLE orchestration entry point
+ * -- it internally handles initial selection, requested-successor
+ * confirmation, idle waiting, and refill-after-advance, all from ONE
+ * fresh `GET /me/player/queue` poll per call. This file must NOT
+ * implement a parallel confirmation path (a separate
+ * `getRealQueueTruth()` call followed by inspecting controller state and
+ * calling `confirmLookaheadSuccessor()` on the side) -- that shape is
+ * exactly what caused the double-poll confirmation race this repair
+ * fixes. One in-flight guard (`lookaheadCycleInFlight`) ensures a normal
+ * tick never overlaps a still-running one. Runs on its own slower
  * interval (real Web API calls, not local SDK state) so it doesn't fire
  * every 500ms alongside the local status-render loop.
  */
@@ -142,34 +150,18 @@ function startLookaheadOrchestration(adapter) {
   stopLookaheadOrchestration();
   lookaheadHandle = setInterval(async () => {
     if (!(adapter instanceof SpotifyPublicControlAdapter)) return;
+    if (!adapter._seedObserved) return; // nothing to plan/confirm/poll until the seed itself is confirmed active
+    if (lookaheadCycleInFlight) return; // never overlap two ticks
+    lookaheadCycleInFlight = true;
     try {
-      await adapter.getRealQueueTruth();
+      const result = await adapter.runLookaheadCycle();
+      logDebug(`runLookaheadCycle() -> queued=${result.queued} confirmed=${result.confirmed ?? "--"} reason=${result.reason || result.selectionReason || "--"}`);
     } catch (e) {
-      logDebug(`getRealQueueTruth() -> ERROR: ${e.message}`);
+      logDebug(`runLookaheadCycle() -> ERROR: ${e.message}`);
+    } finally {
+      lookaheadCycleInFlight = false;
     }
     renderNextControlState(adapter);
-
-    if (!adapter._seedObserved) return; // nothing to plan until the seed itself is confirmed active
-
-    const lookaheadState = adapter._lookaheadController?.state;
-    if (!lookaheadCycleInFlight && (!lookaheadState || lookaheadState === "NO_SUCCESSOR_QUEUED" || lookaheadState === "SELECTING_NEXT_SUCCESSOR")) {
-      lookaheadCycleInFlight = true;
-      try {
-        const result = await adapter.runLookaheadCycle();
-        logDebug(`runLookaheadCycle() -> queued=${result.queued} reason=${result.reason || result.selectionReason || "--"} poolSize=${result.candidatePoolSize ?? "--"}`);
-      } catch (e) {
-        logDebug(`runLookaheadCycle() -> ERROR: ${e.message}`);
-      } finally {
-        lookaheadCycleInFlight = false;
-      }
-    } else if (lookaheadState === "SUCCESSOR_QUEUE_REQUESTED") {
-      try {
-        const confirmResult = await adapter.confirmLookaheadSuccessor();
-        if (confirmResult.confirmed) logDebug(`confirmLookaheadSuccessor() -> confirmed token=${confirmResult.token}`);
-      } catch (e) {
-        logDebug(`confirmLookaheadSuccessor() -> ERROR: ${e.message}`);
-      }
-    }
     renderLookaheadStatus(adapter);
   }, 2000);
 }
@@ -271,6 +263,17 @@ function renderLookaheadStatus(adapter) {
   }
 }
 
+/**
+ * P0-M6-R2 repair pass 2, Blocker 2: the debug panel is tracked
+ * diagnostic evidence, not ephemeral UI -- it must never carry the
+ * owner's raw search text, a raw `spotify:track:` URI, or any other raw
+ * Spotify identifier. Only the RESULT LIST rendered directly in the DOM
+ * below (song name/artist as plain `<span>` text, never logged) may show
+ * that, because the owner needs it to pick a song. Every `logDebug()`
+ * call in this function uses only a result count, an opaque `TRK_`
+ * token (`sanitizeTrackToken`), and/or an endpoint name with no query
+ * string.
+ */
 async function renderSeedResults(adapter, query) {
   els.seedResults.innerHTML = "";
   let results;
@@ -280,7 +283,7 @@ async function renderSeedResults(adapter, query) {
     logDebug(`searchTracks() -> ERROR: ${e.message}`);
     return;
   }
-  logDebug(`searchTracks("${query}") -> ${results.length} result(s) (GET /search?type=track, limit<=10)`);
+  logDebug(`searchTracks() -> ${results.length} result(s)`);
   for (const track of results) {
     const li = document.createElement("li");
     li.className = "seed-result-row";
@@ -289,12 +292,13 @@ async function renderSeedResults(adapter, query) {
     const btn = document.createElement("button");
     btn.textContent = "Play as seed";
     btn.onclick = async () => {
+      const seedToken = sanitizeTrackToken(track.uri);
       try {
         await adapter.playSeedTrack(track.uri);
-        logDebug(`playSeedTrack(${track.uri}) -> PUT /me/player/play?device_id=... {"uris":["${track.uri}"]}`);
+        logDebug(`playSeedTrack(${seedToken}) -> request accepted`);
         renderAutoplayStatus(adapter);
       } catch (e) {
-        logDebug(`playSeedTrack() -> ERROR: ${e.message}`);
+        logDebug(`playSeedTrack(${seedToken}) -> ERROR: ${e.message}`);
       }
     };
     li.appendChild(label);

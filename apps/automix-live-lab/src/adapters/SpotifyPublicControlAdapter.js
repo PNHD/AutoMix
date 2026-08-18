@@ -754,19 +754,51 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
     }
     const controller = this._lookaheadController;
 
+    // P0-M6-R2 repair pass 2, Blocker 1: poll real queue truth EXACTLY
+    // ONCE for this whole cycle. Every decision below (confirmation,
+    // external-occupancy, injection) reads THIS SAME snapshot -- never a
+    // second `GET /me/player/queue`. This is the fix for the
+    // confirmation race: the old design polled once here and then polled
+    // AGAIN inside the (now-unused-here) async `confirmSuccessor()`,
+    // and Spotify could advance the pending successor to `current`
+    // between those two polls, making poll #2 see an empty queue and
+    // wrongly report `NOT_YET_VISIBLE_IN_QUEUE` -- permanently stuck in
+    // `SUCCESSOR_QUEUE_REQUESTED`, since the later `player_state_changed`
+    // for that track can only advance an already-`SUCCESSOR_CONFIRMED`
+    // controller.
     const queueTruth = await this.getRealQueueTruth();
 
     // Already awaiting confirmation of OUR OWN prior request -- this
-    // tick's only job is to try confirming it. Never start a second
-    // selection cycle here, no matter what queueTruth says.
+    // tick's only job is to try confirming it, using the snapshot
+    // already in hand. Never start a second selection cycle here, no
+    // matter what queueTruth says.
     if (controller.state === QueueState.SUCCESSOR_QUEUE_REQUESTED) {
       if (queueTruth.state === QueueTruthState.UNKNOWN_API_ERROR) {
-        // Blocker 2: an API error must never be silently reinterpreted
-        // as "not yet visible" -- report the real blocker.
+        // Blocker 1/2: an API error must never be silently reinterpreted
+        // as "not yet visible" -- report the real blocker and remain
+        // SUCCESSOR_QUEUE_REQUESTED so a later successful poll can still
+        // confirm normally.
         return { queued: false, confirmed: false, reason: "QUEUE_STATE_UNKNOWN_CANNOT_CONFIRM", queueTruthError: queueTruth.error };
       }
-      const confirmResult = await controller.confirmSuccessor();
-      return { queued: false, confirmed: confirmResult.confirmed, reason: confirmResult.reason || "CONFIRMING_OWN_PENDING_SUCCESSOR" };
+      if (queueTruth.state === QueueTruthState.KNOWN_NONEMPTY) {
+        // Pure, synchronous decision against the tokens we already
+        // fetched above -- zero additional GET queue requests.
+        const confirmResult = controller.confirmSuccessorFromTokens(queueTruth.tokens);
+        return { queued: false, confirmed: confirmResult.confirmed, reason: confirmResult.reason || "CONFIRMING_OWN_PENDING_SUCCESSOR" };
+      }
+      // KNOWN_EMPTY -- the pending successor genuinely isn't visible yet
+      // (or was already consumed in the brief window before this poll;
+      // either way there is nothing more to do this tick besides wait).
+      return { queued: false, confirmed: false, reason: "NOT_YET_VISIBLE_IN_QUEUE" };
+    }
+
+    // Already confirmed and waiting for Spotify to actually advance to
+    // it -- this is NOT an external occupant, even though the confirmed
+    // token may still legitimately be sitting in the real queue. Never a
+    // new selection cycle, zero POSTs; `onTrackAdvanced()` (fed by real
+    // `player_state_changed` events) is what moves this forward.
+    if (controller.state === QueueState.SUCCESSOR_CONFIRMED) {
+      return { queued: false, reason: "AWAITING_CONFIRMED_SUCCESSOR_PLAYBACK" };
     }
 
     if (queueTruth.state === QueueTruthState.KNOWN_NONEMPTY) {
