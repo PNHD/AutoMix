@@ -1,6 +1,7 @@
 import { LocalDSPPlaybackAdapter } from "./adapters/LocalDSPPlaybackAdapter.js";
 import { SpotifyPublicControlAdapter, CLIENT_ID_STORAGE_KEY } from "./adapters/SpotifyPublicControlAdapter.js";
 import { SpotifyDJPartnerPlaybackAdapter } from "./adapters/SpotifyDJPartnerPlaybackAdapter.js"; // eslint-disable-line no-unused-vars -- wired for future partner access, see Lane S2 doc
+import { isSeekControlEnabled, createSeekDragController } from "./adapters/spotify-seek.js";
 
 const CLIENT_ID_KEY = CLIENT_ID_STORAGE_KEY;
 
@@ -32,6 +33,10 @@ const els = {
   autoplaySnapshotCount: document.getElementById("autoplay-snapshot-count"),
   autoplayClassification: document.getElementById("autoplay-classification"),
   autoplayClassificationReason: document.getElementById("autoplay-classification-reason"),
+  seekSlider: document.getElementById("seek-slider"),
+  seekCurrentLabel: document.getElementById("seek-current-label"),
+  seekDurationLabel: document.getElementById("seek-duration-label"),
+  seekJumpNearEndBtn: document.getElementById("seek-jump-near-end"),
   ctlConnect: document.getElementById("ctl-connect"),
   ctlPlay: document.getElementById("ctl-play"),
   ctlPause: document.getElementById("ctl-pause"),
@@ -63,6 +68,13 @@ function fmtTrack(t) {
   return `${t.title} -- ${t.artist} (${Math.round(t.durationMs / 1000)}s)`;
 }
 
+function formatMs(ms) {
+  const totalS = Math.max(0, Math.round((ms || 0) / 1000));
+  const m = Math.floor(totalS / 60);
+  const s = totalS % 60;
+  return `${m}:${String(s).padStart(2, "0")}`;
+}
+
 function renderQueue(adapter) {
   const q = adapter.getQueue();
   els.queueCurrent.textContent = q.current ? `Now: ${fmtTrack(q.current)}` : "No track loaded";
@@ -90,11 +102,12 @@ function renderStatus(adapter, readiness) {
   els.planReason.textContent = plan.reason;
 }
 
-function startStatusLoop(adapter) {
+function startStatusLoop(adapter, extraRenderFn) {
   stopStatusLoop();
   refreshHandle = setInterval(() => {
     renderQueue(adapter);
     renderStatus(adapter, adapter._lastReadiness);
+    extraRenderFn?.();
   }, 500);
 }
 function stopStatusLoop() {
@@ -142,6 +155,25 @@ function renderAutoplayStatus(adapter) {
   els.autoplayClassificationReason.textContent = reason;
 }
 
+function renderSeekUI(adapter, seekController) {
+  if (!(adapter instanceof SpotifyPublicControlAdapter)) return;
+  const ps = adapter.getPlaybackState();
+  const enabled = isSeekControlEnabled({
+    sdkReady: adapter._sdkReady,
+    hasCurrentTrack: !!ps.trackId,
+    durationMs: ps.durationMs,
+    disallowsSeeking: ps.disallowsSeeking,
+  });
+  els.seekSlider.disabled = !enabled;
+  els.seekJumpNearEndBtn.disabled = !enabled;
+  els.seekSlider.max = String(ps.durationMs || 0);
+  els.seekDurationLabel.textContent = formatMs(ps.durationMs || 0);
+  if (!seekController.isDragging) {
+    els.seekSlider.value = String(ps.positionMs || 0);
+    els.seekCurrentLabel.textContent = formatMs(ps.positionMs || 0);
+  }
+}
+
 async function renderSeedResults(adapter, query) {
   els.seedResults.innerHTML = "";
   let results;
@@ -185,6 +217,10 @@ async function activateSpotify() {
 
   const adapter = new SpotifyPublicControlAdapter({ clientId, redirectUri: REDIRECT_URI });
   activeAdapter = adapter;
+  const seekController = createSeekDragController({
+    seekFn: (ms) => adapter.seek(ms).catch((e) => logDebug(`seek() -> ERROR: ${e.message}`)),
+    getDurationMs: () => adapter.getPlaybackState().durationMs,
+  });
   adapter.onStateChange((evt) => {
     logDebug(`[spotify-public] ${JSON.stringify(evt.type === "state_changed" ? { type: evt.type } : evt)}`);
     if (evt.type === "autoplay_snapshot" || evt.type === "seed_playback_confirmed" || evt.type === "seed_track_played") {
@@ -216,10 +252,11 @@ async function activateSpotify() {
     // panel (not a playlist) is how playback actually starts.
     const readiness = await adapter.getAccountReadiness();
     adapter._lastReadiness = readiness;
-    startStatusLoop(adapter);
+    startStatusLoop(adapter, () => renderSeekUI(adapter, seekController));
     renderStatus(adapter, readiness);
     renderQueue(adapter);
     renderAutoplayStatus(adapter);
+    renderSeekUI(adapter, seekController);
   };
   els.ctlPlay.onclick = () => adapter.play().catch((e) => logDebug(`play() -> ${e.message}`));
   els.ctlPause.onclick = () => adapter.pause().catch((e) => logDebug(`pause() -> ${e.message}`));
@@ -231,9 +268,34 @@ async function activateSpotify() {
   els.seedSearchInput.onkeydown = (ev) => {
     if (ev.key === "Enter") els.seedSearchBtn.click();
   };
+
+  // Section A: drag (input event, continuous, never seeks) vs commit
+  // (change event, fires exactly once on release) -- standard <input
+  // type=range> semantics map directly onto the drag/commit controller.
+  els.seekSlider.oninput = () => {
+    seekController.onDrag(Number(els.seekSlider.value));
+    els.seekCurrentLabel.textContent = formatMs(seekController.displayValueMs);
+  };
+  els.seekSlider.onchange = () => {
+    const target = seekController.onCommit(Number(els.seekSlider.value));
+    els.seekCurrentLabel.textContent = formatMs(target);
+    logDebug(`seek() committed -> target=${target}ms`);
+  };
+  els.seekJumpNearEndBtn.onclick = async () => {
+    try {
+      const { targetMs, durationMs } = await adapter.startNearEndProbe();
+      logDebug(`startNearEndProbe() -> targetMs=${targetMs} (durationMs=${durationMs}); Autoplay evidence window reset`);
+      renderAutoplayStatus(adapter);
+      renderSeekUI(adapter, seekController);
+    } catch (e) {
+      logDebug(`startNearEndProbe() -> ERROR: ${e.message}`);
+    }
+  };
+
   renderStatus(adapter, null);
   renderQueue(adapter);
   renderAutoplayStatus(adapter);
+  renderSeekUI(adapter, seekController);
 }
 
 els.spotifySaveClientId.onclick = () => {

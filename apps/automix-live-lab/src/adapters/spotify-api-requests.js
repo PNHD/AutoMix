@@ -58,6 +58,31 @@ export function buildPlaySeedRequest(deviceId, uri) {
   };
 }
 
+/**
+ * PUT /v1/me/player  body: {"device_ids":["<id>"],"play":false}
+ *
+ * Runtime defect found during real owner validation (not a PM comment --
+ * observed directly against the live Spotify API): a freshly-`ready` Web
+ * Playback SDK device is registered with Spotify Connect but is NOT
+ * automatically the *active* device. Calling `PUT /me/player/play` with
+ * that `device_id` before transferring playback to it 404s
+ * ("Device not found"), even though the device_id itself is valid. The
+ * official flow (Web Playback SDK Getting Started / Transfer Playback
+ * docs) is: SDK connect -> `ready(device_id)` -> Transfer Playback to
+ * that device -> THEN Start/Resume Playback. Uses the same
+ * `user-modify-playback-state` scope already requested for
+ * `buildPlaySeedRequest` -- no scope broadening needed.
+ */
+export function buildTransferPlaybackRequest(deviceId, play = false) {
+  if (!deviceId) throw new Error("SPOTIFY_DEVICE_ID_REQUIRED");
+  return {
+    method: "PUT",
+    path: "/me/player",
+    url: "/me/player",
+    body: { device_ids: [deviceId], play },
+  };
+}
+
 /** Maps one raw Spotify search-result track object to the minimal shape the seed-picker UI needs. */
 export function toSeedCandidate(track) {
   return {

@@ -7,7 +7,7 @@ import {
   refreshAccessToken,
   SPOTIFY_SCOPES,
 } from "./spotify-pkce.js";
-import { buildSearchRequest, buildPlaySeedRequest, toSeedCandidate, MAX_SEARCH_LIMIT } from "./spotify-api-requests.js";
+import { buildSearchRequest, buildPlaySeedRequest, buildTransferPlaybackRequest, toSeedCandidate, MAX_SEARCH_LIMIT } from "./spotify-api-requests.js";
 import {
   sanitizeTrackToken,
   captureSnapshot,
@@ -16,6 +16,7 @@ import {
   resolveManualAttribution,
   NO_PENDING_MANUAL_ACTION,
 } from "./spotify-autoplay.js";
+import { clampSeekTargetMs, computeNearEndProbeTargetMs } from "./spotify-seek.js";
 
 const TOKEN_STORAGE_KEY = "automix_spotify_token_v1";
 const VERIFIER_STORAGE_KEY = "automix_spotify_pkce_verifier_v1";
@@ -25,7 +26,34 @@ export const CLIENT_ID_STORAGE_KEY = "automix_spotify_client_id_v1";
 /**
  * SpotifyPublicControlAdapter -- Lane S1 (Issue #11 PM comments
  * 5323227813 / 5323231023 / 5323258040 / 5324307503 / 5324583196 /
- * 5324756494).
+ * 5324756494, plus two runtime fixes found during real owner validation).
+ *
+ * NEAR-END PROBE (owner live-testing follow-up): the first real owner run
+ * completed a full song and correctly classified
+ * `SPOTIFY_AUTOPLAY_NOT_OBSERVED`. To make repeat validation passes fast
+ * (no full-length replay needed), added a progress slider + "Jump to last
+ * 15s" probe (`startNearEndProbe()`, spotify-seek.js). Section B of that
+ * request is load-bearing: `seek()` was refactored to NEVER create
+ * pending manual-track-change attribution the way `next()` does -- a
+ * manual seek only emits a sanitized `manual_seek` diagnostic event, so
+ * whatever Spotify does naturally after the seek (continue automatically,
+ * or just stop) is judged as genuine, unsuppressed Autoplay evidence.
+ * `startNearEndProbe()` preserves `_seedToken`/`_seedObserved` (the seed
+ * never changes, only its playback position does) and archives+clears
+ * only `_autoplaySnapshots` (the array `classifyAutoplayResult` reads),
+ * so a fresh probe never inherits evidence from the pre-probe window.
+ *
+ * RUNTIME FIX (owner live-testing, not a PM comment): the real Spotify
+ * API returned `404` from `PUT /me/player/play?device_id=<sdk device>`
+ * on the very first seed play attempt, even with a valid `ready`
+ * device_id. Root cause: a freshly-connected Web Playback SDK device is
+ * registered with Spotify Connect but is NOT automatically the *active*
+ * device -- the official flow (Web Playback SDK Getting Started /
+ * Transfer Playback docs) requires `PUT /me/player` (Transfer Playback)
+ * to that device_id before Start/Resume Playback will accept it. Fixed
+ * with `_ensureDeviceActive()` (idempotent per device_id), called before
+ * the seed's `PUT /me/player/play`. Uses the SAME `user-modify-playback-
+ * state` scope already requested -- no scope broadening.
  *
  * REPAIR PASS 3 (`5324756494`, `P0_M6_R1_PREAUTH_RACE_REPAIR_REQUIRED`):
  * immediately after `playSeedTrack()`, the Web Playback SDK can still
@@ -98,6 +126,7 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
     this._token = null; // { access_token, expires_at_ms, refresh_token }
     this._player = null; // Spotify.Player instance (Web Playback SDK)
     this._deviceId = null;
+    this._deviceActivated = false; // Transfer Playback runtime fix -- see _ensureDeviceActive()
     this._latestState = null;
     this._listeners = new Set();
     this._connected = false;
@@ -112,14 +141,20 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
     this._seedUri = null;
     this._seedToken = null;
     this._autoplaySnapshots = [];
+    // Near-end probe (Section C): each startNearEndProbe() archives the
+    // pre-probe _autoplaySnapshots here (diagnostic-only, never fed to
+    // classifyAutoplayResult) before clearing the live array.
+    this._preProbeSnapshotsArchive = [];
     // Repair (`5324756494`, pre-auth race): AWAITING_SEED_OBSERVATION
     // until the SDK reports the seed itself as current at least once,
     // then SEED_ACTIVE. See _onPlayerStateChanged/playSeedTrack.
     this._seedObserved = false;
-    // Repair (`5324583196`, BLOCKER 2): a manual next()/seek() stays
-    // attributed across same-track intermediate `player_state_changed`
-    // events, resolving only when the current track actually changes (or
-    // a bounded timeout expires) -- see resolveManualAttribution().
+    // Repair (`5324583196`, BLOCKER 2): a manual next() stays attributed
+    // across same-track intermediate `player_state_changed` events,
+    // resolving only when the current track actually changes (or a
+    // bounded timeout expires) -- see resolveManualAttribution(). Manual
+    // Seek deliberately does NOT use this mechanism (Section B) -- see
+    // seek() below.
     this._manualAction = NO_PENDING_MANUAL_ACTION;
   }
 
@@ -314,6 +349,7 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
     });
     this._player.addListener("ready", ({ device_id }) => {
       this._deviceId = device_id;
+      this._deviceActivated = false; // a (re)connect gets a fresh device_id -- must transfer again
       this._sdkReady = true;
       this._emit({ type: "device_ready", deviceId: device_id });
     });
@@ -406,11 +442,28 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
   }
 
   /**
+   * Transfer Playback runtime fix: a freshly-`ready` Web Playback SDK
+   * device is not automatically the *active* Spotify Connect device --
+   * `PUT /me/player/play?device_id=...` 404s ("Device not found") until
+   * this has been called at least once for the current device_id.
+   * Idempotent per device_id (`_deviceActivated`), so repeated seed plays
+   * don't re-issue the transfer call every time.
+   */
+  async _ensureDeviceActive() {
+    if (this._deviceActivated) return;
+    const req = buildTransferPlaybackRequest(this._deviceId, false);
+    await this._api(req.url, { method: req.method, body: JSON.stringify(req.body) });
+    this._deviceActivated = true;
+    this._emit({ type: "device_activated", deviceId: this._deviceId });
+  }
+
+  /**
    * BLOCKER 1: plays exactly ONE seed track on the SDK's own device.
    * Never a playlist context, never more than one uri.
    */
   async playSeedTrack(uri) {
     if (!this._deviceId) throw new Error("SPOTIFY_DEVICE_NOT_READY");
+    await this._ensureDeviceActive();
     const req = buildPlaySeedRequest(this._deviceId, uri);
     await this._api(req.url, { method: req.method, body: JSON.stringify(req.body) });
     this._seedUri = uri;
@@ -441,12 +494,13 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
 
   getPlaybackState() {
     const s = this._latestState;
-    if (!s) return { isPlaying: false, positionMs: 0, durationMs: 0, trackId: null };
+    if (!s) return { isPlaying: false, positionMs: 0, durationMs: 0, trackId: null, disallowsSeeking: false };
     return {
       isPlaying: !s.paused,
       positionMs: s.position,
       durationMs: s.duration,
       trackId: s.track_window?.current_track?.id ?? null,
+      disallowsSeeking: !!s.disallows?.seeking,
     };
   }
 
@@ -465,14 +519,58 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
     return t ? sanitizeTrackToken(t.id) : null;
   }
 
+  /**
+   * Manual Next: creates pending track-change attribution (BLOCKER 2,
+   * `5324583196`) so the resulting changed current track is correctly
+   * judged manual, not Autoplay.
+   */
   async next() {
-    this._manualAction = beginManualAction(Date.now(), this._currentTokenFromLatestState());
+    this._manualAction = beginManualAction(Date.now(), this._currentTokenFromLatestState(), "next");
     await this._player?.nextTrack();
   }
 
+  /**
+   * Manual Seek (Section B, this repair): deliberately does NOT create
+   * pending track-change attribution and NEVER touches `_manualAction`.
+   * A seek only repositions playback within the SAME track -- it must
+   * never cause a LATER, unrelated natural end-of-track change to be
+   * misjudged as manual. Only a sanitized `manual_seek` diagnostic event
+   * (opaque pre-seek token + numeric positions, no titles) is emitted.
+   * Uses the Web Playback SDK's own local `seek()` (the browser device is
+   * already active) rather than an extra Web API call. Always clamps via
+   * `clampSeekTargetMs` regardless of caller, so the adapter itself
+   * guarantees the seek-target invariant.
+   */
   async seek(ms) {
-    this._manualAction = beginManualAction(Date.now(), this._currentTokenFromLatestState());
-    await this._player?.seek(ms);
+    const target = clampSeekTargetMs(ms, this.getPlaybackState().durationMs);
+    this._emit({ type: "manual_seek", requestedPositionMs: target, preSeekToken: this._currentTokenFromLatestState(), capturedAtMs: Date.now() });
+    await this._player?.seek(target);
+    return target;
+  }
+
+  /**
+   * Near-end Autoplay probe (Section C): jumps the ALREADY-ACTIVE seed to
+   * its final ~15s so a repeat owner-validation pass doesn't require
+   * replaying a full song. Requires the seed to already be SEED_ACTIVE
+   * (`_seedObserved`); preserves `_seedToken`/`_seedObserved`/
+   * `_seedPlaybackConfirmed` untouched (same seed, just repositioned).
+   * Archives the pre-probe `_autoplaySnapshots` (diagnostic-only, never
+   * classified) and starts a fresh, empty evidence window so the new
+   * classification can only reflect what happens naturally AFTER this
+   * seek. Never calls next() and never queues anything.
+   */
+  async startNearEndProbe() {
+    if (!this._seedObserved) throw new Error("SEED_NOT_YET_ACTIVE_FOR_PROBE");
+    const durationMs = this.getPlaybackState().durationMs;
+    if (!durationMs || durationMs <= 0) throw new Error("NO_DURATION_KNOWN_FOR_PROBE");
+    const targetMs = computeNearEndProbeTargetMs(durationMs);
+
+    this._preProbeSnapshotsArchive.push({ archivedAtMs: Date.now(), snapshots: this._autoplaySnapshots });
+    this._autoplaySnapshots = [];
+    this._emit({ type: "near_end_probe_started", targetMs, durationMs });
+
+    await this.seek(targetMs);
+    return { targetMs, durationMs };
   }
 
   /**

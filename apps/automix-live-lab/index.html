@@ -24,6 +24,16 @@
       </div>
       <ol id="seed-results" class="upcoming-list seed-results"></ol>
       <hr />
+      <h3>Progress</h3>
+      <div class="seek-row">
+        <span id="seek-current-label" class="seek-time">0:00</span>
+        <input id="seek-slider" type="range" min="0" max="0" value="0" step="1000" disabled />
+        <span id="seek-duration-label" class="seek-time">0:00</span>
+      </div>
+      <div class="controls-row">
+        <button id="seek-jump-near-end" disabled>Jump to last 15s</button>
+      </div>
+      <hr />
       <h3>Autoplay observability</h3>
       <div class="status-row"><span class="label">Seed playing</span><span id="seed-status">no seed selected</span></div>
       <div class="status-row"><span class="label">Snapshots captured</span><span id="autoplay-snapshot-count">0</span></div>

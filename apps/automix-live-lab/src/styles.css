@@ -51,6 +51,10 @@ body {
 .seed-results { max-height: 220px; overflow-y: auto; }
 .seed-result-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 4px 0; }
 .seed-result-row button { flex-shrink: 0; }
+.seek-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.seek-row input[type="range"] { flex: 1; accent-color: var(--accent); }
+.seek-row input[type="range"]:disabled { opacity: .4; }
+.seek-time { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; min-width: 3.2em; text-align: center; }
 .track-row { padding: 8px 0; border-bottom: 1px solid var(--border); }
 .track-current { font-weight: 600; }
 .track-next { color: var(--muted); }

@@ -43,6 +43,35 @@ New deterministic INTEGRATION-level test file, `tools/verify_spotify_preauth_rac
 
 Full regression rerun, all previously-passing suites, all still green: 24/24 seed-identity, 17/17 search, 10/10 play-seed, 18/18 autoplay, 12/12 PKCE, 22/22 schedule. The Local DSP Live 193-second session was, again, deliberately NOT rerun -- the engine was not touched.
 
+## R3. Real owner Spotify validation, transfer-playback runtime fix, and near-end probe
+
+This is the first pass where the owner actually created a Spotify Developer app (Client ID, redirect URI `http://127.0.0.1:5500/`) and drove the live flow themselves, interactively, in their own browser -- not a synthetic-state test. This session guided the owner step by step and never touched their credentials.
+
+**Live run, part 1 -- login and device registration (real, successful):**
+- PKCE login completed (`PKCE login completed, token stored.`), then `connect()` -> `{"ok":true,"reason":"AUTHENTICATED"}`, then a real `device_ready` event with a genuine Spotify Connect device_id. This is real-world proof that PKCE, token exchange, and Web Playback SDK registration all work end to end against the live Spotify API -- the R0-R2 repairs and their synthetic-state tests held up against reality.
+
+**Runtime defect found (not a PM comment -- found live, by the owner, mid-session):** the very first `playSeedTrack()` call's `PUT /me/player/play?device_id=<sdk device>` returned `404`. Root cause, confirmed against Spotify's official Web Playback SDK Getting Started / Transfer Playback documentation: a freshly-`ready` Web Playback SDK device is registered with Spotify Connect but is **not automatically the active device** -- `PUT /me/player` (Transfer Playback) must be called for that `device_id` first. Fixed with `_ensureDeviceActive()` (`SpotifyPublicControlAdapter.js`), idempotent per `device_id`, called once before the seed's play request; re-issues automatically if the SDK reconnects with a new `device_id`. Uses the same `user-modify-playback-state` scope already requested -- no scope broadening. New `apps/automix-live-lab/src/adapters/spotify-api-requests.js` export `buildTransferPlaybackRequest`, tested in `tools/verify_spotify_transfer_playback.mjs` (14/14 PASS, including proof the transfer call precedes the play call exactly once per device and is never re-issued redundantly).
+
+**Live run, part 2 -- full seed play-through (real, successful, real classification):**
+After the transfer-playback fix, the owner searched one arbitrary track, played it as the seed, and let it play to its natural end without ever clicking Next/Seek. Observed and reported directly by the owner:
+
+- seed playback confirmed;
+- `nextTrackCount` remained 0 for the entire seed epoch (no pre-exposure);
+- at the natural end, `isPlaying` became `false`;
+- `currentToken` remained the seed token throughout (no continuation track ever appeared);
+- final classification: **`SPOTIFY_AUTOPLAY_NOT_OBSERVED`**.
+
+This is the first `FACT`-tagged (not `INFERENCE`) real-account Autoplay classification this project has produced. See §8 for what this does and does not settle.
+
+**Near-end probe (owner request, to make repeat validation fast without replaying a full song):** added a progress slider + time labels + "Jump to last 15s" button (Section A of the owner's request) and `startNearEndProbe()` (Section C). Load-bearing repair (Section B): `seek()` was refactored to **never** create pending manual-track-change attribution the way `next()` does -- a manual seek only emits a sanitized `manual_seek` diagnostic event (opaque token + numeric positions, no titles), so whatever Spotify does naturally after the seek is judged as genuine, unsuppressed Autoplay evidence. `startNearEndProbe()` preserves `_seedToken`/`_seedObserved`/`_seedPlaybackConfirmed` (same seed, only its position changes), archives the pre-probe `_autoplaySnapshots` as diagnostic-only, and starts a fresh, empty evidence window so a repeat probe's classification can never inherit stale pre-probe evidence.
+
+New pure module `apps/automix-live-lab/src/adapters/spotify-seek.js` (`clampSeekTargetMs`, `computeNearEndProbeTargetMs`, `isSeekControlEnabled`, `createSeekDragController` -- the last making drag-vs-commit semantics DOM-independent and directly unit-testable). Two new deterministic test files:
+
+- `tools/verify_spotify_seek.mjs` (22/22 PASS) -- near-end target calculation, target clamping (including short-track safety), the enable/disable predicate, and the drag/commit controller proving exactly one seek call per committed action and zero seek calls while merely dragging.
+- `tools/verify_spotify_near_end_probe.mjs` (22/22 PASS), INTEGRATION-level against the real adapter class -- Manual Seek never attributes (a later natural track change after a seek DOES classify as continuation), Manual Next still does (regression, unchanged), the probe guard refuses to run before the seed is `SEED_ACTIVE`, `_seedToken`/`_seedObserved`/`_seedPlaybackConfirmed` all survive the probe untouched, pre-probe `NEXT_TRACKS_VISIBLE`-triggering evidence cannot contaminate the post-probe classification, a genuine post-seek continuation still classifies correctly, a same-seed stopped-at-end state still classifies `SPOTIFY_AUTOPLAY_NOT_OBSERVED`, and no raw id/uri/title/artist text leaks across any of the new event types.
+
+Full regression rerun across all 10 test files, this pass: 180/180 PASS, 0 FAIL (22 seek + 22 near-end-probe + 14 transfer-playback + 19 preauth-race + 24 seed-identity + 17 search + 10 play-seed + 18 autoplay + 12 PKCE + 22 schedule). The Local DSP Live 193-second session was, again, deliberately NOT rerun -- the engine was not touched. A real-browser smoke check (Browser tool, a separate session from the owner's own live one) confirmed the new Progress UI renders correctly and stays disabled until a track/duration is known, with zero console errors.
+
 ## 0. Execution profile actually used
 
 - **Execution surface:** Claude Desktop → Code.
@@ -52,7 +81,7 @@ Full regression rerun, all previously-passing suites, all still green: 24/24 see
 
 ## 1. Result
 
-`OWNER_SPOTIFY_AUTH_REQUIRED` for Lane S1 (app is fully built, runs, and correctly gates at the one external blocker: a real Spotify Developer Client ID). Lane S3 (Local DSP Live) is **fully runnable and independently verified in this session**, not blocked. Lane S2 (DJ partner audit) is complete. Required product classification (§8): **`SPOTIFY_DJ_PARTNER_ACCESS_REQUIRED`**.
+Lane S1 has now been run live by the owner against their own real Spotify Developer app and Premium account (§R3): login, device registration, seed search/play, and a full natural play-through all worked, and produced a real, `FACT`-tagged classification -- **`SPOTIFY_AUTOPLAY_NOT_OBSERVED`** for that one run (§R3, §8). A near-end probe UI was added so a repeat owner validation pass (`OWNER_SPOTIFY_NEAR_END_RETEST_REQUIRED`, see §R3) doesn't require replaying a full song. Lane S3 (Local DSP Live) remains fully runnable and independently verified, not blocked and not modified this pass. Lane S2 (DJ partner audit) is complete and unaffected. Required product classification (§8): **`SPOTIFY_DJ_PARTNER_ACCESS_REQUIRED`** (unchanged -- the real Autoplay result is a separate, additional finding, not a replacement for this classification).
 
 ## 2. Live-state verification
 
@@ -185,6 +214,8 @@ Total elapsed from first `now_playing` (03:45:26.685) to final `item_ended` (03:
 - Ordinary public Spotify Client ID access (`SPOTIFY_PUBLIC_API_SUFFICIENT`) is proven insufficient for real AutoMix DSP: policy explicitly forbids mixing Spotify Content (§5), and Audio Features/Audio Analysis are unavailable to new apps regardless.
 - The local engine is demonstrably NOT the blocker (`LOCAL_ENGINE_REPAIR_REQUIRED` does not apply) -- §6 is fully proven, working, independently verified evidence from this same session.
 - A legitimate route to Spotify-catalog live mixing does exist in the market (djay/rekordbox/Serato, §5) -- so `SPOTIFY_ROUTE_NOT_VIABLE` is too strong; the accurate classification is that the route exists but requires the same licensed partner access those three vendors hold, which this project does not have and, per AGENTS.md, must not attempt to obtain by inference or bypass.
+
+**R3 update -- real Autoplay observability result (`FACT`, one run):** on the owner's own account, a single arbitrary seed track played to its natural end produced `SPOTIFY_AUTOPLAY_NOT_OBSERVED` -- no `next_tracks` pre-exposure, no automatic continuation track. This is one data point, not yet a general claim about the account/region/content type; the near-end probe (§R3) exists specifically to gather more data points quickly without re-litigating the product classification above. It does not change `SPOTIFY_DJ_PARTNER_ACCESS_REQUIRED`: whether or not public-surface Autoplay ever continues automatically, the public Web Playback SDK/Web API still cannot be used to *mix* Spotify Content (§5), which is the actual blocker this classification describes.
 
 ## 9. `OWNER_SPOTIFY_AUTH_REQUIRED` -- exact setup steps
 
