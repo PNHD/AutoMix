@@ -12,22 +12,92 @@
  * tools/verify_spotify_autoplay.mjs without a real Spotify session.
  */
 
+// Repair pass (Issue #11, PM comment `5324583196`,
+// `P0_M6_R1_SEED_IDENTITY_REPAIR_REQUIRED`, BLOCKER 1): Spotify identifies
+// the same track two ways depending on the surface -- `PUT /me/player/play`
+// takes a full URI (`spotify:track:<id>`), while Web Playback SDK's
+// `track_window.current_track.id` is the bare `<id>`. Hashing these two
+// shapes directly, as the prior pass did, produces two DIFFERENT tokens for
+// the SAME song. `canonicalTrackId` is the single place that strips the URI
+// prefix; `sanitizeTrackToken` always canonicalizes before hashing, so
+// every call site (seed selection via URI, runtime state via bare id) goes
+// through the exact same normalization -- no ad-hoc parsing anywhere else.
+const SPOTIFY_TRACK_URI_PREFIX = "spotify:track:";
+
+export function canonicalTrackId(idOrUri) {
+  if (!idOrUri) return null;
+  return idOrUri.startsWith(SPOTIFY_TRACK_URI_PREFIX) ? idOrUri.slice(SPOTIFY_TRACK_URI_PREFIX.length) : idOrUri;
+}
+
 /**
  * Deterministic, synchronous, non-cryptographic FNV-1a 32-bit hash. Used
  * only to produce an opaque, stable, non-reversible-in-practice token for
  * a Spotify track id -- NOT a security primitive. Synchronous (unlike
  * Web Crypto's SubtleCrypto) so it can run directly inside the
  * `player_state_changed` event handler without an extra async hop.
+ *
+ * Accepts EITHER a bare track id ("SEED123") OR a full track URI
+ * ("spotify:track:SEED123") and always returns the SAME token for the
+ * same underlying track -- see `canonicalTrackId` above.
  */
-export function sanitizeTrackToken(trackId) {
-  if (!trackId) return null;
+export function sanitizeTrackToken(trackIdOrUri) {
+  const id = canonicalTrackId(trackIdOrUri);
+  if (!id) return null;
   let hash = 0x811c9dc5;
-  for (let i = 0; i < trackId.length; i++) {
-    hash ^= trackId.charCodeAt(i);
+  for (let i = 0; i < id.length; i++) {
+    hash ^= id.charCodeAt(i);
     hash = Math.imul(hash, 0x01000193);
   }
   const hex = (hash >>> 0).toString(16).padStart(8, "0");
   return `TRK_${hex}`;
+}
+
+// Repair pass (Issue #11, PM comment `5324583196`, BLOCKER 2): the prior
+// pass's `_manualActionPending` boolean was cleared on the FIRST
+// `player_state_changed` event after a manual next()/seek() call, even if
+// that event still showed the SAME track (SDK state events can fire more
+// than once for one user action -- e.g. a position/paused update before
+// the track itself actually changes). That let a later, still-manually-
+// caused track-change event arrive with the flag already cleared and get
+// misclassified as Spotify Autoplay. This state machine keeps attribution
+// alive across same-track intermediate events and only consumes
+// (resolves) it on the event where the track ACTUALLY changes -- bounded
+// by a fixed timeout so a manual action can never suppress attribution
+// forever if the track change is missed for some reason. Not pair/song-
+// specific: the timeout is a single fixed constant.
+export const MANUAL_ACTION_ATTRIBUTION_TIMEOUT_MS = 8000;
+
+export const NO_PENDING_MANUAL_ACTION = Object.freeze({ pendingSinceMs: null, preActionToken: null });
+
+/** Call when next()/seek() is invoked, with the token of whatever is current right before the call. */
+export function beginManualAction(nowMs, currentTokenBeforeAction) {
+  return { pendingSinceMs: nowMs, preActionToken: currentTokenBeforeAction };
+}
+
+/**
+ * Call on every `player_state_changed` event with the CURRENT manual-action
+ * state, the new event's current-track token, and the current time.
+ * Returns `{ manuallyTriggered, nextState }` -- `nextState` must replace
+ * whatever manual-action state the caller was holding.
+ */
+export function resolveManualAttribution(manualState, currentToken, nowMs, timeoutMs = MANUAL_ACTION_ATTRIBUTION_TIMEOUT_MS) {
+  const state = manualState || NO_PENDING_MANUAL_ACTION;
+  if (state.pendingSinceMs === null) {
+    return { manuallyTriggered: false, nextState: NO_PENDING_MANUAL_ACTION };
+  }
+  if (nowMs - state.pendingSinceMs > timeoutMs) {
+    // Bounded timeout expired -- stop attributing; this event is judged normally.
+    return { manuallyTriggered: false, nextState: NO_PENDING_MANUAL_ACTION };
+  }
+  if (currentToken !== state.preActionToken) {
+    // The track has now actually changed -- this IS the manual transition
+    // becoming visible. Attribute it, then resolve (consume) the pending state.
+    return { manuallyTriggered: true, nextState: NO_PENDING_MANUAL_ACTION };
+  }
+  // Same track as before the manual action -- an intermediate event
+  // (e.g. a position update). Still within the manual action's effect;
+  // keep the pending state alive for the next event.
+  return { manuallyTriggered: true, nextState: state };
 }
 
 /**

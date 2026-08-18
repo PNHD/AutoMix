@@ -8,7 +8,14 @@ import {
   SPOTIFY_SCOPES,
 } from "./spotify-pkce.js";
 import { buildSearchRequest, buildPlaySeedRequest, toSeedCandidate, MAX_SEARCH_LIMIT } from "./spotify-api-requests.js";
-import { sanitizeTrackToken, captureSnapshot, classifyAutoplayResult } from "./spotify-autoplay.js";
+import {
+  sanitizeTrackToken,
+  captureSnapshot,
+  classifyAutoplayResult,
+  beginManualAction,
+  resolveManualAttribution,
+  NO_PENDING_MANUAL_ACTION,
+} from "./spotify-autoplay.js";
 
 const TOKEN_STORAGE_KEY = "automix_spotify_token_v1";
 const VERIFIER_STORAGE_KEY = "automix_spotify_pkce_verifier_v1";
@@ -17,9 +24,25 @@ export const CLIENT_ID_STORAGE_KEY = "automix_spotify_client_id_v1";
 
 /**
  * SpotifyPublicControlAdapter -- Lane S1 (Issue #11 PM comments
- * 5323227813 / 5323231023 / 5323258040 / 5324307503).
+ * 5323227813 / 5323231023 / 5323258040 / 5324307503 / 5324583196).
  *
- * REPAIR PASS (`5324307503`, `P0_M6_R1_SPOTIFY_SEED_LOOP_REPAIR_REQUIRED`):
+ * REPAIR PASS 2 (`5324583196`, `P0_M6_R1_SEED_IDENTITY_REPAIR_REQUIRED`):
+ * `playSeedTrack(uri)` hashed the full `spotify:track:<id>` URI while
+ * `_onPlayerStateChanged` hashed the SDK's bare `<id>` -- two different
+ * strings for the same song, so `_seedPlaybackConfirmed` could never
+ * become true and the seed's own first playback could be misclassified
+ * as a non-seed continuation. Fixed at the single source: `sanitizeTrackToken`
+ * (spotify-autoplay.js) now canonicalizes id-vs-uri before hashing, so
+ * every call site is automatically consistent (BLOCKER 1). Separately,
+ * the manual-next/seek attribution boolean cleared on the FIRST
+ * `player_state_changed` event after the call even if that event still
+ * showed the same track, letting a later, still-manually-caused track
+ * change get misclassified as Autoplay; replaced with a small state
+ * machine (`beginManualAction`/`resolveManualAttribution`) that stays
+ * attributed across same-track intermediate events and resolves only on
+ * an actual track change or a fixed bounded timeout (BLOCKER 2).
+ *
+ * REPAIR PASS 1 (`5324307503`, `P0_M6_R1_SPOTIFY_SEED_LOOP_REPAIR_REQUIRED`):
  * the prior pass centered `/me/playlists` and existing-playback resume.
  * The actual product loop is: search ONE arbitrary track -> play that ONE
  * track as a seed (`PUT /me/player/play` with a single-track `uris`
@@ -71,7 +94,11 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
     this._seedUri = null;
     this._seedToken = null;
     this._autoplaySnapshots = [];
-    this._manualActionPending = false; // set true just before next()/seek() so the resulting snapshot isn't mistaken for autoplay continuation
+    // Repair (`5324583196`, BLOCKER 2): a manual next()/seek() stays
+    // attributed across same-track intermediate `player_state_changed`
+    // events, resolving only when the current track actually changes (or
+    // a bounded timeout expires) -- see resolveManualAttribution().
+    this._manualAction = NO_PENDING_MANUAL_ACTION;
   }
 
   /**
@@ -297,17 +324,25 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
   _onPlayerStateChanged(state) {
     if (!this._seedToken) return; // no seed selected yet -- nothing to instrument
     const currentTrack = state?.track_window?.current_track;
-    if (!this._seedPlaybackConfirmed && currentTrack && sanitizeTrackToken(currentTrack.id) === this._seedToken && !state.paused) {
+    // BLOCKER 1 repair: sanitizeTrackToken now canonicalizes id vs uri
+    // internally, so this comparison correctly matches a URI-selected seed
+    // against the SDK's bare-id current_track -- no separate parsing here.
+    const currentToken = currentTrack ? sanitizeTrackToken(currentTrack.id) : null;
+    if (!this._seedPlaybackConfirmed && currentToken === this._seedToken && !state.paused) {
       this._seedPlaybackConfirmed = true;
       this._emit({ type: "seed_playback_confirmed", seedToken: this._seedToken });
     }
+
+    const now = Date.now();
+    const { manuallyTriggered, nextState } = resolveManualAttribution(this._manualAction, currentToken, now);
+    this._manualAction = nextState;
+
     const snapshot = captureSnapshot({
       state,
       seedToken: this._seedToken,
-      capturedAtMs: Date.now(),
-      manuallyTriggered: this._manualActionPending,
+      capturedAtMs: now,
+      manuallyTriggered,
     });
-    this._manualActionPending = false;
     this._autoplaySnapshots.push(snapshot);
     this._emit({ type: "autoplay_snapshot", snapshot });
   }
@@ -379,13 +414,19 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
     await this._player?.pause();
   }
 
+  /** Token of whatever the SDK currently reports as playing, right before a manual action -- the manual-attribution baseline. */
+  _currentTokenFromLatestState() {
+    const t = this._latestState?.track_window?.current_track;
+    return t ? sanitizeTrackToken(t.id) : null;
+  }
+
   async next() {
-    this._manualActionPending = true;
+    this._manualAction = beginManualAction(Date.now(), this._currentTokenFromLatestState());
     await this._player?.nextTrack();
   }
 
   async seek(ms) {
-    this._manualActionPending = true;
+    this._manualAction = beginManualAction(Date.now(), this._currentTokenFromLatestState());
     await this._player?.seek(ms);
   }
 

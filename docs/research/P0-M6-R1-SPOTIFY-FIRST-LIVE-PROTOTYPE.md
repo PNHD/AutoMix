@@ -18,6 +18,19 @@ Three blockers, each traceable to its own PM finding, repaired in this pass:
 
 The Local DSP Live lane (§6) was not modified in this repair pass and its 193-second live session was deliberately not rerun, per the PM comment's own instruction ("Local DSP does not need another 193s rerun unless changed"). `verify_schedule.mjs` was rerun as a regression check only (22/22, unchanged).
 
+## R1. Repair pass 2 -- seed identity/manual-attribution repair
+
+This document was repaired a second time, in the same session/branch, in response to PM review result `P0_M6_R1_SEED_IDENTITY_REPAIR_REQUIRED` (Issue #11 comment `5324583196`), starting from the previously pushed HEAD `85af4c91cd257969337a0560ff045d15586d31c9` (PM independently re-verified this exact SHA, plus the prior PM-review ZIP's SHA-256/size/member count, before filing this finding). Live branch/`main`/`research/p0-feasibility` state matched exactly; no live-state drift.
+
+PM's re-review accepted repair pass 1's product-loop shape (search -> one-URI seed -> observe) but found the seed-identity bookkeeping internally inconsistent in a way that would have invalidated the runtime proof on a real account:
+
+- **BLOCKER 1 (seed token hashed the URI while runtime snapshots hashed the bare track id):** `playSeedTrack(uri)` stored `sanitizeTrackToken(uri)` where `uri` is `spotify:track:<id>`, but `_onPlayerStateChanged`/`captureSnapshot` hashed `current_track.id`, which is just `<id>` -- two different input strings for the same song can never hash equal, so `_seedPlaybackConfirmed` could never become true and the seed's own first playback could be misread as a non-seed continuation. Repaired at the single source: `sanitizeTrackToken` (`spotify-autoplay.js`) now canonicalizes id-vs-uri via a new small pure helper, `canonicalTrackId`, before hashing -- `token(<id>) === token(spotify:track:<id>)` by construction, and every call site (seed selection, runtime state) automatically inherits the fix with zero duplicated parsing logic.
+- **BLOCKER 2 (manual-next attribution cleared too early):** the prior pass's `_manualActionPending` boolean was cleared on the FIRST `player_state_changed` event after a manual `next()`/`seek()` call, even if that event still showed the same track (the SDK can fire more than one state event per user action). A later, still-manually-caused track-change event could then arrive with the flag already cleared and be misclassified as Spotify Autoplay. Repaired with a small state machine (`beginManualAction`/`resolveManualAttribution`, `spotify-autoplay.js`) that stays attributed across same-track intermediate events and resolves (clears) only when the current track actually changes, or after one fixed, bounded timeout (`MANUAL_ACTION_ATTRIBUTION_TIMEOUT_MS = 8000`, not pair/song-specific).
+
+New deterministic INTEGRATION-level test file, `tools/verify_spotify_seed_identity.mjs` (24/24 PASS), driving the real `SpotifyPublicControlAdapter` class (not a reimplementation) with synthetic Web Playback SDK state objects through `_onPlayerStateChanged`/`next()`/`seek()`, proving: the core token-equality invariant; a URI-selected seed is recognized as `isSeedStillCurrent=true` and confirms playback when the SDK reports it by bare id, and is never misclassified as continuation; only a genuinely different track id becomes continuation evidence; the full manual-Next -> intermediate same-track event -> changed-track event sequence stays attributed throughout and does not classify as Autoplay; the bounded timeout is enforced; and sanitized snapshot privacy still holds (no raw id, uri scheme, or title/artist text leaks).
+
+All previously-passing suites were rerun as regression checks (17/17 search, 10/10 play-seed, 18/18 autoplay, 12/12 PKCE, 22/22 schedule) -- all still pass unchanged. The Local DSP Live 193-second session was, again, deliberately NOT rerun, per this comment's own instruction.
+
 ## 0. Execution profile actually used
 
 - **Execution surface:** Claude Desktop → Code.
@@ -71,7 +84,8 @@ The AutoMix DSP/planner logic (the P0-M5-R1 frozen pair manifest, Beat This anch
 - Clicking Search before authenticating fails closed with `SPOTIFY_NOT_AUTHENTICATED` (caught, logged, no unhandled rejection) -- confirmed via the browser console this repair pass. No `/me/playlists` (or any `api.spotify.com`) request is observed on the network log before Connect is clicked -- confirmed via `read_network_requests`.
 - `capability: PUBLIC_CONTROL_ONLY` renders correctly; `getAutoMixPlan()` correctly reports `NO_ACTIVE_SPOTIFY_PLAYBACK` / `executesRealDsp: no (advisory only)` before any playback exists.
 - Clicking Connect with no Client ID configured correctly blocks client-side with `OWNER_SPOTIFY_AUTH_REQUIRED`-style messaging instead of throwing an unhandled error.
-- **Bug found and fixed in the PRIOR pass** (not reintroduced this pass): the adapter originally captured the Client ID once at construction time, so saving a Client ID in the UI *after* the adapter was created was silently ignored on the next Connect click. Fixed by making `_clientId` a live getter that reads `localStorage` on every call. Re-verified again this pass with the trimmed 4-scope authorize URL: saving a Client ID and clicking Connect still genuinely navigates the browser to `https://accounts.spotify.com` (Spotify's real login page rendered, confirmed via `tabs_context`). No further login was attempted; this session holds no real Spotify account credentials and none were entered anywhere.
+- **Bug found and fixed in an EARLIER pass** (not reintroduced): the adapter originally captured the Client ID once at construction time, so saving a Client ID in the UI *after* the adapter was created was silently ignored on the next Connect click. Fixed by making `_clientId` a live getter that reads `localStorage` on every call. Re-verified with the trimmed 4-scope authorize URL: saving a Client ID and clicking Connect still genuinely navigates the browser to `https://accounts.spotify.com` (Spotify's real login page rendered, confirmed via `tabs_context`). No further login was attempted; this session holds no real Spotify account credentials and none were entered anywhere.
+- **Bug found and fixed in R1 (this repair pass):** `sanitizeTrackToken` was called with two differently-shaped inputs -- the full `spotify:track:<id>` URI at seed-selection time, and the bare `<id>` at every subsequent runtime state event -- so the seed's own token could never match its own later playback, silently breaking seed-playback confirmation and risking a false Autoplay-continuation classification on the seed's own first play event. Fixed at the single hashing entry point (`canonicalTrackId`, R1 §above); proven with 24 new integration-level checks driving the real adapter class, not just the pure hash function in isolation.
 
 **Not testable without owner credentials (honest gap, not hidden):** actual token exchange, actual search results, actual seed playback, actual Premium-gated Web Playback SDK device registration, and therefore which of the four PM-defined Autoplay classifications a real session would produce:
 
@@ -209,5 +223,24 @@ Real-browser session (Browser tool, http://127.0.0.1:5500/, this repair pass):
     authorize URL (BLOCKER 3); switching back to Local DSP Live still loads
     cleanly (not exercised further, per the no-rerun instruction).
 ```
+
+**Repair pass 2 (R1, new -- seed identity/manual attribution):**
+```
+node apps/automix-live-lab/tools/verify_spotify_seed_identity.mjs -> 24/24 PASS (NEW -- BLOCKER 1 + BLOCKER 2,
+  integration-level, drives the real SpotifyPublicControlAdapter class)
+
+Full regression rerun of every previously-passing suite (all unchanged):
+node apps/automix-live-lab/tools/verify_spotify_search.mjs      -> 17/17 PASS
+node apps/automix-live-lab/tools/verify_spotify_play_seed.mjs   -> 10/10 PASS
+node apps/automix-live-lab/tools/verify_spotify_autoplay.mjs    -> 18/18 PASS
+node apps/automix-live-lab/tools/verify_pkce.mjs                -> 12/12 PASS
+node apps/automix-live-lab/tools/verify_schedule.mjs            -> 22/22 PASS (Local DSP engine untouched, 193s session NOT rerun)
+
+Real-browser smoke check (Browser tool, http://127.0.0.1:5500/, this pass):
+  app loads cleanly with zero console errors after the repair; Local DSP
+  Live's Connect button was NOT clicked (193s session correctly not rerun).
+```
+
+Combined this pass: 24 new PASS + 79 regression-rerun PASS = 103/103, 0 FAIL.
 
 Combined this pass: 45 new automated PASS checks (17 + 10 + 18), plus 12 PKCE + 22 schedule rerun as regression checks (both still passing), 0 FAIL, plus real-browser runtime evidence for the repaired Spotify flow.
