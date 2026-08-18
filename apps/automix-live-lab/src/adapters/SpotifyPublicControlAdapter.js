@@ -24,7 +24,25 @@ export const CLIENT_ID_STORAGE_KEY = "automix_spotify_client_id_v1";
 
 /**
  * SpotifyPublicControlAdapter -- Lane S1 (Issue #11 PM comments
- * 5323227813 / 5323231023 / 5323258040 / 5324307503 / 5324583196).
+ * 5323227813 / 5323231023 / 5323258040 / 5324307503 / 5324583196 /
+ * 5324756494).
+ *
+ * REPAIR PASS 3 (`5324756494`, `P0_M6_R1_PREAUTH_RACE_REPAIR_REQUIRED`):
+ * immediately after `playSeedTrack()`, the Web Playback SDK can still
+ * emit one stale `player_state_changed` event for whatever was playing
+ * BEFORE the seed, before it emits the seed's own state. The prior pass
+ * fixed identity (BLOCKER 1) but that stale non-seed event could still be
+ * accepted as continuation evidence before the seed had ever even been
+ * observed as current once. Repaired with a small phase/epoch: every
+ * `playSeedTrack()` call enters `AWAITING_SEED_OBSERVATION`
+ * (`_seedObserved = false`); any SDK event in that phase whose current
+ * track is NOT the seed is tagged `beforeSeedObserved: true` and is
+ * mechanically excluded from `_autoplaySnapshots` (and, defense-in-depth,
+ * from `classifyAutoplayResult` itself even if a caller included it
+ * anyway -- see spotify-autoplay.js). The event where the seed first
+ * becomes current transitions the adapter into `SEED_ACTIVE`
+ * (`_seedObserved = true`); only events from that point on can count as
+ * pre-exposure or continuation evidence, exactly as before this repair.
  *
  * REPAIR PASS 2 (`5324583196`, `P0_M6_R1_SEED_IDENTITY_REPAIR_REQUIRED`):
  * `playSeedTrack(uri)` hashed the full `spotify:track:<id>` URI while
@@ -94,6 +112,10 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
     this._seedUri = null;
     this._seedToken = null;
     this._autoplaySnapshots = [];
+    // Repair (`5324756494`, pre-auth race): AWAITING_SEED_OBSERVATION
+    // until the SDK reports the seed itself as current at least once,
+    // then SEED_ACTIVE. See _onPlayerStateChanged/playSeedTrack.
+    this._seedObserved = false;
     // Repair (`5324583196`, BLOCKER 2): a manual next()/seek() stays
     // attributed across same-track intermediate `player_state_changed`
     // events, resolving only when the current track actually changes (or
@@ -316,10 +338,19 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
 
   /**
    * BLOCKER 2: instrumentation point. Every real `player_state_changed`
-   * event is turned into a sanitized snapshot (opaque tokens only) and
-   * appended to `_autoplaySnapshots`. If the currently-playing track is
-   * the seed and this is the first time we see actual playback of it,
-   * that also confirms Premium playback readiness (BLOCKER 3).
+   * event is turned into a sanitized snapshot (opaque tokens only). If
+   * the currently-playing track is the seed and this is the first time
+   * we see actual playback of it, that also confirms Premium playback
+   * readiness (BLOCKER 3).
+   *
+   * Pre-auth race repair (`5324756494`): while still
+   * `AWAITING_SEED_OBSERVATION` (`!_seedObserved`), any event whose
+   * current track is NOT the seed is a stale leftover from whatever was
+   * playing before `playSeedTrack()` -- it is captured for diagnostics
+   * (emitted, never silently dropped) but NOT appended to
+   * `_autoplaySnapshots`, so it can never feed `classifyAutoplayResult`.
+   * The event where the seed first becomes current flips the adapter
+   * into `SEED_ACTIVE` and is processed normally from then on.
    */
   _onPlayerStateChanged(state) {
     if (!this._seedToken) return; // no seed selected yet -- nothing to instrument
@@ -328,6 +359,13 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
     // internally, so this comparison correctly matches a URI-selected seed
     // against the SDK's bare-id current_track -- no separate parsing here.
     const currentToken = currentTrack ? sanitizeTrackToken(currentTrack.id) : null;
+
+    const wasSeedObservedBefore = this._seedObserved;
+    if (!this._seedObserved && currentToken === this._seedToken) {
+      this._seedObserved = true; // AWAITING_SEED_OBSERVATION -> SEED_ACTIVE
+    }
+    const isStalePreSeedEvent = !wasSeedObservedBefore && currentToken !== this._seedToken;
+
     if (!this._seedPlaybackConfirmed && currentToken === this._seedToken && !state.paused) {
       this._seedPlaybackConfirmed = true;
       this._emit({ type: "seed_playback_confirmed", seedToken: this._seedToken });
@@ -342,7 +380,13 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
       seedToken: this._seedToken,
       capturedAtMs: now,
       manuallyTriggered,
+      beforeSeedObserved: isStalePreSeedEvent,
     });
+
+    if (isStalePreSeedEvent) {
+      this._emit({ type: "pre_seed_diagnostic_snapshot", snapshot });
+      return; // never enters _autoplaySnapshots / Autoplay classification evidence
+    }
     this._autoplaySnapshots.push(snapshot);
     this._emit({ type: "autoplay_snapshot", snapshot });
   }
@@ -373,6 +417,7 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
     this._seedToken = sanitizeTrackToken(uri);
     this._autoplaySnapshots = [];
     this._seedPlaybackConfirmed = false;
+    this._seedObserved = false; // enter AWAITING_SEED_OBSERVATION for this new seed epoch
     this._emit({ type: "seed_track_played", seedToken: this._seedToken });
   }
 

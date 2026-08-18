@@ -104,8 +104,17 @@ export function resolveManualAttribution(manualState, currentToken, nowMs, timeo
  * Builds one sanitized snapshot from a raw Web Playback SDK state object
  * (the same shape passed to `player_state_changed`). Only opaque tokens,
  * counts, and numbers are retained -- no title/artist/album text.
+ *
+ * `beforeSeedObserved` (repair pass, PM comment `5324756494`,
+ * `P0_M6_R1_PREAUTH_RACE_REPAIR_REQUIRED`): tags a snapshot captured
+ * while still in the `AWAITING_SEED_OBSERVATION` phase -- i.e. a stale
+ * SDK event for whatever was playing before `playSeedTrack()`, arriving
+ * before the SDK has ever reported the requested seed as current. Purely
+ * informational on the snapshot itself; the adapter (not this function)
+ * is responsible for excluding such snapshots from the array it feeds to
+ * `classifyAutoplayResult`, see `SpotifyPublicControlAdapter.js`.
  */
-export function captureSnapshot({ state, seedToken, capturedAtMs, manuallyTriggered = false }) {
+export function captureSnapshot({ state, seedToken, capturedAtMs, manuallyTriggered = false, beforeSeedObserved = false }) {
   const currentTrack = state?.track_window?.current_track ?? null;
   const nextTracks = state?.track_window?.next_tracks ?? [];
   return {
@@ -118,6 +127,7 @@ export function captureSnapshot({ state, seedToken, capturedAtMs, manuallyTrigge
     isPlaying: state ? !state.paused : null,
     isSeedStillCurrent: currentTrack ? sanitizeTrackToken(currentTrack.id) === seedToken : null,
     manuallyTriggered,
+    beforeSeedObserved,
   };
 }
 
@@ -141,19 +151,31 @@ export function captureSnapshot({ state, seedToken, capturedAtMs, manuallyTrigge
  *   - SPOTIFY_AUTOPLAY_NOT_OBSERVED: no continuation was observed and the
  *     Autoplay setting state is unknown/not confirmed disabled -- the
  *     mechanical default.
+ *
+ * Repair pass (PM comment `5324756494`,
+ * `P0_M6_R1_PREAUTH_RACE_REPAIR_REQUIRED`): any snapshot tagged
+ * `beforeSeedObserved: true` (a stale SDK event for the previously-
+ * playing track, arriving before the requested seed was ever observed
+ * as current) is mechanically excluded from every decision below, no
+ * matter what the caller passes in -- the invariant "non-seed state
+ * before first seed observation != continuation evidence" is enforced
+ * here unconditionally, not merely by callers remembering not to append
+ * such snapshots in the first place.
  */
 export function classifyAutoplayResult(snapshots, { autoplayConfirmedDisabled = false } = {}) {
-  if (!Array.isArray(snapshots) || snapshots.length === 0) {
-    return { result: "SPOTIFY_AUTOPLAY_NOT_OBSERVED", reason: "NO_SNAPSHOTS_CAPTURED" };
+  const eligible = Array.isArray(snapshots) ? snapshots.filter((s) => !s.beforeSeedObserved) : [];
+  if (eligible.length === 0) {
+    const reason = Array.isArray(snapshots) && snapshots.length > 0 ? "ALL_SNAPSHOTS_BEFORE_SEED_OBSERVED" : "NO_SNAPSHOTS_CAPTURED";
+    return { result: "SPOTIFY_AUTOPLAY_NOT_OBSERVED", reason };
   }
-  const seedToken = snapshots[0].seedToken;
+  const seedToken = eligible[0].seedToken;
 
-  const preExposed = snapshots.some((s) => s.isSeedStillCurrent && s.nextTrackCount > 0);
+  const preExposed = eligible.some((s) => s.isSeedStillCurrent && s.nextTrackCount > 0);
   if (preExposed) {
     return { result: "SPOTIFY_AUTOPLAY_NEXT_TRACKS_VISIBLE", reason: "next_tracks was populated while the seed track was still current" };
   }
 
-  const continuedWithoutManualTrigger = snapshots.find(
+  const continuedWithoutManualTrigger = eligible.find(
     (s) => s.currentToken && s.currentToken !== seedToken && !s.manuallyTriggered
   );
   if (continuedWithoutManualTrigger) {

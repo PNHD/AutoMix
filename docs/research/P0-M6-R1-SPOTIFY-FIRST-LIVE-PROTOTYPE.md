@@ -31,6 +31,18 @@ New deterministic INTEGRATION-level test file, `tools/verify_spotify_seed_identi
 
 All previously-passing suites were rerun as regression checks (17/17 search, 10/10 play-seed, 18/18 autoplay, 12/12 PKCE, 22/22 schedule) -- all still pass unchanged. The Local DSP Live 193-second session was, again, deliberately NOT rerun, per this comment's own instruction.
 
+## R2. Repair pass 3 -- pre-auth race repair
+
+This document was repaired a third time, in the same session/branch, in response to PM review result `P0_M6_R1_PREAUTH_RACE_REPAIR_REQUIRED` (Issue #11 comment `5324756494`), starting from the previously pushed HEAD `4b2a420914feef083f2cf5979b51664fe7633a49`. PM independently reproduced this defect directly against the shipped adapter from the R1 review ZIP, not merely by inspecting source.
+
+PM confirmed repair pass 2's identity/manual-attribution fixes are correct, but found one remaining integration race: immediately after `playSeedTrack()` resets `_autoplaySnapshots`/`_seedToken`, the Web Playback SDK can still emit one stale `player_state_changed` event for whatever was playing BEFORE the new seed, before it ever emits the seed's own state. The prior classifier accepted any non-seed current track with `manuallyTriggered=false` as continuation evidence -- so that stale event alone could produce the false-positive verdict `SPOTIFY_AUTOPLAY_CONTINUES_BUT_NEXT_NOT_PREEXPOSED` **before the seed had ever been observed even once**, and the false verdict would persist even after the seed's real state later arrived.
+
+- **BLOCKER (no seed-epoch boundary around Autoplay evidence):** repaired with one deterministic phase per seed selection. `playSeedTrack()` now also resets `_seedObserved = false`, entering `AWAITING_SEED_OBSERVATION`. In `_onPlayerStateChanged`, any event whose current track is NOT the seed while still in that phase is tagged `beforeSeedObserved: true` (`captureSnapshot`, `spotify-autoplay.js`) and is excluded from `_autoplaySnapshots` entirely -- it is still captured and emitted as a `pre_seed_diagnostic_snapshot` event (visible in the debug panel), never silently dropped, just excluded from evidence. The event where the current track first equals the seed token flips `_seedObserved` to `true` (`SEED_ACTIVE`); from that point on, pre-exposure (`next_tracks` populated) and continuation (a genuinely different later track) are evaluated exactly as before this repair. As defense-in-depth, `classifyAutoplayResult` (`spotify-autoplay.js`) also mechanically filters out any `beforeSeedObserved: true` snapshot itself, so the invariant holds even if a future caller passed pre-epoch snapshots in by mistake.
+
+New deterministic INTEGRATION-level test file, `tools/verify_spotify_preauth_race.mjs` (19/19 PASS), driving the real `SpotifyPublicControlAdapter` class through the exact PM-specified sequence: select seed -> stale `OLD_TRACK` (classification stays `SPOTIFY_AUTOPLAY_NOT_OBSERVED`, seed unconfirmed, zero entries in `_autoplaySnapshots`) -> seed `SEED123` becomes current (seed confirmed, `_seedObserved` flips true, still no continuation verdict) -> later genuinely different `AUTO_NEXT` (only now classifies as `SPOTIFY_AUTOPLAY_CONTINUES_BUT_NEXT_NOT_PREEXPOSED`) -- plus a dedicated case proving stale pre-seed `next_tracks` cannot produce `SPOTIFY_AUTOPLAY_NEXT_TRACKS_VISIBLE` (while genuine post-observation pre-exposure still can), and regression cases proving seed-fed-first sequences and manual-Next attribution both behave identically to repair pass 2.
+
+Full regression rerun, all previously-passing suites, all still green: 24/24 seed-identity, 17/17 search, 10/10 play-seed, 18/18 autoplay, 12/12 PKCE, 22/22 schedule. The Local DSP Live 193-second session was, again, deliberately NOT rerun -- the engine was not touched.
+
 ## 0. Execution profile actually used
 
 - **Execution surface:** Claude Desktop → Code.
@@ -241,6 +253,26 @@ Real-browser smoke check (Browser tool, http://127.0.0.1:5500/, this pass):
   Live's Connect button was NOT clicked (193s session correctly not rerun).
 ```
 
-Combined this pass: 24 new PASS + 79 regression-rerun PASS = 103/103, 0 FAIL.
+Combined repair pass 2: 24 new PASS + 79 regression-rerun PASS = 103/103, 0 FAIL.
 
-Combined this pass: 45 new automated PASS checks (17 + 10 + 18), plus 12 PKCE + 22 schedule rerun as regression checks (both still passing), 0 FAIL, plus real-browser runtime evidence for the repaired Spotify flow.
+**Repair pass 3 (R2, new -- pre-auth race repair):**
+```
+node apps/automix-live-lab/tools/verify_spotify_preauth_race.mjs -> 19/19 PASS (NEW --
+  integration-level, drives the real SpotifyPublicControlAdapter class through the
+  exact PM-specified stale-OLD_TRACK -> SEED123 -> AUTO_NEXT sequence)
+
+Full regression rerun of every previously-passing suite (all unchanged):
+node apps/automix-live-lab/tools/verify_spotify_seed_identity.mjs -> 24/24 PASS
+node apps/automix-live-lab/tools/verify_spotify_search.mjs        -> 17/17 PASS
+node apps/automix-live-lab/tools/verify_spotify_play_seed.mjs     -> 10/10 PASS
+node apps/automix-live-lab/tools/verify_spotify_autoplay.mjs      -> 18/18 PASS
+node apps/automix-live-lab/tools/verify_pkce.mjs                  -> 12/12 PASS
+node apps/automix-live-lab/tools/verify_schedule.mjs              -> 22/22 PASS
+  (Local DSP engine untouched, 193s session NOT rerun)
+
+Real-browser smoke check (Browser tool, http://127.0.0.1:5500/, this pass):
+  app loads cleanly, zero console errors, after the repair. Local DSP Live's
+  Connect button was deliberately NOT clicked (193s session correctly not rerun).
+```
+
+Combined repair pass 3: 19 new PASS + 103 regression-rerun PASS = **122/122, 0 FAIL**.
