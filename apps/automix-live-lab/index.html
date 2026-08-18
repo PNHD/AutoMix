@@ -26,11 +26,14 @@
       <section class="panel panel-now-playing" id="panel-now-playing">
         <h2>Now Playing</h2>
         <div id="panel-seed" class="subsection hidden">
-          <div class="controls-row">
-            <input id="seed-search-input" type="text" placeholder="search any track..." />
-            <button id="seed-search-btn">Search</button>
+          <div id="seed-search-controls">
+            <div class="controls-row">
+              <input id="seed-search-input" type="text" placeholder="search any track..." />
+              <button id="seed-search-btn">Search</button>
+            </div>
+            <ol id="seed-results" class="upcoming-list seed-results"></ol>
           </div>
-          <ol id="seed-results" class="upcoming-list seed-results"></ol>
+          <button id="ctl-change-seed" class="link-btn hidden">Change seed</button>
         </div>
         <div id="queue-current" class="track-row track-current">No source connected</div>
         <div class="seek-row">
@@ -87,6 +90,9 @@
       <summary>Advanced</summary>
 
       <div id="advanced-spotify-only" class="hidden">
+        <h3>Spotify setup</h3>
+        <button id="ctl-change-spotify-setup" class="link-btn">Change Spotify setup</button>
+
         <h3>App-controlled continuation queue</h3>
         <div class="status-row"><span class="label">Lookahead state</span><span id="lookahead-state" class="badge">--</span></div>
         <div class="status-row"><span class="label">Candidate pool size</span><span id="lookahead-pool-size">0</span></div>

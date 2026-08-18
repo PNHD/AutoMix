@@ -40,6 +40,15 @@ function extractAdvancedBlock(markup) {
 const advancedBlock = extractAdvancedBlock(html);
 const primaryBlock = html.slice(0, html.indexOf('id="panel-advanced"'));
 
+/** Substring from the first occurrence of `startMarker` up to the next occurrence of `endMarker` (searched after startMarker), or null if either isn't found. */
+function sliceBetween(text, startMarker, endMarker) {
+  const s = text.indexOf(startMarker);
+  if (s === -1) return null;
+  const e = text.indexOf(endMarker, s + startMarker.length);
+  if (e === -1) return null;
+  return text.slice(s, e);
+}
+
 // ============================================================
 // Test 9: no duplicated status blocks -- every element id is unique, and
 // the AutoMix session numbers/capability card appear exactly once each.
@@ -175,6 +184,81 @@ const primaryBlock = html.slice(0, html.indexOf('id="panel-advanced"'));
   check("renderReadinessBadge() interpolates only readiness.reason (already-sanitized enum text), never a raw track/device id", !/\$\{adapter\._(seedUri|deviceId|token)\}/.test(appJs));
   check("renderCapabilityStatement() text is a static string, not built from raw track/artist/device data", !/capabilityStatement\.textContent = `[^`]*\$\{/.test(appJs));
   check("next-source label is derived only from the sanitized selectionSource enum, never a raw id", /selectionSource === "SPOTIFY_PROVIDER_NEXT_UP"/.test(appJs));
+}
+
+// ============================================================
+// P0-M6-R3-PREOWNER UI Defect 1: hide Spotify credential setup from the
+// primary dashboard once connect() succeeds, but keep it recoverable from
+// Advanced without ever clearing the stored Client ID, and without
+// breaking reauth.
+// ============================================================
+{
+  // app.js has TWO "els.ctlConnect.onclick = async () => {" assignments
+  // (one inside activateLocal(), one inside activateSpotify()) -- must
+  // scope to the Spotify one specifically, not just the first match.
+  const activateSpotifyBody = appJs.slice(appJs.indexOf("async function activateSpotify()"), appJs.indexOf("els.spotifySaveClientId.onclick"));
+  check("defect 1 test: activateSpotify()'s body is present in app.js", activateSpotifyBody.length > 0);
+  const connectHandlerBody = sliceBetween(activateSpotifyBody, "els.ctlConnect.onclick = async () => {", "els.ctlPlay.onclick");
+  check("defect 1 test: the Spotify-mode ctlConnect handler body is present in app.js", !!connectHandlerBody);
+
+  const reauthMarker = "SPOTIFY_REAUTH_REQUIRED_FOR_NEW_SCOPES";
+  const notAuthMarker = 'reason.startsWith("NOT_AUTHENTICATED")';
+  const lastEarlyReturnIdx = connectHandlerBody ? connectHandlerBody.lastIndexOf(notAuthMarker) : -1;
+  const earlyReturnsOnly = connectHandlerBody && lastEarlyReturnIdx !== -1 ? connectHandlerBody.slice(0, lastEarlyReturnIdx) : "";
+  const successPathOnly = connectHandlerBody && lastEarlyReturnIdx !== -1 ? connectHandlerBody.slice(lastEarlyReturnIdx) : "";
+  check("test 1 setup: both early-return branches (reauth-required, not-authenticated) are present", !!connectHandlerBody && connectHandlerBody.includes(reauthMarker) && connectHandlerBody.includes(notAuthMarker));
+  check("test 1: once connect() actually succeeds, the Spotify setup form is hidden from the primary dashboard", /els\.spotifySetup\.classList\.add\(\s*"hidden"\s*\)/.test(successPathOnly));
+  check("test 1: the hide is NOT inside either early-return branch (reauth-required / not-authenticated) -- only the success path hides it", !earlyReturnsOnly.includes('els.spotifySetup.classList.add("hidden")'));
+
+  check('test 2: index.html exposes a "Change Spotify setup" control inside the collapsed Advanced block', advancedBlock.includes('id="ctl-change-spotify-setup"'));
+  check("test 2: that control is NOT duplicated as a second Client ID input inside Advanced (the setup form itself stays in Controls, only toggled)", !advancedBlock.includes('id="spotify-client-id"'));
+  const changeSetupHandler = sliceBetween(appJs, "els.ctlChangeSpotifySetup.onclick = () => {", "els.ctlDebugToggle.onclick");
+  check("test 2: the Change-Spotify-setup control toggles the setup form's visibility (recoverable, not deleted)", !!changeSetupHandler && /els\.spotifySetup\.classList\.toggle\(\s*"hidden"\s*\)/.test(changeSetupHandler));
+  check("test 2: the Change-Spotify-setup control never clears the stored Client ID", !!changeSetupHandler && !changeSetupHandler.includes("removeItem(CLIENT_ID_KEY)") && !changeSetupHandler.includes("removeItem(CLIENT_ID_STORAGE_KEY)"));
+  check("test 2: reauth is still reachable from the SAME connect handler -- beginLogin() is still called on the reauth/not-authenticated branches, unchanged", !!connectHandlerBody && /await adapter\.beginLogin\(\);/g.test(connectHandlerBody));
+  check("test 2: before authentication, the setup form is still shown by default when entering Spotify Live mode (unchanged golden path)", /els\.spotifySetup\.classList\.remove\(\s*"hidden"\s*\);/.test(appJs));
+}
+
+// ============================================================
+// P0-M6-R3-PREOWNER UI Defect 2: collapse/clear the search-results list
+// once a seed is confirmed playing, replaced by a small "Change seed"
+// control that restores (never auto-runs) the search workflow.
+// ============================================================
+{
+  const collapseFn = appJs.match(/function collapseSeedSearch\(\)[\s\S]*?\n}/)?.[0] || "";
+  check("test 3: collapseSeedSearch() exists", collapseFn.length > 0);
+  check("test 3: collapseSeedSearch() clears the search-results list", /seedResults\.innerHTML = ""/.test(collapseFn));
+  check("test 3: collapseSeedSearch() hides the search input/button/results container", /seedSearchControls\.classList\.add\(\s*"hidden"\s*\)/.test(collapseFn));
+  check("test 3: collapseSeedSearch() reveals the small 'Change seed' control", /ctlChangeSeed\.classList\.remove\(\s*"hidden"\s*\)/.test(collapseFn));
+  check("test 3: collapseSeedSearch() never touches Now Playing's own elements (queueCurrent/seekSlider untouched)", !/queueCurrent|seekSlider/.test(collapseFn));
+
+  const playAsSeedHandler = sliceBetween(appJs, "btn.onclick = async () => {", "} catch (e) {");
+  check("test 3: the 'Play as seed' handler calls collapseSeedSearch() only after playSeedTrack() actually succeeds (inside the try block, after the await)", !!playAsSeedHandler && /await adapter\.playSeedTrack\(track\.uri\);[\s\S]*collapseSeedSearch\(\);/.test(playAsSeedHandler));
+
+  const restoreFn = appJs.match(/function restoreSeedSearch\(\)[\s\S]*?\n}/)?.[0] || "";
+  check("test 4: restoreSeedSearch() exists", restoreFn.length > 0);
+  check("test 4: restoreSeedSearch() reveals the search input/button/results container", /seedSearchControls\.classList\.remove\(\s*"hidden"\s*\)/.test(restoreFn));
+  check("test 4: restoreSeedSearch() hides the 'Change seed' control", /ctlChangeSeed\.classList\.add\(\s*"hidden"\s*\)/.test(restoreFn));
+  check("test 4: 'Change seed' never triggers a search or plays/changes a track by itself (no searchTracks/playSeedTrack call in restoreSeedSearch())", !/searchTracks|playSeedTrack/.test(restoreFn));
+  check("test 4: the 'Change seed' button is wired to call restoreSeedSearch() and nothing else", /els\.ctlChangeSeed\.onclick = \(\) => restoreSeedSearch\(\);/.test(appJs));
+  const activateSpotifySetupSection = appJs.slice(appJs.indexOf("async function activateSpotify()"), appJs.indexOf("const adapter = new SpotifyPublicControlAdapter"));
+  check("test 4: entering/reactivating Spotify Live mode resets to the default search-visible state (a fresh adapter has no seed yet)", /restoreSeedSearch\(\);/.test(activateSpotifySetupSection));
+}
+
+// ============================================================
+// Tests 5 & 6: the primary post-auth/post-seed screenshot state contains
+// neither the Client ID input nor the redirect URI. Proven structurally:
+// both live inside the exact single `#spotify-setup` container that test
+// 1 proves is hidden once connect() succeeds, and neither appears
+// anywhere else in the primary markup.
+// ============================================================
+{
+  const setupBlock = sliceBetween(html, 'id="spotify-setup"', "</div>");
+  check("test 5: the Client ID input lives inside the #spotify-setup container (the one hidden on connect success)", !!setupBlock && setupBlock.includes('id="spotify-client-id"'));
+  check("test 6: the redirect URI hint lives inside the SAME #spotify-setup container", !!setupBlock && setupBlock.includes('id="redirect-uri-hint"'));
+  check("test 5: no element outside #spotify-setup in the primary markup contains the Client ID input", (primaryBlock.match(/id="spotify-client-id"/g) || []).length === 1);
+  check("test 6: no element outside #spotify-setup in the primary markup contains the redirect URI hint", (primaryBlock.match(/id="redirect-uri-hint"/g) || []).length === 1);
+  check("test 5/6: neither id appears a second time anywhere in the whole document (Advanced included)", (html.match(/id="spotify-client-id"/g) || []).length === 1 && (html.match(/id="redirect-uri-hint"/g) || []).length === 1);
 }
 
 console.log(`\nRESULT: ${passed}/${checks} PASS`);

@@ -48,10 +48,13 @@ const els = {
   lookaheadBlocker: document.getElementById("lookahead-blocker"),
   lookaheadPlayNext: document.getElementById("lookahead-play-next"),
   lookaheadProviderQueueSize: document.getElementById("lookahead-provider-queue-size"),
+  seedSearchControls: document.getElementById("seed-search-controls"),
+  ctlChangeSeed: document.getElementById("ctl-change-seed"),
   seedSearchInput: document.getElementById("seed-search-input"),
   seedSearchBtn: document.getElementById("seed-search-btn"),
   seedResults: document.getElementById("seed-results"),
   seedStatus: document.getElementById("seed-status"),
+  ctlChangeSpotifySetup: document.getElementById("ctl-change-spotify-setup"),
   autoplaySnapshotCount: document.getElementById("autoplay-snapshot-count"),
   autoplayClassification: document.getElementById("autoplay-classification"),
   autoplayClassificationReason: document.getElementById("autoplay-classification-reason"),
@@ -351,6 +354,31 @@ function renderLookaheadStatus(adapter) {
 }
 
 /**
+ * P0-M6-R3 pre-owner UI repair (UI Defect 2): once a seed is confirmed
+ * playing, the full 10-result search list has no reason to stay on
+ * screen -- it defeats the compact screenshot goal. Collapses the
+ * search input/button/results into a single small "Change seed" control;
+ * Now Playing (outside `#seed-search-controls`) is untouched and stays
+ * visible throughout.
+ */
+function collapseSeedSearch() {
+  els.seedResults.innerHTML = "";
+  els.seedSearchControls.classList.add("hidden");
+  els.ctlChangeSeed.classList.remove("hidden");
+}
+
+/**
+ * "Change seed" restores the search workflow so a NEW seed can be picked
+ * -- it must never itself trigger a search or change the currently
+ * active song; it only reveals the controls the owner already knows how
+ * to use.
+ */
+function restoreSeedSearch() {
+  els.seedSearchControls.classList.remove("hidden");
+  els.ctlChangeSeed.classList.add("hidden");
+}
+
+/**
  * P0-M6-R2 repair pass 2, Blocker 2: the debug panel is tracked
  * diagnostic evidence, not ephemeral UI -- it must never carry the
  * owner's raw search text, a raw `spotify:track:` URI, or any other raw
@@ -384,6 +412,7 @@ async function renderSeedResults(adapter, query) {
         await adapter.playSeedTrack(track.uri);
         logDebug(`playSeedTrack(${seedToken}) -> request accepted`);
         renderAutoplayStatus(adapter);
+        collapseSeedSearch();
       } catch (e) {
         logDebug(`playSeedTrack(${seedToken}) -> ERROR: ${e.message}`);
       }
@@ -405,6 +434,7 @@ async function activateSpotify() {
   els.advancedSpotifyOnly.classList.remove("hidden");
   els.nextAutomixMeta.classList.remove("hidden");
   els.panelSession.classList.remove("hidden");
+  restoreSeedSearch(); // fresh adapter instance for this activation -- no seed chosen yet
 
   const adapter = new SpotifyPublicControlAdapter({ clientId, redirectUri: REDIRECT_URI });
   activeAdapter = adapter;
@@ -453,6 +483,14 @@ async function activateSpotify() {
     // panel (not a playlist) is how playback actually starts.
     const readiness = await adapter.getAccountReadiness();
     adapter._lastReadiness = readiness;
+    // UI Defect 1 (P0-M6-R3 pre-owner UI repair): once connect() has
+    // actually succeeded, the Client ID field and redirect URI have no
+    // reason to stay on the primary compact dashboard -- and a screenshot
+    // taken from here on must not show either. The locally-stored Client
+    // ID itself is untouched; "Change Spotify setup" (Advanced) reveals
+    // this same form again on demand, it is never cleared.
+    els.spotifySetup.classList.add("hidden");
+    els.ctlChangeSpotifySetup.textContent = "Change Spotify setup";
     startStatusLoop(adapter, () => renderSeekUI(adapter, seekController));
     startLookaheadOrchestration(adapter);
     renderStatus(adapter, readiness);
@@ -478,6 +516,9 @@ async function activateSpotify() {
   els.seedSearchInput.onkeydown = (ev) => {
     if (ev.key === "Enter") els.seedSearchBtn.click();
   };
+  // UI Defect 2: "Change seed" only reveals the search workflow again --
+  // it must never itself search or touch the currently-playing track.
+  els.ctlChangeSeed.onclick = () => restoreSeedSearch();
 
   // Section A: drag (input event, continuous, never seeks) vs commit
   // (change event, fires exactly once on release) -- standard <input
@@ -536,6 +577,15 @@ els.ctlAutoMixToggle.onclick = () => {
   els.ctlAutoMixToggle.setAttribute("aria-pressed", String(next));
   els.ctlAutoMixToggle.textContent = `AutoMix: ${next ? "ON" : "OFF"}`;
   activeAdapter?.setAutoMixEnabled(next);
+};
+
+// UI Defect 1: the only way back to the Client ID / redirect URI form
+// once it's been auto-hidden after a successful connect(). Never clears
+// the stored Client ID -- this only toggles visibility of the existing
+// form (same convention as the debug-panel toggle below).
+els.ctlChangeSpotifySetup.onclick = () => {
+  els.spotifySetup.classList.toggle("hidden");
+  els.ctlChangeSpotifySetup.textContent = els.spotifySetup.classList.contains("hidden") ? "Change Spotify setup" : "Hide Spotify setup";
 };
 
 els.ctlDebugToggle.onclick = () => {
