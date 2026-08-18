@@ -73,21 +73,37 @@ export function needsSearchFallback(poolSizeSoFar, minSize = MIN_POOL_SIZE_BEFOR
 
 /**
  * Merges multiple candidate-list sources into one bounded, deduplicated
- * pool. De-dup keeps the FIRST occurrence of a given track id, so callers
- * must order `sources` by preference (top tracks, then recently played,
- * then search) -- a track appearing in top tracks stays tagged
- * TOP_TRACK_AFFINITY even if it also turns up in recently played.
+ * pool. De-dup keeps the FIRST-seen source's `affinitySource` for a given
+ * track id, so callers must order `sources` by preference (top tracks,
+ * then recently played, then search) -- a track appearing in top tracks
+ * stays tagged TOP_TRACK_AFFINITY even if it also turns up in recently
+ * played.
+ *
+ * P0-M6-R2 repair, Blocker 5: the prior version dropped a LATER source's
+ * candidate entirely on a duplicate id, which silently discarded
+ * `recentPlayRank` for any track that was also in Top Tracks -- making a
+ * just-played top track look like it had never been played recently at
+ * all. A duplicate now MERGES in any `recentPlayRank` the kept entry
+ * didn't already have, instead of discarding the second occurrence
+ * outright.
  */
 export function assembleCandidatePool(sources, maxSize = MAX_CANDIDATE_POOL_SIZE) {
-  const seen = new Set();
-  const pool = [];
+  const byId = new Map();
+  const order = [];
   for (const list of sources || []) {
     for (const c of list || []) {
-      if (!c || !c.id || seen.has(c.id)) continue;
-      seen.add(c.id);
-      pool.push(c);
-      if (pool.length >= maxSize) return pool;
+      if (!c || !c.id) continue;
+      const existing = byId.get(c.id);
+      if (existing) {
+        if (Number.isInteger(c.recentPlayRank) && !Number.isInteger(existing.recentPlayRank)) {
+          existing.recentPlayRank = c.recentPlayRank;
+        }
+        continue;
+      }
+      if (order.length >= maxSize) continue;
+      byId.set(c.id, { ...c });
+      order.push(c.id);
     }
   }
-  return pool;
+  return order.map((id) => byId.get(id));
 }

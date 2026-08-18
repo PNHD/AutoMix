@@ -18,7 +18,17 @@ import {
   toSeedCandidate,
   MAX_SEARCH_LIMIT,
 } from "./spotify-api-requests.js";
-import { deriveQueueTruth, isNextControlEnabled, nextControlState, describePlayAtNaturalEnd, NO_QUEUED_NEXT_TRACK, EMPTY_QUEUE_TRUTH } from "./spotify-queue-truth.js";
+import {
+  deriveQueueTruth,
+  unknownNotPolledQueueTruth,
+  unknownApiErrorQueueTruth,
+  isNextControlEnabled,
+  nextControlState,
+  canInjectToQueue,
+  describePlayAtNaturalEnd,
+  QueueTruthState,
+  UNKNOWN_QUEUE_TRUTH,
+} from "./spotify-queue-truth.js";
 import {
   sanitizeTrackToken,
   captureSnapshot,
@@ -27,11 +37,14 @@ import {
   resolveManualAttribution,
   NO_PENDING_MANUAL_ACTION,
 } from "./spotify-autoplay.js";
+import { sanitizeDeviceToken } from "./spotify-privacy.js";
 import { clampSeekTargetMs, computeNearEndProbeTargetMs } from "./spotify-seek.js";
-import { parseSpotifyApiResponse, SpotifyApiError } from "./spotify-api-response.js";
+import { parseSpotifyApiResponse, SpotifyApiError, extractSanitizedSpotifyErrorMessage } from "./spotify-api-response.js";
 import { candidatesFromTopTracks, candidatesFromRecentlyPlayed, candidatesFromSearch, assembleCandidatePool, needsSearchFallback } from "./spotify-candidate-pool.js";
 import { selectNextTrack } from "./spotify-planner.js";
 import { LookaheadQueueController, QueueState } from "./spotify-lookahead-queue.js";
+import { hasAllRequiredScopes, parseScopeString } from "./spotify-scope.js";
+import { classifyQueueFailure, isBlockerActive, QueueBlockerType } from "./spotify-queue-error-policy.js";
 
 // P0-M6-R2 Phase D: how many of the most-recently-auto-played tracks (in
 // this AutoMix session) stay in the recent-repeat exclusion window, on
@@ -180,11 +193,14 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
     // seek() below.
     this._manualAction = NO_PENDING_MANUAL_ACTION;
 
-    // P0-M6-R2 Phase B: last-known real-queue truth from
-    // GET /me/player/queue (see getRealQueueTruth()). null until the
-    // first successful poll; the Next control and Play-at-natural-end
-    // messaging must never claim a successor exists before this is known.
-    this._lastQueueTruth = null;
+    // P0-M6-R2 Phase B (repair pass, Blocker 2): last-known real-queue
+    // truth from GET /me/player/queue (see getRealQueueTruth()). ALWAYS
+    // a tri-state object (never `null`) -- starts as
+    // `UNKNOWN_NOT_POLLED`, the initial "we genuinely don't know yet"
+    // state, distinct from a confirmed-empty poll result. The Next
+    // control and Play-at-natural-end messaging must never claim a
+    // successor exists (or definitely doesn't) before this is known.
+    this._lastQueueTruth = unknownNotPolledQueueTruth();
 
     // P0-M6-R2 Phases C/D/E: app-controlled continuation queue state.
     // Reset per seed (see playSeedTrack()) -- this is per-AutoMix-session
@@ -195,6 +211,30 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
     this._lastCandidatePoolBreakdown = { topCount: 0, recentCount: 0, searchFallbackUsed: false };
     this._lastSelectionResult = null; // most recent selectNextTrack() result (see runLookaheadCycle())
     this._lookaheadController = null; // created lazily on the first runLookaheadCycle() call for this seed
+    // Blocker 5: real GET /me/player/recently-played history (raw track
+    // ids, most-recent-first), captured by _fetchCandidatePool() --
+    // separate from _sessionPlayedIds, which is only what THIS AutoMix
+    // session itself has played.
+    this._lastRecentlyPlayedIds = [];
+
+    // P0-M6-R2 repair, Blocker 4: candidate/endpoint failure bookkeeping
+    // that spans MULTIPLE orchestration ticks, so a failing queue-write
+    // can never be retried every ~2s forever. See
+    // spotify-queue-error-policy.js.
+    this._failedCandidateTokens = new Set(); // tokens excluded from selection this session (candidate-specific failures)
+    this._queueBlocker = null; // { type, status, untilMs? } | null -- a systemic blocker (terminal auth or timed cooldown)
+
+    // P0-M6-R2 repair, Blocker 6: explicit AutoMix on/off state actually
+    // consulted by the orchestration cycle (setAutoMixEnabled() was
+    // previously a no-op here). Defaults ON, matching the UI's default
+    // "AutoMix: ON" toggle state.
+    this._autoMixEnabled = true;
+
+    // P0-M6-R2 repair, Blocker 7: opaque per-connection device token
+    // (sanitizeDeviceToken(this._deviceId)) for anything emitted into
+    // tracked evidence/debug output -- the raw device_id itself is kept
+    // only on `_deviceId` for making real API calls, never emitted.
+    this._deviceToken = null;
   }
 
   /**
@@ -231,6 +271,25 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
   _storeToken(tok) {
     this._token = tok;
     localStorage.setItem(TOKEN_STORAGE_KEY, JSON.stringify(tok));
+  }
+
+  /**
+   * P0-M6-R2 repair, Blocker 1: discards ONLY the stored Spotify token
+   * (in-memory and localStorage) so the owner is routed back through
+   * PKCE on the next Connect -- never touches the Client ID
+   * (`CLIENT_ID_STORAGE_KEY`), and never requires the owner to open
+   * DevTools or clear localStorage manually. Wrapped in try/catch
+   * (matching `_loadStoredToken`'s existing defensive style) since the
+   * in-memory `_token = null` is what actually matters for the reauth
+   * flow even if localStorage access itself ever failed.
+   */
+  _discardStaleToken() {
+    this._token = null;
+    try {
+      localStorage.removeItem(TOKEN_STORAGE_KEY);
+    } catch {
+      // best-effort only -- see comment above.
+    }
   }
 
   /**
@@ -284,6 +343,12 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
       access_token: tokenResp.access_token,
       refresh_token: tokenResp.refresh_token,
       expires_at_ms: Date.now() + tokenResp.expires_in * 1000,
+      // P0-M6-R2 repair, Blocker 1: Spotify's token response documents a
+      // `scope` field (space-separated). Stored alongside the token so a
+      // FUTURE scope requirement (like this very repair pass's own new
+      // scopes) can be detected against an already-issued token instead
+      // of silently reusing it and getting a 403 from the new endpoints.
+      scope: parseScopeString(tokenResp.scope),
     });
     sessionStorage.removeItem(VERIFIER_STORAGE_KEY);
     sessionStorage.removeItem(STATE_STORAGE_KEY);
@@ -300,6 +365,13 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
         access_token: refreshed.access_token,
         refresh_token: refreshed.refresh_token || this._token.refresh_token,
         expires_at_ms: Date.now() + refreshed.expires_in * 1000,
+        // P0-M6-R2 repair, Blocker 1: Spotify's refresh response MAY omit
+        // `scope` entirely when it hasn't changed from the original
+        // grant -- preserve the previously-known granted scope set in
+        // that case instead of silently losing it (which would make a
+        // perfectly valid, fully-scoped token look stale on the very
+        // next `connect()` scope check).
+        scope: refreshed.scope ? parseScopeString(refreshed.scope) : this._token.scope || [],
       });
     }
     return this._token.access_token;
@@ -311,8 +383,19 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
    * successful-but-non-JSON shape (204, empty 200, plain-text 200 --
    * common for Player write endpoints) is an explicit branch instead of
    * one unconditional `JSON.parse(text)` that threw `Unexpected token ...
-   * is not valid JSON` on the real live API. Never includes the token or
-   * the query string (only `path`) in a thrown error.
+   * is not valid JSON` on the real live API. Never includes the token in
+   * a thrown error.
+   *
+   * P0-M6-R2 repair, Blocker 7: the query string is stripped from `path`
+   * BEFORE constructing `SpotifyApiError` -- several call sites (queue
+   * injection, seed play) pass a `path` that includes query parameters
+   * carrying a raw track URI or `device_id` (e.g.
+   * `/me/player/queue?uri=spotify:track:...&device_id=...`); the prior
+   * version stored that whole string verbatim on the thrown error,
+   * meaning any place that logged/emitted the error (debug panel,
+   * `queue_truth_poll_failed`, etc.) leaked a raw identifier. Also
+   * captures a `Retry-After` response header (429s) as `retryAfterSec`
+   * for the bounded-cooldown repair (Blocker 4).
    */
   async _api(path, opts = {}) {
     const token = await this._ensureFreshToken();
@@ -322,15 +405,39 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
     });
     const parsed = await parseSpotifyApiResponse(res);
     if (!parsed.ok) {
-      throw new SpotifyApiError({ method: opts.method || "GET", path, status: parsed.status, body: parsed.body, bodyType: parsed.bodyType });
+      const pathname = String(path).split("?")[0];
+      const retryAfterHeader = typeof res.headers?.get === "function" ? res.headers.get("Retry-After") : null;
+      const retryAfterSec = retryAfterHeader !== null ? Number.parseInt(retryAfterHeader, 10) : null;
+      throw new SpotifyApiError({
+        method: opts.method || "GET",
+        path: pathname,
+        status: parsed.status,
+        body: parsed.body,
+        bodyType: parsed.bodyType,
+        retryAfterSec: Number.isFinite(retryAfterSec) ? retryAfterSec : null,
+      });
     }
     return parsed.body;
   }
 
+  /**
+   * P0-M6-R2 repair, Blocker 1: before ever attempting to use a stored
+   * token, it must actually cover every scope `SPOTIFY_SCOPES` currently
+   * requires. A legacy token stored before this repair (no `scope`
+   * metadata at all) or one missing any newly-required scope is treated
+   * as stale: it is discarded (Client ID is NEVER touched) and the
+   * caller (app.js) is expected to route the owner through `beginLogin()`
+   * again on this exact `SPOTIFY_REAUTH_REQUIRED_FOR_NEW_SCOPES` reason
+   * -- no DevTools, no manual localStorage clearing.
+   */
   async connect() {
     this._token = this._loadStoredToken();
     if (!this._token) {
       return { ok: false, reason: "NOT_AUTHENTICATED_CALL_beginLogin" };
+    }
+    if (!hasAllRequiredScopes(this._token.scope, SPOTIFY_SCOPES)) {
+      this._discardStaleToken();
+      return { ok: false, reason: "SPOTIFY_REAUTH_REQUIRED_FOR_NEW_SCOPES" };
     }
     try {
       await this._ensureFreshToken();
@@ -398,9 +505,13 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
     });
     this._player.addListener("ready", ({ device_id }) => {
       this._deviceId = device_id;
+      // Blocker 7: the raw device_id is kept ONLY on `_deviceId` (needed
+      // for real API calls) -- everything emitted/logged uses the opaque
+      // per-device token instead.
+      this._deviceToken = sanitizeDeviceToken(device_id);
       this._deviceActivated = false; // a (re)connect gets a fresh device_id -- must transfer again
       this._sdkReady = true;
-      this._emit({ type: "device_ready", deviceId: device_id });
+      this._emit({ type: "device_ready", deviceToken: this._deviceToken });
     });
     this._player.addListener("player_state_changed", (state) => {
       this._latestState = state;
@@ -520,7 +631,7 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
     const req = buildTransferPlaybackRequest(this._deviceId, false);
     await this._api(req.url, { method: req.method, body: JSON.stringify(req.body) });
     this._deviceActivated = true;
-    this._emit({ type: "device_activated", deviceId: this._deviceId });
+    this._emit({ type: "device_activated", deviceToken: this._deviceToken });
   }
 
   /**
@@ -547,6 +658,9 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
     this._lastCandidatePoolBreakdown = { topCount: 0, recentCount: 0, searchFallbackUsed: false };
     this._lastSelectionResult = null;
     this._lookaheadController = null;
+    this._lastRecentlyPlayedIds = [];
+    this._failedCandidateTokens = new Set();
+    this._queueBlocker = null;
 
     this._emit({ type: "seed_track_played", seedToken: this._seedToken });
   }
@@ -573,6 +687,11 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
     ]);
     const topCandidates = candidatesFromTopTracks(topRaw);
     const recentCandidates = candidatesFromRecentlyPlayed(recentRaw);
+    // Blocker 5: real account listening history (most-recent-first),
+    // kept SEPARATE from `_sessionPlayedIds` (only what THIS AutoMix
+    // session itself has played) -- runLookaheadCycle() feeds the first
+    // fixed-N of this into the planner's `recentRepeatWindowIds`.
+    this._lastRecentlyPlayedIds = recentCandidates.map((c) => c.id);
 
     let searchCandidates = [];
     const searchFallbackUsed = needsSearchFallback(topCandidates.length + recentCandidates.length) && !!fallbackSearchQuery;
@@ -595,13 +714,30 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
   }
 
   /**
-   * P0-M6-R2 Phase E orchestration: builds the candidate pool (Phase C),
-   * runs the planner (Phase D), and enqueues exactly one chosen successor
-   * (Phase E) via the one-track lookahead queue state machine. Lazily
-   * creates the `LookaheadQueueController` (once per seed -- see
-   * playSeedTrack()'s reset) wired to this adapter's own `_api()` (so it
-   * automatically inherits the Phase A response-parsing repair) and
-   * `getRealQueueTruth()` (Phase B) for confirmation.
+   * P0-M6-R2 Phase E orchestration, REPAIRED (Blockers 3/4/5/6): a single
+   * entry point safe to call on every orchestration tick. Always:
+   *
+   *   1. Polls REAL queue truth fresh (never acts on a stale cached
+   *      value from a prior tick) -- Blocker 3.
+   *   2. If a successor is already `SUCCESSOR_QUEUE_REQUESTED` (awaiting
+   *      confirmation), this tick's job is ONLY to try confirming it --
+   *      it never starts a second selection cycle, regardless of what
+   *      the real queue currently shows (Blocker 3's
+   *      "duplicate orchestration ticks -> one POST total").
+   *   3. Otherwise, a NEW selection/enqueue cycle is only attempted when
+   *      the real queue is `KNOWN_EMPTY` (`canInjectToQueue`). A
+   *      `KNOWN_NONEMPTY` queue that isn't ours yields
+   *      `EXTERNAL_QUEUE_OCCUPIED` with zero POSTs; any `UNKNOWN_*` state
+   *      yields `QUEUE_STATE_UNKNOWN_CANNOT_INJECT` with zero POSTs --
+   *      Blocker 3.
+   *   4. AutoMix OFF (`_autoMixEnabled`) blocks only this NEW-selection
+   *      path, never an already-in-flight confirmation -- Blocker 6.
+   *   5. A standing systemic blocker (`_queueBlocker` -- terminal auth or
+   *      an unexpired cooldown) also blocks this path -- Blocker 4. A
+   *      failed queue-write is classified (`classifyQueueFailure`) into
+   *      either a candidate-specific exclusion (planner never offers
+   *      that token again) or a systemic blocker, so a failing
+   *      candidate/endpoint is never retried every ~2s forever.
    */
   async runLookaheadCycle() {
     if (!this._seedObserved) throw new Error("SEED_NOT_YET_ACTIVE_FOR_LOOKAHEAD");
@@ -616,6 +752,45 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
         onStateChange: (s) => this._emit({ type: "lookahead_state_changed", state: s }),
       });
     }
+    const controller = this._lookaheadController;
+
+    const queueTruth = await this.getRealQueueTruth();
+
+    // Already awaiting confirmation of OUR OWN prior request -- this
+    // tick's only job is to try confirming it. Never start a second
+    // selection cycle here, no matter what queueTruth says.
+    if (controller.state === QueueState.SUCCESSOR_QUEUE_REQUESTED) {
+      if (queueTruth.state === QueueTruthState.UNKNOWN_API_ERROR) {
+        // Blocker 2: an API error must never be silently reinterpreted
+        // as "not yet visible" -- report the real blocker.
+        return { queued: false, confirmed: false, reason: "QUEUE_STATE_UNKNOWN_CANNOT_CONFIRM", queueTruthError: queueTruth.error };
+      }
+      const confirmResult = await controller.confirmSuccessor();
+      return { queued: false, confirmed: confirmResult.confirmed, reason: confirmResult.reason || "CONFIRMING_OWN_PENDING_SUCCESSOR" };
+    }
+
+    if (queueTruth.state === QueueTruthState.KNOWN_NONEMPTY) {
+      this._emit({ type: "external_queue_occupied", queueSize: queueTruth.queueSize });
+      return { queued: false, reason: "EXTERNAL_QUEUE_OCCUPIED" };
+    }
+    if (!canInjectToQueue(queueTruth)) {
+      // UNKNOWN_NOT_POLLED or UNKNOWN_API_ERROR -- never inject on an
+      // unconfirmed queue state (Blocker 2/3).
+      return { queued: false, reason: "QUEUE_STATE_UNKNOWN_CANNOT_INJECT", queueTruthError: queueTruth.error };
+    }
+
+    // Blocker 6: AutoMix OFF prevents all NEW selection/queue POSTs.
+    if (!this._autoMixEnabled) {
+      return { queued: false, reason: "AUTOMIX_DISABLED" };
+    }
+
+    // Blocker 4: a standing systemic blocker (terminal auth, or an
+    // unexpired cooldown from a prior transient/rate-limit failure)
+    // prevents a new attempt until it clears.
+    if (isBlockerActive(this._queueBlocker, Date.now())) {
+      return { queued: false, reason: this._queueBlocker.type === QueueBlockerType.TERMINAL_AUTH ? "TERMINAL_AUTH_BLOCKER" : "IN_COOLDOWN", blocker: this._queueBlocker };
+    }
+    this._queueBlocker = null; // any cooldown that WAS active has now expired
 
     const currentTrackRaw = this._latestState?.track_window?.current_track;
     const currentTrack = currentTrackRaw
@@ -624,19 +799,39 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
     const fallbackSearchQuery = currentTrackRaw?.artists?.[0]?.name || null;
 
     const pool = await this._fetchCandidatePool({ fallbackSearchQuery });
-    const result = await this._lookaheadController.selectAndQueueSuccessor({
+    const result = await controller.selectAndQueueSuccessor({
       candidates: pool,
       currentTrack,
       sessionPlayedIds: this._sessionPlayedIds,
-      recentRepeatWindowIds: this._sessionPlayedIds.slice(-RECENT_REPEAT_WINDOW_SIZE),
+      // Blocker 5: real GET /me/player/recently-played history (not
+      // `_sessionPlayedIds`, which is a different, already-separate
+      // exclusion) -- the first fixed-N most-recently-played real
+      // Spotify track ids.
+      recentRepeatWindowIds: this._lastRecentlyPlayedIds.slice(0, RECENT_REPEAT_WINDOW_SIZE),
       usedArtistIdsThisSession: this._usedArtistIds,
+      failedCandidateTokens: this._failedCandidateTokens,
     });
     this._lastSelectionResult = result;
+
+    if (!result.queued && result.reason === "QUEUE_REQUEST_FAILED_AFTER_RETRIES") {
+      const classification = classifyQueueFailure(result.errorStatus, result.errorRetryAfterSec);
+      if (classification.type === QueueBlockerType.CANDIDATE_FAILED) {
+        if (result.token) this._failedCandidateTokens.add(result.token);
+        this._emit({ type: "queue_candidate_failed", status: classification.status });
+      } else if (classification.type === QueueBlockerType.TERMINAL_AUTH) {
+        this._queueBlocker = { type: QueueBlockerType.TERMINAL_AUTH, status: classification.status, sinceMs: Date.now() };
+        this._emit({ type: "queue_blocked", blocker: this._queueBlocker });
+      } else {
+        this._queueBlocker = { type: QueueBlockerType.COOLDOWN, status: classification.status, untilMs: Date.now() + classification.cooldownMs };
+        this._emit({ type: "queue_blocked", blocker: this._queueBlocker });
+      }
+    }
+
     this._emit({ type: "successor_selection_result", token: result.token ?? null, queued: result.queued, reason: result.reason ?? result.selectionReason ?? null });
     return result;
   }
 
-  /** P0-M6-R2 Phase E: confirms the pending successor is actually visible in the real queue (GET /me/player/queue) before trusting it. */
+  /** P0-M6-R2 Phase E: confirms the pending successor is actually visible in the real queue (GET /me/player/queue) before trusting it. Exposed standalone for direct/manual use; `runLookaheadCycle()` is the orchestration-loop entry point and already calls this internally when appropriate. */
   async confirmLookaheadSuccessor() {
     if (!this._lookaheadController) return { confirmed: false, reason: "NO_LOOKAHEAD_CYCLE_STARTED" };
     return this._lookaheadController.confirmSuccessor();
@@ -654,44 +849,69 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
       refillCount: c?.refillCount ?? 0,
       consecutiveAutoTrackCount: c?.consecutiveAutoTrackCount ?? 1,
       successorConfirmed: c ? c.state === QueueState.SUCCESSOR_CONFIRMED || c.state === QueueState.SUCCESSOR_BECOMES_CURRENT || c.state === QueueState.SELECTING_NEXT_SUCCESSOR : false,
+      autoMixEnabled: this._autoMixEnabled,
+      queueBlocker: this._queueBlocker,
+      failedCandidateCount: this._failedCandidateTokens.size,
     };
   }
 
   /**
-   * P0-M6-R2 Phase B: the ONLY truthful source for "does a real queued
-   * successor exist" -- `GET /me/player/queue` (requires
-   * `user-read-playback-state`). Caches the result on `_lastQueueTruth`
-   * so `next()`/UI can consult it synchronously between polls. Never
-   * throws on a malformed/empty response -- `deriveQueueTruth` treats
-   * that as "no successor" rather than crashing the poll loop.
+   * P0-M6-R2 Phase B, REPAIRED (Blocker 2): the ONLY truthful source for
+   * "does a real queued successor exist" -- `GET /me/player/queue`
+   * (requires `user-read-playback-state`). ALWAYS resolves to a
+   * tri-state `queueTruth` object (`KNOWN_EMPTY` / `KNOWN_NONEMPTY` /
+   * `UNKNOWN_API_ERROR`) and caches it on `_lastQueueTruth` -- an API
+   * failure is represented as `UNKNOWN_API_ERROR` with sanitized
+   * diagnostics (endpoint path with no query identifiers, HTTP status,
+   * bodyType, sanitized Spotify error message), NEVER silently
+   * downgraded to "empty."
    */
   async getRealQueueTruth() {
-    let raw = null;
     try {
-      raw = await this._api(buildGetQueueRequest().url);
+      const raw = await this._api(buildGetQueueRequest().url);
+      const truth = deriveQueueTruth(raw);
+      this._lastQueueTruth = truth;
+      this._emit({ type: "queue_truth_updated", state: truth.state, queueSize: truth.queueSize });
+      return truth;
     } catch (e) {
-      this._emit({ type: "queue_truth_poll_failed", message: e.message });
-      raw = null;
+      const truth =
+        e instanceof SpotifyApiError
+          ? unknownApiErrorQueueTruth({ path: e.path, status: e.status, bodyType: e.bodyType, sanitizedMessage: extractSanitizedSpotifyErrorMessage(e.body, e.bodyType) })
+          : unknownApiErrorQueueTruth({ path: "/me/player/queue", status: null, bodyType: null, sanitizedMessage: "network or unexpected error" });
+      this._lastQueueTruth = truth;
+      this._emit({ type: "queue_truth_poll_failed", error: truth.error });
+      return truth;
     }
-    const truth = deriveQueueTruth(raw);
-    this._lastQueueTruth = truth;
-    this._emit({ type: "queue_truth_updated", queueSize: truth.queueSize, hasQueuedSuccessor: truth.hasQueuedSuccessor });
-    return truth;
   }
 
-  /** UI-facing: whether the manual Next control should be enabled right now, per the last known real-queue truth. */
+  /** UI-facing: whether the manual Next control should be enabled right now, per the last known real-queue truth (KNOWN_NONEMPTY only). */
   isNextControlEnabled() {
-    return isNextControlEnabled(this._lastQueueTruth || EMPTY_QUEUE_TRUTH);
+    return isNextControlEnabled(this._lastQueueTruth || UNKNOWN_QUEUE_TRUTH);
   }
 
-  /** UI-facing state label ("NEXT_TRACK_QUEUED" | "NO_QUEUED_NEXT_TRACK") -- never implies Next creates a recommendation. */
+  /** UI-facing state label -- disabled/labeled distinctly for EMPTY vs. either UNKNOWN state, so the owner sees the real blocker instead of a flat "no successor." */
   getNextControlState() {
-    return nextControlState(this._lastQueueTruth || EMPTY_QUEUE_TRUTH);
+    return nextControlState(this._lastQueueTruth || UNKNOWN_QUEUE_TRUTH);
   }
 
-  /** Truthful description of what Play does right now at natural end (restart same seed vs. advance to a real successor). */
+  /** Truthful description of what Play does right now at natural end (restart same seed / advance to a real successor / genuinely unknown). */
   getPlayAtNaturalEndDescription() {
-    return describePlayAtNaturalEnd(this._lastQueueTruth || EMPTY_QUEUE_TRUTH);
+    return describePlayAtNaturalEnd(this._lastQueueTruth || UNKNOWN_QUEUE_TRUTH);
+  }
+
+  /**
+   * P0-M6-R2 repair, Blocker 6: AutoMix on/off actually consulted by
+   * `runLookaheadCycle()` now (previously a no-op). OFF prevents all NEW
+   * selection/queue POSTs; it does NOT retroactively "unqueue" an
+   * already-confirmed successor -- the public Spotify API offers no
+   * reliable way to remove a specific item from the queue, so this never
+   * pretends otherwise. ON simply removes the gate; the next
+   * orchestration tick resumes exactly one cycle once real queue truth
+   * permits it.
+   */
+  setAutoMixEnabled(enabled) {
+    this._autoMixEnabled = !!enabled;
+    this._emit({ type: "automix_enabled_changed", enabled: this._autoMixEnabled });
   }
 
   getQueue() {
@@ -739,19 +959,31 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
    * `5324583196`) so the resulting changed current track is correctly
    * judged manual, not Autoplay.
    *
-   * P0-M6-R2 Phase B truthfulness gate: once `_lastQueueTruth` has been
-   * populated at least once (via `getRealQueueTruth()`) and it shows no
-   * real queued successor, this refuses to call the SDK's `nextTrack()`
-   * at all -- calling it anyway would either no-op or surface a
-   * misleading Spotify-side error, and would falsely suggest Next can
-   * conjure a recommendation. Before the first poll (`_lastQueueTruth ===
-   * null`) this is permissive, preserving all pre-existing manual-Next
-   * attribution tests that never populate queue truth.
+   * P0-M6-R2 Phase B truthfulness gate, repaired for the Blocker 2
+   * tri-state queue truth: once `_lastQueueTruth` has moved past its
+   * initial `UNKNOWN_NOT_POLLED` state (i.e. at least one
+   * `getRealQueueTruth()` poll has actually completed, successfully or
+   * not) and it does NOT show a confirmed real queued successor
+   * (`KNOWN_EMPTY` or `UNKNOWN_API_ERROR`), this refuses to call the
+   * SDK's `nextTrack()` at all -- calling it anyway would either no-op or
+   * surface a misleading Spotify-side error, and would falsely suggest
+   * Next can conjure a recommendation. Before the first poll this stays
+   * permissive, preserving all pre-existing manual-Next attribution
+   * tests, which exercise the Autoplay-attribution state machine in
+   * isolation and never populate queue truth; in the real app, the
+   * orchestration poll loop populates it within ~2s of Connect, well
+   * before an owner could click Next. The owner-facing Next BUTTON itself
+   * is separately, unconditionally disabled for EMPTY or either UNKNOWN
+   * state via `isNextControlEnabled()`/`getNextControlState()` (Blocker
+   * 2's actual "Next disabled for EMPTY or UNKNOWN" requirement) --
+   * this internal gate is defense-in-depth for direct/programmatic calls.
    */
   async next() {
-    if (this._lastQueueTruth && !this._lastQueueTruth.hasQueuedSuccessor) {
-      this._emit({ type: "next_blocked", reason: NO_QUEUED_NEXT_TRACK });
-      return { ok: false, reason: NO_QUEUED_NEXT_TRACK };
+    const truth = this._lastQueueTruth;
+    if (truth && truth.state !== QueueTruthState.UNKNOWN_NOT_POLLED && !isNextControlEnabled(truth)) {
+      const reason = nextControlState(truth);
+      this._emit({ type: "next_blocked", reason });
+      return { ok: false, reason };
     }
     this._manualAction = beginManualAction(Date.now(), this._currentTokenFromLatestState(), "next");
     await this._player?.nextTrack();
@@ -837,10 +1069,6 @@ export class SpotifyPublicControlAdapter extends PlaybackAdapter {
       beatDownbeatSync: false,
       executesRealDsp: false,
     };
-  }
-
-  setAutoMixEnabled() {
-    // No-op beyond UI state: PUBLIC_CONTROL_ONLY never executes DSP regardless.
   }
 
   onStateChange(cb) {

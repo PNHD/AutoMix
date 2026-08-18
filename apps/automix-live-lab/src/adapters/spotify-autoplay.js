@@ -22,6 +22,8 @@
 // prefix; `sanitizeTrackToken` always canonicalizes before hashing, so
 // every call site (seed selection via URI, runtime state via bare id) goes
 // through the exact same normalization -- no ad-hoc parsing anywhere else.
+import { fnv1aHex } from "./spotify-privacy.js";
+
 const SPOTIFY_TRACK_URI_PREFIX = "spotify:track:";
 
 export function canonicalTrackId(idOrUri) {
@@ -30,10 +32,11 @@ export function canonicalTrackId(idOrUri) {
 }
 
 /**
- * Deterministic, synchronous, non-cryptographic FNV-1a 32-bit hash. Used
- * only to produce an opaque, stable, non-reversible-in-practice token for
- * a Spotify track id -- NOT a security primitive. Synchronous (unlike
- * Web Crypto's SubtleCrypto) so it can run directly inside the
+ * Deterministic, synchronous, non-cryptographic hash (`fnv1aHex`,
+ * spotify-privacy.js -- shared with device-id sanitization, Blocker 7).
+ * Used only to produce an opaque, stable, non-reversible-in-practice
+ * token for a Spotify track id -- NOT a security primitive. Synchronous
+ * (unlike Web Crypto's SubtleCrypto) so it can run directly inside the
  * `player_state_changed` event handler without an extra async hop.
  *
  * Accepts EITHER a bare track id ("SEED123") OR a full track URI
@@ -43,13 +46,7 @@ export function canonicalTrackId(idOrUri) {
 export function sanitizeTrackToken(trackIdOrUri) {
   const id = canonicalTrackId(trackIdOrUri);
   if (!id) return null;
-  let hash = 0x811c9dc5;
-  for (let i = 0; i < id.length; i++) {
-    hash ^= id.charCodeAt(i);
-    hash = Math.imul(hash, 0x01000193);
-  }
-  const hex = (hash >>> 0).toString(16).padStart(8, "0");
-  return `TRK_${hex}`;
+  return `TRK_${fnv1aHex(id)}`;
 }
 
 // Repair pass (Issue #11, PM comment `5324583196`, BLOCKER 2): the prior

@@ -90,13 +90,18 @@ export async function parseSpotifyApiResponse(res) {
 
 /**
  * Thrown by `_api()` for any non-ok response. Carries only `method`,
- * `path` (never the full URL with query secrets, and never headers), the
- * HTTP `status`, and the already-parsed/sanitized `body`/`bodyType` from
- * `parseSpotifyApiResponse` -- there is no field on this error that could
- * ever hold an Authorization header or access token.
+ * `path` -- P0-M6-R2 repair, Blocker 7: `_api()` is responsible for
+ * stripping any query string BEFORE constructing this error, so `path`
+ * here can never carry a raw track URI or device_id that happened to be
+ * a query parameter on the request (e.g. `POST /me/player/queue?uri=...
+ * &device_id=...`) -- and never headers. The HTTP `status`, already-
+ * parsed/sanitized `body`/`bodyType` from `parseSpotifyApiResponse`, and
+ * `retryAfterSec` (from a `Retry-After` response header on a `429`, if
+ * present) round out the shape. There is no field on this error that
+ * could ever hold an Authorization header or access token.
  */
 export class SpotifyApiError extends Error {
-  constructor({ method, path, status, body, bodyType }) {
+  constructor({ method, path, status, body, bodyType, retryAfterSec = null }) {
     super(`SPOTIFY_API_ERROR: ${method} ${path} -> ${status}`);
     this.name = "SpotifyApiError";
     this.method = method;
@@ -104,5 +109,28 @@ export class SpotifyApiError extends Error {
     this.status = status;
     this.body = body;
     this.bodyType = bodyType;
+    this.retryAfterSec = retryAfterSec;
   }
+}
+
+// Kept short -- this is a UI-facing diagnostic fragment, not a full error dump.
+const MAX_SANITIZED_MESSAGE_LENGTH = 160;
+
+/**
+ * P0-M6-R2 repair, Blocker 2: extracts ONLY Spotify's own documented
+ * `{error:{status,message}}` message text (or a short bodyType-derived
+ * fallback) for tri-state queue-truth diagnostics -- never the raw body,
+ * never a URI/device_id, never a token. Safe to display directly in the
+ * owner-facing UI.
+ */
+export function extractSanitizedSpotifyErrorMessage(body, bodyType) {
+  if (bodyType === "JSON_ERROR" && body && typeof body === "object" && body.error && typeof body.error.message === "string") {
+    const msg = body.error.message;
+    return msg.length > MAX_SANITIZED_MESSAGE_LENGTH ? `${msg.slice(0, MAX_SANITIZED_MESSAGE_LENGTH)}...` : msg;
+  }
+  if (bodyType === "TEXT_ERROR" && typeof body === "string") {
+    return body; // already sanitizeErrorText()'d and length-capped by parseSpotifyApiResponse
+  }
+  if (bodyType === "EMPTY_ERROR") return "(empty error body)";
+  return "(no sanitized message available)";
 }

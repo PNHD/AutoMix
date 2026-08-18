@@ -127,11 +127,26 @@ export class LookaheadQueueController {
     }
 
     // Bounded retry exhausted -- fail back to NO_SUCCESSOR_QUEUED rather
-    // than being stuck in SELECTING_SUCCESSOR forever.
+    // than being stuck in SELECTING_SUCCESSOR forever. P0-M6-R2 repair,
+    // Blocker 4: `errorStatus`/`errorRetryAfterSec` are surfaced (not
+    // just `error.message`) so the caller can classify the failure
+    // (spotify-queue-error-policy.js) and decide whether to blacklist
+    // just this candidate, enter a cooldown, or stop entirely for a
+    // terminal auth/scope error -- instead of the orchestration loop
+    // blindly retrying the exact same failing candidate every tick.
+    const failedToken = result.token;
     this._pendingToken = null;
     this._pendingSelection = null;
     this._setState(QueueState.NO_SUCCESSOR_QUEUED);
-    return { queued: false, reason: "QUEUE_REQUEST_FAILED_AFTER_RETRIES", attempts, error: lastError?.message };
+    return {
+      queued: false,
+      reason: "QUEUE_REQUEST_FAILED_AFTER_RETRIES",
+      attempts,
+      token: failedToken,
+      error: lastError?.message,
+      errorStatus: lastError?.status ?? null,
+      errorRetryAfterSec: lastError?.retryAfterSec ?? null,
+    };
   }
 
   /**

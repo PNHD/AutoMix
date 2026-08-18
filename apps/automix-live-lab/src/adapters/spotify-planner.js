@@ -24,6 +24,12 @@ export const EXCLUSION_REASON = Object.freeze({
   IMMEDIATE_SAME_ARTIST_REPETITION: "IMMEDIATE_SAME_ARTIST_REPETITION",
   EXPLICIT_CONTENT_RESTRICTED: "EXPLICIT_CONTENT_RESTRICTED",
   DUPLICATE_URI: "DUPLICATE_URI",
+  // P0-M6-R2 repair, Blocker 4: a candidate whose queue-write failed
+  // non-recoverably this session (see spotify-queue-error-policy.js's
+  // CANDIDATE_FAILED classification) must never be offered again --
+  // otherwise every orchestration tick would just re-select and re-fail
+  // on the exact same track forever.
+  PERMANENTLY_FAILED_THIS_SESSION: "PERMANENTLY_FAILED_THIS_SESSION",
 });
 
 export const SELECTION_REASON = Object.freeze({
@@ -54,6 +60,7 @@ export function evaluateHardExclusion(candidate, ctx = {}) {
 
   const token = sanitizeTrackToken(candidate.id);
   if (ctx.seenTokens?.has(token)) return EXCLUSION_REASON.DUPLICATE_URI;
+  if (ctx.failedCandidateTokens?.has(token)) return EXCLUSION_REASON.PERMANENTLY_FAILED_THIS_SESSION;
   if (ctx.currentTrackToken && token === ctx.currentTrackToken) return EXCLUSION_REASON.IS_CURRENT_TRACK;
   if (ctx.sessionPlayedTokens?.has(token)) return EXCLUSION_REASON.ALREADY_PLAYED_THIS_SESSION;
   if (ctx.recentRepeatWindowTokens?.has(token)) return EXCLUSION_REASON.RECENT_REPEAT_EXCLUDED;
@@ -95,6 +102,7 @@ export function selectNextTrack({
   recentRepeatWindowIds = [],
   usedArtistIdsThisSession = [],
   excludeExplicit = false,
+  failedCandidateTokens = null,
 } = {}) {
   const currentTrackToken = currentTrack?.id ? sanitizeTrackToken(currentTrack.id) : null;
   const currentPrimaryArtistId = currentTrack?.primaryArtistId ?? null;
@@ -114,6 +122,7 @@ export function selectNextTrack({
       currentPrimaryArtistId,
       excludeExplicit,
       seenTokens,
+      failedCandidateTokens,
     });
     const token = candidate && typeof candidate.id === "string" ? sanitizeTrackToken(candidate.id) : null;
     if (reason) {

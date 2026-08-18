@@ -36,6 +36,8 @@ const els = {
   lookaheadSuccessorConfirmed: document.getElementById("lookahead-successor-confirmed"),
   lookaheadRefillCount: document.getElementById("lookahead-refill-count"),
   lookaheadConsecutiveCount: document.getElementById("lookahead-consecutive-count"),
+  lookaheadAutoMixState: document.getElementById("lookahead-automix-state"),
+  lookaheadBlocker: document.getElementById("lookahead-blocker"),
   seedSearchInput: document.getElementById("seed-search-input"),
   seedSearchBtn: document.getElementById("seed-search-btn"),
   seedResults: document.getElementById("seed-results"),
@@ -255,6 +257,18 @@ function renderLookaheadStatus(adapter) {
   els.lookaheadSuccessorConfirmed.textContent = s.successorConfirmed ? "yes" : "no";
   els.lookaheadRefillCount.textContent = String(s.refillCount);
   els.lookaheadConsecutiveCount.textContent = String(s.consecutiveAutoTrackCount);
+  els.lookaheadAutoMixState.textContent = s.autoMixEnabled ? "ON" : "OFF (paused)";
+  // P0-M6-R2 repair, Blocker 2/4: the owner UI must show the REAL
+  // blocker (terminal auth, a timed cooldown, or none) -- never just a
+  // generic "not working."
+  if (s.queueBlocker?.type === "TERMINAL_AUTH_BLOCKER") {
+    els.lookaheadBlocker.textContent = `TERMINAL_AUTH_BLOCKER (status ${s.queueBlocker.status ?? "?"}) -- reauthorize / check scopes`;
+  } else if (s.queueBlocker?.type === "COOLDOWN") {
+    const remainingS = Math.max(0, Math.round((s.queueBlocker.untilMs - Date.now()) / 1000));
+    els.lookaheadBlocker.textContent = `COOLDOWN -- retrying in ~${remainingS}s (status ${s.queueBlocker.status ?? "?"})`;
+  } else {
+    els.lookaheadBlocker.textContent = s.failedCandidateCount > 0 ? `none (${s.failedCandidateCount} candidate(s) excluded this session)` : "none";
+  }
 }
 
 async function renderSeedResults(adapter, query) {
@@ -326,6 +340,16 @@ async function activateSpotify() {
     }
     const res = await adapter.connect();
     logDebug(`connect() -> ${JSON.stringify(res)}`);
+    if (!res.ok && res.reason === "SPOTIFY_REAUTH_REQUIRED_FOR_NEW_SCOPES") {
+      // P0-M6-R2 repair, Blocker 1: the previously-stored token doesn't
+      // cover a scope this build now requires -- connect() already
+      // discarded ONLY that stale token (Client ID untouched); routing
+      // straight back through PKCE here means the owner never has to
+      // open DevTools or clear localStorage by hand.
+      logDebug("Reauthorization required for new scopes -- redirecting to Spotify authorize page (PKCE)...");
+      await adapter.beginLogin();
+      return;
+    }
     if (!res.ok && res.reason.startsWith("NOT_AUTHENTICATED")) {
       logDebug("Redirecting to Spotify authorize page (PKCE)...");
       await adapter.beginLogin();
