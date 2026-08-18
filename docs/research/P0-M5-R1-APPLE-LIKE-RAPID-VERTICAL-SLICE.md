@@ -1,6 +1,6 @@
 # P0-M5-R1 — Apple-Like AutoMix Rapid Vertical Slice + Real-Music Owner Gate
 
-Status date: 2026-08-18 (repaired)
+Status date: 2026-08-18 (repaired twice)
 
 Binding task: GitHub Issue #10, executed after Issue #9's `OWNER_NG4_GROUND_TRUTH_REQUIRED` hold (PM comment `5322015325`) reaffirmed the original Apple-Music-AutoMix-like product target and authorized this closed-loop technical-route-reset task in its place. Issue #9's artifacts (the P0-M4-R2 narrow-fallback evidence) are unchanged and preserved.
 
@@ -16,6 +16,13 @@ Four blockers, each traceable to its own PM finding:
 - **BLOCKER 3** — M1 sent every tail through Signalsmith, including unity-rate pairs, introducing an avoidable raw-vs-processed seam. Repaired: Signalsmith is bypassed entirely when `abs(rate-1.0) <= 0.001`; the raw tail is used directly.
 - **BLOCKER 4** — the windowed edge-discontinuity proxy was wired as a hard failure, so the delivered `VALIDATION_OUTPUT.txt` showed `RESULT: 9 SAFETY FAILURE(S)` while the report still called the pack ready — a genuine self-contradiction. Repaired: the windowed proxy is now diagnostic-only; a new exact-splice hard check (single-sample delta at the true seam, normalized against a local baseline that excludes the seam itself) is the real hard gate. Applying it surfaced a genuine, previously-undetected defect (see §7) that is fixed below, not merely reclassified.
 
+## R1. Repair pass 2 — binding PM re-review and scope
+
+This document was repaired a second time, in the same session/branch, in response to PM re-review result `P0_M5_R1_PRELISTEN_REPAIR_2_REQUIRED` (Issue #10 comment `5322996856`), starting from the previously pushed HEAD `eaa70a20854c10f2a2cc5d6fa41e8eb958d48ed6` (verified live before this repair — §2). PM's re-review provisionally **accepted** every finding from repair pass 1 (BLOCKER 1/2/3/4, stretch coverage) and found two NEW, narrower defects, one introduced by repair pass 1 itself and one exposed by re-review. **Again, no owner listening had begun**, so the repair-pass-1 owner ZIP (SHA-256 `f5e740...`) is also invalidated. It is renamed locally to `P0-M5-R1-APPLE-LIKE-OWNER-LISTENING.INVALID_DO_NOT_RATE.2.zip` (the original pass's ZIP remains `...INVALID_DO_NOT_RATE.zip`; neither must be rated).
+
+- **BLOCKER A (introduced by repair 1's own micro-splice fix)** — `micro_splice_fade` blended `outgoing_pre`'s own already-emitted last ~10ms against the processed tail's first ~10ms. Since `render_m1` still emitted the FULL, unshortened `outgoing_pre` immediately before that blend, the same ~10ms source interval was audible twice — once raw, once blended — a real program-timeline rewind/duplication, even though the amplitude seam itself was smooth (equal-power gains hid a timeline defect, they did not fix one). Repaired: the blend now uses the window's OWN leading raw content (`out_audio[exit_smp : exit_smp + raw_lead_input_smp]`, i.e. the same forward-time interval the processed head represents), never a reused already-played sample. A new deterministic synthetic verifier (`verify_micro_splice.py`, 11/11 checks) proves no pre-seam interval is replayed and program chronology stays monotonic.
+- **BLOCKER B (pre-existing, exposed by re-review)** — the outgoing exit downbeat snap allowed up to a 45-second forward-or-backward search, which could (and for `RM099->RM071` did) pull a complex-mix transition more than 15 seconds *earlier* than the cached R2 late/natural exit whenever Beat This had no later usable downbeat — violating the preservation-first "near the selected late/natural region" contract. Repaired: the snap is now bounded to `min(4 local bars, 10 seconds)`, computed from already-cached evidence; a pair with no downbeat inside that bounded neighborhood fails closed to `NO_USABLE_DOWNBEAT_NEAR_EXIT_CANDIDATE` instead of reaching further afield. Pair discovery was rerun from the existing Beat This cache only — `RM099->RM071` is no longer eligible (replaced by `RM089->RM020` in the refrozen 8).
+
 ## 0. Execution profile actually used
 
 - **Execution surface:** Claude Desktop → Code.
@@ -24,7 +31,7 @@ Four blockers, each traceable to its own PM finding:
 
 ## 1. Result
 
-**`OWNER_APPLE_LIKE_LISTENING_REQUIRED`** (repaired) — Phases A–F are complete and the repaired pack genuinely passes all hard safety checks (verifier exit code 0, independently re-run). A valid, machine-verified, local-only blinded owner listening pack (`P0-M5-R1-APPLE-LIKE-OWNER-LISTENING.zip`, 8 scenarios x 2 methods = 16 real-music mixed WAV clips, new blind seed) has been built. Owner ratings have **not** been collected. The Post-Rating Route Gate is **not** evaluated in this pass. P1 has not started.
+**`OWNER_APPLE_LIKE_LISTENING_REQUIRED`** (repaired twice) — Phases A–F are complete and the repaired pack genuinely passes all hard safety checks (verifier exit code 0, independently re-run), the micro-splice timeline defect is fixed and mechanically verified, and the exit-anchor snap is now bounded. A valid, machine-verified, local-only blinded owner listening pack (`P0-M5-R1-APPLE-LIKE-OWNER-LISTENING.zip`, 8 scenarios x 2 methods = 16 real-music mixed WAV clips, a THIRD new blind seed) has been built. Owner ratings have **not** been collected. The Post-Rating Route Gate is **not** evaluated in this pass. P1 has not started.
 
 ## 2. Live-state verification
 
@@ -32,10 +39,11 @@ Four blockers, each traceable to its own PM finding:
 |---|---|
 | Branch | `research/p0-feasibility` |
 | HEAD at original-pass session start | `4c0cc7c6b1d3fa3c9b8174cbb966a876c0493234` — matched Issue #10's expected HEAD exactly |
-| HEAD at repair-pass session start | `06b0ccacf6938000cedaba86076fa0534eb853e9` — matched this repair task's expected HEAD exactly |
-| `main` | `2450d55c60601bcee5eb52a2c38ce5d6e87a76aa` — untouched (both passes) |
+| HEAD at repair-pass-1 session start | `06b0ccacf6938000cedaba86076fa0534eb853e9` — matched that repair task's expected HEAD exactly |
+| HEAD at repair-pass-2 session start | `eaa70a20854c10f2a2cc5d6fa41e8eb958d48ed6` — matched this repair task's expected HEAD exactly |
+| `main` | `2450d55c60601bcee5eb52a2c38ce5d6e87a76aa` — untouched (all three passes) |
 
-Issue #9 hold comments `5322015325` (direction correction) and `5322071131` (supersession pointer to this issue) were fetched and read in full via `gh api` (original pass). Issue #10 PM review comment `5322363724` (`P0_M5_R1_PRELISTEN_REPAIR_REQUIRED`) was fetched and read in full this pass.
+Issue #9 hold comments `5322015325` (direction correction) and `5322071131` (supersession pointer to this issue) were fetched and read in full via `gh api` (original pass). Issue #10 PM review comments `5322363724` (`P0_M5_R1_PRELISTEN_REPAIR_REQUIRED`, repair 1) and `5322996856` (`P0_M5_R1_PRELISTEN_REPAIR_2_REQUIRED`, repair 2) were fetched and read in full.
 
 ## 3. Phase A — pinned-candidate verification and environment gate
 
@@ -57,46 +65,45 @@ Ran once per opaque track (existing 100-track `RM###` corpus, same corpus P0-M4-
 
 SongFormer's optional section-boundary pass did **not** run (Phase A block). Phase C therefore uses Issue #10's explicit fallback: "the accepted R2 natural/late boundary logic and Beat This anchors."
 
-## 5. Phase C — deterministic positive-pair discovery (repaired)
+## 5. Phase C — deterministic positive-pair discovery (repaired twice)
 
-Scored all 9,900 ordered pairs from the 100-track corpus using only already-cached evidence (`corpus_analysis.local.json`'s Stage-B fields + the existing Beat This cache from the original pass — **not re-analyzed this repair**). No manual song selection; no listening-outcome feedback.
+Scored all 9,900 ordered pairs from the 100-track corpus using only already-cached evidence (`corpus_analysis.local.json`'s Stage-B fields + the existing Beat This cache from the original pass — **not re-analyzed by either repair**). No manual song selection; no listening-outcome feedback.
 
-- **Eligible pairs found: 260** (down from the original (defective) pass's 268, since the corrected computation is strictly stricter: 8,415 failed `EXIT_STRUCTURE_CONFIDENCE_BELOW_MEDIUM`, 1,106 failed `TEMPO_CORRECTION_EXCEEDS_6PCT`, and **119 pairs were newly and correctly rejected by the new `LOCAL_TEMPO_OCTAVE_AMBIGUITY` guard** — direct, mechanical proof the BLOCKER 1 fix is live and doing real work, not a no-op).
-- **Stretch-cover candidates found: 168** (correction in [2%, 6%]) — comfortably above the required minimum of 2.
-- **Frozen exactly 8 pairs: 2 stretch-cover + 6 near-native, 6 dev / 2 holdout, 1 of the 2 stretch-cover pairs in holdout** (as required when feasible) — `RM055->RM052` (dev) and `RM055->RM047` (holdout), both at 3.12% tempo correction; the 6 near-native pairs at 0.0% correction, including `RM010->RM099`, which also appeared as a 0%-correction pair in the pre-repair set and remains legitimately eligible under the corrected beat-tempo computation.
+- **Eligible pairs found: 247** (down from repair 1's 260, since BLOCKER B's bounded neighborhood is strictly stricter: 8,415 failed `EXIT_STRUCTURE_CONFIDENCE_BELOW_MEDIUM`, 1,028 failed `TEMPO_CORRECTION_EXCEEDS_6PCT`, 111 failed `LOCAL_TEMPO_OCTAVE_AMBIGUITY`, and **99 pairs were newly and correctly rejected by the new bounded exit-downbeat neighborhood** — direct, mechanical proof the BLOCKER B fix is live and doing real work).
+- **Stretch-cover candidates found: 161** (correction in [2%, 6%]) — comfortably above the required minimum of 2.
+- **Frozen exactly 8 pairs: 2 stretch-cover + 6 near-native, 6 dev / 2 holdout, 1 of the 2 stretch-cover pairs in holdout** — `RM055->RM052` (dev) and `RM055->RM047` (holdout), both at 3.12% tempo correction (unchanged from repair 1, still eligible under the bounded neighborhood); the 6 near-native pairs at 0.0% correction. **`RM099->RM071` (the pair PM cited as pulled 15.7s early) is gone**, replaced by `RM089->RM020`. Every remaining pair's exit-snap delta is now small and forward (0.4–4.5s), spot-checked directly against the frozen manifest.
 
-The repair also **caught its own motivating example**: `RM089->RM018` (the exact pair the PM cited as admitted-in-error under the old bar-rate computation) is no longer eligible at all under the repaired logic.
+The repair also **caught its own motivating examples**: `RM089->RM018` (repair 1's cited defect) remains ineligible, and `RM099->RM071` (repair 2's cited defect) is now also ineligible — both absent from the twice-refrozen 8.
 
-## 6. Phase D — M0/M1 render (repaired)
+## 6. Phase D — M0/M1 render (repaired twice)
 
-For each of the 8 (refrozen) pairs, rendered both methods from the **same** source pair and the **same** broad transition region:
+For each of the 8 (twice-refrozen) pairs, rendered both methods from the **same** source pair and the **same** broad transition region:
 
-- **M0** (baseline): equal-power crossfade at the pair's *raw, un-snapped* R2 candidate boundary — no beat/downbeat alignment, no stretch, no bass handoff. Unchanged by this repair.
-- **M1** (`APPLE_LIKE_V1`): outgoing tail (an integer number of bars, sized from a genuine bar-period-in-seconds field, 8–16s window) stretched via the browser Signalsmith bridge to the pair's cached tempo ratio, starting exactly at a Beat-This-snapped outgoing downbeat — **only when the pair actually needs correction** (BLOCKER 3: Signalsmith is bypassed entirely at `|rate-1.0| <= 0.001`, using the raw tail directly); incoming overlap taken **unstretched** at its own snapped downbeat; equal-power gain **with** the existing accepted bass-handoff EQ swap; incoming continues at native tempo after the overlap.
+- **M0** (baseline): equal-power crossfade at the pair's *raw, un-snapped* R2 candidate boundary — no beat/downbeat alignment, no stretch, no bass handoff. Unchanged by either repair.
+- **M1** (`APPLE_LIKE_V1`): outgoing tail (an integer number of bars, sized from a genuine bar-period-in-seconds field, 8–16s window) stretched via the browser Signalsmith bridge to the pair's cached tempo ratio, starting exactly at a Beat-This-snapped outgoing downbeat (now bounded, BLOCKER B) — **only when the pair actually needs correction** (BLOCKER 3: Signalsmith is bypassed entirely at `|rate-1.0| <= 0.001`, using the raw tail directly); incoming overlap taken **unstretched** at its own snapped downbeat; equal-power gain **with** the existing accepted bass-handoff EQ swap; incoming continues at native tempo after the overlap; the internal raw-pre-roll/processed-tail seam is now blended (BLOCKER A, corrected, see §7).
 
-**8/8 M0 and 8/8 M1 scenarios rendered successfully; 2/8 scenarios (the stretch-cover pairs, S01/S02) actually exercised the Signalsmith stretch path this time** (`rate=0.9688`, a genuine 3.12% correction) — the remaining 6 correctly bypass Signalsmith per BLOCKER 3. Clip durations 32.96–34.59s.
+**8/8 M0 and 8/8 M1 scenarios rendered successfully; the same 2/8 scenarios (S01/S02) actually exercised the Signalsmith stretch path** (`rate=0.9688`, a genuine 3.12% correction) — the remaining 6 correctly bypass Signalsmith. Clip durations 32.96–34.59s.
 
-## 7. Phase E — machine safety/contract checks (repaired)
+## 7. Phase E — machine safety/contract checks (repaired twice)
 
 - **NaN/Inf: 0 across all 16 clips. Uncontrolled clipping: 0 across all 16 clips. Format (44100Hz/stereo): correct on all 16.**
-- **BLOCKER 4 repair in effect:** the old windowed edge proxy (`discontinuity_proxy_at_edges`) is now computed and reported for every clip but contributes **zero** to the failure list — it produced 11 non-blocking diagnostic warnings this run (0–636 hits, expected/benign per its own documented limitation on real percussive music), all correctly excluded from the hard-fail path.
-- **New exact-splice hard check found a real defect the old approach never precisely isolated:** on first run, the 2 genuine stretch-cover scenarios (S01/S02 M1) failed with `z_score≈15.4` at the raw-audio/Signalsmith-processed seam — a real ~0.6-amplitude single-sample jump against a ~0.04 local baseline, i.e. a likely-audible click, not a proxy false positive. **Root-caused and fixed in two steps, both using only official information the pinned Signalsmith node already reports (no new capability):**
-  1. The node's own reported `stretch_latency_s` (its documented processing/lookahead delay, already queried by the accepted worker but not previously used for trimming) was incorporated into the warm-up discard — reduced `z` to ≈12.6, a partial improvement, proving latency was a real contributing factor but not the whole story.
-  2. The remaining discontinuity is an inherent property of splicing directly-decoded PCM against phase-vocoder analysis/resynthesis output — no choice of cut point removes it. Fixed with a short (10ms) internal equal-power micro-crossfade exactly at that seam, using the SAME public-domain `equal_power_gains` primitive already used for every crossfade in this codebase (not a new DSP technique) — reduced `z` to ≈1.42, well under the 8.0 threshold.
-- **Final verifier run: genuinely exits 0** — `RESULT: ALL 16 CLIPS PASS SAFETY CHECKS (0 hard failures, 11 non-blocking diagnostic warnings)`, independently re-run and confirmed, not merely asserted in prose.
+- **BLOCKER 4 (repair 1) remains in effect:** the windowed edge proxy is diagnostic-only, contributing zero to the failure list (9 non-blocking warnings this run).
+- **BLOCKER A (repair 2) — a real timeline defect introduced by repair 1's own micro-splice fix, now fixed:** `micro_splice_fade` previously blended `outgoing_pre`'s own already-emitted last ~10ms against the processed tail's first ~10ms, while `render_m1` still emitted the full unshortened `outgoing_pre` immediately before it — the same ~10ms interval played twice (once raw, once blended), a genuine chronology rewind the exact-splice amplitude check could not detect (a smooth amplitude seam does not imply correct timeline order). **Fixed:** the blend now uses the window's own leading RAW content (`out_audio[exit_smp : exit_smp + raw_lead_input_smp]`, the SAME forward-time interval the processed head represents) — never a reused already-played sample; `outgoing_pre` is untouched. As a direct side effect, the exact-splice z-scores at the two real stretch pairs' seam *improved further* (S01/S02 M1 edge1: `z≈1.42` in repair 1 → `z≈0.29` in repair 2), since the blend now genuinely matches the correct forward-time content instead of a mistimed one.
+- **Final verifier run: genuinely exits 0** — `RESULT: ALL 16 CLIPS PASS SAFETY CHECKS (0 hard failures, 9 non-blocking diagnostic warnings)`, independently re-run and confirmed, not merely asserted in prose.
 
-## 7.1 Regression note
+## 7.1 Regression / new-verifier note
 
-`verify_pair_discovery.py` (new this repair, 12/12 synthetic checks) proves the BLOCKER 1 fix mechanically: it reproduces the PM-cited `125 vs 63.83 BPM` scenario from synthetic beat data and confirms the direct-ratio rule now rejects it, confirms the octave-ambiguity guard fires/doesn't-fire correctly on synthetic cases, and confirms no half/double-time folding logic exists anywhere in the module.
+- `verify_pair_discovery.py` (20/20 checks, extended this pass) proves both BLOCKER 1 (repair 1) and BLOCKER B (repair 2) mechanically against synthetic data: the PM-cited `125 vs 63.83 BPM` scenario is rejected; the octave-ambiguity guard fires/doesn't-fire correctly; the bounded exit-downbeat neighborhood reproduces the `RM099->RM071` shape (only a far backward downbeat available) and correctly fails closed instead of snapping ~15s backward; the 4-bar/10s cap is independently checked at both a fast and a slow synthetic tempo.
+- `verify_micro_splice.py` (new this pass, 11/11 checks) proves BLOCKER A mechanically: using a synthetic forward-time-index ramp signal, it proves `raw_lead` is read from the window's own leading edge (never the already-emitted `outgoing_pre` tail), that the blend source continues monotonically forward from `outgoing_pre`'s last emitted sample, that both the raw and processed operands genuinely contribute to the blend (not silently ignoring one), and that post-fade content is untouched.
 
-## 8. Phase F — blinded owner listening pack (rebuilt, new seed)
+## 8. Phase F — blinded owner listening pack (rebuilt again, THIRD blind seed)
 
-The original `P0-M5-R1-APPLE-LIKE-OWNER-LISTENING.zip` is renamed locally to `P0-M5-R1-APPLE-LIKE-OWNER-LISTENING.INVALID_DO_NOT_RATE.zip` and must not be rated — no owner listening had begun, so no blind test is contaminated by rebuilding it.
+Both prior owner ZIPs are invalid and must not be rated: the original pass's `P0-M5-R1-APPLE-LIKE-OWNER-LISTENING.zip` (renamed `...INVALID_DO_NOT_RATE.zip`) and repair 1's rebuild, SHA-256 `f5e740...` (renamed `...INVALID_DO_NOT_RATE.2.zip`).
 
-New `P0-M5-R1-APPLE-LIKE-OWNER-LISTENING.zip` (local-only, never committed), built from the repaired render set:
+New `P0-M5-R1-APPLE-LIKE-OWNER-LISTENING.zip` (local-only, never committed), built from the twice-repaired render set:
 
 - Exactly **8 scenarios x 2 blinded methods = 16 real-music mixed WAV clips**, named `S01-A.wav` .. `S08-B.wav` (blind tokens only).
-- Which letter (A/B) is M0 vs M1 is randomized **independently per scenario** using a **NEW** frozen 64-bit random seed (generated fresh this repair pass, recorded **only** in the local, never-zipped, never-committed `blind_key.local.json` — the original pass's seed is discarded along with its invalid pack).
+- Which letter (A/B) is M0 vs M1 is randomized **independently per scenario** using a **THIRD, brand new** frozen 64-bit random seed (both prior seeds are discarded along with their invalid packs).
 - `LISTENING_INSTRUCTIONS.md` and `OWNER_RATINGS_TEMPLATE.json` (8-scenario rows, all 9 fields per Issue #10 Phase F).
 - Zero exposure of method names, opaque track IDs, dev/holdout labels, filenames/titles/artists, or the blind key — verified both structurally (`verify_owner_pack.py`, 20/20 checks) and via a direct regex scan of the built ZIP's filenames and text contents (zero hits).
 - ZIP: 18 members (16 clips + 2 docs), SHA-256/size reported in the handoff.
@@ -111,10 +118,11 @@ New `P0-M5-R1-APPLE-LIKE-OWNER-LISTENING.zip` (local-only, never committed), bui
 ## 10. Verifier / validation results
 
 ```
-python tools/p0m5/apple_like_vertical_slice/verify_pair_discovery.py ...        -> 12/12 PASS (NEW this repair)
-python tools/p0m5/apple_like_vertical_slice/pair_discovery.py ...               -> 260 eligible (119 rejected by new octave guard), 168 stretch-cover candidates, 8 FROZEN (6 dev/2 holdout, 2 stretch-cover/1 holdout) -- deterministic, byte-identical on rerun
+python tools/p0m5/apple_like_vertical_slice/verify_pair_discovery.py ...        -> 20/20 PASS (extended this pass, BLOCKER 1 + BLOCKER B)
+python tools/p0m5/apple_like_vertical_slice/verify_micro_splice.py ...          -> 11/11 PASS (NEW this pass, BLOCKER A)
+python tools/p0m5/apple_like_vertical_slice/pair_discovery.py ...               -> 247 eligible (99 newly rejected: bounded exit-downbeat neighborhood), 161 stretch-cover candidates, 8 FROZEN (6 dev/2 holdout, 2 stretch-cover/1 holdout) -- deterministic, byte-identical on rerun
 python tools/p0m5/apple_like_vertical_slice/apple_like_render.py prepare/finish -> 8/8 M0 + 8/8 M1 SUCCESS, 2/8 with real Signalsmith stretch applied
-python tools/p0m5/apple_like_vertical_slice/safety_checks.py ...                -> RESULT: ALL 16 CLIPS PASS SAFETY CHECKS (0 hard failures, 11 non-blocking diagnostic warnings) -- exit code 0, independently re-run
+python tools/p0m5/apple_like_vertical_slice/safety_checks.py ...                -> RESULT: ALL 16 CLIPS PASS SAFETY CHECKS (0 hard failures, 9 non-blocking diagnostic warnings) -- exit code 0, independently re-run
 python tools/p0m5/apple_like_vertical_slice/verify_owner_pack.py ...            -> 20/20 PASS
 ```
 
@@ -124,13 +132,14 @@ python tools/p0m5/apple_like_vertical_slice/verify_owner_pack.py ...            
 - `beat_this_runtime.py` — isolated Beat This runtime wrapper (no vendored model code committed).
 - `corpus_beat_analysis.py` — Phase B corpus analysis harness.
 - `beat_analysis_aggregate_sanitized.json` — sanitized per-track Beat This summary (opaque IDs + counts/scalars only).
-- `pair_discovery.py` — Phase C deterministic positive-pair discovery; **repaired this pass** (beat-tempo-based eligibility, octave-ambiguity guard, stretch-coverage selection).
-- `verify_pair_discovery.py` — **new this pass.** Synthetic unit checks proving the tempo-eligibility repair (12 checks).
-- `pair_manifest_sanitized.json` — the frozen 8-pair manifest (opaque IDs, anchors, tempo/harmonic/energy evidence); **refrozen this pass.**
-- `apple_like_render.py` — Phase D M0/M1 renderer; **repaired this pass** (tail-pad trim + latency compensation + micro-splice-fade, unity-rate Signalsmith bypass).
-- `render_evidence_sanitized.json` — sanitized per-scenario render evidence (overlap/tempo/safety numbers, opaque IDs).
-- `safety_checks.py` — Phase E safety/click-proxy verifier; **repaired this pass** (exact-splice hard check added, windowed proxy demoted to diagnostic-only).
-- `safety_checks_sanitized.json` — sanitized per-clip safety evidence; **regenerated this pass, genuinely 0 hard failures.**
+- `pair_discovery.py` — Phase C deterministic positive-pair discovery; **repaired twice** (repair 1: beat-tempo-based eligibility, octave-ambiguity guard, stretch-coverage selection; repair 2: bounded exit-downbeat neighborhood, BLOCKER B).
+- `verify_pair_discovery.py` — synthetic unit checks; **extended this pass** to 20 checks (BLOCKER 1 + BLOCKER B).
+- `pair_manifest_sanitized.json` — the frozen 8-pair manifest (opaque IDs, anchors, tempo/harmonic/energy evidence); **refrozen again this pass.**
+- `apple_like_render.py` — Phase D M0/M1 renderer; **repaired twice** (repair 1: tail-pad trim + latency compensation + micro-splice-fade; repair 2: micro-splice-fade timeline fix, BLOCKER A).
+- `verify_micro_splice.py` — **new this pass.** Synthetic timeline-chronology checks proving the BLOCKER A fix (11 checks).
+- `render_evidence_sanitized.json` — sanitized per-scenario render evidence (overlap/tempo/safety numbers, opaque IDs); **regenerated this pass.**
+- `safety_checks.py` — Phase E safety/click-proxy verifier; repaired in repair 1 (exact-splice hard check, windowed proxy demoted to diagnostic-only); unchanged logic this pass, rerun against the twice-repaired renders.
+- `safety_checks_sanitized.json` — sanitized per-clip safety evidence; **regenerated this pass, genuinely 0 hard failures, exact-splice z-scores improved further.**
 - `build_owner_pack.py` — Phase F blinded pack builder.
 - `verify_owner_pack.py` — Phase F pack verifier.
 - This report.
@@ -141,10 +150,11 @@ python tools/p0m5/apple_like_vertical_slice/verify_owner_pack.py ...            
 - `work_local/pylibs`, `work_local/torch_cache` — isolated dependency/checkpoint caches.
 - `work_local/decoded` — decoded canonical WAVs for the 100-track corpus.
 - `work_local/beat_cache` — full per-track beat/downbeat timing arrays.
-- `work_local/renders` — the 16 final M0/M1 WAV clips (source for the owner pack).
-- `work_local/owner_pack` — the owner-pack staging directory including `blind_key.local.json` (new seed, this repair).
-- `P0-M5-R1-APPLE-LIKE-OWNER-LISTENING.zip` (repo root) — the repaired owner-facing pack.
-- `P0-M5-R1-APPLE-LIKE-OWNER-LISTENING.INVALID_DO_NOT_RATE.zip` (repo root) — the original pass's pack, invalidated by this repair, must not be rated.
+- `work_local/renders` — the 16 final M0/M1 WAV clips (source for the owner pack); **regenerated this pass.**
+- `work_local/owner_pack` — the owner-pack staging directory including `blind_key.local.json` (THIRD new seed, this pass).
+- `P0-M5-R1-APPLE-LIKE-OWNER-LISTENING.zip` (repo root) — the twice-repaired owner-facing pack.
+- `P0-M5-R1-APPLE-LIKE-OWNER-LISTENING.INVALID_DO_NOT_RATE.zip` (repo root) — the original pass's pack, invalidated, must not be rated.
+- `P0-M5-R1-APPLE-LIKE-OWNER-LISTENING.INVALID_DO_NOT_RATE.2.zip` (repo root) — repair 1's rebuilt pack (SHA-256 `f5e740...`), also invalidated by repair 2, must not be rated.
 
 ## 13. What must happen next
 

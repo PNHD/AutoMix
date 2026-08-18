@@ -63,13 +63,32 @@ Hard eligibility:
     outgoing_local_beat_bpm - 1| <= 0.06 (no half/double-time folding);
   - no source-analysis failure on either side.
 
-Boundary policy (unchanged by this repair): outgoing exit snaps to the
-nearest Beat This downbeat at or after the cached exit_candidate_t_ms;
-incoming entry is the first Beat This downbeat at or after the cached
-leading-silence-skip point (0 if none is authored) -- SongFormer
-intro/outro evidence remains unavailable (`SONGFORMER_BLOCKED_ASSET_TERMS`,
-not reopened per PM instruction), so this task uses the "otherwise"
-branch Issue #10 itself authorizes.
+Boundary policy: outgoing exit snaps to the nearest Beat This downbeat at
+or after the cached exit_candidate_t_ms, BOUNDED to a small neighborhood
+(see PM RE-REVIEW REPAIR below -- BLOCKER B); incoming entry is the first
+Beat This downbeat at or after the cached leading-silence-skip point (0 if
+none is authored), unchanged. SongFormer intro/outro evidence remains
+unavailable (`SONGFORMER_BLOCKED_ASSET_TERMS`, not reopened per PM
+instruction), so this task uses the "otherwise" branch Issue #10 itself
+authorizes.
+
+PM RE-REVIEW REPAIR (Issue #10 comment `5322996856`,
+`P0_M5_R1_PRELISTEN_REPAIR_2_REQUIRED`, BLOCKER B): the prior 45-second
+permissive snap allowed the outgoing exit downbeat to be pulled more than
+15 seconds EARLIER than the cached R2 late/natural exit whenever Beat
+This had no later usable downbeat within that window (concretely
+`RM099->RM071`: raw exit 216.990s, snapped exit 201.260s) -- violating
+Issue #10's preservation-first "near the selected late/natural region"
+contract; a missing late downbeat should fail closed for complex mixing,
+not authorize a large backward jump. Repaired: the snap is now bounded to
+`min(4 local bars, 10 seconds)` (see `bounded_exit_downbeat`), computed
+from already-cached evidence only; forward candidates within that bound
+are preferred, backward candidates are only considered within the SAME
+bound, and a pair with no downbeat inside the bounded neighborhood fails
+closed to `NO_USABLE_DOWNBEAT_NEAR_EXIT_CANDIDATE` rather than reaching
+further afield. Rerun from the existing Beat This cache only -- 99 pairs
+newly (and correctly) rejected by this bound; `RM099->RM071` is no longer
+eligible.
 
 Soft ranking (in this exact order, all from already-cached evidence):
   1. structure quality (exit_structure_confidence HIGH > MEDIUM);
@@ -109,23 +128,45 @@ STRETCH_COVER_REQUIRED_COUNT = 2
 MAX_APPEARANCES = 2
 REQUIRED_PAIR_COUNT = 8
 HOLDOUT_COUNT = 2
-DOWNBEAT_SEARCH_WINDOW_S = 45.0  # how far from the cached exit candidate a downbeat may be snapped
 HOLDOUT_SALT = "P0-M5-R1-APPLE-LIKE-V1"
 OCTAVE_TOLERANCE = 0.08  # relative tolerance around an exact 2x/0.5x octave ratio
+# PM RE-REVIEW REPAIR (BLOCKER B, Issue #10 comment `5322996856`): the
+# original 45s permissive downbeat snap allowed a complex-mix exit to be
+# pulled more than 15 SECONDS earlier than the cached R2 late/natural exit
+# (concretely `RM099->RM071`: raw exit 216.990s, snapped exit 201.260s)
+# whenever Beat This had no later usable downbeat -- violating the
+# preservation-first "near the selected late/natural region" contract.
+# Replaced with a bounded neighborhood: at most 4 local bars OR 10
+# seconds, whichever is SMALLER, computed from already-cached evidence
+# only. A missing downbeat inside that bounded region now fails closed
+# (`NO_USABLE_DOWNBEAT_NEAR_EXIT_CANDIDATE`) rather than reaching further
+# afield for one.
+EXIT_NEIGHBORHOOD_MAX_BARS = 4
+EXIT_NEIGHBORHOOD_MAX_S = 10.0
 
 
 def load_json(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def nearest_downbeat_at_or_after(downbeats_s: list, t_s: float, search_window_s: float = DOWNBEAT_SEARCH_WINDOW_S):
-    candidates = [d for d in downbeats_s if t_s <= d <= t_s + search_window_s]
-    if candidates:
-        return min(candidates)
-    # fall back to nearest downbeat within the window on either side
-    nearby = [d for d in downbeats_s if abs(d - t_s) <= search_window_s]
-    if nearby:
-        return min(nearby, key=lambda d: abs(d - t_s))
+def bounded_exit_downbeat(downbeats_s: list, exit_t_s: float, local_bar_period_s: float):
+    """PM repair (BLOCKER B): the outgoing exit downbeat must be snapped
+    within a bounded neighborhood of the cached R2 late/natural exit --
+    never reached for arbitrarily far afield. Neighborhood radius =
+    min(EXIT_NEIGHBORHOOD_MAX_BARS * local_bar_period_s,
+    EXIT_NEIGHBORHOOD_MAX_S). Prefers the nearest downbeat AT OR AFTER the
+    raw exit; only searches backward (never earlier than
+    `exit_t_s - neighborhood_s`) when no forward candidate exists within
+    the SAME bounded neighborhood -- never a larger backward-only window.
+    Returns None if no downbeat exists inside the bounded neighborhood at
+    all (caller fails closed to `NO_USABLE_DOWNBEAT_NEAR_EXIT_CANDIDATE`)."""
+    neighborhood_s = min(EXIT_NEIGHBORHOOD_MAX_BARS * local_bar_period_s, EXIT_NEIGHBORHOOD_MAX_S)
+    forward = [d for d in downbeats_s if exit_t_s <= d <= exit_t_s + neighborhood_s]
+    if forward:
+        return min(forward)
+    backward = [d for d in downbeats_s if exit_t_s - neighborhood_s <= d < exit_t_s]
+    if backward:
+        return max(backward)  # closest-to-exit_t_s backward candidate
     return None
 
 
@@ -135,7 +176,10 @@ def outgoing_exit_anchor_s(out_id: str, analysis: dict, beat_cache_dir: Path):
     beat/downbeat alignment") can genuinely differ from M1's beat-snapped
     placement, rather than M0 silently inheriting M1's beat-aware anchor.
     `downbeats_s` here is used ONLY for bar-phase boundary snapping, per
-    the PM repair -- never for tempo (see `local_beat_tempo_near` below)."""
+    the PM repair -- never for tempo (see `local_beat_tempo_near` below).
+    PM repair (BLOCKER B): the snap is now bounded to a small neighborhood
+    of the raw exit (see `bounded_exit_downbeat`), never reaching far
+    afield merely because no later downbeat exists."""
     a = analysis[out_id]
     confidence = a["candidates"]["exit_structure_confidence"]
     if confidence not in ("MEDIUM", "HIGH"):
@@ -144,7 +188,11 @@ def outgoing_exit_anchor_s(out_id: str, analysis: dict, beat_cache_dir: Path):
     beat_data = load_json(beat_cache_dir / f"{out_id}.json")
     if beat_data["summary"]["status"] != "SUCCESS":
         return None, None, "BEAT_THIS_ANALYSIS_FAILED"
-    downbeat = nearest_downbeat_at_or_after(beat_data["downbeats_s"], exit_t_s)
+    downbeats_s = beat_data["downbeats_s"]
+    local_bar_period_s = local_bar_period_s_near(downbeats_s, exit_t_s)
+    if not local_bar_period_s:
+        return None, None, "NO_USABLE_DOWNBEAT_NEAR_EXIT_CANDIDATE"
+    downbeat = bounded_exit_downbeat(downbeats_s, exit_t_s, local_bar_period_s)
     if downbeat is None:
         return None, None, "NO_USABLE_DOWNBEAT_NEAR_EXIT_CANDIDATE"
     return downbeat, exit_t_s, "OK"

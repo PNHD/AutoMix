@@ -10,8 +10,8 @@
     0.02,
     0.06
   ],
-  "eligible_pair_count_before_appearance_cap": 260,
-  "stretch_cover_candidate_count_before_appearance_cap": 168,
+  "eligible_pair_count_before_appearance_cap": 247,
+  "stretch_cover_candidate_count_before_appearance_cap": 161,
   "pairs": [
     {
       "out_id": "RM055",
@@ -154,24 +154,24 @@
       "combined_energy_gap_db": 52.08
     },
     {
-      "out_id": "RM099",
-      "in_id": "RM071",
+      "out_id": "RM089",
+      "in_id": "RM020",
       "split": "dev",
       "eligible": true,
       "reason": "OK",
-      "exit_anchor_s": 201.26,
-      "entry_anchor_s": 2.5,
-      "exit_anchor_raw_s": 216.99,
-      "entry_anchor_raw_s": 2.415,
-      "outgoing_local_beat_bpm": 103.45,
-      "incoming_local_beat_bpm": 103.45,
-      "outgoing_bar_period_s": 2.28,
+      "exit_anchor_s": 189.96,
+      "entry_anchor_s": 5.56,
+      "exit_anchor_raw_s": 189.382,
+      "entry_anchor_raw_s": 0.0,
+      "outgoing_local_beat_bpm": 125.0,
+      "incoming_local_beat_bpm": 125.0,
+      "outgoing_bar_period_s": 1.92,
       "tempo_ratio": 1.0,
       "tempo_correction": 0.0,
       "is_stretch_cover_candidate": false,
       "exit_structure_confidence": "HIGH",
-      "harmonic_relationship": "COMPATIBLE",
-      "combined_energy_gap_db": 180.95
+      "harmonic_relationship": null,
+      "combined_energy_gap_db": 1.22
     }
   ]
 }

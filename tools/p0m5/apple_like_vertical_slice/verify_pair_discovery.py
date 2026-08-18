@@ -1,9 +1,16 @@
 """
-P0-M5-R1 repair verifier (BLOCKER 1) -- synthetic unit checks proving the
-tempo-eligibility fix: local tempo now comes from `beats_s` (not
-`downbeats_s`), the octave-ambiguity guard rejects a half/double misread,
-and the direct-ratio/no-folding rule is unchanged. No private corpus data
-is used.
+P0-M5-R1 repair verifier -- synthetic unit checks proving two repair
+passes' fixes, entirely against synthetic data (no private corpus):
+
+  - repair 1 (BLOCKER 1, Issue #10 comment `5322363724`): local tempo now
+    comes from `beats_s` (not `downbeats_s`), the octave-ambiguity guard
+    rejects a half/double misread, and the direct-ratio/no-folding rule is
+    unchanged;
+  - repair 2 (BLOCKER B, Issue #10 comment `5322996856`): the outgoing
+    exit downbeat snap is now bounded to `min(4 local bars, 10 seconds)`
+    instead of the old, permissive 45-second window that could pull a
+    complex-mix exit more than 15 seconds earlier than the cached R2 late
+    exit.
 
 Usage:
     python tools/p0m5/apple_like_vertical_slice/verify_pair_discovery.py
@@ -78,6 +85,49 @@ def main() -> int:
     downbeats_2s_bars = [0.0, 2.0, 4.0, 6.0, 8.0]
     bar_period = pd.local_bar_period_s_near(downbeats_2s_bars, anchor_s=4.0)
     check("local_bar_period_s_near returns a period in seconds (2.0s bars)", bar_period is not None and abs(bar_period - 2.0) < 1e-6, str(bar_period))
+
+    # 7. BLOCKER B (Issue #10 comment 5322996856): bounded exit-downbeat
+    #    neighborhood -- reproduces the PM-cited RM099->RM071 shape (raw
+    #    exit far from the nearest forward downbeat, only a much-earlier
+    #    backward one available) using synthetic data, and proves the
+    #    fix now fails closed instead of snapping ~15s backward.
+    bar_period_2s = 2.0  # -> neighborhood = min(4*2.0, 10.0) = 8.0s
+    far_backward_only = [0.0, 50.0, 100.0]  # nothing within 8s of exit_t_s=120.0 forward or back
+    check(
+        "bounded_exit_downbeat: PM-cited shape (only a far backward downbeat available) now fails closed",
+        pd.bounded_exit_downbeat(far_backward_only, exit_t_s=120.0, local_bar_period_s=bar_period_2s) is None,
+    )
+
+    forward_within_bound = [125.0, 200.0]  # 5s forward, within the 8s bound
+    check(
+        "bounded_exit_downbeat: prefers the nearest forward downbeat within the bound",
+        pd.bounded_exit_downbeat(forward_within_bound, exit_t_s=120.0, local_bar_period_s=bar_period_2s) == 125.0,
+    )
+
+    forward_too_far = [135.0]  # 15s forward, OUTSIDE the 8s bound
+    backward_within_bound = [115.0]  # 5s backward, within the 8s bound
+    check(
+        "bounded_exit_downbeat: rejects a forward candidate outside the bound and correctly falls back to a valid backward one within the bound",
+        pd.bounded_exit_downbeat(forward_too_far + backward_within_bound, exit_t_s=120.0, local_bar_period_s=bar_period_2s) == 115.0,
+    )
+
+    # Neighborhood cap: 4 bars at a slow tempo (bar_period=5s -> 20s) must
+    # still be capped at the 10s ceiling, never wider.
+    slow_bar_period = 5.0
+    just_outside_10s_cap = [131.0]  # 11s forward -- inside "4 bars" (20s) but OUTSIDE the 10s hard cap
+    check(
+        "bounded_exit_downbeat: 10s hard cap applies even when 4 local bars would be wider",
+        pd.bounded_exit_downbeat(just_outside_10s_cap, exit_t_s=120.0, local_bar_period_s=slow_bar_period) is None,
+    )
+    just_inside_10s_cap = [129.0]  # 9s forward -- inside both the bar-based and the 10s cap
+    check(
+        "bounded_exit_downbeat: accepts a candidate just inside the 10s hard cap",
+        pd.bounded_exit_downbeat(just_inside_10s_cap, exit_t_s=120.0, local_bar_period_s=slow_bar_period) == 129.0,
+    )
+
+    check("EXIT_NEIGHBORHOOD_MAX_BARS is exactly 4 (PM-specified)", pd.EXIT_NEIGHBORHOOD_MAX_BARS == 4)
+    check("EXIT_NEIGHBORHOOD_MAX_S is exactly 10.0 (PM-specified)", pd.EXIT_NEIGHBORHOOD_MAX_S == 10.0)
+    check("the old 45s permissive constant no longer exists", not hasattr(pd, "DOWNBEAT_SEARCH_WINDOW_S"))
 
     failed = [c for c in checks if not c[1]]
     for name, ok, detail in checks:

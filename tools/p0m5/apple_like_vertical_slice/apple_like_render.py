@@ -105,6 +105,7 @@ sys.path.insert(0, str(DSP_DIR))
 
 from dsp.wav_io import read_wav_float, write_wav_float32  # noqa: E402
 from dsp.mixing import assemble_transition_render, apply_headroom_and_safety, equal_power_gains  # noqa: E402
+from dsp.render_common import fit_exact_length  # noqa: E402
 
 CANONICAL_SR = 44100
 SERVER_BASE_URL = "http://127.0.0.1:8765"
@@ -255,24 +256,40 @@ def render_m0(out_audio, in_audio, sr, exit_smp, entry_smp, window_smp):
     }
 
 
-def micro_splice_fade(raw_tail: np.ndarray, processed_head: np.ndarray, fade_smp: int) -> np.ndarray:
-    """PM re-review finding (this repair pass): even after correctly
-    trimming warm-up + the Signalsmith node's own reported processing
-    latency, a real, measurable amplitude discontinuity remains exactly at
-    the raw-audio/processed-audio splice (z~12-15, a ~0.6-amplitude jump
-    against a ~0.04 local baseline) -- an inherent property of splicing
-    directly-decoded PCM against phase-vocoder analysis/resynthesis
-    output, not a further timing offset to hunt for. The correct,
-    standard fix is a short internal equal-power blend AT the seam itself
-    (the same public-domain `equal_power_gains` primitive already used
-    for every crossfade in this codebase, reused here for a `fade_smp`
-    micro-splice, not a new DSP technique) rather than expecting a hard
-    cut between two differently-reconstructed signals to be seamless."""
-    fade_smp = min(fade_smp, raw_tail.shape[0], processed_head.shape[0])
+def micro_splice_fade(raw_lead: np.ndarray, processed_head: np.ndarray, fade_smp: int) -> np.ndarray:
+    """PM RE-REVIEW REPAIR (BLOCKER A, Issue #10 comment `5322996856`):
+    the prior version of this function blended `outgoing_pre`'s own LAST
+    `fade_smp` samples (audio that has ALREADY been emitted, immediately
+    before this call's output plays) against the processed tail's first
+    `fade_smp` samples. Because `render_m1` then still emits the full,
+    unshortened `outgoing_pre` immediately before this blended result, the
+    same pre-seam source interval was audible TWICE -- once raw, once
+    blended -- a real ~10ms rewind/duplication in program chronology, even
+    though the amplitude seam itself was smooth (equal-power gains hide a
+    timeline defect, they do not fix one).
+
+    Repaired: `raw_lead` must be the RAW reconstruction of the SAME
+    forward-time program interval the processed head represents -- i.e.
+    the first `raw_input_smp` raw samples of the window itself (starting
+    exactly at the window's true start, the same point `processed_head`
+    was stretched from), NEVER any sample already emitted via
+    `outgoing_pre`. That interval is consumed exactly once: this call
+    replaces the window's own leading edge with a blend of its two
+    available reconstructions (raw vs. processed) of that one interval;
+    `outgoing_pre` is never shortened or touched, since it was never the
+    source of this blend. `raw_lead` may not be exactly `fade_smp` samples
+    long (a non-unity rate maps a slightly different raw sample count onto
+    the same `fade_smp`-sample output duration); it is length-fit
+    (zero-padded/trimmed) rather than resampled -- the deviation is bounded
+    by the pair's own <=6% tempo-correction envelope over a 10ms window,
+    i.e. at most a fraction of a millisecond, applied only within this
+    already-tiny declick blend, never to program content at large."""
+    fade_smp = min(fade_smp, processed_head.shape[0])
     if fade_smp <= 0:
         return processed_head
+    raw_lead_fit = fit_exact_length(raw_lead, fade_smp)
     g_out, g_in = equal_power_gains(fade_smp)
-    blended = raw_tail[-fade_smp:] * g_out[:, None] + processed_head[:fade_smp] * g_in[:, None]
+    blended = raw_lead_fit * g_out[:, None] + processed_head[:fade_smp] * g_in[:, None]
     return np.concatenate([blended, processed_head[fade_smp:]], axis=0)
 
 
@@ -288,7 +305,12 @@ def render_m1(out_audio, in_audio, sr, exit_smp, entry_smp, stretched_tail, rate
         # -- the bypass path uses raw audio contiguous with outgoing_pre,
         # verified defect-free by the exact-splice check (no seam exists).
         fade_smp = ms_to_smp(MICRO_SPLICE_FADE_S, sr)
-        stretched_tail = micro_splice_fade(outgoing_pre, stretched_tail, fade_smp)
+        # BLOCKER A fix: raw_lead is the window's OWN leading raw content
+        # (never-yet-emitted, starting exactly at exit_smp), not a reuse of
+        # outgoing_pre's already-emitted tail.
+        raw_lead_input_smp = int(round(fade_smp * rate))
+        raw_lead = out_audio[exit_smp: exit_smp + raw_lead_input_smp]
+        stretched_tail = micro_splice_fade(raw_lead, stretched_tail, fade_smp)
 
     n = stretched_tail.shape[0]
     incoming_overlap = in_audio[entry_smp: entry_smp + n]

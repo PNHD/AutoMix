@@ -2,7 +2,7 @@
   "clip_count": 16,
   "failure_count": 0,
   "failures": [],
-  "warning_count": 11,
+  "warning_count": 9,
   "warnings": [
     "S01_M0: diagnostic windowed-edge-proxy hit count=28 (NOT a hard failure -- heuristic proxy, see module docstring)",
     "S01_M1: diagnostic windowed-edge-proxy hit count=3 (NOT a hard failure -- heuristic proxy, see module docstring)",
@@ -12,9 +12,7 @@
     "S05_M0: diagnostic windowed-edge-proxy hit count=1 (NOT a hard failure -- heuristic proxy, see module docstring)",
     "S05_M1: diagnostic windowed-edge-proxy hit count=1 (NOT a hard failure -- heuristic proxy, see module docstring)",
     "S06_M0: diagnostic windowed-edge-proxy hit count=6 (NOT a hard failure -- heuristic proxy, see module docstring)",
-    "S07_M1: diagnostic windowed-edge-proxy hit count=8 (NOT a hard failure -- heuristic proxy, see module docstring)",
-    "S08_M0: diagnostic windowed-edge-proxy hit count=30 (NOT a hard failure -- heuristic proxy, see module docstring)",
-    "S08_M1: diagnostic windowed-edge-proxy hit count=636 (NOT a hard failure -- heuristic proxy, see module docstring)"
+    "S07_M1: diagnostic windowed-edge-proxy hit count=8 (NOT a hard failure -- heuristic proxy, see module docstring)"
   ],
   "checks": [
     {
@@ -85,9 +83,9 @@
       "exact_splice_check": {
         "edge1": {
           "edge_sample": 441000,
-          "splice_delta": 0.07394826412200928,
-          "baseline_median": 0.031288307160139084,
-          "z_score": 1.422,
+          "splice_delta": 0.02243894338607788,
+          "baseline_median": 0.031058264896273613,
+          "z_score": 0.289,
           "is_discontinuity": false,
           "note": null
         },
@@ -171,9 +169,9 @@
       "exact_splice_check": {
         "edge1": {
           "edge_sample": 441000,
-          "splice_delta": 0.07479465007781982,
-          "baseline_median": 0.03165065869688988,
-          "z_score": 1.423,
+          "splice_delta": 0.02269574999809265,
+          "baseline_median": 0.03141934424638748,
+          "z_score": 0.29,
           "is_discontinuity": false,
           "note": null
         },
@@ -622,7 +620,7 @@
     {
       "sample_rate": 44100,
       "channels": 2,
-      "duration_s": 33.4,
+      "duration_s": 33.52,
       "nan_inf_count": 0,
       "peak_dbfs": -1.0,
       "clipped_sample_count": 0,
@@ -631,30 +629,30 @@
           {
             "edge_sample": 441000,
             "discontinuity_count": 0,
-            "max_abs_delta": 0.0008598240092396736
+            "max_abs_delta": 0.0580672025680542
           },
           {
-            "edge_sample": 943740,
-            "discontinuity_count": 30,
-            "max_abs_delta": 0.04770265519618988
+            "edge_sample": 949032,
+            "discontinuity_count": 0,
+            "max_abs_delta": 0.043700627982616425
           }
         ],
-        "total_discontinuity_count": 30
+        "total_discontinuity_count": 0
       },
       "exact_splice_check": {
         "edge1": {
           "edge_sample": 441000,
-          "splice_delta": 8.207559585571289e-05,
-          "baseline_median": 0.00020205415785312653,
-          "z_score": 0.745,
+          "splice_delta": 0.00626944936811924,
+          "baseline_median": 0.009375348687171936,
+          "z_score": 0.377,
           "is_discontinuity": false,
           "note": null
         },
         "edge2": {
-          "edge_sample": 943740,
-          "splice_delta": 1.9536353647708893e-05,
-          "baseline_median": 0.0007158358348533511,
-          "z_score": 1.065,
+          "edge_sample": 949032,
+          "splice_delta": 0.010445766150951385,
+          "baseline_median": 0.008491946384310722,
+          "z_score": 0.291,
           "is_discontinuity": false,
           "note": null
         }
@@ -665,7 +663,7 @@
     {
       "sample_rate": 44100,
       "channels": 2,
-      "duration_s": 33.4,
+      "duration_s": 33.52,
       "nan_inf_count": 0,
       "peak_dbfs": -1.0,
       "clipped_sample_count": 0,
@@ -674,30 +672,30 @@
           {
             "edge_sample": 441000,
             "discontinuity_count": 0,
-            "max_abs_delta": 0.027302905917167664
+            "max_abs_delta": 0.05441607907414436
           },
           {
-            "edge_sample": 943740,
-            "discontinuity_count": 636,
-            "max_abs_delta": 0.20260773599147797
+            "edge_sample": 949032,
+            "discontinuity_count": 0,
+            "max_abs_delta": 0.07756244391202927
           }
         ],
-        "total_discontinuity_count": 636
+        "total_discontinuity_count": 0
       },
       "exact_splice_check": {
         "edge1": {
           "edge_sample": 441000,
-          "splice_delta": 0.011828407645225525,
-          "baseline_median": 0.0036222022026777267,
-          "z_score": 2.322,
+          "splice_delta": 0.011477641761302948,
+          "baseline_median": 0.010491738095879555,
+          "z_score": 0.106,
           "is_discontinuity": false,
           "note": null
         },
         "edge2": {
-          "edge_sample": 943740,
-          "splice_delta": 0.00012441747821867466,
-          "baseline_median": 0.0005381535738706589,
-          "z_score": 0.626,
+          "edge_sample": 949032,
+          "splice_delta": 0.011220097541809082,
+          "baseline_median": 0.016448043286800385,
+          "z_score": 0.362,
           "is_discontinuity": false,
           "note": null
         }

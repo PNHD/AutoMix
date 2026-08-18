@@ -311,28 +311,28 @@
     {
       "scenario": "S08",
       "status": "SUCCESS",
-      "out_id": "RM099",
-      "in_id": "RM071",
+      "out_id": "RM089",
+      "in_id": "RM020",
       "split": "dev",
       "is_stretch_cover_candidate": false,
-      "window_bars": 5,
-      "requested_window_s": 11.4,
+      "window_bars": 6,
+      "requested_window_s": 11.52,
       "m0": {
-        "overlap_ms": 11400.0,
+        "overlap_ms": 11520.0,
         "applied_tempo_ratio": 1.0,
         "beat_alignment_applied": false,
         "bass_eq_handoff_applied": false,
         "safety": {
-          "pre_peak_dbfs": 0.961907775676094,
+          "pre_peak_dbfs": 1.4610170865680014,
           "post_peak_dbfs": -0.9999999999999997,
-          "applied_headroom_gain_db": -1.9619077756760936,
+          "applied_headroom_gain_db": -2.4610170865680017,
           "nan_inf_sample_count": 0,
           "clipped_sample_count": 0
         },
-        "output_duration_s": 33.4
+        "output_duration_s": 33.52
       },
       "m1": {
-        "overlap_ms": 11400.0,
+        "overlap_ms": 11520.0,
         "applied_tempo_ratio": 1.0,
         "beat_alignment_applied": true,
         "bass_eq_handoff_applied": true,
@@ -340,13 +340,13 @@
         "duration_contract_ok": true,
         "duration_contract_detail": null,
         "safety": {
-          "pre_peak_dbfs": 3.4849995216452045,
-          "post_peak_dbfs": -0.9999999999999987,
-          "applied_headroom_gain_db": -4.484999521645204,
+          "pre_peak_dbfs": 1.4610170865680014,
+          "post_peak_dbfs": -0.9999999999999997,
+          "applied_headroom_gain_db": -2.4610170865680017,
           "nan_inf_sample_count": 0,
           "clipped_sample_count": 0
         },
-        "output_duration_s": 33.4
+        "output_duration_s": 33.52
       }
     }
   ]
