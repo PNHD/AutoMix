@@ -1,0 +1,9 @@
+# P0-M5-R1 Apple-like vertical slice -- local-only private/heavy artifacts.
+# Source/harness/verifiers and sanitized (opaque-ID-only) evidence ARE
+# committed; owner audio, the private corpus, model weights/checkpoints,
+# vendored third-party repos, and blind keys are NOT.
+
+work_local/
+work_local*/
+*.local.json
+blind_key*.json

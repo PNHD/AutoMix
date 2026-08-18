@@ -1,0 +1,417 @@
+{
+  "clip_count": 16,
+  "failure_count": 9,
+  "failures": [
+    "S01_M1: EDGE_DISCONTINUITY_PROXY_HIT count=14",
+    "S02_M1: EDGE_DISCONTINUITY_PROXY_HIT count=1",
+    "S03_M1: EDGE_DISCONTINUITY_PROXY_HIT count=1",
+    "S04_M0: EDGE_DISCONTINUITY_PROXY_HIT count=13",
+    "S05_M1: EDGE_DISCONTINUITY_PROXY_HIT count=16",
+    "S06_M0: EDGE_DISCONTINUITY_PROXY_HIT count=8",
+    "S06_M1: EDGE_DISCONTINUITY_PROXY_HIT count=30",
+    "S08_M0: EDGE_DISCONTINUITY_PROXY_HIT count=3",
+    "S08_M1: EDGE_DISCONTINUITY_PROXY_HIT count=27"
+  ],
+  "checks": [
+    {
+      "sample_rate": 44100,
+      "channels": 2,
+      "duration_s": 33.198,
+      "nan_inf_count": 0,
+      "peak_dbfs": -1.0,
+      "clipped_sample_count": 0,
+      "edge_discontinuity_check": {
+        "per_edge": [
+          {
+            "edge_sample": 441000,
+            "discontinuity_count": 0,
+            "max_abs_delta": 0.012407351285219193
+          },
+          {
+            "edge_sample": 934841,
+            "discontinuity_count": 0,
+            "max_abs_delta": 0.07662264257669449
+          }
+        ],
+        "total_discontinuity_count": 0
+      },
+      "scenario": "S01",
+      "method": "M0"
+    },
+    {
+      "sample_rate": 44100,
+      "channels": 2,
+      "duration_s": 33.698,
+      "nan_inf_count": 0,
+      "peak_dbfs": -1.0,
+      "clipped_sample_count": 0,
+      "edge_discontinuity_check": {
+        "per_edge": [
+          {
+            "edge_sample": 441000,
+            "discontinuity_count": 14,
+            "max_abs_delta": 0.31388038396835327
+          },
+          {
+            "edge_sample": 956891,
+            "discontinuity_count": 0,
+            "max_abs_delta": 0.05177925527095795
+          }
+        ],
+        "total_discontinuity_count": 14
+      },
+      "scenario": "S01",
+      "method": "M1"
+    },
+    {
+      "sample_rate": 44100,
+      "channels": 2,
+      "duration_s": 33.52,
+      "nan_inf_count": 0,
+      "peak_dbfs": -1.0,
+      "clipped_sample_count": 0,
+      "edge_discontinuity_check": {
+        "per_edge": [
+          {
+            "edge_sample": 441000,
+            "discontinuity_count": 0,
+            "max_abs_delta": 0.05828090012073517
+          },
+          {
+            "edge_sample": 949032,
+            "discontinuity_count": 0,
+            "max_abs_delta": 0.01880725845694542
+          }
+        ],
+        "total_discontinuity_count": 0
+      },
+      "scenario": "S02",
+      "method": "M0"
+    },
+    {
+      "sample_rate": 44100,
+      "channels": 2,
+      "duration_s": 34.02,
+      "nan_inf_count": 0,
+      "peak_dbfs": -1.0,
+      "clipped_sample_count": 0,
+      "edge_discontinuity_check": {
+        "per_edge": [
+          {
+            "edge_sample": 441000,
+            "discontinuity_count": 1,
+            "max_abs_delta": 0.09655933827161789
+          },
+          {
+            "edge_sample": 971082,
+            "discontinuity_count": 0,
+            "max_abs_delta": 0.02772374078631401
+          }
+        ],
+        "total_discontinuity_count": 1
+      },
+      "scenario": "S02",
+      "method": "M1"
+    },
+    {
+      "sample_rate": 44100,
+      "channels": 2,
+      "duration_s": 33.52,
+      "nan_inf_count": 0,
+      "peak_dbfs": -1.0,
+      "clipped_sample_count": 0,
+      "edge_discontinuity_check": {
+        "per_edge": [
+          {
+            "edge_sample": 441000,
+            "discontinuity_count": 0,
+            "max_abs_delta": 0.058057889342308044
+          },
+          {
+            "edge_sample": 949032,
+            "discontinuity_count": 0,
+            "max_abs_delta": 0.004250572063028812
+          }
+        ],
+        "total_discontinuity_count": 0
+      },
+      "scenario": "S03",
+      "method": "M0"
+    },
+    {
+      "sample_rate": 44100,
+      "channels": 2,
+      "duration_s": 34.02,
+      "nan_inf_count": 0,
+      "peak_dbfs": -1.0,
+      "clipped_sample_count": 0,
+      "edge_discontinuity_check": {
+        "per_edge": [
+          {
+            "edge_sample": 441000,
+            "discontinuity_count": 1,
+            "max_abs_delta": 0.0904911458492279
+          },
+          {
+            "edge_sample": 971082,
+            "discontinuity_count": 0,
+            "max_abs_delta": 0.3745047450065613
+          }
+        ],
+        "total_discontinuity_count": 1
+      },
+      "scenario": "S03",
+      "method": "M1"
+    },
+    {
+      "sample_rate": 44100,
+      "channels": 2,
+      "duration_s": 34.601,
+      "nan_inf_count": 0,
+      "peak_dbfs": -1.0,
+      "clipped_sample_count": 0,
+      "edge_discontinuity_check": {
+        "per_edge": [
+          {
+            "edge_sample": 441000,
+            "discontinuity_count": 0,
+            "max_abs_delta": 0.006698478013277054
+          },
+          {
+            "edge_sample": 996688,
+            "discontinuity_count": 13,
+            "max_abs_delta": 0.15778809785842896
+          }
+        ],
+        "total_discontinuity_count": 13
+      },
+      "scenario": "S04",
+      "method": "M0"
+    },
+    {
+      "sample_rate": 44100,
+      "channels": 2,
+      "duration_s": 33.46,
+      "nan_inf_count": 0,
+      "peak_dbfs": -1.0,
+      "clipped_sample_count": 0,
+      "edge_discontinuity_check": {
+        "per_edge": [
+          {
+            "edge_sample": 441000,
+            "discontinuity_count": 0,
+            "max_abs_delta": 0.08268583565950394
+          },
+          {
+            "edge_sample": 946385,
+            "discontinuity_count": 0,
+            "max_abs_delta": 0.5361188054084778
+          }
+        ],
+        "total_discontinuity_count": 0
+      },
+      "scenario": "S04",
+      "method": "M1"
+    },
+    {
+      "sample_rate": 44100,
+      "channels": 2,
+      "duration_s": 35.081,
+      "nan_inf_count": 0,
+      "peak_dbfs": -1.0,
+      "clipped_sample_count": 0,
+      "edge_discontinuity_check": {
+        "per_edge": [
+          {
+            "edge_sample": 441000,
+            "discontinuity_count": 0,
+            "max_abs_delta": 0.00041281036101281643
+          },
+          {
+            "edge_sample": 1017890,
+            "discontinuity_count": 0,
+            "max_abs_delta": 0.06624408066272736
+          }
+        ],
+        "total_discontinuity_count": 0
+      },
+      "scenario": "S05",
+      "method": "M0"
+    },
+    {
+      "sample_rate": 44100,
+      "channels": 2,
+      "duration_s": 35.581,
+      "nan_inf_count": 0,
+      "peak_dbfs": -1.0,
+      "clipped_sample_count": 0,
+      "edge_discontinuity_check": {
+        "per_edge": [
+          {
+            "edge_sample": 441000,
+            "discontinuity_count": 16,
+            "max_abs_delta": 0.16037243604660034
+          },
+          {
+            "edge_sample": 1039940,
+            "discontinuity_count": 0,
+            "max_abs_delta": 0.009191915392875671
+          }
+        ],
+        "total_discontinuity_count": 16
+      },
+      "scenario": "S05",
+      "method": "M1"
+    },
+    {
+      "sample_rate": 44100,
+      "channels": 2,
+      "duration_s": 33.198,
+      "nan_inf_count": 0,
+      "peak_dbfs": -1.0,
+      "clipped_sample_count": 0,
+      "edge_discontinuity_check": {
+        "per_edge": [
+          {
+            "edge_sample": 441000,
+            "discontinuity_count": 0,
+            "max_abs_delta": 0.012518703937530518
+          },
+          {
+            "edge_sample": 934841,
+            "discontinuity_count": 8,
+            "max_abs_delta": 0.08245347440242767
+          }
+        ],
+        "total_discontinuity_count": 8
+      },
+      "scenario": "S06",
+      "method": "M0"
+    },
+    {
+      "sample_rate": 44100,
+      "channels": 2,
+      "duration_s": 33.698,
+      "nan_inf_count": 0,
+      "peak_dbfs": -1.0,
+      "clipped_sample_count": 0,
+      "edge_discontinuity_check": {
+        "per_edge": [
+          {
+            "edge_sample": 441000,
+            "discontinuity_count": 16,
+            "max_abs_delta": 0.30546608567237854
+          },
+          {
+            "edge_sample": 956891,
+            "discontinuity_count": 14,
+            "max_abs_delta": 0.17283335328102112
+          }
+        ],
+        "total_discontinuity_count": 30
+      },
+      "scenario": "S06",
+      "method": "M1"
+    },
+    {
+      "sample_rate": 44100,
+      "channels": 2,
+      "duration_s": 33.639,
+      "nan_inf_count": 0,
+      "peak_dbfs": -1.0,
+      "clipped_sample_count": 0,
+      "edge_discontinuity_check": {
+        "per_edge": [
+          {
+            "edge_sample": 441000,
+            "discontinuity_count": 0,
+            "max_abs_delta": 0.02483430504798889
+          },
+          {
+            "edge_sample": 954288,
+            "discontinuity_count": 0,
+            "max_abs_delta": 0.009218866936862469
+          }
+        ],
+        "total_discontinuity_count": 0
+      },
+      "scenario": "S07",
+      "method": "M0"
+    },
+    {
+      "sample_rate": 44100,
+      "channels": 2,
+      "duration_s": 34.139,
+      "nan_inf_count": 0,
+      "peak_dbfs": -1.0,
+      "clipped_sample_count": 0,
+      "edge_discontinuity_check": {
+        "per_edge": [
+          {
+            "edge_sample": 441000,
+            "discontinuity_count": 0,
+            "max_abs_delta": 0.019521355628967285
+          },
+          {
+            "edge_sample": 976338,
+            "discontinuity_count": 0,
+            "max_abs_delta": 0.00732840970158577
+          }
+        ],
+        "total_discontinuity_count": 0
+      },
+      "scenario": "S07",
+      "method": "M1"
+    },
+    {
+      "sample_rate": 44100,
+      "channels": 2,
+      "duration_s": 34.0,
+      "nan_inf_count": 0,
+      "peak_dbfs": -1.0,
+      "clipped_sample_count": 0,
+      "edge_discontinuity_check": {
+        "per_edge": [
+          {
+            "edge_sample": 441000,
+            "discontinuity_count": 1,
+            "max_abs_delta": 0.08416873216629028
+          },
+          {
+            "edge_sample": 970200,
+            "discontinuity_count": 2,
+            "max_abs_delta": 0.2566031217575073
+          }
+        ],
+        "total_discontinuity_count": 3
+      },
+      "scenario": "S08",
+      "method": "M0"
+    },
+    {
+      "sample_rate": 44100,
+      "channels": 2,
+      "duration_s": 34.5,
+      "nan_inf_count": 0,
+      "peak_dbfs": -1.0,
+      "clipped_sample_count": 0,
+      "edge_discontinuity_check": {
+        "per_edge": [
+          {
+            "edge_sample": 441000,
+            "discontinuity_count": 0,
+            "max_abs_delta": 0.14042632281780243
+          },
+          {
+            "edge_sample": 992250,
+            "discontinuity_count": 27,
+            "max_abs_delta": 0.3750094175338745
+          }
+        ],
+        "total_discontinuity_count": 27
+      },
+      "scenario": "S08",
+      "method": "M1"
+    }
+  ]
+}
