@@ -10,7 +10,8 @@
 - Branch: `prototype/live-automix-lab` (created this session from `research/p0-feasibility` at the verified expected HEAD)
 - Starting HEAD (matched Issue #11's expected HEAD exactly): `5139411c8d94d7407e5d9c244b4e9275f30a8221`
 - `main`: untouched at `2450d55c60601bcee5eb52a2c38ce5d6e87a76aa` (not touched this session)
-- This session's work is committed on `prototype/live-automix-lab` (see commit below) -- **not pushed** (awaiting PM instruction on whether to push; `research/p0-feasibility` was also not touched).
+- Code/docs commit this session: `534db9097817e2243dc6b34e11c355d8e156ab69` ("research(p0-m6-r1): Spotify-first live AutoMix prototype ...") directly on top of `5139411`. This HANDOFF_TO_PM.md edit is a small follow-up commit on top of that (recording the exact SHA required self-reference); check `git log --oneline -3` for the exact final HEAD.
+- **Not pushed** (awaiting PM instruction on whether to push; `research/p0-feasibility` was also not touched).
 
 ### WHAT WAS BUILT
 
