@@ -208,7 +208,7 @@ export class LocalDSPPlaybackAdapter extends PlaybackAdapter {
 
   isJumpAvailable() {
     const snap = this._engine?.chainSnapshot();
-    return !!(snap && !snap.hasSuccessorScheduled && snap.remainingToExitS !== null);
+    return !!(snap && !snap.hasSuccessorScheduled && snap.remainingToExitS !== null && !(snap.fadeInRemainingS > 0));
   }
 
   getQueue() {

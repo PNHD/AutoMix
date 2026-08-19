@@ -205,11 +205,115 @@ async function testGaplessOverlapAcrossFullChain() {
   }
 }
 
+// --- P0-M8-R2 chronology regression tests -----------------------------
+// The R1 owner-listening finding: outgoing plays past its intended exit,
+// a silence gap follows, then a piece of the outgoing track's own outro
+// is audibly re-inserted after the successor has already started. Root
+// cause: jumpToNearExit() could fire on a track that was announced
+// "current" (chainSnapshot flips index at the crossfade's START, not its
+// end) while ITS OWN incoming crossfade-in was still running -- replacing
+// the audible source mid-fade produces an abrupt content splice. R1's own
+// automated live-browser smoke test happened to click Jump 35-49s apart
+// (comfortably past every ~11-12s fade window), so it never exercised
+// this race; a real listener clicking Jump soon after "Next: Ready"
+// appears (the same instant a track becomes current) reliably does.
+// These tests would FAIL against the unfixed R1 deck-engine.js.
+
+async function testJumpRefusedDuringIncomingCrossfade() {
+  const { ctx, engine } = makeEngine();
+  await engine.startChain(T.RM062);
+  await engine.extendChain(T.RM076); // schedules RM076's crossfade-in, window [T.RM062.exitOffsetS, +T.RM062.windowS)
+  const fadeInStart = 0.25 + T.RM062.exitOffsetS; // seed's leadInS (0.25) + RM062's exit anchor == RM076's own absolute t0
+  const fadeInEnd = fadeInStart + T.RM062.windowS;
+
+  // Advance ctx.currentTime to squarely inside RM076's own incoming
+  // crossfade window (its predecessor, RM062, has not yet fully faded out).
+  ctx.currentTime = fadeInStart + T.RM062.windowS * 0.5;
+  const sourceCountBefore = ctx.sources.length;
+  const rm076NodeBefore = engine.chainNodes[1];
+  const srcBefore = rm076NodeBefore.src;
+
+  const res = engine.jumpToNearExit(15);
+  check("jumpToNearExit(): REFUSED while the current track's own incoming crossfade is still active (R1 regression)", res.ok === false && res.reason === "JUMP_DURING_INCOMING_CROSSFADE");
+  check("jumpToNearExit(): a refused mid-fade-in jump reports the correct remaining fade-in time", Math.abs(res.remainingFadeInS - T.RM062.windowS * 0.5) < 1e-6);
+  check("jumpToNearExit(): a refused mid-fade-in jump does not replace the audible source (no mid-fade content splice)", engine.chainNodes[1].src === srcBefore);
+  check("jumpToNearExit(): a refused mid-fade-in jump creates no new AudioBufferSourceNode at all", ctx.sources.length === sourceCountBefore);
+
+  // Once the incoming crossfade has fully completed, jump must work again.
+  ctx.currentTime = fadeInEnd + 0.5;
+  const res2 = engine.jumpToNearExit(15);
+  check("jumpToNearExit(): allowed again once the incoming crossfade has fully completed", res2.ok === true);
+}
+
+async function testFullChainSourceTimelineInvariants() {
+  // Replicates the real owner flow: jump used for ALL 3 transitions, each
+  // jump issued only once the current track's own fade-in has completed
+  // (as the fix now requires) -- proving the actual scheduled Web Audio
+  // source timeline, not just planner metadata, satisfies the required
+  // chronology for every hop.
+  const { ctx, engine } = makeEngine();
+  const nodes = [await engine.startChain(T.RM062)];
+  ctx.currentTime = 0.5; // just after the seed starts; no incoming crossfade to wait out for the seed itself
+
+  const chainTags = ["RM076", "RM010", "RM099"];
+  for (const nextTag of chainTags) {
+    // Jump the current (last) node to 15s before its own exit. Time is
+    // never reset backward across iterations -- ctx.currentTime was
+    // already advanced past the current node's own fade-in (if any) at
+    // the end of the previous iteration, exactly matching the real
+    // owner's flow of clicking Jump only once a track is fully current.
+    const jumpRes = engine.jumpToNearExit(15);
+    check(`jump before ${nextTag}: succeeds once the predecessor's own fade-in (if any) has completed`, jumpRes.ok === true);
+    // Advance to just past the jumped exit so extendChain's crossfade math
+    // is exercised against real "now" progress, matching adapter usage.
+    ctx.currentTime += 0.01;
+    const nextNode = await engine.extendChain(T[nextTag]);
+    nodes.push(nextNode);
+
+    const outgoingNode = engine.chainNodes[nodes.length - 2];
+    const successorStartAt = nextNode.src.startedAt;
+    const outgoingStopAt = outgoingNode.src.stoppedAt;
+
+    check(`${outgoingNode.tag}->${nextTag}: successor's audible start occurs BEFORE outgoing's scheduled stop (real overlap, not a gap)`, successorStartAt < outgoingStopAt);
+    check(`${outgoingNode.tag}->${nextTag}: overlap duration matches the outgoing track's configured crossfade window`, Math.abs((outgoingStopAt - successorStartAt) - T[outgoingNode.tag].windowS) < 1e-6);
+    check(`${outgoingNode.tag}->${nextTag}: outgoing's stop is scheduled EXACTLY at its crossfade-out completion (explicit invalidation, not buffer-length coincidence)`, outgoingStopAt !== undefined);
+
+    // Advance ctx.currentTime past THIS hop's own fade-in so the NEXT
+    // iteration's jump (on nextNode) is not itself refused by the new gate.
+    ctx.currentTime = successorStartAt + T[outgoingNode.tag].windowS + 0.5;
+
+    // No stale event: the just-superseded outgoing source must never be
+    // started again, and nothing else in this session references it after
+    // its terminal stop.
+    check(`${outgoingNode.tag}: superseded source is never started a second time after its terminal stop`, ctx.sources.filter((s) => s === outgoingNode.src).length === 1);
+  }
+}
+
+async function testRapidJumpDoesNotDuplicateSources() {
+  const { ctx, engine } = makeEngine();
+  await engine.startChain(T.RM062);
+  ctx.currentTime = 5.0;
+
+  const first = engine.jumpToNearExit(15);
+  check("rapid jump: first call succeeds", first.ok === true);
+  const sourceCountAfterFirst = ctx.sources.length;
+  const srcAfterFirst = engine.chainNodes[0].src;
+
+  // Simulate a rapid duplicate click (same instant, no time elapsed).
+  const second = engine.jumpToNearExit(15);
+  check("rapid jump: an immediate duplicate click is refused (ALREADY_NEAR_EXIT), not a second replacement", second.ok === false && second.reason === "ALREADY_NEAR_EXIT");
+  check("rapid jump: no additional AudioBufferSourceNode was created by the refused duplicate", ctx.sources.length === sourceCountAfterFirst);
+  check("rapid jump: the audible source is unchanged by the refused duplicate", engine.chainNodes[0].src === srcAfterFirst);
+}
+
 await testStartChain();
 await testExtendChainSchedulesRealCrossfade();
 await testThreeConsecutiveHandoffsSchedulable();
 await testJumpToNearExit();
 await testGaplessOverlapAcrossFullChain();
+await testJumpRefusedDuringIncomingCrossfade();
+await testFullChainSourceTimelineInvariants();
+await testRapidJumpDoesNotDuplicateSources();
 
 globalThis.fetch = originalFetch;
 

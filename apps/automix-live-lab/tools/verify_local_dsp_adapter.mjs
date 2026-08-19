@@ -233,12 +233,34 @@ function testNoSpotifyReferenceInLocalDspSource() {
   check("deck-engine.js contains no reference to Spotify (structural provider-boundary check)", !/spotify/i.test(engineSrc));
 }
 
+// --- P0-M8-R2: isJumpAvailable() must reflect the incoming-crossfade gate ---
+// (regression for the owner's chronology finding -- see
+// verify_local_dsp_chain_engine.mjs for the underlying engine-level fix
+// and root-cause tests). The UI must never offer a Jump control that the
+// engine would silently refuse.
+async function testJumpUnavailableDuringIncomingCrossfade() {
+  const adapter = await freshAdapter();
+  await adapter.selectSeed("RM062");
+  const seedExitAt = 0.25 + 185.26;
+  sharedCtx.currentTime = seedExitAt - 5;
+  adapter._tick();
+  await new Promise((r) => setTimeout(r, 0));
+  sharedCtx.currentTime = seedExitAt + 0.01; // RM076 just became current; its own fade-in (11.52s window) has barely started
+  adapter._tick();
+  check("(sanity) RM076 is now current", adapter._lastCurrentTag === "RM076");
+  check("isJumpAvailable() is FALSE while RM076's own incoming crossfade is still running (R1 regression)", adapter.isJumpAvailable() === false);
+
+  sharedCtx.currentTime = seedExitAt + 11.52 + 0.5; // past RM076's own fade-in window
+  check("isJumpAvailable() becomes TRUE once the incoming crossfade has fully completed", adapter.isJumpAvailable() === true);
+}
+
 await testSeedToAutomaticSuccessor();
 await testRefillExactlyOnceNoDuplicates();
 await testThreeConsecutiveHandoffs();
 await testGracefulFallbackAtChainEnd();
 await testAutoMixOffPreventsContinuation();
 testNoSpotifyReferenceInLocalDspSource();
+await testJumpUnavailableDuringIncomingCrossfade();
 
 restoreStubs();
 

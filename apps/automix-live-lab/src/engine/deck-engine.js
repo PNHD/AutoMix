@@ -251,7 +251,10 @@ export class DeckEngine {
     this.scheduledNodes.push(src);
     src.onended = () => this._emit({ type: "chain_track_ended", tag: track.tag });
 
-    const node = { tag: track.tag, track, src, ch, relT0: entry.t0, relExitAt: entry.exitAt, relWindowEndAt: entry.windowEndAt, relItemEndAt: entry.itemEndAt };
+    // relFadeInEndAt: null -- the seed has no predecessor, so it is audibly
+    // "current" (and jump-eligible) from the moment it starts, unlike every
+    // later chain node (see extendChain()).
+    const node = { tag: track.tag, track, src, ch, relT0: entry.t0, relExitAt: entry.exitAt, relWindowEndAt: entry.windowEndAt, relItemEndAt: entry.itemEndAt, relFadeInEndAt: null };
     this.chainNodes = [node];
     this._emit({ type: "chain_track_scheduled", tag: track.tag, index: 0, hasExit: entry.exitAt !== null });
     return node;
@@ -295,7 +298,22 @@ export class DeckEngine {
     const windowS = prevEntry.windowEndAt - prevEntry.exitAt;
     this._crossfade(prevNode.ch, ch, exitTimeAbs, windowS, prevNode.track.bassHandoffSpeed);
 
-    const node = { tag: track.tag, track, src, ch, relT0: entry.t0, relExitAt: entry.exitAt, relWindowEndAt: entry.windowEndAt, relItemEndAt: entry.itemEndAt };
+    // Explicitly invalidate the now-superseded outgoing source at the exact
+    // moment its crossfade-out completes, rather than relying on its own
+    // buffer running out at (coincidentally) the same instant. This is the
+    // one authoritative place a chain track's audible life ends -- no stale
+    // source is left able to fire again after this.
+    try {
+      prevNode.src.stop(exitTimeAbs + windowS);
+    } catch {
+      /* already stopped/ended */
+    }
+
+    // relFadeInEndAt: this track is only FULLY current (fully faded in, the
+    // predecessor fully gone) once its own incoming crossfade window ends --
+    // jumpToNearExit() refuses to jump on a track before that point (see
+    // there for why: replacing its source mid-fade-in is an audible splice).
+    const node = { tag: track.tag, track, src, ch, relT0: entry.t0, relExitAt: entry.exitAt, relWindowEndAt: entry.windowEndAt, relItemEndAt: entry.itemEndAt, relFadeInEndAt: prevEntry.windowEndAt };
     this.chainNodes.push(node);
     this._emit({ type: "chain_track_scheduled", tag: track.tag, index: this.chainNodes.length - 1, hasExit: entry.exitAt !== null });
     return node;
@@ -319,6 +337,21 @@ export class DeckEngine {
     if (node.relExitAt === null) return { ok: false, reason: "NO_EXIT_ANCHOR" };
 
     const now = this.ctx.currentTime;
+
+    // Refuse to jump while this track's OWN incoming crossfade (fading it
+    // in from its predecessor) is still running. Jumping mid-fade-in would
+    // replace the audible source feeding an already-partway-open gain
+    // automation, producing an abrupt, audible content splice (the
+    // successor jump-cutting to near its own ending while still audibly
+    // ramping up) instead of a clean handoff. Chronology requires the
+    // predecessor to have fully disappeared -- and this track to be fully,
+    // stably current -- before any further jump/exit manipulation of it.
+    if (node.relFadeInEndAt !== null) {
+      const absFadeInEndAt = this._chainOriginCtxTime + node.relFadeInEndAt;
+      if (now < absFadeInEndAt) {
+        return { ok: false, reason: "JUMP_DURING_INCOMING_CROSSFADE", remainingFadeInS: absFadeInEndAt - now };
+      }
+    }
     const absExitAt = this._chainOriginCtxTime + node.relExitAt;
     const absT0 = this._chainOriginCtxTime + node.relT0;
     const remainingS = absExitAt - now;
@@ -371,8 +404,10 @@ export class DeckEngine {
     }
     if (idx === -1) idx = 0; // before the seed's own lead-in has elapsed
     const entry = timeline[idx];
+    const node = this.chainNodes[idx];
     const absT0 = this._chainOriginCtxTime + entry.t0;
     const absExitAt = entry.exitAt !== null ? this._chainOriginCtxTime + entry.exitAt : null;
+    const absFadeInEndAt = node && node.relFadeInEndAt != null ? this._chainOriginCtxTime + node.relFadeInEndAt : null;
     return {
       index: idx,
       tag: entry.tag,
@@ -382,6 +417,9 @@ export class DeckEngine {
       remainingToExitS: absExitAt !== null ? absExitAt - now : null,
       hasSuccessorScheduled: this.chainNodes.length > idx + 1,
       trackCount: this.chainTrackConfigs.length,
+      // >0 while this track is still fading in from its predecessor -- jump
+      // is refused during this window (see jumpToNearExit()).
+      fadeInRemainingS: absFadeInEndAt !== null ? Math.max(0, absFadeInEndAt - now) : 0,
     };
   }
 }
