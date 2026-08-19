@@ -1,0 +1,11 @@
+name = "automix-p0-m8-preview"
+main = "worker.js"
+compatibility_date = "2025-09-01"
+
+[assets]
+directory = "../"
+binding = "ASSETS"
+
+[[r2_buckets]]
+binding = "AUDIO_BUCKET"
+bucket_name = "automix-p0-m8-preview"
