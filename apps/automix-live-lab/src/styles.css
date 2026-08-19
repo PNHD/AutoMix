@@ -106,6 +106,8 @@ body {
 input[type="text"] { min-width: 0; }
 button { background: #232a37; color: var(--text); border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; cursor: pointer; }
 button:hover { border-color: var(--accent); }
+button.danger { background: #4a1414; border-color: #b23a3a; color: #ffb3b3; font-weight: 600; }
+button.danger:hover { background: #611a1a; border-color: #ff5c5c; }
 .link-btn { background: none; border: none; color: var(--accent); padding: 0; }
 .debug-panel { max-height: 240px; overflow: auto; background: #05070a; padding: 10px; border-radius: 6px; font-size: 11px; margin-top: 8px; }
 .debug-panel.hidden { display: none; }

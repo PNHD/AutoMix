@@ -198,6 +198,34 @@ export class LocalDSPPlaybackAdapter extends PlaybackAdapter {
     }
   }
 
+  /**
+   * P0-M8-R3: owner control -- immediately stops ALL active and future
+   * scheduled audio (real AudioBufferSourceNode.stop() via
+   * engine.stopAll(), not a mute/gain-to-zero) and clears the LocalDSP
+   * session, leaving the adapter ready for a fresh selectSeed() call.
+   * Unlike setAutoMixEnabled(false) (which lets already-scheduled
+   * crossfades finish honestly), this is a hard stop: it also cancels a
+   * successor that was already extendChain()-scheduled ahead of the
+   * currently audible track, since Web Audio scheduling has no "cancel
+   * future events only" primitive short of stopping the source node.
+   */
+  stopAudio() {
+    if (this._pollHandle) {
+      clearInterval(this._pollHandle);
+      this._pollHandle = null;
+    }
+    this._engine?.stopAll();
+    this._plannedSuccessorTag = null;
+    this._scheduledSuccessorTag = null;
+    this._lastCurrentTag = null;
+    this._consecutiveAutoTrackCount = 0;
+    this._refillCount = 0;
+    this._fallbackReason = null;
+    this._extendInFlight = false;
+    this._onEngineEvent({ type: "audio_stopped" });
+    return { ok: true };
+  }
+
   /** Owner acceleration control -- available only while a successor is planned but not yet scheduled. */
   jumpToNearExit(secondsBeforeExit = JUMP_TARGET_S) {
     if (!this._engine) return { ok: false, reason: "NOT_CONNECTED" };

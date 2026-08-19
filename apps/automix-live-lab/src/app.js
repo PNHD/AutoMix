@@ -77,6 +77,7 @@ const els = {
   ctlPause: document.getElementById("ctl-pause"),
   ctlNext: document.getElementById("ctl-next"),
   ctlAutoMixToggle: document.getElementById("ctl-automix-toggle"),
+  ctlStopAudio: document.getElementById("ctl-stop-audio"),
   ctlDebugToggle: document.getElementById("ctl-debug-toggle"),
   debugPanel: document.getElementById("debug-panel"),
 };
@@ -650,6 +651,14 @@ async function activateLocal() {
     logDebug(`jumpToNearExit(15) -> ${JSON.stringify(res)}`);
     renderLocalSessionState(adapter);
   };
+  els.ctlStopAudio.onclick = () => {
+    const res = adapter.stopAudio();
+    logDebug(`stopAudio() -> ${JSON.stringify(res)}`);
+    renderQueue(adapter);
+    renderLocalSessionState(adapter);
+    renderLocalSeekUI(adapter);
+    restoreLocalSeedPicker(adapter);
+  };
 
   renderStatus(adapter, null);
   renderQueue(adapter);
@@ -682,6 +691,7 @@ function setModeUi() {
   els.ctlChangeSeed.classList.add("hidden");
   els.ctlConnect.textContent = activeMode === "spotify" ? "Connect / Authorize" : "Connect (start local audio)";
   els.ctlNext.disabled = activeMode === "local";
+  els.ctlStopAudio.classList.toggle("hidden", activeMode !== "local");
   stopStatusLoop();
   stopLookaheadOrchestration();
 }

@@ -86,11 +86,43 @@ def main() -> int:
     for (o, i), e in zip(hops, edges):
         assert e["tempo_correction"] == 0.0, f"{o}->{i} is not near-native (correction={e['tempo_correction']}); this script only handles the zero-correction chain"
 
+    # P0-M8-R3 forensic exit-anchor correction ------------------------------
+    # discover_local_dsp_graph.py's evaluate_pair() (frozen, reused verbatim
+    # -- NOT modified here) picked exit_anchor_s values that are structurally
+    # valid (bar/phrase boundaries, exit_structure_confidence=HIGH) but land
+    # on already near-silent source content: direct PCM measurement of the
+    # DECODED ORIGINAL tracks (not the trimmed excerpts) showed
+    #   RM062: steady ~-8dBFS through t=183.4s, then a genuine, permanent
+    #     outro fade collapses it to <=-38dBFS by t=185.6s -- the graph's
+    #     exit_anchor_s=185.26 sits INSIDE that fade, not before it.
+    #   RM076: steady ~-8..-14dBFS through t=174.0s, then a hard mid-song
+    #     dramatic-pause breakdown drops it to full digital silence by
+    #     t=175.6s (it resumes at t=176.4s for one more full-energy section
+    #     before its own real outro near t=185s) -- the graph's
+    #     exit_anchor_s=174.02 sits right at the edge of that breakdown.
+    # Combined with the live equal-power crossfade, this produced a real
+    # ~30dB composite loudness hole at every RM062->RM076 and RM076->RM010
+    # handoff (see ../../P0-M8-R3-CLAUDE-REPORT.md Phase A-C). RM010's own
+    # exit_anchor_s=199.12 (RM010->RM099) measured clean (steady loudness
+    # through the anchor) and is NOT overridden.
+    #
+    # This does not touch evaluate_pair()/choose_window_bars() or any
+    # eligibility/tempo/harmonic threshold -- it only substitutes a
+    # bar-aligned (outgoing_bar_period_s multiple), EARLIER point within the
+    # SAME already-accepted pair's outgoing track, chosen from direct PCM
+    # evidence to sit before the measured near-silence onset. window_s stays
+    # exactly what choose_window_bars() derives from the frozen bar_period.
+    EXIT_ANCHOR_OVERRIDE_S = {
+        "RM062": 181.42,  # was 185.26 -- 2 bars (2 * 1.92s) earlier, before the outro fade onset (~184.2s)
+        "RM076": 160.02,  # was 174.02 -- 7 bars (7 * 2.0s) earlier, before the breakdown onset (~174.2s)
+    }
+
     # windows, keyed by the OUTGOING track of each hop
     windows = {}
     for (out_id, in_id), e in zip(hops, edges):
         bars, window_s = choose_window_bars(e["outgoing_bar_period_s"])
-        windows[out_id] = {"in_id": in_id, "exit_anchor_s": e["exit_anchor_s"], "entry_anchor_s": e["entry_anchor_s"], "window_bars": bars, "window_s": round(window_s, 3), "evidence": e}
+        exit_anchor_s = EXIT_ANCHOR_OVERRIDE_S.get(out_id, e["exit_anchor_s"])
+        windows[out_id] = {"in_id": in_id, "exit_anchor_s": exit_anchor_s, "entry_anchor_s": e["entry_anchor_s"], "window_bars": bars, "window_s": round(window_s, 3), "evidence": e}
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     tracks_out = []
