@@ -33,6 +33,9 @@
             </div>
             <ol id="seed-results" class="upcoming-list seed-results"></ol>
           </div>
+          <div id="local-seed-controls" class="hidden">
+            <ol id="local-seed-list" class="upcoming-list seed-results"></ol>
+          </div>
           <button id="ctl-change-seed" class="link-btn hidden">Change seed</button>
         </div>
         <div id="queue-current" class="track-row track-current">No source connected</div>
@@ -60,7 +63,11 @@
         <h2>AutoMix Session</h2>
         <div class="status-row"><span class="label">Consecutive tracks</span><span id="lookahead-consecutive-count">1</span></div>
         <div class="status-row"><span class="label">Refill count</span><span id="lookahead-refill-count">0</span></div>
-        <div class="status-row"><span class="label">Provider queue size (Spotify's own)</span><span id="lookahead-provider-queue-size">0</span></div>
+        <div id="session-spotify-only" class="status-row"><span class="label">Provider queue size (Spotify's own)</span><span id="lookahead-provider-queue-size">0</span></div>
+        <div id="session-local-only" class="hidden">
+          <div class="status-row"><span class="label">Successor state</span><span id="local-successor-state" class="badge">--</span></div>
+          <div class="status-row"><span class="label">Fallback reason</span><span id="local-fallback-reason">none</span></div>
+        </div>
       </section>
 
       <section class="panel panel-capability" id="panel-capability">
@@ -119,7 +126,14 @@
         <div class="status-row"><span class="label">Play at natural end</span><span id="play-natural-end-hint">--</span></div>
       </div>
 
-      <h3>Next transition plan (advisory only -- never executed)</h3>
+      <div id="advanced-local-only" class="hidden">
+        <h3>Local DSP chain</h3>
+        <div class="status-row"><span class="label">Transition mode</span><span id="local-transition-mode">--</span></div>
+        <div class="status-row"><span class="label">Transition duration</span><span id="local-transition-duration">--</span></div>
+        <div class="status-row"><span class="label">Jump available</span><span id="local-jump-available" class="badge">--</span></div>
+      </div>
+
+      <h3>Next transition plan (real DSP for Local; advisory only for Spotify -- never executed there)</h3>
       <div class="status-row"><span class="label">Exit anchor</span><span id="plan-exit">--</span></div>
       <div class="status-row"><span class="label">Entry anchor</span><span id="plan-entry">--</span></div>
       <div class="status-row"><span class="label">Tempo correction</span><span id="plan-tempo">--</span></div>

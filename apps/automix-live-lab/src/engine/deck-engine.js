@@ -1,4 +1,4 @@
-import { computeQueueSchedule } from "./schedule.js";
+import { computeQueueSchedule, computeChainSchedule } from "./schedule.js";
 
 /**
  * DeckEngine -- genuine live two-deck Web Audio playback.
@@ -35,6 +35,10 @@ export class DeckEngine {
     this.timeline = [];
     this.startedAtCtxTime = null;
     this.listeners = new Set();
+    this.chainTrackConfigs = [];
+    this.chainNodes = [];
+    this._chainOriginCtxTime = null;
+    this._chainLeadInS = 0.25;
   }
 
   on(cb) {
@@ -68,6 +72,11 @@ export class DeckEngine {
     await Promise.all([...files].map((f) => this._loadBuffer(f)));
   }
 
+  /** Preloads a flat list of file names (P0-M8-R1 chain tracks -- one file per track, no out/in pairing). */
+  async preloadFiles(fileNames) {
+    await Promise.all([...new Set(fileNames)].map((f) => this._loadBuffer(f)));
+  }
+
   _equalPowerCurve(steps, invert) {
     const arr = new Float32Array(steps);
     for (let i = 0; i < steps; i++) {
@@ -87,6 +96,32 @@ export class DeckEngine {
     gain.connect(bass);
     bass.connect(this.master);
     return { gain, bass };
+  }
+
+  /**
+   * Applies the equal-power crossfade + bass/EQ handoff automation between
+   * an outgoing and incoming channel, starting at `startTime` (AudioContext
+   * absolute time) over `windowS` seconds. Shared by the legacy baked-queue
+   * path (scheduleQueue) and the P0-M8-R1 chain path (extendChain) so both
+   * execute the exact same automation code, not a re-derived copy.
+   */
+  _crossfade(outCh, inCh, startTime, windowS, bassHandoffSpeed) {
+    const steps = Math.max(8, Math.round(windowS * 20)); // ~20 automation points/sec
+    const outCurve = this._equalPowerCurve(steps, true);
+    const inCurve = this._equalPowerCurve(steps, false);
+    outCh.gain.gain.setValueCurveAtTime(outCurve, startTime, windowS);
+    inCh.gain.gain.setValueCurveAtTime(inCurve, startTime, windowS);
+
+    // Live bass/EQ handoff: outgoing bass cut ramps down faster
+    // (bassHandoffSpeed multiplier, reused from dsp/mixing.py's
+    // BASS_HANDOFF_SPEED) than the full-band crossfade; incoming bass
+    // ramps up to match, so low end changes hands before the rest of
+    // the spectrum finishes crossfading (reduces bass-on-bass buildup).
+    const bassWindowS = windowS / bassHandoffSpeed;
+    outCh.bass.gain.setValueAtTime(0, startTime);
+    outCh.bass.gain.linearRampToValueAtTime(-18, startTime + bassWindowS);
+    inCh.bass.gain.setValueAtTime(-18, startTime);
+    inCh.bass.gain.linearRampToValueAtTime(0, startTime + bassWindowS);
   }
 
   /**
@@ -137,23 +172,8 @@ export class DeckEngine {
       inSrc.start(base + entry.exitAt, entry.entryOffsetS);
 
       const windowS = entry.windowEndAt - entry.exitAt;
-      const steps = Math.max(8, Math.round(windowS * 20)); // ~20 automation points/sec
-      const outCurve = this._equalPowerCurve(steps, true);
-      const inCurve = this._equalPowerCurve(steps, false);
       const exitTime = base + entry.exitAt;
-      outCh.gain.gain.setValueCurveAtTime(outCurve, exitTime, windowS);
-      inCh.gain.gain.setValueCurveAtTime(inCurve, exitTime, windowS);
-
-      // Live bass/EQ handoff: outgoing bass cut ramps down faster
-      // (bassHandoffSpeed multiplier, reused from dsp/mixing.py's
-      // BASS_HANDOFF_SPEED) than the full-band crossfade; incoming bass
-      // ramps up to match, so low end changes hands before the rest of
-      // the spectrum finishes crossfading (reduces bass-on-bass buildup).
-      const bassWindowS = windowS / entry.bassHandoffSpeed;
-      outCh.bass.gain.setValueAtTime(0, exitTime);
-      outCh.bass.gain.linearRampToValueAtTime(-18, exitTime + bassWindowS);
-      inCh.bass.gain.setValueAtTime(-18, exitTime);
-      inCh.bass.gain.linearRampToValueAtTime(0, exitTime + bassWindowS);
+      this._crossfade(outCh, inCh, exitTime, windowS, entry.bassHandoffSpeed);
 
       this.scheduledNodes.push(outSrc, inSrc);
       inSrc.onended = () => this._emit({ type: "item_ended", tag: entry.tag, mode: entry.mode });
@@ -194,5 +214,174 @@ export class DeckEngine {
     this.scheduledNodes = [];
     this.timeline = [];
     this.startedAtCtxTime = null;
+    this.chainTrackConfigs = [];
+    this.chainNodes = [];
+    this._chainOriginCtxTime = null;
+    this._chainLeadInS = 0.25;
+  }
+
+  // ---- P0-M8-R1: genuine single-current-track LocalDSP chain ----
+  //
+  // Unlike scheduleQueue() (a whole session pre-baked from a fixed item
+  // list), a chain is built ONE track at a time: startChain() plays only
+  // the seed; extendChain() is called later (by the adapter, once it has
+  // chosen an automatic successor) to schedule exactly one more track and
+  // crossfade into it from the CURRENTLY PLAYING deck -- the same buffer
+  // that has been audible since it became current, never restarted. This
+  // is what makes "AutoMix refills after the successor becomes current"
+  // a genuine runtime event rather than a UI label over a precomputed plan.
+
+  /** @param {{tag:string,file:string,durationS:number,exitOffsetS:number|null,windowS:number|null,bassHandoffSpeed:number,tempoRatio:number|null}} track */
+  async startChain(track, leadInS = 0.25) {
+    await this._loadBuffer(track.file);
+    this._chainOriginCtxTime = this.ctx.currentTime;
+    this._chainLeadInS = leadInS;
+    this.chainTrackConfigs = [track];
+    this.chainNodes = [];
+
+    const entry = computeChainSchedule([track], leadInS).timeline[0];
+    const buf = this.bufferCache.get(track.file);
+    const src = this.ctx.createBufferSource();
+    src.buffer = buf;
+    const ch = this._makeChannel();
+    ch.gain.gain.value = 1.0;
+    src.connect(ch.gain);
+    const absT0 = this._chainOriginCtxTime + entry.t0;
+    src.start(absT0);
+    this.scheduledNodes.push(src);
+    src.onended = () => this._emit({ type: "chain_track_ended", tag: track.tag });
+
+    const node = { tag: track.tag, track, src, ch, relT0: entry.t0, relExitAt: entry.exitAt, relWindowEndAt: entry.windowEndAt, relItemEndAt: entry.itemEndAt };
+    this.chainNodes = [node];
+    this._emit({ type: "chain_track_scheduled", tag: track.tag, index: 0, hasExit: entry.exitAt !== null });
+    return node;
+  }
+
+  /**
+   * Schedules exactly one more chain track, crossfading in from whichever
+   * track is currently last in the chain. Throws if the current last track
+   * has no exit anchor (nothing to crossfade from -- graceful fallback
+   * territory, the caller should not have offered a successor) or if this
+   * exact track tag is already scheduled anywhere in the chain (guards
+   * against duplicate scheduling from rapid/duplicate state events).
+   * Scheduling more than one hop ahead of the currently AUDIBLE track is
+   * allowed (Web Audio scheduling is not time-limited); the adapter's own
+   * refill policy is what keeps this to one hop at a time in practice.
+   */
+  async extendChain(track) {
+    if (!this.chainNodes.length) throw new Error("CHAIN_EXTEND_WITHOUT_SEED: startChain() was not called");
+    if (this.chainTrackConfigs.some((t) => t.tag === track.tag)) throw new Error(`CHAIN_EXTEND_DUPLICATE: ${track.tag} is already scheduled in this chain`);
+    const prevNode = this.chainNodes[this.chainNodes.length - 1];
+    if (prevNode.relExitAt === null) throw new Error(`CHAIN_EXTEND_WITHOUT_EXIT: ${prevNode.tag} has no exit anchor to crossfade from`);
+
+    await this._loadBuffer(track.file);
+    this.chainTrackConfigs.push(track);
+    const timeline = computeChainSchedule(this.chainTrackConfigs, this._chainLeadInS).timeline;
+    const prevEntry = timeline[timeline.length - 2];
+    const entry = timeline[timeline.length - 1];
+
+    const buf = this.bufferCache.get(track.file);
+    const src = this.ctx.createBufferSource();
+    src.buffer = buf;
+    const ch = this._makeChannel();
+    ch.gain.gain.value = 0.0;
+    src.connect(ch.gain);
+    const absT0 = this._chainOriginCtxTime + entry.t0;
+    src.start(absT0);
+    this.scheduledNodes.push(src);
+    src.onended = () => this._emit({ type: "chain_track_ended", tag: track.tag });
+
+    const exitTimeAbs = this._chainOriginCtxTime + prevEntry.exitAt;
+    const windowS = prevEntry.windowEndAt - prevEntry.exitAt;
+    this._crossfade(prevNode.ch, ch, exitTimeAbs, windowS, prevNode.track.bassHandoffSpeed);
+
+    const node = { tag: track.tag, track, src, ch, relT0: entry.t0, relExitAt: entry.exitAt, relWindowEndAt: entry.windowEndAt, relItemEndAt: entry.itemEndAt };
+    this.chainNodes.push(node);
+    this._emit({ type: "chain_track_scheduled", tag: track.tag, index: this.chainNodes.length - 1, hasExit: entry.exitAt !== null });
+    return node;
+  }
+
+  /**
+   * Owner acceleration control: seeks the CURRENTLY LAST (not yet extended)
+   * chain track forward so its exit anchor arrives in ~`secondsBeforeExit`
+   * seconds, by stopping and restarting its AudioBufferSourceNode at a
+   * later buffer offset (Web Audio has no live-seek), then shifting the
+   * chain's time origin so every not-yet-scheduled future track inherits
+   * the same wall-clock shift. Never available once a successor has
+   * already been scheduled for the current track (no mid-crossfade jump).
+   */
+  jumpToNearExit(secondsBeforeExit = 15) {
+    const snap = this.chainSnapshot();
+    if (!snap) return { ok: false, reason: "NO_CURRENT_TRACK" };
+    if (snap.hasSuccessorScheduled) return { ok: false, reason: "SUCCESSOR_ALREADY_SCHEDULED" };
+    const idx = snap.index;
+    const node = this.chainNodes[idx];
+    if (node.relExitAt === null) return { ok: false, reason: "NO_EXIT_ANCHOR" };
+
+    const now = this.ctx.currentTime;
+    const absExitAt = this._chainOriginCtxTime + node.relExitAt;
+    const absT0 = this._chainOriginCtxTime + node.relT0;
+    const remainingS = absExitAt - now;
+    if (remainingS <= secondsBeforeExit) return { ok: false, reason: "ALREADY_NEAR_EXIT", remainingS };
+
+    const currentBufferOffsetS = now - absT0;
+    const targetBufferOffsetS = Math.max(currentBufferOffsetS, node.track.exitOffsetS - secondsBeforeExit);
+    if (targetBufferOffsetS <= currentBufferOffsetS) return { ok: false, reason: "ALREADY_PAST_JUMP_TARGET" };
+
+    try {
+      node.src.stop(now);
+    } catch {
+      /* already stopped/ended */
+    }
+    const newSrc = this.ctx.createBufferSource();
+    newSrc.buffer = node.src.buffer;
+    newSrc.connect(node.ch.gain);
+    newSrc.start(now, targetBufferOffsetS);
+    this.scheduledNodes.push(newSrc);
+    newSrc.onended = () => this._emit({ type: "chain_track_ended", tag: node.tag });
+    node.src = newSrc;
+
+    const newAbsT0 = now - targetBufferOffsetS;
+    const deltaS = newAbsT0 - absT0;
+    this._chainOriginCtxTime += deltaS; // shifts this + all not-yet-scheduled future tracks uniformly
+
+    const newRemainingS = this._chainOriginCtxTime + node.relExitAt - now;
+    this._emit({ type: "chain_jump", tag: node.tag, targetBufferOffsetS, remainingS: newRemainingS });
+    return { ok: true, remainingS: newRemainingS };
+  }
+
+  /**
+   * Snapshot of the currently audible chain track, or null if no chain is
+   * playing. During a crossfade window BOTH the outgoing and incoming
+   * track's own buffer intervals contain `now` (the outgoing deck is still
+   * fading out while it plays out its own tail) -- "current" means the
+   * MOST RECENTLY STARTED track (the incoming/successor deck), not
+   * whichever interval happens to be found first.
+   */
+  chainSnapshot() {
+    if (!this.chainNodes.length) return null;
+    const now = this.ctx.currentTime;
+    const timeline = computeChainSchedule(this.chainTrackConfigs, this._chainLeadInS).timeline;
+    let idx = -1;
+    for (let i = timeline.length - 1; i >= 0; i--) {
+      if (now >= this._chainOriginCtxTime + timeline[i].t0) {
+        idx = i;
+        break;
+      }
+    }
+    if (idx === -1) idx = 0; // before the seed's own lead-in has elapsed
+    const entry = timeline[idx];
+    const absT0 = this._chainOriginCtxTime + entry.t0;
+    const absExitAt = entry.exitAt !== null ? this._chainOriginCtxTime + entry.exitAt : null;
+    return {
+      index: idx,
+      tag: entry.tag,
+      track: this.chainTrackConfigs[idx],
+      positionS: Math.max(0, now - absT0),
+      durationS: entry.itemEndAt - entry.t0,
+      remainingToExitS: absExitAt !== null ? absExitAt - now : null,
+      hasSuccessorScheduled: this.chainNodes.length > idx + 1,
+      trackCount: this.chainTrackConfigs.length,
+    };
   }
 }

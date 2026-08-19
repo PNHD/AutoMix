@@ -54,6 +54,16 @@ const els = {
   seedSearchBtn: document.getElementById("seed-search-btn"),
   seedResults: document.getElementById("seed-results"),
   seedStatus: document.getElementById("seed-status"),
+  localSeedControls: document.getElementById("local-seed-controls"),
+  localSeedList: document.getElementById("local-seed-list"),
+  sessionSpotifyOnly: document.getElementById("session-spotify-only"),
+  sessionLocalOnly: document.getElementById("session-local-only"),
+  localSuccessorState: document.getElementById("local-successor-state"),
+  localFallbackReason: document.getElementById("local-fallback-reason"),
+  advancedLocalOnly: document.getElementById("advanced-local-only"),
+  localTransitionMode: document.getElementById("local-transition-mode"),
+  localTransitionDuration: document.getElementById("local-transition-duration"),
+  localJumpAvailable: document.getElementById("local-jump-available"),
   ctlChangeSpotifySetup: document.getElementById("ctl-change-spotify-setup"),
   autoplaySnapshotCount: document.getElementById("autoplay-snapshot-count"),
   autoplayClassification: document.getElementById("autoplay-classification"),
@@ -243,34 +253,6 @@ function stopLookaheadOrchestration() {
   if (lookaheadHandle) clearInterval(lookaheadHandle);
   lookaheadHandle = null;
   lookaheadCycleInFlight = false;
-}
-
-async function activateLocal() {
-  activeMode = "local";
-  setModeUi();
-  logDebug("Activating LocalDSPPlaybackAdapter...");
-  const queueManifest = await fetch("/src/data/queue_manifest.json").then((r) => r.json());
-  const adapter = new LocalDSPPlaybackAdapter({ audioBaseUrl: "/work_local/queue_audio", queueManifest });
-  activeAdapter = adapter;
-  adapter.onStateChange((evt) => logDebug(`[local-dsp] ${JSON.stringify(evt)}`));
-
-  els.ctlConnect.onclick = async () => {
-    const res = await adapter.connect();
-    logDebug(`connect() -> ${JSON.stringify(res)}`);
-    const readiness = await adapter.getAccountReadiness();
-    adapter._lastReadiness = readiness;
-    const { timeline, totalDurationS, transitionCount } = await adapter.loadQueue();
-    logDebug(`loadQueue() -> ${transitionCount} transitions, ${totalDurationS.toFixed(2)}s total session`);
-    logDebug(`timeline: ${JSON.stringify(timeline.map((t) => ({ tag: t.tag, t0: +t.t0.toFixed(2), itemEndAt: +t.itemEndAt.toFixed(2) })))}`);
-    startStatusLoop(adapter);
-    renderStatus(adapter, readiness);
-    renderQueue(adapter);
-  };
-  els.ctlPlay.onclick = () => adapter.play();
-  els.ctlPause.onclick = () => adapter.pause();
-  els.ctlNext.onclick = () => adapter.next().catch((e) => logDebug(`next() -> ${e.message}`));
-  renderStatus(adapter, null);
-  renderQueue(adapter);
 }
 
 function renderAutoplayStatus(adapter) {
@@ -551,6 +533,130 @@ async function activateSpotify() {
   renderLookaheadStatus(adapter);
 }
 
+/**
+ * P0-M8-R1 Phase D: Local DSP telemetry -- successor state, transition
+ * mode/duration, jump availability, fallback reason, plus the shared
+ * (generic) consecutive-track and refill counters in panel-session. Never
+ * claims tempo/beat/downbeat certainty beyond what getAutoMixPlan() itself
+ * reports from the reused eligibility evidence.
+ */
+function renderLocalSessionState(adapter) {
+  if (!(adapter instanceof LocalDSPPlaybackAdapter)) return;
+  const plan = adapter.getAutoMixPlan();
+  els.lookaheadConsecutiveCount.textContent = String(plan.consecutiveAutoTrackCount);
+  els.lookaheadRefillCount.textContent = String(plan.refillCount);
+  els.localSuccessorState.textContent = plan.successorState;
+  els.localSuccessorState.className = plan.successorState === "SCHEDULED" || plan.successorState === "PLANNED" ? "badge badge-ready" : "badge badge-muted";
+  els.localFallbackReason.textContent = plan.fallbackReason || "none";
+  els.localTransitionMode.textContent = plan.transitionMode || "--";
+  els.localTransitionDuration.textContent = plan.transitionDurationS != null ? `${plan.transitionDurationS.toFixed(2)}s` : "--";
+  const jumpAvailable = adapter.isJumpAvailable();
+  els.localJumpAvailable.textContent = jumpAvailable ? "yes" : "no";
+  els.localJumpAvailable.className = jumpAvailable ? "badge badge-ready" : "badge badge-muted";
+  els.seekJumpNearEndBtn.disabled = !jumpAvailable;
+
+  els.nextAutomixMeta.classList.remove("hidden");
+  els.nextSource.textContent = "AutoMix successor (local corpus, real graph lookup)";
+  if (plan.available) {
+    els.nextReadyBadge.textContent = "Ready";
+    els.nextReadyBadge.className = "badge badge-ready";
+  } else if (plan.fallbackReason) {
+    els.nextReadyBadge.textContent = "No successor";
+    els.nextReadyBadge.className = "badge badge-muted";
+  } else {
+    els.nextReadyBadge.textContent = "--";
+    els.nextReadyBadge.className = "badge badge-muted";
+  }
+}
+
+/** Read-only position/duration display -- Local DSP chain playback has no arbitrary manual seek, only Jump-to-last-15s. */
+function renderLocalSeekUI(adapter) {
+  const ps = adapter.getPlaybackState();
+  els.seekSlider.disabled = true;
+  els.seekSlider.max = String(ps.durationMs || 0);
+  els.seekSlider.value = String(ps.positionMs || 0);
+  els.seekDurationLabel.textContent = formatMs(ps.durationMs || 0);
+  els.seekCurrentLabel.textContent = formatMs(ps.positionMs || 0);
+}
+
+/** Mirrors collapseSeedSearch()/restoreSeedSearch() (P0-M6-R3) for the Local seed picker -- same compact-screenshot contract, separate markup so the two providers' seed UIs never interfere. */
+function collapseLocalSeedPicker() {
+  els.localSeedList.innerHTML = "";
+  els.localSeedControls.classList.add("hidden");
+  els.ctlChangeSeed.classList.remove("hidden");
+}
+function restoreLocalSeedPicker(adapter) {
+  els.localSeedControls.classList.remove("hidden");
+  els.ctlChangeSeed.classList.add("hidden");
+  renderLocalSeedOptions(adapter);
+}
+
+function renderLocalSeedOptions(adapter) {
+  els.localSeedList.innerHTML = "";
+  for (const seed of adapter.listAvailableSeeds()) {
+    const li = document.createElement("li");
+    li.className = "seed-result-row";
+    const label = document.createElement("span");
+    label.textContent = seed.label;
+    const btn = document.createElement("button");
+    btn.textContent = "Play as seed";
+    btn.onclick = async () => {
+      try {
+        await adapter.selectSeed(seed.trackId);
+        logDebug(`selectSeed(${seed.trackId}) -> session started`);
+        collapseLocalSeedPicker();
+        renderQueue(adapter);
+        renderLocalSessionState(adapter);
+      } catch (e) {
+        logDebug(`selectSeed(${seed.trackId}) -> ERROR: ${e.message}`);
+      }
+    };
+    li.appendChild(label);
+    li.appendChild(btn);
+    els.localSeedList.appendChild(li);
+  }
+}
+
+async function activateLocal() {
+  activeMode = "local";
+  setModeUi();
+  logDebug("Activating LocalDSPPlaybackAdapter...");
+
+  const adapter = new LocalDSPPlaybackAdapter({});
+  activeAdapter = adapter;
+  adapter.onStateChange((evt) => logDebug(`[local-dsp] ${JSON.stringify(evt)}`));
+
+  els.ctlConnect.onclick = async () => {
+    const res = await adapter.connect();
+    logDebug(`connect() -> ${JSON.stringify(res)}`);
+    const readiness = await adapter.getAccountReadiness();
+    adapter._lastReadiness = readiness;
+    renderLocalSeedOptions(adapter);
+    startStatusLoop(adapter, () => {
+      renderLocalSessionState(adapter);
+      renderLocalSeekUI(adapter);
+    });
+    renderStatus(adapter, readiness);
+    renderQueue(adapter);
+    renderLocalSessionState(adapter);
+    renderLocalSeekUI(adapter);
+  };
+  els.ctlPlay.onclick = () => adapter.play();
+  els.ctlPause.onclick = () => adapter.pause();
+  els.ctlNext.disabled = true; // chain playback is continuous-by-design; use Jump to accelerate instead
+  els.ctlChangeSeed.onclick = () => restoreLocalSeedPicker(adapter);
+  els.seekJumpNearEndBtn.onclick = () => {
+    const res = adapter.jumpToNearExit(15);
+    logDebug(`jumpToNearExit(15) -> ${JSON.stringify(res)}`);
+    renderLocalSessionState(adapter);
+  };
+
+  renderStatus(adapter, null);
+  renderQueue(adapter);
+  renderLocalSessionState(adapter);
+  renderLocalSeekUI(adapter);
+}
+
 els.spotifySaveClientId.onclick = () => {
   localStorage.setItem(CLIENT_ID_KEY, els.spotifyClientIdInput.value.trim());
   logDebug("Spotify Client ID saved locally (localStorage only, never sent anywhere but Spotify's own accounts/API endpoints).");
@@ -560,10 +666,22 @@ function setModeUi() {
   els.modeSpotify.setAttribute("aria-selected", String(activeMode === "spotify"));
   els.modeLocal.setAttribute("aria-selected", String(activeMode === "local"));
   els.spotifySetup.classList.toggle("hidden", activeMode !== "spotify");
-  els.panelSeed.classList.toggle("hidden", activeMode !== "spotify");
+  // P0-M8-R1: the seed panel, Next card, and AutoMix Session panel are now
+  // generic across both providers (Local DSP gained its own genuine
+  // seed-picker + successor telemetry) -- only the PROVIDER-SPECIFIC
+  // sub-blocks inside them toggle by mode.
+  els.panelSeed.classList.remove("hidden");
+  els.nextAutomixMeta.classList.remove("hidden");
+  els.panelSession.classList.remove("hidden");
   els.advancedSpotifyOnly.classList.toggle("hidden", activeMode !== "spotify");
-  els.nextAutomixMeta.classList.toggle("hidden", activeMode !== "spotify");
-  els.panelSession.classList.toggle("hidden", activeMode !== "spotify");
+  els.advancedLocalOnly.classList.toggle("hidden", activeMode !== "local");
+  els.sessionSpotifyOnly.classList.toggle("hidden", activeMode !== "spotify");
+  els.sessionLocalOnly.classList.toggle("hidden", activeMode !== "local");
+  els.seedSearchControls.classList.toggle("hidden", activeMode !== "spotify");
+  els.localSeedControls.classList.toggle("hidden", activeMode !== "local");
+  els.ctlChangeSeed.classList.add("hidden");
+  els.ctlConnect.textContent = activeMode === "spotify" ? "Connect / Authorize" : "Connect (start local audio)";
+  els.ctlNext.disabled = activeMode === "local";
   stopStatusLoop();
   stopLookaheadOrchestration();
 }

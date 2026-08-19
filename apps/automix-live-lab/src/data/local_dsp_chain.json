@@ -1,0 +1,72 @@
+{
+  "schema": "p0m8_local_dsp_chain_v1",
+  "seed_tag": "RM062",
+  "track_count": 4,
+  "transition_count": 3,
+  "tracks": [
+    {
+      "tag": "RM062",
+      "role": "seed",
+      "file": "RM062_seed.wav",
+      "duration_s": 196.78,
+      "trim_start_s": 0.0,
+      "exit_offset_s": 185.26,
+      "window_s": 11.52,
+      "next_tag": "RM076",
+      "bass_cutoff_hz": 150.0,
+      "bass_handoff_speed": 2.2,
+      "tempo_ratio": 1.0,
+      "tempo_correction_pct": 0.0,
+      "exit_structure_confidence": "HIGH",
+      "harmonic_relationship": null
+    },
+    {
+      "tag": "RM076",
+      "role": "middle",
+      "file": "RM076_mid.wav",
+      "duration_s": 183.98,
+      "trim_start_s": 2.04,
+      "exit_offset_s": 171.98,
+      "window_s": 12.0,
+      "next_tag": "RM010",
+      "bass_cutoff_hz": 150.0,
+      "bass_handoff_speed": 2.2,
+      "tempo_ratio": 1.0,
+      "tempo_correction_pct": 0.0,
+      "exit_structure_confidence": "HIGH",
+      "harmonic_relationship": null
+    },
+    {
+      "tag": "RM010",
+      "role": "middle",
+      "file": "RM010_mid.wav",
+      "duration_s": 205.28,
+      "trim_start_s": 5.04,
+      "exit_offset_s": 194.08,
+      "window_s": 11.2,
+      "next_tag": "RM099",
+      "bass_cutoff_hz": 150.0,
+      "bass_handoff_speed": 2.2,
+      "tempo_ratio": 1.0,
+      "tempo_correction_pct": 0.0,
+      "exit_structure_confidence": "HIGH",
+      "harmonic_relationship": "COMPATIBLE"
+    },
+    {
+      "tag": "RM099",
+      "role": "terminal",
+      "file": "RM099_terminal.wav",
+      "duration_s": 71.2,
+      "trim_start_s": 0.56,
+      "exit_offset_s": null,
+      "window_s": null,
+      "next_tag": null,
+      "bass_cutoff_hz": 150.0,
+      "bass_handoff_speed": 2.2,
+      "tempo_ratio": null,
+      "tempo_correction_pct": null,
+      "exit_structure_confidence": null,
+      "harmonic_relationship": null
+    }
+  ]
+}
